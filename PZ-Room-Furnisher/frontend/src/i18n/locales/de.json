@@ -1,0 +1,49 @@
+{
+  "app": {
+    "title": "PZ Room Furnisher",
+    "subtitle": "Project Zomboid – Building Editor TBX Viewer",
+    "dimensions": "{{width}} × {{height}}",
+    "floors_one": "{{count}} Stockwerk",
+    "floors_other": "{{count}} Stockwerke",
+    "roomsTotal_one": "{{count}} Raum gesamt",
+    "roomsTotal_other": "{{count}} Räume gesamt",
+    "roomsTotalHint": "Nur Räume mit mindestens einer Tür oder einem Fenster",
+    "roomsFloor_one": "{{count}} Raum auf diesem Stockwerk",
+    "roomsFloor_other": "{{count}} Räume auf diesem Stockwerk"
+  },
+  "upload": {
+    "processing": "Datei wird verarbeitet…",
+    "hint": ".tbx Datei hier ablegen oder klicken",
+    "loaded": "✅ {{name}} geladen – neue Datei ablegen"
+  },
+  "floor": {
+    "ground": "Erdgeschoss",
+    "upper": "Stockwerk {{n}}",
+    "noGrid": "Kein Raster für dieses Stockwerk vorhanden."
+  },
+  "legend": {
+    "door": "Tür",
+    "window": "Fenster",
+    "stairs": "Treppe",
+    "stairEntry": "Treppenaufgang",
+    "selectHint": "{{name}} – klicken zum Hervorheben, STRG+Klick für Mehrfachauswahl",
+    "clearSelection": "✕ Auswahl aufheben ({{count}})"
+  },
+  "direction": {
+    "N": "Nord",
+    "S": "Süd",
+    "W": "West",
+    "E": "Ost"
+  },
+  "cell": {
+    "outside": "außen",
+    "stairs": "Treppe"
+  },
+  "object": {
+    "Door": "Tür",
+    "Window": "Fenster"
+  }
+}
+
+
+

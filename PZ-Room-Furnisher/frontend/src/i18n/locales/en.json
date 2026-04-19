@@ -1,0 +1,49 @@
+{
+  "app": {
+    "title": "PZ Room Furnisher",
+    "subtitle": "Project Zomboid – Building Editor TBX Viewer",
+    "dimensions": "{{width}} × {{height}}",
+    "floors_one": "{{count}} floor",
+    "floors_other": "{{count}} floors",
+    "roomsTotal_one": "{{count}} room total",
+    "roomsTotal_other": "{{count}} rooms total",
+    "roomsTotalHint": "Only rooms with at least one door or window",
+    "roomsFloor_one": "{{count}} room on this floor",
+    "roomsFloor_other": "{{count}} rooms on this floor"
+  },
+  "upload": {
+    "processing": "Processing file…",
+    "hint": "Drop .tbx file here or click",
+    "loaded": "✅ {{name}} loaded – drop a new file to replace"
+  },
+  "floor": {
+    "ground": "Ground floor",
+    "upper": "Floor {{n}}",
+    "noGrid": "No grid data available for this floor."
+  },
+  "legend": {
+    "door": "Door",
+    "window": "Window",
+    "stairs": "Stairs",
+    "stairEntry": "Stair entry",
+    "selectHint": "{{name}} – click to highlight, CTRL+click for multi-select",
+    "clearSelection": "✕ Clear selection ({{count}})"
+  },
+  "direction": {
+    "N": "North",
+    "S": "South",
+    "W": "West",
+    "E": "East"
+  },
+  "cell": {
+    "outside": "outside",
+    "stairs": "Stairs"
+  },
+  "object": {
+    "Door": "Door",
+    "Window": "Window"
+  }
+}
+
+
+

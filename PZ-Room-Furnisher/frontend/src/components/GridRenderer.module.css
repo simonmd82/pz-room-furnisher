@@ -1,0 +1,373 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Legend wrapper (legend + clear button) ── */
+.legendWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 10px 16px;
+  background: #141422;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+}
+
+.legendDivider {
+  width: 1px;
+  height: 20px;
+  background: #3a3a5a;
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: #ccd;
+  border-radius: 5px;
+  padding: 3px 6px;
+  transition: background 0.15s, opacity 0.15s;
+  user-select: none;
+}
+
+/* Clickable room items */
+.legendItemClickable {
+  cursor: pointer;
+}
+.legendItemClickable:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+/* Selected room */
+.legendItemSelected {
+  background: rgba(255,255,255,0.13);
+  outline: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Dimmed room (selection active but this one not selected) */
+.legendItemDimmed {
+  opacity: 0.4;
+}
+
+/* Square swatch for rooms / stairs */
+.legendSwatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.18);
+  flex-shrink: 0;
+}
+
+/* Thin horizontal bar for door in legend */
+.legendDoorBar {
+  display: inline-block;
+  width: 24px;
+  height: 7px;
+  background: #d4852a;
+  border-radius: 2px;
+  border: 1.5px solid #000;
+  flex-shrink: 0;
+}
+
+/* Thin horizontal bar for window in legend */
+.legendWindowBar {
+  display: inline-block;
+  width: 24px;
+  height: 5px;
+  background: #48c8e8;
+  border-radius: 1px;
+  border: 1.5px solid #000;
+  flex-shrink: 0;
+}
+
+/* Stair swatch: yellow diagonal stripes */
+.stairSwatch {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #3a3000,
+      #3a3000 3px,
+      #e8c83a 3px,
+      #e8c83a 6px
+    ) !important;
+  border-color: #e8c83a88 !important;
+}
+
+/* Stair entry X in legend */
+.legendEntryX {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #000;
+  background: #e8c83a;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.25);
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff;
+  flex-shrink: 0;
+}
+
+/* ── Clear selection button ── */
+.clearBtn {
+  align-self: flex-start;
+  padding: 5px 14px;
+  background: #3a1a3a;
+  border: 1px solid #8844aa;
+  border-radius: 6px;
+  color: #dda0ff;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.clearBtn:hover {
+  background: #541a74;
+  border-color: #bb66ff;
+  color: #fff;
+}
+
+/* ── Scrollable container ── */
+.scrollArea {
+  overflow: auto;
+  max-width: 100%;
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  gap: 0;
+}
+
+/* Every cell */
+.cell {
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.30);
+  transition: filter 0.1s, background 0.15s;
+  overflow: hidden;
+}
+
+.cell:hover {
+  filter: brightness(1.25);
+  z-index: 4;
+  outline: 1px solid rgba(255,255,255,0.4);
+}
+
+/* Highlighted cell: bright outline */
+.cellHighlighted {
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.55);
+}
+
+.outside {
+  background: #0c0c16 !important;
+  border-color: #1e1e2e !important;
+}
+
+/* ── Staircase diagonal stripe overlay ── */
+.stairStripe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(232, 200, 58, 0.35) 4px,
+      rgba(232, 200, 58, 0.35) 7px
+    );
+  z-index: 1;
+}
+
+/* ── Stair entry point: black X with white border ── */
+.stairEntry {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  font-weight: 900;
+  color: #000;
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff,
+     0    0   3px rgba(255,255,255,0.8);
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+}
+
+.empty {
+  color: #778;
+  font-style: italic;
+}
+
+/* ── Legend ── */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #141422;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: #ccd;
+}
+
+/* Square swatch for rooms / stairs */
+.legendSwatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.18);
+  flex-shrink: 0;
+}
+
+/* Thin horizontal bar for door in legend */
+.legendDoorBar {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 7px;
+  background: #d4852a;
+  border-radius: 2px;
+  border: 1.5px solid #000;
+  flex-shrink: 0;
+}
+
+/* Thin horizontal bar for window in legend */
+.legendWindowBar {
+  display: inline-block;
+  width: 24px;
+  height: 5px;
+  background: #48c8e8;
+  border-radius: 1px;
+  border: 1.5px solid #000;
+  flex-shrink: 0;
+}
+
+/* ── Scrollable container ── */
+.scrollArea {
+  overflow: auto;
+  max-width: 100%;
+}
+
+/* Stair swatch: yellow diagonal stripes */
+.stairSwatch {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #3a3000,
+      #3a3000 3px,
+      #e8c83a 3px,
+      #e8c83a 6px
+    ) !important;
+  border-color: #e8c83a88 !important;
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  gap: 0;
+  overflow: auto;
+}
+
+/* Every cell */
+.cell {
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.30);
+  transition: filter 0.1s;
+  overflow: hidden; /* keep stripes inside, markers are inset anyway */
+}
+
+.cell:hover {
+  filter: brightness(1.25);
+  z-index: 4;
+  outline: 1px solid rgba(255,255,255,0.4);
+}
+
+.outside {
+  background: #0c0c16 !important;
+  border-color: #1e1e2e !important;
+}
+
+/* ── Staircase diagonal stripe overlay ── */
+.stairStripe {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      rgba(232, 200, 58, 0.35) 4px,
+      rgba(232, 200, 58, 0.35) 7px
+    );
+  z-index: 1;
+}
+
+/* ── Stair entry point: black X with white border ── */
+.stairEntry {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1em;
+  font-weight: 900;
+  color: #000;
+  /* white halo so the X is visible on any background */
+  text-shadow:
+    -1px -1px 0 #fff,
+     1px -1px 0 #fff,
+    -1px  1px 0 #fff,
+     1px  1px 0 #fff,
+     0    0   3px rgba(255,255,255,0.8);
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+}
+
+.empty {
+  color: #778;
+  font-style: italic;
+}
+
+
+
+
