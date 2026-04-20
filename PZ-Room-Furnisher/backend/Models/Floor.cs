@@ -16,4 +16,3 @@ public class Floor
     public List<WallEdge> Edges { get; set; } = [];
 }
 
-

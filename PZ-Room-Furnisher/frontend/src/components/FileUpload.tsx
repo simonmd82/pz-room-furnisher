@@ -52,7 +52,7 @@ export function FileUpload({ onBuildingLoaded }: Props) {
         <p className={styles.hint}>⏳ {t('upload.processing')}</p>
       ) : (
         <>
-          <p className={styles.icon}>📂</p>
+          <p className={styles.icon}></p>
           <p className={styles.hint}>
             {fileName ? t('upload.loaded', { name: fileName }) : t('upload.hint')}
           </p>

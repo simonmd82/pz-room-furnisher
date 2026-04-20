@@ -24,4 +24,3 @@ public class FloorObject
     public Direction Dir { get; set; }
     public string Tile { get; set; } = string.Empty;
 }
-

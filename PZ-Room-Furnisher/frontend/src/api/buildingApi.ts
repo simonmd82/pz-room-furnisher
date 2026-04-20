@@ -18,4 +18,3 @@ export async function uploadTbx(file: File): Promise<Building> {
 
   return response.json() as Promise<Building>;
 }
-

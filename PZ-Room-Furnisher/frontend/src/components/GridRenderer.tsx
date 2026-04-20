@@ -237,7 +237,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
                 );
                 const title = [
                   `[${colIdx},${rowIdx}] ${room ? room.name : t('cell.outside')}`,
-                  isStair ? `🪜 ${t('cell.stairs')}` : '',
+                  isStair ? ` ${t('cell.stairs')}` : '',
                   ...edgeLines,
                 ].filter(Boolean).join('\n');
 
@@ -291,7 +291,6 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
     </div>
   );
 }
-
 
 
 

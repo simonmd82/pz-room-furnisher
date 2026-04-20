@@ -3,12 +3,15 @@ import { useTranslation } from 'react-i18next';
 import { FileUpload } from './components/FileUpload';
 import { FloorSelector } from './components/FloorSelector';
 import { GridRenderer } from './components/GridRenderer';
+import { TileBrowser } from './components/TileBrowser/TileBrowser';
+import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser';
+import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
 import type { Building, Floor } from './types/building';
 import './App.css';
 
 const LANGS = [
-  { code: 'de', label: 'DE 🇩🇪' },
-  { code: 'en', label: 'EN 🇬🇧' },
+  { code: 'de', label: 'DE ' },
+  { code: 'en', label: 'EN ' },
 ];
 
 /** Distinct room indices (1-based) that appear in this floor's grid. */
@@ -61,6 +64,7 @@ function App() {
   const { t, i18n } = useTranslation();
   const [building, setBuilding] = useState<Building | null>(null);
   const [selectedFloor, setSelectedFloor] = useState(0);
+  const [activeTab, setActiveTab] = useState<'building' | 'tiles' | 'furniture' | 'roomtypes'>('building');
 
   const handleBuildingLoaded = (b: Building) => {
     setBuilding(b);
@@ -99,8 +103,41 @@ function App() {
             ))}
           </div>
         </div>
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${activeTab === 'building' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('building')}
+          >
+            🏠 {t('tabs.building')}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'tiles' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('tiles')}
+          >
+            🖼 {t('tabs.tiles')}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'furniture' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('furniture')}
+          >
+            📋 {t('tabs.furniture')}
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'roomtypes' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('roomtypes')}
+          >
+            🏠 Raumtypen
+          </button>
+        </div>
       </header>
 
+      {activeTab === 'tiles' ? (
+        <TileBrowser />
+      ) : activeTab === 'furniture' ? (
+        <FurnitureBrowser />
+      ) : activeTab === 'roomtypes' ? (
+        <RoomTypeEditor />
+      ) : (
       <main className="app-main">
         <section className="upload-section">
           <FileUpload onBuildingLoaded={handleBuildingLoaded} />
@@ -110,10 +147,10 @@ function App() {
           <>
             <section className="info-section">
               <div className="info-bar">
-                <span>📐 {t('app.dimensions', { width: building.width, height: building.height })}</span>
-                <span>🏢 {t('app.floors', { count: building.floors.length })}</span>
+                <span> {t('app.dimensions', { width: building.width, height: building.height })}</span>
+                <span> {t('app.floors', { count: building.floors.length })}</span>
                 <span title={t('app.roomsTotalHint')}>
-                  🏷️ {t('app.roomsTotal', { count: accessibleCount })}
+                  ️ {t('app.roomsTotal', { count: accessibleCount })}
                 </span>
                 {floor && (
                   <span className="info-bar-secondary">
@@ -137,11 +174,11 @@ function App() {
           </>
         )}
       </main>
+      )}
     </div>
   );
 }
 
 export default App;
-
 
 

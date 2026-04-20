@@ -42,8 +42,50 @@
   "object": {
     "Door": "Tür",
     "Window": "Fenster"
+  },
+  "tabs": {
+    "building": "Gebäude",
+    "tiles": "Tile-Browser",
+    "furniture": "Möbel-Vorlagen"
+  },
+  "tileBrowser": {
+    "tilesPath": "PZ Tiles-Ordner",
+    "setPath": "Setzen",
+    "browse": "Ordner durchsuchen",
+    "pathOk": "Gefunden",
+    "pathNotFound": "Ordner nicht gefunden",
+    "searchSheets": "Sheet suchen…",
+    "noSheets": "Keine PNG-Dateien gefunden",
+    "selectSheet": "Sheet in der Liste auswählen",
+    "configurePath": "Bitte zuerst einen Tiles-Ordner konfigurieren",
+    "selectSprite": "Sprite im Sheet anklicken um es zu konfigurieren",
+    "zoom": "Zoom",
+    "export": "Exportieren",
+    "basic": "Allgemein",
+    "label": "Bezeichnung",
+    "group": "Gruppe",
+    "orientation": "Orientierung",
+    "height": "Höhe",
+    "low": "niedrig (low)",
+    "high": "hoch (high)",
+    "layer": "Layer",
+    "size": "Größe (Zellen)",
+    "flags": "Eigenschaften",
+    "blocksPathing": "Blockiert Bewegung",
+    "wallMounted": "Wandmontiert",
+    "canStack": "Stapelbar",
+    "placementRules": "Platzierungsregeln",
+    "nearWall": "Nahe Wand bevorzugt",
+    "nearDoor": "Nahe Tür bevorzugt",
+    "nearWindow": "Nahe Fenster bevorzugt",
+    "centerRoom": "Raummitte bevorzugt",
+    "cornerOnly": "Nur Ecken",
+    "notes": "Notizen",
+    "save": "Speichern",
+    "delete": "Definition löschen",
+    "tileLayout": "Tile-Layout",
+    "tileLayoutHint": "Zelle anklicken → dann Sprite im Sheet anklicken zum Zuweisen. Automatischer Vorschub zur nächsten Zelle."
   }
 }
-
 
 

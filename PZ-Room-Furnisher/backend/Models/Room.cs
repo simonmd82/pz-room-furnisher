@@ -13,4 +13,3 @@ public class Room
     public int GrimeWall { get; set; }
     public int Ceiling { get; set; }
 }
-

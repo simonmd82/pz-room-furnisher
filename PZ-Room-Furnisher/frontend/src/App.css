@@ -127,5 +127,26 @@
   font-style: italic;
 }
 
+/* ── Tab navigation ── */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  padding: 8px 16px 0;
+  border-top: 1px solid #2a2a3a;
+  margin-top: 10px;
+}
+.tab-btn {
+  padding: 6px 20px;
+  background: transparent;
+  border: 1px solid #2a2a3a;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  color: #778;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.12s, color 0.12s;
+}
+.tab-btn:hover  { background: #1a1a2e; color: #aab; }
+.tab-active     { background: #1a1a2e; border-color: #3a3a5a; color: #fff; font-weight: 600; }
 
 

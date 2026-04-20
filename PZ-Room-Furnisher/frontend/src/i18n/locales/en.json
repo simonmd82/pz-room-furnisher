@@ -42,8 +42,50 @@
   "object": {
     "Door": "Door",
     "Window": "Window"
+  },
+  "tabs": {
+    "building": "Building",
+    "tiles": "Tile Browser",
+    "furniture": "Furniture Templates"
+  },
+  "tileBrowser": {
+    "tilesPath": "PZ Tiles folder",
+    "setPath": "Set",
+    "browse": "Browse folder",
+    "pathOk": "Found",
+    "pathNotFound": "Directory not found",
+    "searchSheets": "Search sheets…",
+    "noSheets": "No PNG files found",
+    "selectSheet": "Select a sheet from the list",
+    "configurePath": "Please configure a tiles folder first",
+    "selectSprite": "Click a sprite in the sheet to configure it",
+    "zoom": "Zoom",
+    "export": "Export",
+    "basic": "General",
+    "label": "Label",
+    "group": "Group",
+    "orientation": "Orientation",
+    "height": "Height",
+    "low": "low",
+    "high": "high",
+    "layer": "Layer",
+    "size": "Size (cells)",
+    "flags": "Properties",
+    "blocksPathing": "Blocks pathing",
+    "wallMounted": "Wall mounted",
+    "canStack": "Stackable",
+    "placementRules": "Placement rules",
+    "nearWall": "Prefer near wall",
+    "nearDoor": "Prefer near door",
+    "nearWindow": "Prefer near window",
+    "centerRoom": "Prefer room center",
+    "cornerOnly": "Corner only",
+    "notes": "Notes",
+    "save": "Save",
+    "delete": "Delete definition",
+    "tileLayout": "Tile Layout",
+    "tileLayoutHint": "Click a cell → then click a sprite in the sheet to assign it. Selection auto-advances to the next cell."
   }
 }
-
 
 

@@ -39,4 +39,3 @@ public class WallEdge
     /// <summary>Row of the second cell (south or east neighbour).</summary>
     public int Cell2Row { get; set; }
 }
-

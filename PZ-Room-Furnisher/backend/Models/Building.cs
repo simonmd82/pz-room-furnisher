@@ -8,4 +8,3 @@ public class Building
     public List<Room> Rooms { get; set; } = [];
     public List<Floor> Floors { get; set; } = [];
 }
-
