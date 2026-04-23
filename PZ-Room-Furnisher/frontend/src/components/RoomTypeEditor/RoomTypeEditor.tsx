@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ROOM_TYPES } from '../../types/tiles';
 import { SLOT_TYPES, SIZE_KEYS, defaultSlot, defaultRoomTypeConfig } from '../../types/roomTypes';
-import type { RoomTypeConfig, RoomTypeConfigMap, SlotSizeConfig, RoomTypeSlot, SizeKey } from '../../types/roomTypes';
+import type { RoomTypeConfig, RoomTypeConfigMap, SlotSizeConfig, RoomTypeSlot } from '../../types/roomTypes';
 import {
   getRoomTypes, saveRoomType, deleteRoomType,
   getSlotSizes, saveSlotSizes,

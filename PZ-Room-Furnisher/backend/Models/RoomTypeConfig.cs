@@ -55,4 +55,3 @@ public class RoomTypeConfig
     public List<RoomTypeSlot> Slots   { get; set; } = [];
 }
 
-

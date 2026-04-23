@@ -57,4 +57,3 @@ export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
 }
 
 
-

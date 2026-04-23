@@ -1,12 +1,19 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Floor, Room, WallEdge } from '../types/building';
+import type { Floor, Room, WallEdge, Building, FloorObject } from '../types/building';
+import { recomputeRoomPath } from '../api/buildingApi';
 import styles from './GridRenderer.module.css';
 
 interface Props {
   floor: Floor;
   rooms: Room[];
   cellSize?: number;
+  /** Full building object – needed for path recomputation (optional). */
+  building?: Building;
+  /** Index of the displayed floor – needed for path recomputation. */
+  floorIndex?: number;
+  /** Called after a room's path is regenerated so the parent can persist the updated floor. */
+  onFloorUpdated?: (floor: Floor) => void;
 }
 
 const DOOR_COLOR   = '#d4852a';
@@ -30,18 +37,35 @@ interface StairInfo {
   entry: Set<string>;
 }
 
-function buildStairCells(floor: Floor): StairInfo {
+/**
+ * Build stair cell sets for the given floor.
+ * - cells: full stair span (visual striping) – from own + lower floor objects
+ * - entry: only the X-marked waypoint cells from floor.stairWaypoints
+ */
+function buildStairCells(floor: Floor, allFloors?: Floor[]): StairInfo {
   const cells = new Set<string>();
   const entry = new Set<string>();
-  for (const obj of floor.objects) {
-    if (obj.type !== 'Stairs') continue;
+
+  const addSpan = (obj: FloorObject) => {
     for (let i = 0; i < STAIR_SPAN; i++) {
       const cx = obj.dir === 'W' ? obj.x + i : obj.x;
       const cy = obj.dir === 'N' ? obj.y + i : obj.y;
       cells.add(`${cx},${cy}`);
-      if (i === STAIR_SPAN - 1) entry.add(`${cx},${cy}`);
     }
-  }
+  };
+
+  for (const obj of floor.objects)
+    if (obj.type === 'Stairs') addSpan(obj);
+
+  const lowerFloor = allFloors?.find(f => f.index === floor.index - 1);
+  if (lowerFloor)
+    for (const obj of lowerFloor.objects)
+      if (obj.type === 'Stairs') addSpan(obj);
+
+  // X markers come directly from pre-computed stairWaypoints (single source of truth)
+  for (const sw of floor.stairWaypoints ?? [])
+    entry.add(`${sw.col},${sw.row}`);
+
   return { cells, entry };
 }
 
@@ -122,22 +146,21 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
+export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated }: Props) {
   const { t } = useTranslation();
   const grid = floor.roomGrid;
 
-  // 1-based room indices that are currently highlighted (matches roomGrid values)
   const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [showPaths, setShowPaths] = useState(false);
+  const [recomputingRoom, setRecomputingRoom] = useState<number | null>(null);
 
   const handleLegendClick = useCallback((roomIdx1Based: number, ctrlKey: boolean) => {
     setSelected(prev => {
       const next = new Set(prev);
       if (ctrlKey) {
-        // Toggle this room while keeping others
         if (next.has(roomIdx1Based)) next.delete(roomIdx1Based);
         else next.add(roomIdx1Based);
       } else {
-        // Single click: select only this room, or deselect if already the only one
         if (next.size === 1 && next.has(roomIdx1Based)) next.clear();
         else { next.clear(); next.add(roomIdx1Based); }
       }
@@ -147,11 +170,28 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
 
   const clearSelection = useCallback(() => setSelected(new Set()), []);
 
+  const handleRegenPath = useCallback(async (roomIdx1Based: number) => {
+    if (!building) return;
+    setRecomputingRoom(roomIdx1Based);
+    try {
+      const newCells = await recomputeRoomPath(building, floorIndex, roomIdx1Based, Math.floor(Math.random() * 2147483647));
+      const updatedFloor: Floor = {
+        ...floor,
+        pathsByRoom: { ...floor.pathsByRoom, [roomIdx1Based]: newCells },
+      };
+      onFloorUpdated?.(updatedFloor);
+    } catch (e) {
+      console.error('Path recompute error:', e);
+    } finally {
+      setRecomputingRoom(null);
+    }
+  }, [building, floor, floorIndex, onFloorUpdated]);
+
   if (!grid || grid.length === 0) {
     return <p className={styles.empty}>{t('floor.noGrid')}</p>;
   }
 
-  const stairInfo   = buildStairCells(floor);
+  const stairInfo   = buildStairCells(floor, building?.floors);
   const stairCells  = stairInfo.cells;
   const stairEntry  = stairInfo.entry;
   const cellEdgeMap = buildCellEdgeMap(floor.edges);
@@ -160,6 +200,21 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
   const svgW        = cols * cellSize;
   const svgH        = rows * cellSize;
   const hasSelection = selected.size > 0;
+
+  // Build per-room path sets from floor.pathsByRoom
+  const pathSets: Map<number, Set<string>> = new Map();
+  Object.entries(floor.pathsByRoom ?? {}).forEach(([riStr, cells]) => {
+    const ri = Number(riStr);
+    if (cells && cells.length > 0)
+      pathSets.set(ri, new Set(cells.map(([c, r]) => `${c},${r}`)));
+  });
+  const pathRoomCount = pathSets.size;
+
+  // Combined set for quick cell lookup
+  const anyPathSet = new Set<string>();
+  if (showPaths) {
+    for (const s of pathSets.values()) s.forEach(k => anyPathSet.add(k));
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -171,6 +226,8 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
           {rooms.map((room, idx) => {
             const roomIdx1 = idx + 1;
             const isSelected = selected.has(roomIdx1);
+            const hasPath = (floor.pathsByRoom?.[roomIdx1]?.length ?? 0) > 0;
+            const isRegen  = recomputingRoom === roomIdx1;
             return (
               <div
                 key={idx}
@@ -180,11 +237,20 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
               >
                 <span className={styles.legendSwatch} style={{ background: toRgb(room.color) }} />
                 <span>{room.name}</span>
+                {building && hasPath && (
+                  <button
+                    className={styles.regenBtn}
+                    disabled={isRegen}
+                    title="Weg neu generieren"
+                    onClick={e => { e.stopPropagation(); void handleRegenPath(roomIdx1); }}
+                  >
+                    {isRegen ? '⏳' : '🔄'}
+                  </button>
+                )}
               </div>
             );
           })}
 
-          {/* Divider */}
           <div className={styles.legendDivider} />
 
           {/* Non-clickable symbols */}
@@ -204,9 +270,24 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
             <span className={styles.legendEntryX}>✕</span>
             <span>{t('legend.stairEntry')}</span>
           </div>
+
+          {showPaths && (
+            <div className={styles.legendItem}>
+              <span className={styles.legendPathDot} />
+              <span>Weg (Tür→Tür)</span>
+            </div>
+          )}
+
+          <div className={styles.legendDivider} />
+
+          <button
+            className={`${styles.pathToggleBtn} ${showPaths ? styles.pathToggleActive : ''}`}
+            onClick={() => setShowPaths(v => !v)}
+          >
+            {showPaths ? `🛤 Wege verbergen (${pathRoomCount})` : '🛤 Wege zeigen'}
+          </button>
         </div>
 
-        {/* Clear-selection button */}
         {hasSelection && (
           <button className={styles.clearBtn} onClick={clearSelection}>
             {t('legend.clearSelection', { count: selected.size })}
@@ -230,14 +311,15 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
                 const isStair   = stairCells.has(key);
                 const isEntry   = stairEntry.has(key);
                 const cellEdges = cellEdgeMap.get(key) ?? [];
+                const isPath    = showPaths && anyPathSet.has(key);
 
                 const edgeLines = cellEdges.map(
-                  ({ edge, dir }) =>
-                    `  ${t(`object.${edge.type}`)} (${t(DIR_LABEL_KEY[dir])})`,
+                  ({ edge, dir }) => `  ${t(`object.${edge.type}`)} (${t(DIR_LABEL_KEY[dir])})`,
                 );
                 const title = [
                   `[${colIdx},${rowIdx}] ${room ? room.name : t('cell.outside')}`,
                   isStair ? ` ${t('cell.stairs')}` : '',
+                  isPath  ? ' [Weg]' : '',
                   ...edgeLines,
                 ].filter(Boolean).join('\n');
 
@@ -246,15 +328,15 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
                 const isDimmed       = hasSelection && !isSelectedRoom && !isStair;
 
                 let alpha: number;
-                if (isSelectedRoom)     alpha = 0.95;
-                else if (isStair)       alpha = 0.5;
-                else if (isDimmed)      alpha = 0.18;
-                else                    alpha = 0.72;
+                if (isSelectedRoom)  alpha = 0.95;
+                else if (isStair)    alpha = 0.5;
+                else if (isDimmed)   alpha = 0.18;
+                else                 alpha = 0.72;
 
                 let bg: string;
-                if (isStair)    bg = room ? toRgb(room.color, alpha) : `rgba(40,32,0,${isStair ? 0.6 : 0.18})`;
-                else if (room)  bg = toRgb(room.color, alpha);
-                else            bg = 'transparent';
+                if (isStair)   bg = room ? toRgb(room.color, alpha) : `rgba(40,32,0,${isStair ? 0.6 : 0.18})`;
+                else if (room) bg = toRgb(room.color, alpha);
+                else           bg = 'transparent';
 
                 return (
                   <div
@@ -263,6 +345,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
                       styles.cell,
                       room || isStair ? '' : styles.outside,
                       isSelectedRoom ? styles.cellHighlighted : '',
+                      isPath ? styles.cellPath : '',
                     ].join(' ')}
                     style={{ width: cellSize, height: cellSize, background: bg }}
                     title={title}
@@ -275,12 +358,32 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
             )}
           </div>
 
-          {/* SVG overlay – doors and windows exactly on the grid lines */}
+          {/* SVG overlay – doors/windows + path dots */}
           <svg
             width={svgW}
             height={svgH}
             style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
           >
+            {/* Path dots */}
+            {showPaths && Array.from(pathSets.entries()).map(([roomIdx1, pset]) => {
+              const room = rooms[roomIdx1 - 1];
+              if (!room) return null;
+              const color = toRgb(room.color, 0.85);
+              return Array.from(pset).map(key => {
+                const [c, r] = key.split(',').map(Number);
+                const cx = c * cellSize + cellSize / 2;
+                const cy = r * cellSize + cellSize / 2;
+                const radius = Math.max(2, cellSize * 0.13);
+                return (
+                  <g key={key}>
+                    <circle cx={cx} cy={cy} r={radius + 1.5} fill="rgba(0,0,0,0.55)" />
+                    <circle cx={cx} cy={cy} r={radius} fill={color} />
+                  </g>
+                );
+              });
+            })}
+
+            {/* Doors & windows */}
             {floor.edges.map(edge => (
               <EdgeMarker key={edge.edgeKey} edge={edge} cellSize={cellSize} />
             ))}
@@ -291,10 +394,4 @@ export function GridRenderer({ floor, rooms, cellSize = 40 }: Props) {
     </div>
   );
 }
-
-
-
-
-
-
 

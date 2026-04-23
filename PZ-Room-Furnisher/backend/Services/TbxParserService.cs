@@ -127,6 +127,35 @@ public class TbxParserService : ITbxParserService
             building.Floors.Add(floor);
         }
 
+        // ── Stair waypoints (computed once here, stored per floor) ─────────────
+        const int StairSpan = 5;
+        for (int fi = 0; fi < building.Floors.Count; fi++)
+        {
+            var fl = building.Floors[fi];
+            foreach (var obj in fl.Objects)
+            {
+                if (obj.Type != FloorObjectType.Stairs) continue;
+
+                // Ascending entry = LAST cell of span on this floor
+                int ei    = StairSpan - 1;
+                int acCol = obj.Dir == Direction.W ? obj.X + ei : obj.X;
+                int acRow = obj.Dir == Direction.N ? obj.Y + ei : obj.Y;
+                fl.StairWaypoints.Add(new StairWaypoint
+                {
+                    Col = acCol, Row = acRow,
+                    WaypointType = StairWaypointType.Ascending
+                });
+
+                // Descending entry = FIRST cell of span on the floor ABOVE
+                if (fi + 1 < building.Floors.Count)
+                    building.Floors[fi + 1].StairWaypoints.Add(new StairWaypoint
+                    {
+                        Col = obj.X, Row = obj.Y,
+                        WaypointType = StairWaypointType.Descending
+                    });
+            }
+        }
+
         return building;
     }
 

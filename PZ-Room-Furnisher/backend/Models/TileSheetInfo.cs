@@ -12,4 +12,3 @@ public class TileSheetInfo
     public int    SpriteCount  { get; set; }
     public int    DefinedCount { get; set; }
 }
-

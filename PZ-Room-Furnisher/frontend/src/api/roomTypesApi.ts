@@ -37,4 +37,3 @@ export async function saveSlotSizes(cfg: SlotSizeConfig): Promise<SlotSizeConfig
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
-

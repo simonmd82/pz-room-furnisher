@@ -79,4 +79,3 @@ internal class BfEntry
         return layout;
     }
 }
-

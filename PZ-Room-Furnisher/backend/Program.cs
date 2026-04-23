@@ -17,6 +17,7 @@ builder.Services.AddSingleton<ITileLibraryService, TileLibraryService>();
 builder.Services.AddSingleton<ITileConfigService, TileConfigService>();
 builder.Services.AddSingleton<IBuildingFurnitureService, BuildingFurnitureService>();
 builder.Services.AddSingleton<IRoomTypeConfigService, RoomTypeConfigService>();
+builder.Services.AddSingleton<IPathfinderService, PathfinderService>();
 
 builder.Services.AddCors(options =>
 {

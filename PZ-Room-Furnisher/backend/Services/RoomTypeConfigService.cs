@@ -89,4 +89,3 @@ public class RoomTypeConfigService : IRoomTypeConfigService
         File.WriteAllText(_slotSizesPath, JsonSerializer.Serialize(_slotSizes, Opts));
     }
 }
-

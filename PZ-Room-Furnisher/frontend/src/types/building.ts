@@ -1,4 +1,5 @@
 export interface Room {
+  id: string;
   name: string;
   internalName: string;
   /** Raw color string like "255 0 0" */
@@ -9,6 +10,7 @@ export interface Room {
   grimeFloor: number;
   grimeWall: number;
   ceiling: number;
+  // pathCells removed – now lives on Floor.pathsByRoom
 }
 
 export type DirectionType = 'N' | 'S' | 'E' | 'W';
@@ -45,13 +47,28 @@ export interface WallEdge {
   cell2Row: number;
 }
 
+export type StairWaypointType = 'Ascending' | 'Descending';
+
+export interface StairWaypoint {
+  col: number;
+  row: number;
+  waypointType: StairWaypointType;
+}
+
 export interface Floor {
   index: number;
   /** roomGrid[row][col] — 0 = outside, 1..N = room index (1-based into Building.rooms) */
   roomGrid: number[][];
   objects: FloorObject[];
-  /** All doors and windows as shared cell-edges, ready for furniture placement queries */
+  /** All doors and windows as shared cell-edges */
   edges: WallEdge[];
+  /** Stair entry/exit points pre-computed during parse */
+  stairWaypoints: StairWaypoint[];
+  /**
+   * Wall-hugging traversal paths per room on this floor.
+   * Key = 1-based room index.
+   */
+  pathsByRoom: Record<number, [number, number][]>;
 }
 
 export interface Building {

@@ -225,4 +225,3 @@ public class BuildingFurnitureService : IBuildingFurnitureService
         catch { /* ignore */ }
     }
 }
-

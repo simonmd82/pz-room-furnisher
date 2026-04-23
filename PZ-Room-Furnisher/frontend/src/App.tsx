@@ -71,6 +71,15 @@ function App() {
     setSelectedFloor(0);
   };
 
+  /** Called by GridRenderer after a single room's path was regenerated. */
+  const handleFloorUpdated = (updatedFloor: Floor) => {
+    if (!building) return;
+    setBuilding({
+      ...building,
+      floors: building.floors.map(f => f.index === updatedFloor.index ? updatedFloor : f),
+    });
+  };
+
   const floor = building?.floors.find((f) => f.index === selectedFloor) ?? null;
 
   const accessibleCount = useMemo(
@@ -167,7 +176,14 @@ function App() {
                 onSelect={setSelectedFloor}
               />
               {floor
-                ? <GridRenderer floor={floor} rooms={building.rooms} cellSize={40} />
+                ? <GridRenderer
+                    floor={floor}
+                    rooms={building.rooms}
+                    cellSize={40}
+                    building={building}
+                    floorIndex={selectedFloor}
+                    onFloorUpdated={handleFloorUpdated}
+                  />
                 : <p className="no-floor">{t('floor.noGrid')}</p>
               }
             </section>

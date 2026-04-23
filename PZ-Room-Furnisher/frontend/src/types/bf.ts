@@ -20,4 +20,3 @@ export interface BfEntryDto {
   rootTileId: string;
   tileLayout: string[][];
 }
-

@@ -27,4 +27,3 @@ export async function getBfGroupDetail(index: number): Promise<BfGroupDetail> {
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
-

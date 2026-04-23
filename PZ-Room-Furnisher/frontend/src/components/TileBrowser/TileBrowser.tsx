@@ -230,7 +230,7 @@ export function TileBrowser() {
               onKeyDown={e => e.key === 'Enter' && handleSetPath()}
               placeholder="z.B. C:\Games\ProjectZomboid\media\textures"
             />
-            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('tileBrowser.browse')}>📁</button>
+            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('tileBrowser.browse')}></button>
             <button className={s.setBtn} onClick={handleSetPath}>{t('tileBrowser.setPath')}</button>
             {pathOk
               ? <span className={s.statusOk}>✓ {t('tileBrowser.pathOk')} — {sheets.length} Sheets</span>
@@ -597,17 +597,6 @@ export function TileBrowser() {
               />
               <span className={s.fieldHint}>1 = selten · 10 = häufig</span>
             </div>
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>Max. Anzahl</span>
-              <input
-                type="number" min={0}
-                className={s.fieldInputSmall}
-                value={editDef.maxCount}
-                onChange={e => setEditDef({ ...editDef, maxCount: Math.max(0, Number(e.target.value)) })}
-              />
-              <span className={s.fieldHint}>0 = unbegrenzt</span>
-            </div>
-
             {/* Variant group */}
             <div className={s.fieldRow}>
               <span className={s.fieldLabel}>Varianten-ID</span>
@@ -636,9 +625,9 @@ export function TileBrowser() {
               </div>
             </div>
 
-            <button className={s.saveBtn} onClick={handleSave}>💾 {t('tileBrowser.save')}</button>
+            <button className={s.saveBtn} onClick={handleSave}> {t('tileBrowser.save')}</button>
             {config[editDef.tileId] && (
-              <button className={s.deleteBtn} onClick={handleDelete}>🗑 {t('tileBrowser.delete')}</button>
+              <button className={s.deleteBtn} onClick={handleDelete}> {t('tileBrowser.delete')}</button>
             )}
           </>
         ) : (

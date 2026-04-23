@@ -73,9 +73,6 @@ export interface TileDefinition {
   roomTypes: string[];
   /** Relative spawn weight 1–10 (default 5) */
   weight: number;
-  /** Max number of this piece per room (0 = unlimited) */
-  maxCount: number;
-  /** Valid orientations for randomiser placement */
   /** Links N/S/E/W variants of the same physical object (empty = no link) */
   variantGroup: string;
   /** Style tags – stored but not yet used by the generator */
@@ -136,7 +133,6 @@ export function defaultDefinition(tileId: string): TileDefinition {
     styleTags: [],
   };
 }
-
 
 
 

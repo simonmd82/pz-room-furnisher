@@ -43,7 +43,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
     <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className={s.dialog}>
         <div className={s.titleBar}>
-          <span>📁 Ordner auswählen</span>
+          <span> Ordner auswählen</span>
           <button className={s.closeBtn} onClick={onClose}>✕</button>
         </div>
 
@@ -63,7 +63,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
                   onClick={() => navigate(result.parent ?? undefined)}
                 >
                   <span className={s.entryIcon}>↩</span>
-                  <span>{result.parent ? '.. (zurück)' : '🖥 Laufwerke'}</span>
+                  <span>{result.parent ? '.. (zurück)' : ' Laufwerke'}</span>
                 </div>
               )}
 
@@ -77,7 +77,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
                   className={s.entry}
                   onClick={() => navigate(e.fullPath)}
                 >
-                  <span className={s.entryIcon}>{e.isDrive ? '💾' : '📁'}</span>
+                  <span className={s.entryIcon}>{e.isDrive ? '' : ''}</span>
                   <span>{e.name || e.fullPath}</span>
                 </div>
               ))}

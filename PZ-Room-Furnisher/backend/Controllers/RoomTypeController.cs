@@ -39,4 +39,3 @@ public class RoomTypeController : ControllerBase
         return Ok(sizes);
     }
 }
-
