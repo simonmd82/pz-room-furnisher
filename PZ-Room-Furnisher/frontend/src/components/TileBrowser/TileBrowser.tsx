@@ -4,11 +4,13 @@ import {
   getTilesPath, setTilesPath, getSheets, getTileConfig,
   saveTileDefinition, deleteTileDefinition, sheetImageUrl, exportConfigUrl,
 } from '../../api/tilesApi';
-import type { TileSheetInfo, TileDefinition, TileConfigMap, PlacementRules } from '../../types/tiles';
+import type { TileSheetInfo, TileDefinition, TileConfigMap } from '../../types/tiles';
 import {
   makeTileId, defaultDefinition, parseTileId,
-  layoutCols, layoutRows, COLORS, ROOM_TYPES, STYLE_TAGS, PREDEFINED_GROUPS,
+  layoutCols, layoutRows, COLORS, STYLE_TAGS,
+  TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE,
 } from '../../types/tiles';
+import { getRoomTypeNames, getCategories } from '../../api/settingsApi';
 import { DirPicker } from './DirPicker';
 import s from './TileBrowser.module.css';
 
@@ -22,8 +24,8 @@ export function TileBrowser() {
 
   // ── path ─────────────────────────────────────────────────────────────
   const [pathInput, setPathInput] = useState('');
-  const [pathOk, setPathOk]       = useState(false);
-  const [pathErr, setPathErr]     = useState('');
+  const [pathOk, setPathOk]   = useState(false);
+  const [pathErr, setPathErr] = useState('');
   const [pathTried, setPathTried] = useState(false);
   const [backendOk, setBackendOk] = useState(true);
 
@@ -39,12 +41,15 @@ export function TileBrowser() {
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
   const [groupInput, setGroupInput]   = useState('');
 
+  // ── known categories (from settings) ──────────────────────────────────────
+  const [knownCategories, setKnownCategories] = useState<string[]>([]);
+
   const allGroups = useMemo(() => {
     const fromConfig = Object.values(config).map(d => d.group).filter(Boolean);
-    const combined = [...PREDEFINED_GROUPS, ...fromConfig, ...extraGroups];
+    const combined = [...knownCategories, ...fromConfig, ...extraGroups];
     const seen = new Set<string>();
     return combined.filter(g => { const l = g.toLowerCase(); if (seen.has(l)) return false; seen.add(l); return true; });
-  }, [config, extraGroups]);
+  }, [config, extraGroups, knownCategories]);
 
   const handleAddGroup = () => {
     const trimmed = groupInput.trim();
@@ -71,6 +76,9 @@ export function TileBrowser() {
   // ── dir picker ────────────────────────────────────────────────────────
   const [showPicker, setShowPicker] = useState(false);
 
+  // ── room types (from settings) ────────────────────────────────────────────
+  const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
+
   // ── init ─────────────────────────────────────────────────────────────
   useEffect(() => {
     getTilesPath()
@@ -79,6 +87,8 @@ export function TileBrowser() {
     getTileConfig()
       .then(setConfig)
       .catch(() => { /* ignore */ });
+    getRoomTypeNames().then(setRoomTypeList).catch(console.error);
+    getCategories().then(setKnownCategories).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -407,37 +417,11 @@ export function TileBrowser() {
                 {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
-            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>{t('tileBrowser.height')}</span>
-              <div className={s.chipGroup}>
-                {(['low', 'high'] as const).map(h => (
-                  <span
-                    key={h}
-                    className={`${s.chip} ${editDef.height.includes(h) ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({
-                      ...editDef,
-                      height: editDef.height.includes(h)
-                        ? editDef.height.filter(x => x !== h)
-                        : [...editDef.height, h],
-                    })}
-                  >{h === 'low' ? t('tileBrowser.low') : t('tileBrowser.high')}</span>
-                ))}
-              </div>
-            </div>
             <div className={s.fieldRow}>
               <span className={s.fieldLabel}>{t('tileBrowser.layer')}</span>
               <select className={s.fieldSelect} value={editDef.layer}
                 onChange={e => setEditDef({ ...editDef, layer: e.target.value as TileDefinition['layer'] })}>
-                <option>Furniture</option>
-                <option>Furniture2</option>
-                <option>Furniture3</option>
-                <option>Furniture4</option>
-                <option>Wallfurniture</option>
-                <option>Wallfurniture2</option>
-                <option>Wallfurniture3</option>
-                <option>Wallfurniture4</option>
-                <option>FloorOverlay</option>
-                <option>FloorFurniture</option>
+                {['Furniture','Furniture2','Furniture3','Furniture4','Wallfurniture','Wallfurniture2','Wallfurniture3','Wallfurniture4','FloorOverlay','FloorFurniture'].map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
 
@@ -507,35 +491,13 @@ export function TileBrowser() {
               <button className={s.layoutBtn} onClick={removeRow} disabled={layoutRows(editDef) <= 1}>－ Zeile</button>
             </div>
 
-            {/* ── Flags ── */}
+            {/* ── Eigenschaften ── */}
             <div className={s.sectionTitle}>{t('tileBrowser.flags')}</div>
-            {([ ['blocksPathing', t('tileBrowser.blocksPathing')],
-                ['wallMounted',   t('tileBrowser.wallMounted')],
-                ['canStack',      t('tileBrowser.canStack')],
-             ] as [keyof TileDefinition, string][]).map(([key, lbl]) => (
+            {TILE_PROPERTIES.map(key => (
               <label key={key} className={s.checkRow}>
                 <input type="checkbox" checked={editDef[key] as boolean}
                   onChange={e => setEditDef({ ...editDef, [key]: e.target.checked })} />
-                {lbl}
-              </label>
-            ))}
-
-            {/* ── Placement rules ── */}
-            <div className={s.sectionTitle}>{t('tileBrowser.placementRules')}</div>
-            {([ ['nearWall',   t('tileBrowser.nearWall')],
-                ['nearDoor',   t('tileBrowser.nearDoor')],
-                ['nearWindow', t('tileBrowser.nearWindow')],
-                ['centerRoom', t('tileBrowser.centerRoom')],
-                ['cornerOnly', t('tileBrowser.cornerOnly')],
-             ] as [keyof PlacementRules, string][]).map(([key, lbl]) => (
-              <label key={key} className={s.checkRow}>
-                <input type="checkbox"
-                  checked={editDef.placementRules[key]}
-                  onChange={e => setEditDef({
-                    ...editDef,
-                    placementRules: { ...editDef.placementRules, [key]: e.target.checked },
-                  })} />
-                {lbl}
+                {TILE_PROPERTY_LABELS_DE[key]}
               </label>
             ))}
 
@@ -571,7 +533,7 @@ export function TileBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>Raumtypen</span>
               <div className={s.chipGroup}>
-                {ROOM_TYPES.map(r => (
+                {roomTypeList.map(r => (
                   <span
                     key={r}
                     className={`${s.chip} ${editDef.roomTypes.includes(r) ? s.chipActive : ''}`}
@@ -586,17 +548,6 @@ export function TileBrowser() {
               </div>
             </div>
 
-            {/* Weight + MaxCount */}
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>Gewichtung</span>
-              <input
-                type="number" min={1} max={10}
-                className={s.fieldInputSmall}
-                value={editDef.weight}
-                onChange={e => setEditDef({ ...editDef, weight: Math.max(1, Math.min(10, Number(e.target.value))) })}
-              />
-              <span className={s.fieldHint}>1 = selten · 10 = häufig</span>
-            </div>
             {/* Variant group */}
             <div className={s.fieldRow}>
               <span className={s.fieldLabel}>Varianten-ID</span>
@@ -638,13 +589,5 @@ export function TileBrowser() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
 
 

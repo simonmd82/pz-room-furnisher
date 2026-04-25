@@ -1,8 +1,17 @@
 .layout {
   display: grid;
-  grid-template-columns: 230px 1fr 210px;
-  height: calc(100vh - 68px);
+  grid-template-columns: 230px 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
   overflow: hidden;
+}
+
+/* Wrapper: editor + ref footer */
+.rightPane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;  /* allows flex child to shrink below content size */
 }
 
 /* ── List panel ── */
@@ -46,6 +55,20 @@
   padding: 1px 6px;
   flex-shrink: 0;
 }
+/* Remove-button on list items – hidden by default, visible on hover */
+.listItemRemove {
+  display: none;
+  margin-left: 4px;
+  padding: 0 4px;
+  cursor: pointer;
+  color: #6a4444;
+  font-size: 0.72rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+.listItem:hover .listItemRemove { display: inline; }
+.listItemRemove:hover { color: #f88; background: #2a1010; }
 
 /* ── Slot size box ── */
 .slotSizeBox {
@@ -95,6 +118,8 @@
 
 /* ── Editor panel ── */
 .editorPanel {
+  flex: 1;
+  min-height: 0;  /* required so overflow-y: auto actually kicks in */
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -133,9 +158,11 @@
 .slotsHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
+  justify-content: flex-start;
 }
 .slotsLabel {
+  flex: 1;
   font-size: 0.72rem;
   color: #668;
   text-transform: uppercase;
@@ -152,6 +179,32 @@
 }
 .addSlotBtn:hover { background: #2a3a2a; }
 
+/* ── Info button + panel ── */
+.infoBtn {
+  padding: 2px 8px;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #88a;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.infoBtn:hover   { border-color: #8866cc; color: #ddf; }
+.infoBtnActive   { border-color: #8866cc; background: #2a1a4a; color: #ddf; }
+.infoPanel {
+  background: #0e0e1e;
+  border: 1px solid #3a3a5a;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 4px 0 8px;
+  font-size: 0.75rem;
+  color: #aab;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  font-family: inherit;
+  max-width: 860px;
+}
+
 /* ── Slot card ── */
 .slotCard {
   background: #141422;
@@ -160,6 +213,49 @@
   overflow: hidden;
 }
 .slotCardRequired { border-color: #664400; }
+/* Gruppen-markierter Slot: farbiger linker Rand via CSS-Variable */
+.slotCardGrouped  { border-left: 3px solid var(--group-color, #8866cc); }
+
+/* ── Akkordion-Zusammenfassungsleiste ── */
+.slotSummaryBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2a2a3a;
+  flex-wrap: nowrap;
+  user-select: none;
+  min-height: 34px;
+}
+.slotSummaryBar:hover { background: #1e1e35; }
+
+.collapseToggleIcon {
+  font-size: 0.6rem;
+  color: #556;
+  flex-shrink: 0;
+}
+
+.slotSummaryId {
+  font-size: 0.75rem;
+  font-family: monospace;
+  flex-shrink: 0;
+}
+
+.slotSummaryLabel {
+  font-size: 0.75rem;
+  color: #ccd;
+  flex-shrink: 0;
+}
+
+.slotSummaryBadge {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .slotCardHeader {
   display: flex;
   align-items: center;
@@ -209,8 +305,13 @@
   border-radius: 3px;
   color: #dde;
   font-size: 0.78rem;
+  text-align: center;
 }
 .slotNumInput:focus { outline: none; border-color: #8866cc; }
+/* Spinner-Pfeile ausblenden – Eingabe per Tastatur oder direktes Tippen */
+.slotNumInput::-webkit-outer-spin-button,
+.slotNumInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.slotNumInput[type=number] { -moz-appearance: textfield; }
 .removeSlotBtn {
   margin-left: auto;
   padding: 2px 7px;
@@ -222,6 +323,17 @@
   font-size: 0.76rem;
 }
 .removeSlotBtn:hover { background: #2a1a1a; color: #f88; }
+.duplicateSlotBtn {
+  padding: 2px 7px;
+  background: none;
+  border: 1px solid #2a3a2a;
+  border-radius: 3px;
+  color: #6a9;
+  cursor: pointer;
+  font-size: 0.76rem;
+  title: "Slot duplizieren";
+}
+.duplicateSlotBtn:hover { background: #1a2a1a; color: #8fc; }
 .slotCardBody {
   padding: 8px 10px;
   display: flex;
@@ -265,23 +377,29 @@
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
+  max-width: 860px;
+  width: 100%;
 }
 .saveBtn:hover:not(:disabled) { background: #3a6a3a; }
 .saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── Ref panel ── */
+/* ── Ref panel (horizontal footer) ── */
 .refPanel {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  flex-shrink: 0;
   background: #0e0e18;
-  border-left: 1px solid #2a2a3a;
-  overflow-y: auto;
+  border-top: 1px solid #2a2a3a;
+  padding: 8px 16px;
+  overflow-x: auto;
 }
 .refTable {
-  padding: 8px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-shrink: 0;
 }
 .refRow {
   display: flex;
@@ -312,10 +430,12 @@
 .refNote {
   font-size: 0.68rem;
   color: #446;
-  line-height: 1.5;
-  padding: 8px 10px;
-  border-top: 1px solid #1a1a2a;
+  line-height: 1.6;
   margin: 0;
+  max-width: 220px;
+  border-top: none;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 /* ── Size table (Min/Max per XS–XL) ── */
@@ -352,4 +472,16 @@
 }
 .sizeNumInput:focus { outline: none; border-color: #8866cc; }
 
+/* ── Anker-Regel-Karte ── */
+.anchorRuleCard {
+  background: #0e1a1e;
+  border: 1px solid #2a3a3a;
+  border-left: 3px solid #2a6a4a;
+  border-radius: 5px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
 

@@ -28,14 +28,4 @@ public class RoomTypeController : ControllerBase
         _svc.Delete(roomType);
         return NoContent();
     }
-
-    [HttpGet("slot-sizes")]
-    public IActionResult GetSlotSizes() => Ok(_svc.GetSlotSizes());
-
-    [HttpPut("slot-sizes")]
-    public IActionResult SaveSlotSizes([FromBody] SlotSizeConfig sizes)
-    {
-        _svc.SaveSlotSizes(sizes);
-        return Ok(sizes);
-    }
 }

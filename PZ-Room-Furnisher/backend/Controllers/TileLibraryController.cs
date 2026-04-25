@@ -127,6 +127,20 @@ public class TileLibraryController : ControllerBase
         return PhysicalFile(path, "image/png");
     }
 
+    // ── Distinct groups from tile definitions ─────────────────────────────
+
+    [HttpGet("groups")]
+    public IActionResult GetGroups()
+    {
+        var groups = _cfg.GetAll().Values
+            .Select(d => d.Group)
+            .Where(g => !string.IsNullOrWhiteSpace(g))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        return Ok(groups);
+    }
+
     // ── Tile definitions ─────────────────────────────────────────────────
 
     [HttpGet("config")]

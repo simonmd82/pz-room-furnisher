@@ -6,6 +6,7 @@ import { GridRenderer } from './components/GridRenderer';
 import { TileBrowser } from './components/TileBrowser/TileBrowser';
 import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser';
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
+import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import type { Building, Floor } from './types/building';
 import './App.css';
 
@@ -64,7 +65,7 @@ function App() {
   const { t, i18n } = useTranslation();
   const [building, setBuilding] = useState<Building | null>(null);
   const [selectedFloor, setSelectedFloor] = useState(0);
-  const [activeTab, setActiveTab] = useState<'building' | 'tiles' | 'furniture' | 'roomtypes'>('building');
+  const [activeTab, setActiveTab] = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'settings'>('building');
 
   const handleBuildingLoaded = (b: Building) => {
     setBuilding(b);
@@ -137,15 +138,23 @@ function App() {
           >
             🏠 Raumtypen
           </button>
+          <button
+            className={`tab-btn ${activeTab === 'settings' ? 'tab-active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            ⚙ Einstellungen
+          </button>
         </div>
       </header>
 
       {activeTab === 'tiles' ? (
-        <TileBrowser />
+        <div className="tab-full"><TileBrowser /></div>
       ) : activeTab === 'furniture' ? (
-        <FurnitureBrowser />
+        <div className="tab-full"><FurnitureBrowser /></div>
       ) : activeTab === 'roomtypes' ? (
-        <RoomTypeEditor />
+        <div className="tab-full"><RoomTypeEditor /></div>
+      ) : activeTab === 'settings' ? (
+        <div className="tab-full"><SettingsEditor /></div>
       ) : (
       <main className="app-main">
         <section className="upload-section">
@@ -196,5 +205,4 @@ function App() {
 }
 
 export default App;
-
 

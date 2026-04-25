@@ -1,4 +1,38 @@
 {
   "tilesPath": "C:\\Users\\simon\\Documents\\Project Zomboid\\B42 Editors\\Tiles\\2x",
-  "bfFilePath": "C:\\Users\\simon\\Documents\\Project Zomboid\\B42 Editors\\.TileZed\\BuildingFurniture.txt"
+  "bfFilePath": "C:\\Users\\simon\\Documents\\Project Zomboid\\B42 Editors\\.TileZed\\BuildingFurniture.txt",
+  "knownCategories": [
+    "Appliance",
+    "Beds",
+    "Bedtable",
+    "Cabinet",
+    "Chair",
+    "Counter",
+    "Decoration",
+    "DiningChair",
+    "Lamp",
+    "Mirror",
+    "Plant",
+    "Rug",
+    "Shelf",
+    "Sidetable",
+    "Sink",
+    "Sofa",
+    "Storage",
+    "Table",
+    "Walldecoration"
+  ],
+  "knownRoomTypes": [
+    "Bar",
+    "Bathroom",
+    "Bedroom",
+    "Diningroom",
+    "Garage",
+    "Hallway",
+    "Kitchen",
+    "LivingRoom",
+    "Office",
+    "Restaurant",
+    "Storage"
+  ]
 }

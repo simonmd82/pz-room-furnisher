@@ -1,0 +1,245 @@
+﻿# PZ Room Furnisher
+
+Ein Tool zur Unterstützung von Project Zomboid Mod- und Mapentwicklern.  
+Es verbindet einen **.NET 10 ASP.NET Core Backend** mit einem **React 19 + TypeScript Frontend** (Vite).
+
+---
+
+## Inhaltsverzeichnis
+
+- [Architektur](#architektur)
+- [Voraussetzungen](#voraussetzungen)
+- [Starten](#starten)
+- [Feature-Übersicht](#feature-übersicht)
+  - [🏠 Gebäude-Tab](#-gebäude-tab)
+  - [🖼 Tile Browser](#-tile-browser)
+  - [📋 Furniture Browser](#-furniture-browser)
+  - [🏠 Raumtypen-Editor](#-raumtypen-editor)
+  - [⚙ Einstellungen](#-einstellungen)
+- [API-Endpunkte](#api-endpunkte)
+- [Tech Stack](#tech-stack)
+
+---
+
+## Architektur
+
+```
+PZ-Room-Furnisher/
+├── backend/          # ASP.NET Core Web API (.NET 10)
+│   ├── Controllers/  # REST-Endpunkte
+│   ├── Services/     # Geschäftslogik (Parser, Pathfinder, …)
+│   ├── Models/       # Datenmodelle
+│   └── Data/         # Persistente JSON-Dateien (settings, tile-definitions)
+└── frontend/         # React 19 + TypeScript (Vite)
+    └── src/
+        ├── api/          # Fetch-Wrapper für alle Backend-Endpunkte
+        ├── components/   # UI-Komponenten je Tab
+        ├── types/        # Gemeinsame TypeScript-Typen
+        └── i18n/         # Übersetzungen (DE / EN)
+```
+
+---
+
+## Voraussetzungen
+
+| Tool | Version |
+|------|---------|
+| .NET SDK | 10.0+ |
+| Node.js | 18+ |
+| npm | 9+ |
+
+---
+
+## Starten
+
+### Backend
+
+```powershell
+cd backend
+dotnet run
+```
+
+Das Backend läuft standardmäßig auf `http://localhost:5000`.  
+Die OpenAPI-Dokumentation ist über Scalar unter `/scalar/v1` erreichbar.
+
+### Frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Das Frontend läuft standardmäßig auf `http://localhost:5173`.
+
+Alternativ können die mitgelieferten Skripte genutzt werden:
+
+```powershell
+.\run-frontend.ps1   # oder run-frontend.cmd
+```
+
+---
+
+## Feature-Übersicht
+
+### 🏠 Gebäude-Tab
+
+Der Einstiegspunkt der Anwendung. Hier wird ein **Project Zomboid `.tbx`-Gebäudefile** geladen und visualisiert.
+
+**Was es kann:**
+
+- **`.tbx`-Upload** – Parst das Gebäudeformat des PZ Building Editors (bis 10 MB).
+- **Gebäude-Info** – Zeigt Abmessungen (Breite × Höhe), Stockwerkanzahl und Gesamt-/Stockwerk-Raumanzahl.
+- **Stockwerk-Navigation** – Wechsel zwischen allen vorhandenen Stockwerken.
+- **Grid-Renderer** – Visualisiert das Raumgitter als farbiges Kachel-Grid mit SVG-Overlay.
+  - Türen (orange) und Fenster (cyan) werden als Balken auf den Wänden dargestellt.
+  - Treppen werden gestreift dargestellt, der Einstiegspunkt mit einem ✕ markiert.
+  - Tooltip je Zelle mit Raumname, Tür-/Fensterinfo und Koordinaten.
+- **Raumauswahl** – Einzelklick oder Ctrl+Klick (Multi-Select) um Räume hervorzuheben / auszublenden.
+- **A\*-Wegfindung** – Berechnet beim Upload automatisch für jeden Raum den kürzesten Weg zwischen allen Tür-Waypoints (mit kleinem Zufalls-Jitter für optische Variation).
+  - Treppen-Zellen werden beim Routing ausgenommen; nur der Einstiegspunkt ist passierbar.
+  - Kostengefälle: offene Fläche > wandnahe Zellen > Ecken.
+- **Wege anzeigen** – Toggle zum Ein-/Ausblenden der berechneten Wege als farbige Punkte im Grid.
+- **Weg neu generieren** – Per Klick auf 🔄 im Raumlegende-Eintrag wird der Weg eines einzelnen Raums mit neuem Zufalls-Seed neu berechnet (ohne Reload).
+
+---
+
+### 🖼 Tile Browser
+
+Werkzeug zum Erfassen und Konfigurieren von **Sprite-Tiles** aus den PZ-Texturordnern.
+
+**Was es kann:**
+
+- **Pfadkonfiguration** – Pfad zum `media/textures`-Ordner des Spiels setzen. Wird persistent gespeichert.
+- **Verzeichnis-Browser** – Grafischer Datei-Browser (navigiert über das Backend durch das Dateisystem – Laufwerke, Ordner).
+- **Sheet-Liste** – Listet alle `.png`-Sprite-Sheets im konfigurierten Ordner auf, mit Suchfilter.
+  - Zeigt Badge `definiert / gesamt` je Sheet.
+- **Sheet-Viewer** – Rendert das vollständige Sprite-Sheet mit Zoom (0,5× / 1× / 1,5× / 2×).
+  - Bereits definierte Sprites werden hervorgehoben.
+  - Ausgewähltes Sprite wird markiert.
+  - Bei aktivem Layout-Zuweisungsmodus zeigt ein Hinweisbalken die aktive Zelle.
+- **Tile-Konfiguration** – Klick auf ein Sprite öffnet den Konfigurationsbereich:
+  - **Label** – Anzeigename
+  - **Gruppe** – Kategorie (vordef. + eigene; per Chip auswählen oder neu eingeben)
+  - **Orientierung** – N / S / E / W oder beliebig
+  - **Höhe** – low / high (Mehrfachauswahl)
+  - **Layer** – Furniture, Wallfurniture, FloorOverlay, … (10 Layer)
+  - **Flags** – `blocksPathing`, `wallMounted`, `canStack`
+  - **Notizen** – Freitext
+- **Multi-Tile Layout-Editor** – Definiert, aus welchen Sprites ein mehrzelliges Möbelstück besteht.
+  - Beliebige Raster-Größe (Spalten + Zeilen dynamisch anpassbar).
+  - Zelle anklicken → aktivieren → Sprite im Sheet anklicken → automatisches Weiterspringen zur nächsten Zelle.
+  - Zellen können einzeln geleert werden.
+  - Mini-Vorschau je Zelle direkt aus dem Sprite-Sheet.
+- **Zufallsgenerator-Metadaten:**
+  - **Farben** – Chip-Auswahl (white, black, brown, …)
+  - **Raumtypen** – welche Räume dieses Tile verwenden dürfen
+  - **Varianten-ID** – Gruppiert farbliche/stilistische Varianten desselben Möbeltyps
+  - **Style-Tags** – Modern, Rustic, … (gespeichert, noch nicht im Generator aktiv)
+- **Speichern / Löschen** – Jede Definition wird als JSON auf dem Backend persistiert.
+- **Export** – Download der gesamten `tile-definitions.json` per Link.
+
+---
+
+### 📋 Furniture Browser
+
+Lesezugriff auf **BuildingFurniture-Dateien** (`.bf`-Format von Project Zomboid) zur Massenimport-Unterstützung.
+
+**Was es kann:**
+
+- **Pfad-Konfiguration** – Pfad zu einer `.bf`-Datei setzen (z. B. `BuildingFurniture_01.bf`). Wird persistent gespeichert.
+- **Verzeichnis-Browser** – Gleicher Datei-Browser wie im Tile Browser.
+- **Gruppen-Liste** – Listet alle `group`-Blöcke der Datei mit Bezeichnung, Piece-Anzahl und Entry-Anzahl auf.
+  - Suchfilter.
+- **Detail-Ansicht** – Zeigt alle `furniture`-Einträge (Pieces) einer Gruppe mit ihren Orientierungen und Tile-IDs.
+  - Mini-Sprite-Vorschauen aus den gecachten Sprite-Sheets.
+- **Multi-Select** – Mehrere Entries gleichzeitig auswählen (Checkboxen, auch je Piece).
+- **Import als Tile-Definition** – Ausgewählte Entries werden als TileDefinition-Entwürfe aus der `.bf`-Struktur abgeleitet und können direkt konfiguriert und gespeichert werden.
+  - Bereits importierte Tiles werden mit einem Indikator markiert.
+  - Konfigurationsfelder wie im Tile Browser (Gruppe, Farben, Raumtypen, Varianten-ID, Style-Tags, Flags, Notizen).
+
+---
+
+### 🏠 Raumtypen-Editor
+
+Definiert, welche Möbel-Slots ein Raum eines bestimmten Typs haben soll – als Grundlage für einen künftigen automatischen Raumdekorierer.
+
+**Was es kann:**
+
+- **Raumtyp-Verwaltung** – Liste aller bekannten Raumtypen. Neue Typen anlegen oder bestehende entfernen (inkl. Löschung gespeicherter Konfiguration).
+- **Slot-System** – Jeder Raumtyp besitzt eine beliebige Zahl an Slots. Ein Slot ist eine „Anfrage" an den Generator:
+  - **Fußabdruck (B × H)** – Wie viele Zellen das Möbelstück belegt (1×1 bis 5×5).
+  - **Drehbar** – Bei nicht-quadratischen Footprints kann B und H getauscht werden. Mini-Visualisierung beider Orientierungen.
+  - **Pflicht / Optional** – Pflicht-Slots werden immer befüllt.
+  - **Priorität** – Optionale Slots werden in Prioritätsreihenfolge gezogen (0 = zuerst).
+  - **Anzahl je Raumgröße** – Min/Max-Tabelle für XS / S / M / L / XL (Max -1 = unbegrenzt).
+  - **Erlaubte Kategorien** – Welche Tile-Gruppen für diesen Slot infrage kommen, mit Gewichtung (1–10).
+  - **Platzierungsregeln** – An der Wand / An einer Tür / An einem Fenster / Raummitte / Nur in Ecken.
+  - **Layer-Filter** – Schränkt auf einen bestimmten Furniture-Layer ein.
+  - **Erforderliche Eigenschaften** – z. B. `blocksPathing`, `wallMounted`, `canStack`.
+  - **Varianten-Gruppe (one-of)** – Mehrere Slots in einer Gruppe → Generator wählt genau eine Variante (gewichtet).
+  - **Anker-Slot** – Verknüpft diesen Slot relativ zu einem anderen (z. B. Nachttisch „HeadLeft" neben dem Bett).
+- **Slot duplizieren** – Schnelles Kopieren eines bestehenden Slots.
+- **Info-Panel** – Einblendbare Erklärung aller Slot-Konzepte.
+- **Referenz-Footer** – Zeigt häufige Footprint-Raster und die Raumgrößen-Skala als Nachschlage-Leiste.
+- **Speichern / Löschen** – Konfigurationen werden als JSON auf dem Backend persistiert.
+
+---
+
+### ⚙ Einstellungen
+
+Globale Listen, die von anderen Tabs genutzt werden.
+
+**Was es kann:**
+
+- **Bekannte Raumtyp-Namen** – Zentrales Register aller Raumtyp-Bezeichner (wird im Tile Browser und Raumtypen-Editor verwendet).
+- **Bekannte Kategorien** – Zentrales Register aller Tile-Kategorien (wird im Raumtypen-Editor als Kategorie-Auswahl angeboten).
+- Einträge können hinzugefügt und entfernt werden (mit Bestätigungsdialog).
+
+---
+
+## API-Endpunkte
+
+| Methode | Pfad | Beschreibung |
+|---------|------|-------------|
+| `POST` | `/api/building/upload` | `.tbx`-Datei hochladen und parsen |
+| `POST` | `/api/building/recompute-paths` | Wege für alle Räume eines Stockwerks neu berechnen |
+| `POST` | `/api/building/recompute-room-path` | Weg für einen einzelnen Raum neu berechnen |
+| `GET` | `/api/tiles/path` | Konfigurierten Textur-Pfad lesen |
+| `POST` | `/api/tiles/path` | Textur-Pfad setzen |
+| `GET` | `/api/tiles/browse` | Verzeichnis-Browser (Laufwerke / Ordner) |
+| `GET` | `/api/tiles/sheets` | Alle Sprite-Sheets auflisten |
+| `GET` | `/api/tiles/sheet/{name}/image` | Sprite-Sheet als PNG ausliefern |
+| `GET` | `/api/tiles/config` | Alle Tile-Definitionen lesen |
+| `PUT` | `/api/tiles/config/{tileId}` | Tile-Definition speichern |
+| `DELETE` | `/api/tiles/config/{tileId}` | Tile-Definition löschen |
+| `GET` | `/api/tiles/config/export` | Gesamte Config als JSON-Download |
+| `POST` | `/api/tiles/config/import` | Config-JSON importieren |
+| `GET` | `/api/tiles/groups` | Alle distinct Gruppen auflisten |
+| `GET` | `/api/bfurniture/path` | BF-Dateipfad lesen |
+| `POST` | `/api/bfurniture/path` | BF-Dateipfad setzen |
+| `GET` | `/api/bfurniture/groups` | BF-Gruppen-Übersicht |
+| `GET` | `/api/bfurniture/groups/{index}` | BF-Gruppen-Detail |
+| `GET` | `/api/roomtypes` | Alle Raumtyp-Konfigurationen |
+| `PUT` | `/api/roomtypes/{roomType}` | Raumtyp-Konfiguration speichern |
+| `DELETE` | `/api/roomtypes/{roomType}` | Raumtyp-Konfiguration löschen |
+| `GET` | `/api/settings/room-type-names` | Bekannte Raumtyp-Namen |
+| `PUT` | `/api/settings/room-type-names` | Raumtyp-Namen setzen |
+| `GET` | `/api/settings/categories` | Bekannte Kategorien |
+| `PUT` | `/api/settings/categories` | Kategorien setzen |
+
+OpenAPI-Dokumentation (Scalar): `http://localhost:5000/scalar/v1`
+
+---
+
+## Tech Stack
+
+| Schicht | Technologie |
+|---------|------------|
+| Backend | .NET 10, ASP.NET Core Web API |
+| OpenAPI | Scalar + Microsoft.AspNetCore.OpenApi |
+| Frontend | React 19, TypeScript, Vite 6 |
+| i18n | react-i18next (Deutsch / Englisch) |
+| Pathfinding | A\* mit Manhattan-Heuristik + Zufalls-Jitter |
+| Format-Parser | `.tbx` (PZ Building Editor), `.bf` (PZ BuildingFurniture) |
+

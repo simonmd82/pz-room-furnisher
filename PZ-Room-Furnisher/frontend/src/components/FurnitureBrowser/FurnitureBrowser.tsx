@@ -1,4 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { getBfPath, setBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
+import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
+import { getRoomTypeNames, getCategories } from '../../api/settingsApi';
+import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
+import type { TileDefinition, TileConfigMap } from '../../types/tiles';
+import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, STYLE_TAGS, TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
+import { DirPicker } from '../TileBrowser/DirPicker';
+import s from './FurnitureBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
 function IndeterminateCheckbox({ checked, indeterminate, onChange }: {
@@ -8,13 +16,6 @@ function IndeterminateCheckbox({ checked, indeterminate, onChange }: {
   useEffect(() => { if (ref.current) ref.current.indeterminate = indeterminate; }, [indeterminate]);
   return <input ref={ref} type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />;
 }
-import { getBfPath, setBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
-import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
-import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
-import type { TileDefinition, TileConfigMap, PlacementRules } from '../../types/tiles';
-import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, ROOM_TYPES, STYLE_TAGS, PREDEFINED_GROUPS } from '../../types/tiles';
-import { DirPicker } from '../TileBrowser/DirPicker';
-import s from './FurnitureBrowser.module.css';
 
 const SPRITE_W   = 128;
 const SPRITE_H   = 256;
@@ -53,16 +54,26 @@ export function FurnitureBrowser() {
   /** sheet name → column count, loaded once for correct sprite positioning */
   const [sheetCols, setSheetCols] = useState<Record<string, number>>({});
 
+  // ── room types (from settings) ────────────────────────────────────────────
+  const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
+
+  // ── known categories (from settings) ──────────────────────────────────────
+  const [knownCategories, setKnownCategories] = useState<string[]>([]);
+
+  // ── collapsible sections ──────────────────────────────────────────────────
+  const [notesOpen, setNotesOpen]     = useState(false);
+  const [spritesOpen, setSpritesOpen] = useState(false);
+
   // ── group selector ────────────────────────────────────────────────────
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
   const [groupInput, setGroupInput]   = useState('');
 
   const allGroups = useMemo(() => {
     const fromConfig = Object.values(config).map(d => d.group).filter(Boolean);
-    const combined = [...PREDEFINED_GROUPS, ...fromConfig, ...extraGroups];
+    const combined = [...knownCategories, ...fromConfig, ...extraGroups];
     const seen = new Set<string>();
     return combined.filter(g => { const l = g.toLowerCase(); if (seen.has(l)) return false; seen.add(l); return true; });
-  }, [config, extraGroups]);
+  }, [config, extraGroups, knownCategories]);
 
   const handleAddGroup = () => {
     const trimmed = groupInput.trim();
@@ -102,6 +113,8 @@ export function FurnitureBrowser() {
       .then(r => { setPathInput(r.path); setPathOk(r.isValid); setBackendOk(true); })
       .catch(() => setBackendOk(false));
     getTileConfig().then(setConfig).catch(() => {});
+    getRoomTypeNames().then(setRoomTypeList).catch(console.error);
+    getCategories().then(setKnownCategories).catch(console.error);
     getSheets().then(r => {
       if (r.configured) {
         const map: Record<string, number> = {};
@@ -183,18 +196,6 @@ export function FurnitureBrowser() {
     setViewDefs(prev => {
       const next = { ...prev };
       selRootIds.forEach(id => { if (next[id]) next[id] = { ...next[id], [field]: value }; });
-      return next;
-    });
-    setDirtyIds(prev => new Set([...prev, ...selRootIds]));
-    setSaveState('idle');
-  };
-
-  const applyPlacementRule = (field: keyof PlacementRules, value: boolean) => {
-    setViewDefs(prev => {
-      const next = { ...prev };
-      selRootIds.forEach(id => {
-        if (next[id]) next[id] = { ...next[id], placementRules: { ...next[id].placementRules, [field]: value } };
-      });
       return next;
     });
     setDirtyIds(prev => new Set([...prev, ...selRootIds]));
@@ -466,21 +467,26 @@ export function FurnitureBrowser() {
                     </div>
                     <p className={s.cfgLayoutDims}>{layoutCols(def)} × {layoutRows(def)} Zellen</p>
                   </div>
-                  <div className={s.sectionTitle}>
-                    Verwendete Sprites
-                    <span className={s.spritesCount}> ({allIds.length} Zellen · {unique.length} eindeutig)</span>
+                  <div className={`${s.sectionTitle} ${s.collapsibleHeader}`} onClick={() => setSpritesOpen(v => !v)}>
+                    <span>
+                      Verwendete Sprites
+                      <span className={s.spritesCount}> ({allIds.length} Zellen · {unique.length} eindeutig)</span>
+                    </span>
+                    <span className={`${s.collapseToggle} ${spritesOpen ? s.collapseToggleOpen : ''}`}>▶</span>
                   </div>
-                  <div className={s.spritesList}>
-                    {unique.map(id => (
-                      <div key={id} className={s.spriteEntry} title={id}>
-                        <span className={s.spriteEntryIcon}>
-                          {(() => { const css = spriteStyle(id, 0.18);
-                            return css ? <div style={{ ...css, width: Math.round(SPRITE_W*0.18), height: Math.round(SPRITE_H*0.18), flexShrink: 0 }} /> : null; })()}
-                        </span>
-                        <span className={s.spriteEntryId}>{id}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {spritesOpen && (
+                    <div className={s.spritesList}>
+                      {unique.map(id => (
+                        <div key={id} className={s.spriteEntry} title={id}>
+                          <span className={s.spriteEntryIcon}>
+                            {(() => { const css = spriteStyle(id, 0.18);
+                              return css ? <div style={{ ...css, width: Math.round(SPRITE_W*0.18), height: Math.round(SPRITE_H*0.18), flexShrink: 0 }} /> : null; })()}
+                          </span>
+                          <span className={s.spriteEntryId}>{id}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </>
               );
             })()}
@@ -563,67 +569,31 @@ export function FurnitureBrowser() {
               );
             })()}
 
-            {/* Höhe Chips */}
-            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Höhe</span>
-              <div className={s.chipGroup}>
-                {(['low','high'] as const).map(h => {
-                  const st = arrState(d => d.height, h);
-                  return (
-                    <span key={h}
-                      className={`${s.chip} ${st === 'all' ? s.chipActive : st === 'some' ? s.chipPartial : ''}`}
-                      onClick={() => toggleArrayField('height', h)}>
-                      {h === 'low' ? 'niedrig (low)' : 'hoch (high)'}
-                    </span>
-                  );
-                })}
-              </div>
-            </div>
-
             {/* ── Eigenschaften ── */}
             <div className={s.sectionTitle}>Eigenschaften</div>
-            {([
-              ['blocksPathing', 'Blockiert Bewegung'],
-              ['wallMounted',   'Wandmontiert'],
-              ['canStack',      'Stapelbar'],
-            ] as [keyof TileDefinition, string][]).map(([field, lbl]) => {
-              const mixed  = isMixed(d => d[field]);
-              const curVal = sv(d => d[field]) as boolean | undefined;
+            {TILE_PROPERTIES.map(key => {
+              const mixed  = isMixed(d => d[key]);
+              const curVal = sv(d => d[key]) as boolean | undefined;
               return (
-                <label key={field} className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
+                <label key={key} className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
                   <IndeterminateCheckbox checked={mixed ? false : (curVal ?? false)} indeterminate={mixed}
-                    onChange={v => applyField(field, v as TileDefinition[typeof field])} />
-                  {lbl}{mixed ? ' ⚠' : ''}
-                </label>
-              );
-            })}
-
-            {/* ── Platzierungsregeln ── */}
-            <div className={s.sectionTitle}>Platzierungsregeln</div>
-            {([
-              ['nearWall',   'Nahe Wand bevorzugt'],
-              ['nearDoor',   'Nahe Tür bevorzugt'],
-              ['nearWindow', 'Nahe Fenster bevorzugt'],
-              ['centerRoom', 'Raummitte bevorzugt'],
-              ['cornerOnly', 'Nur Ecken'],
-            ] as [keyof PlacementRules, string][]).map(([field, lbl]) => {
-              const mixed  = isMixed(d => d.placementRules[field]);
-              const curVal = sv(d => d.placementRules[field]) as boolean | undefined;
-              return (
-                <label key={field} className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
-                  <IndeterminateCheckbox checked={mixed ? false : (curVal ?? false)} indeterminate={mixed}
-                    onChange={v => applyPlacementRule(field, v)} />
-                  {lbl}{mixed ? ' ⚠' : ''}
+                    onChange={v => applyField(key, v as TileDefinition[typeof key])} />
+                  {TILE_PROPERTY_LABELS_DE[key]}{mixed ? ' ⚠' : ''}
                 </label>
               );
             })}
 
             {selDefs.length === 1 && (
               <>
-                <div className={s.sectionTitle}>Notizen</div>
-                <textarea className={s.fieldInput} rows={2}
-                  value={selDefs[0].notes}
-                  onChange={e => applyField('notes', e.target.value)} />
+                <div className={`${s.sectionTitle} ${s.collapsibleHeader}`} onClick={() => setNotesOpen(v => !v)}>
+                  <span>Notizen</span>
+                  <span className={`${s.collapseToggle} ${notesOpen ? s.collapseToggleOpen : ''}`}>▶</span>
+                </div>
+                {notesOpen && (
+                  <textarea className={s.fieldInput} rows={2}
+                    value={selDefs[0].notes}
+                    onChange={e => applyField('notes', e.target.value)} />
+                )}
               </>
             )}
 
@@ -643,30 +613,14 @@ export function FurnitureBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>Raumtypen</span>
               <div className={s.chipGroup}>
-                {ROOM_TYPES.map(r => { const st = arrState(d => d.roomTypes, r); return (
+                {roomTypeList.map(r => { const st = arrState(d => d.roomTypes, r); return (
                   <span key={r} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
                     onClick={() => toggleArrayField('roomTypes', r)}>{r}</span>
                 ); })}
               </div>
             </div>
 
-            {(() => {
-              const mixed  = isMixed(d => d.weight);
-              const curVal = sv(d => d.weight) as number | undefined;
-              return (
-                <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>
-                    Gewichtung{mixed ? ' ⚠' : ''}
-                  </span>
-                  <input type="number" min={1} max={10}
-                    className={s.fieldInputSmall}
-                    value={mixed ? '' : (curVal ?? 5)}
-                    placeholder={mixed ? '—' : ''} style={mixStyle(mixed)}
-                    onChange={e => applyField('weight', Math.max(1, Math.min(10, Number(e.target.value))))} />
-                  <span className={s.fieldHint}>1=selten · 10=häufig</span>
-                </div>
-              );
-            })()}
+
 
             {(() => {
               const mixed  = isMixed(d => d.variantGroup);
@@ -692,18 +646,20 @@ export function FurnitureBrowser() {
               </div>
             </div>
 
-            <button className={s.saveBtn}
-              disabled={saveState === 'saving' || dirtyIds.size === 0}
-              onClick={handleSave}>
-              {saveState === 'saving' ? '⏳ Speichert…'
-               : saveState === 'ok'  ? '✅ Gespeichert'
-               : saveState === 'err' ? '❌ Fehler'
-               : dirtyIds.size > 0  ? `💾 ${dirtyIds.size} Eintrag${dirtyIds.size !== 1 ? 'e' : ''} speichern`
-               : '💾 Keine Änderungen'}
-            </button>
-            <p className={s.saveHint}>
-              Speichert in <em>tile-definitions.json</em> – BuildingFurniture.txt bleibt unverändert.
-            </p>
+            <div className={s.saveStickyBar}>
+              <button className={s.saveBtn}
+                disabled={saveState === 'saving' || dirtyIds.size === 0}
+                onClick={handleSave}>
+                {saveState === 'saving' ? '⏳ Speichert…'
+                 : saveState === 'ok'  ? '✅ Gespeichert'
+                 : saveState === 'err' ? '❌ Fehler'
+                 : dirtyIds.size > 0  ? `💾 ${dirtyIds.size} Eintrag${dirtyIds.size !== 1 ? 'e' : ''} speichern`
+                 : '💾 Keine Änderungen'}
+              </button>
+              <p className={s.saveHint}>
+                Speichert in <em>tile-definitions.json</em> – BuildingFurniture.txt bleibt unverändert.
+              </p>
+            </div>
           </>
         ) : (
           <p className={s.hint} style={{ padding: 32 }}>

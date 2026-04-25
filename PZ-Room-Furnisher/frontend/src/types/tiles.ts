@@ -2,8 +2,6 @@
   'Beds', 'Bedtable', 'Cabinet', 'Mirror', 'Walldecoration',
 ] as const;
 
-export const HEIGHTS = ['low', 'high'] as const;
-
 // ── Randomiser meta constants ─────────────────────────────────────────────
 export const COLORS = [
   'Brown', 'Black', 'White', 'Grey', 'Red', 'Blue', 'Green',
@@ -55,24 +53,24 @@ export interface TileDefinition {
    *    ["furniture_seating_indoor_01_002"]]
    */
   tileLayout: string[][];
-  /** Height tags — multiple allowed, e.g. ["low","high"] for a full-height mirror */
-  height: string[];
-  blocksPathing: boolean;
-  wallMounted: boolean;
   group: string;
   layer: 'Furniture' | 'Furniture2' | 'Furniture3' | 'Furniture4'
        | 'Wallfurniture' | 'Wallfurniture2' | 'Wallfurniture3' | 'Wallfurniture4'
        | 'FloorOverlay' | 'FloorFurniture';
-  canStack: boolean;
-  placementRules: PlacementRules;
   notes: string;
-  // ── Randomiser meta ───────────────────────────
+  // ── Unified boolean properties ────────────────────────────────────────
+  isHigh:        boolean;
+  isLow:         boolean;
+  isWallMounted: boolean;
+  hasSurface:    boolean;
+  hasCollision:  boolean;
+  canStack:      boolean;
+  isTableTop:    boolean;
+  // ── Randomiser meta ───────────────────────────────────────────────────
   /** Colour tags for grouping similar-looking furniture */
   colors: string[];
   /** Room types where this furniture is appropriate */
   roomTypes: string[];
-  /** Relative spawn weight 1–10 (default 5) */
-  weight: number;
   /** Links N/S/E/W variants of the same physical object (empty = no link) */
   variantGroup: string;
   /** Style tags – stored but not yet used by the generator */
@@ -80,6 +78,38 @@ export interface TileDefinition {
 }
 
 export type TileConfigMap = Record<string, TileDefinition>;
+
+// ── Unified tile properties (used in all 3 tabs) ──────────────────────────
+export const TILE_PROPERTIES = [
+  'isHigh',
+  'isLow',
+  'isWallMounted',
+  'hasSurface',
+  'hasCollision',
+  'canStack',
+  'isTableTop',
+] as const;
+export type TileProperty = typeof TILE_PROPERTIES[number];
+
+export const TILE_PROPERTY_LABELS_DE: Record<TileProperty, string> = {
+  isHigh:        'Hoch',
+  isLow:         'Niedrig',
+  isWallMounted: 'Wandmontiert',
+  hasSurface:    'Hat Oberfläche',
+  hasCollision:  'Hat Kollision',
+  canStack:      'Stapelbar',
+  isTableTop:    'Tischfläche',
+};
+
+export const TILE_PROPERTY_LABELS_EN: Record<TileProperty, string> = {
+  isHigh:        'High',
+  isLow:         'Low',
+  isWallMounted: 'Wall mounted',
+  hasSurface:    'Has surface',
+  hasCollision:  'Has collision',
+  canStack:      'Can stack',
+  isTableTop:    'Table top',
+};
 
 /** Number of columns in the layout grid. */
 export function layoutCols(def: TileDefinition): number {
@@ -111,24 +141,19 @@ export function defaultDefinition(tileId: string): TileDefinition {
     tileId,
     label: '',
     orientation: '',
-    tileLayout: [[tileId]],   // 1×1 with the root tile pre-filled
-    height: ['high'],
-    blocksPathing: true,
-    wallMounted: false,
+    tileLayout: [[tileId]],
     group: '',
     layer: 'Furniture',
-    canStack: false,
-    placementRules: {
-      nearWall: false,
-      nearDoor: false,
-      nearWindow: false,
-      centerRoom: false,
-      cornerOnly: false,
-    },
     notes: '',
+    isHigh:        true,
+    isLow:         false,
+    isWallMounted: false,
+    hasSurface:    false,
+    hasCollision:  true,
+    canStack:      false,
+    isTableTop:    false,
     colors: [],
     roomTypes: [],
-    weight: 5,
     variantGroup: '',
     styleTags: [],
   };

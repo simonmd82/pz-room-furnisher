@@ -64,3 +64,10 @@ export function exportConfigUrl(): string {
   return `${BASE}/config/export`;
 }
 
+/** Returns distinct non-empty group names from all saved tile definitions. */
+export async function getGroups(): Promise<string[]> {
+  const r = await fetch(`${BASE}/groups`);
+  if (!r.ok) return [];
+  return r.json();
+}
+
