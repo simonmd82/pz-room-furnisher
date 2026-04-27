@@ -297,4 +297,37 @@
   font-style: italic;
 }
 
+/* ── Furniture sprite overlay ── */
+.furnitureSprite {
+  position: absolute;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+/* ── Furniture layer switcher in legend ── */
+.layerLabel {
+  font-size: 0.75rem;
+  color: #889;
+  white-space: nowrap;
+}
+
+.layerBtn {
+  padding: 2px 8px;
+  background: #1a2030;
+  border: 1px solid #334;
+  border-radius: 4px;
+  color: #99a;
+  font-size: 0.74rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+}
+.layerBtn:hover { background: #1e2a40; border-color: #558; color: #ccd; }
+.layerBtnActive {
+  background: #0d2435 !important;
+  border-color: #4d9fcc !important;
+  color: #7fd3ff !important;
+  font-weight: 600;
+}
+
 

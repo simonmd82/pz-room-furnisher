@@ -136,6 +136,7 @@ Werkzeug zum Erfassen und Konfigurieren von **Sprite-Tiles** aus den PZ-Texturor
   - **Raumtypen** – welche Räume dieses Tile verwenden dürfen
   - **Varianten-ID** – Gruppiert farbliche/stilistische Varianten desselben Möbeltyps
   - **Style-Tags** – Modern, Rustic, … (gespeichert, noch nicht im Generator aktiv)
+  - **Raumtypen-Filter** – Tiles mit mindestens einem Raumtyp-Eintrag werden nur in passenden Räumen verwendet. Tiles ohne Raumtyp-Eintrag gelten als neutral und sind überall erlaubt.
 - **Speichern / Löschen** – Jede Definition wird als JSON auf dem Backend persistiert.
 - **Export** – Download der gesamten `tile-definitions.json` per Link.
 
@@ -156,7 +157,8 @@ Lesezugriff auf **BuildingFurniture-Dateien** (`.bf`-Format von Project Zomboid)
 - **Multi-Select** – Mehrere Entries gleichzeitig auswählen (Checkboxen, auch je Piece).
 - **Import als Tile-Definition** – Ausgewählte Entries werden als TileDefinition-Entwürfe aus der `.bf`-Struktur abgeleitet und können direkt konfiguriert und gespeichert werden.
   - Bereits importierte Tiles werden mit einem Indikator markiert.
-  - Konfigurationsfelder wie im Tile Browser (Gruppe, Farben, Raumtypen, Varianten-ID, Style-Tags, Flags, Notizen).
+  - **Konfigurationsfelder wie im Tile Browser** (Gruppe, Farben, Raumtypen, Varianten-ID, Style-Tags, Flags, Notizen).
+    - Tiles mit gesetzten Raumtypen werden nur in passenden Räumen verwendet; leere Raumtypen = überall erlaubt.
 
 ---
 
@@ -174,11 +176,14 @@ Definiert, welche Möbel-Slots ein Raum eines bestimmten Typs haben soll – als
   - **Priorität** – Optionale Slots werden in Prioritätsreihenfolge gezogen (0 = zuerst).
   - **Anzahl je Raumgröße** – Min/Max-Tabelle für XS / S / M / L / XL (Max -1 = unbegrenzt).
   - **Erlaubte Kategorien** – Welche Tile-Gruppen für diesen Slot infrage kommen, mit Gewichtung (1–10).
-  - **Platzierungsregeln** – An der Wand / An einer Tür / An einem Fenster / Raummitte / Nur in Ecken.
+  - **Platzierungsregeln** – An der Wand / An einer Tür / An einem Fenster / Raummitte / Nur in Ecken / Auf Pfadzellen erlaubt.
+  - **Wandausrichtung** (nur bei „An der Wand"): Automatisch / ⊥ Senkrecht / ∥ Parallel.
+  - **Fallback-Regeln** – Geordnete Liste alternativer Platzierungsregeln. Findet der Generator mit den primären Regeln keine freie Position, versucht er die Fallbacks der Reihe nach (nur für Pflicht-Slots relevant).
   - **Layer-Filter** – Schränkt auf einen bestimmten Furniture-Layer ein.
   - **Erforderliche Eigenschaften** – z. B. `blocksPathing`, `wallMounted`, `canStack`.
   - **Varianten-Gruppe (one-of)** – Mehrere Slots in einer Gruppe → Generator wählt genau eine Variante (gewichtet).
   - **Anker-Slot** – Verknüpft diesen Slot relativ zu einem anderen (z. B. Nachttisch „HeadLeft" neben dem Bett).
+- **Raumtypen-Filter im Generator** – Tiles werden beim Möblieren automatisch auf den aktuellen Raumtyp gefiltert. Nur Tiles, deren `RoomTypes`-Liste den Raumtyp enthält oder die keine Einschränkung haben (leere Liste), werden ausgewählt.
 - **Slot duplizieren** – Schnelles Kopieren eines bestehenden Slots.
 - **Info-Panel** – Einblendbare Erklärung aller Slot-Konzepte.
 - **Referenz-Footer** – Zeigt häufige Footprint-Raster und die Raumgrößen-Skala als Nachschlage-Leiste.

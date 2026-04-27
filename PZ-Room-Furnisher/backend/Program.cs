@@ -19,6 +19,8 @@ builder.Services.AddSingleton<IBuildingFurnitureService, BuildingFurnitureServic
 builder.Services.AddSingleton<IRoomTypeConfigService, RoomTypeConfigService>();
 builder.Services.AddSingleton<ISettingsService, SettingsService>();
 builder.Services.AddSingleton<IPathfinderService, PathfinderService>();
+builder.Services.AddSingleton<IFurnishingGeneratorService, FurnishingGeneratorService>();
+builder.Services.AddSingleton<ITbxExportService, TbxExportService>();
 
 builder.Services.AddCors(options =>
 {

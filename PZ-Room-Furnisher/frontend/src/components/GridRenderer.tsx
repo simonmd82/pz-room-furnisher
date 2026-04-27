@@ -1,19 +1,28 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Floor, Room, WallEdge, Building, FloorObject } from '../types/building';
+import type { Floor, Room, WallEdge, Building, FloorObject, PlacedFurnitureItem } from '../types/building';
+import type { TileConfigMap, TileSheetInfo } from '../types/tiles';
+import { parseTileId } from '../types/tiles';
+import { sheetImageUrl } from '../api/tilesApi';
 import { recomputeRoomPath } from '../api/buildingApi';
 import styles from './GridRenderer.module.css';
+
+const SPRITE_W = 128;
+const SPRITE_H = 256;
 
 interface Props {
   floor: Floor;
   rooms: Room[];
   cellSize?: number;
-  /** Full building object – needed for path recomputation (optional). */
   building?: Building;
-  /** Index of the displayed floor – needed for path recomputation. */
   floorIndex?: number;
-  /** Called after a room's path is regenerated so the parent can persist the updated floor. */
   onFloorUpdated?: (floor: Floor) => void;
+  /** Placed furniture for this floor */
+  furniturePlacements?: PlacedFurnitureItem[];
+  /** Tile definitions – needed for sprite rendering */
+  tileConfig?: TileConfigMap;
+  /** Sheet metadata – needed for sprite cropping */
+  sheetInfos?: TileSheetInfo[];
 }
 
 const DOOR_COLOR   = '#d4852a';
@@ -146,13 +155,42 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated }: Props) {
+export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], tileConfig, sheetInfos }: Props) {
   const { t } = useTranslation();
   const grid = floor.roomGrid;
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [showPaths, setShowPaths] = useState(false);
   const [recomputingRoom, setRecomputingRoom] = useState<number | null>(null);
+  const [hiddenLayers, setHiddenLayers] = useState<Set<string>>(new Set());
+  const [showDebug, setShowDebug] = useState(false);
+
+  // ── Furniture helpers ────────────────────────────────────────────────────────
+  const sheetInfoMap = useMemo(() => {
+    const m = new Map<string, TileSheetInfo>();
+    for (const s of sheetInfos ?? []) m.set(s.name, s);
+    return m;
+  }, [sheetInfos]);
+
+  const placementLayers = useMemo(() => {
+    const layers = new Set<string>();
+    for (const p of furniturePlacements) layers.add(p.layer);
+    return Array.from(layers).sort();
+  }, [furniturePlacements]);
+
+  const visiblePlacements = useMemo(() =>
+    furniturePlacements.filter(p => !hiddenLayers.has(p.layer)),
+  [furniturePlacements, hiddenLayers]);
+
+  const toggleLayer = useCallback((layer: string) => {
+    setHiddenLayers(prev => {
+      const next = new Set(prev);
+      if (next.has(layer)) next.delete(layer); else next.add(layer);
+      return next;
+    });
+  }, []);
+
+  const allLayersVisible = hiddenLayers.size === 0;
 
   const handleLegendClick = useCallback((roomIdx1Based: number, ctrlKey: boolean) => {
     setSelected(prev => {
@@ -286,6 +324,64 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
           >
             {showPaths ? `🛤 Wege verbergen (${pathRoomCount})` : '🛤 Wege zeigen'}
           </button>
+
+          {furniturePlacements.length > 0 && (
+            <button
+              className={`${styles.pathToggleBtn} ${showDebug ? styles.pathToggleActive : ''}`}
+              style={{ marginTop: 4 }}
+              onClick={() => setShowDebug(v => !v)}
+            >
+              🐛 {showDebug ? `Debug aus` : `Debug (${furniturePlacements.length})`}
+            </button>
+          )}
+
+          {placementLayers.length > 0 && (
+            <>
+              <div className={styles.legendDivider} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+                <span className={styles.layerLabel}>🛋 Layer</span>
+                {!allLayersVisible && (
+                  <button
+                    className={styles.layerBtn}
+                    style={{ fontSize: '0.66rem', padding: '1px 6px' }}
+                    onClick={() => setHiddenLayers(new Set())}
+                    title="Alle Layer einblenden"
+                  >
+                    alle an
+                  </button>
+                )}
+              </div>
+              {placementLayers.map(l => {
+                const count   = furniturePlacements.filter(p => p.layer === l).length;
+                const visible = !hiddenLayers.has(l);
+                return (
+                  <label
+                    key={l}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      cursor: 'pointer', userSelect: 'none',
+                      padding: '2px 4px', borderRadius: 3,
+                      background: visible ? '#1a2a1a' : '#1a1a1a',
+                      border: `1px solid ${visible ? '#3a6a3a' : '#2a2a3a'}`,
+                      fontSize: '0.73rem',
+                      color: visible ? '#9f9' : '#556',
+                      marginTop: 2,
+                    }}
+                    title={visible ? `${l} ausblenden` : `${l} einblenden`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={visible}
+                      onChange={() => toggleLayer(l)}
+                      style={{ accentColor: '#4a9a4a', margin: 0 }}
+                    />
+                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l}</span>
+                    <span style={{ color: '#556', fontSize: '0.66rem' }}>{count}</span>
+                  </label>
+                );
+              })}
+            </>
+          )}
         </div>
 
         {hasSelection && (
@@ -357,6 +453,93 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
               })
             )}
           </div>
+
+          {/* ── Debug overlay ── */}
+          {showDebug && visiblePlacements.length > 0 && (
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}>
+              {visiblePlacements.map((p, i) => {
+                const orientArrow: Record<string, string> = { N: '↑', S: '↓', E: '→', W: '←' };
+                const layerColor: Record<string, string> = {
+                  Furniture:      'rgba(80,200,120,0.65)',
+                  Furniture2:     'rgba(60,180,100,0.65)',
+                  Furniture3:     'rgba(40,160,80,0.65)',
+                  Furniture4:     'rgba(20,140,60,0.65)',
+                  Wallfurniture:  'rgba(100,160,255,0.65)',
+                  Wallfurniture2: 'rgba(80,140,220,0.65)',
+                  Wallfurniture3: 'rgba(60,120,190,0.65)',
+                  Wallfurniture4: 'rgba(40,100,160,0.65)',
+                  FloorOverlay:   'rgba(255,200,80,0.60)',
+                  FloorFurniture: 'rgba(220,170,60,0.60)',
+                };
+                const bg = layerColor[p.layer] ?? 'rgba(180,100,255,0.65)';
+                const arrow = orientArrow[p.orient] ?? p.orient;
+                const shortId = p.tileId.split('_').pop()?.slice(-4) ?? p.tileId.slice(-4);
+                const fontSize = Math.max(7, Math.min(11, cellSize * 0.22));
+                return (
+                  <div
+                    key={i}
+                    title={`Slot: ${p.slotId || '—'}\n${p.tileId}\nLayer: ${p.layer}\nOrient: ${p.orient}\n[${p.col}, ${p.row}]`}
+                    style={{
+                      position:       'absolute',
+                      left:           p.col * cellSize + 1,
+                      top:            p.row * cellSize + 1,
+                      width:          cellSize - 2,
+                      height:         cellSize - 2,
+                      background:     bg,
+                      border:         '1.5px solid rgba(255,255,255,0.4)',
+                      borderRadius:   3,
+                      display:        'flex',
+                      flexDirection:  'column',
+                      alignItems:     'center',
+                      justifyContent: 'center',
+                      overflow:       'hidden',
+                      pointerEvents:  'auto',
+                    }}
+                  >
+                    <span style={{ fontSize: fontSize + 3, lineHeight: 1, color: '#fff', fontWeight: 700, textShadow: '0 0 4px #000' }}>
+                      {arrow}
+                    </span>
+                    <span style={{ fontSize, lineHeight: 1.15, color: '#ffe', textShadow: '0 0 2px #000', marginTop: 1, textAlign: 'center' }}>
+                      {shortId}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── Furniture sprite overlay ── */}
+          {!showDebug && visiblePlacements.length > 0 && (
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3 }}>
+              {visiblePlacements.map((p, i) => {
+                const parsed = parseTileId(p.tileId);
+                if (!parsed) return null;
+                const sheet = sheetInfoMap.get(parsed.sheet);
+                if (!sheet) return null;
+                const scale   = cellSize / SPRITE_W;
+                const sprH    = SPRITE_H * scale; // natural height = 2 * cellSize
+                return (
+                  <div
+                    key={i}
+                    className={styles.furnitureSprite}
+                    style={{
+                      left:               p.col * cellSize,
+                      // bottom-align to cell bottom (sprite grows upward – PZ convention)
+                      top:                (p.row + 1) * cellSize - sprH,
+                      width:              cellSize,
+                      height:             sprH,
+                      backgroundImage:    `url(${sheetImageUrl(parsed.sheet)})`,
+                      backgroundRepeat:   'no-repeat',
+                      backgroundSize:     `${sheet.sheetWidth  * scale}px ${sheet.sheetHeight * scale}px`,
+                      backgroundPosition: `${-(parsed.index % sheet.columns) * SPRITE_W * scale}px `
+                                        + `${-Math.floor(parsed.index / sheet.columns) * SPRITE_H * scale}px`,
+                    }}
+                    title={`${p.tileId} [${p.layer}]`}
+                  />
+                );
+              })}
+            </div>
+          )}
 
           {/* SVG overlay – doors/windows + path dots */}
           <svg

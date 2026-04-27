@@ -1,0 +1,237 @@
+﻿.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: #0a0a14;
+  border-left: 1px solid #2a2a3a;
+  width: 280px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+.panelTitle {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c8a8ff;
+  margin: 0 0 4px;
+}
+
+.sectionLabel {
+  font-size: 0.68rem;
+  color: #668;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 6px 0 4px;
+}
+
+/* ── Room list ── */
+.roomList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.roomRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: #141422;
+  border: 1px solid #2a2a3a;
+  cursor: pointer;
+  user-select: none;
+}
+.roomRow:hover { background: #1a1a2e; }
+.roomRowSelected { border-color: #8866cc; background: #1e1e3a; }
+
+.roomRowCheck {
+  accent-color: #8866cc;
+  flex-shrink: 0;
+}
+
+.roomRowName {
+  font-size: 0.76rem;
+  color: #ccd;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roomRowType {
+  font-size: 0.66rem;
+  color: #778;
+  font-style: italic;
+}
+
+.roomRowBadge {
+  font-size: 0.62rem;
+  background: #2a1a4a;
+  color: #aa88dd;
+  border-radius: 8px;
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+
+.roomRowNoMatch {
+  font-size: 0.62rem;
+  color: #f66;
+  flex-shrink: 0;
+}
+
+/* Color swatch next to room name */
+.roomColorSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.15);
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Override input for roomType */
+.overrideInput {
+  width: 100%;
+  padding: 3px 6px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 3px;
+  color: #dde;
+  font-size: 0.72rem;
+  margin-top: 3px;
+}
+.overrideInput:focus { outline: none; border-color: #8866cc; }
+
+/* ── Seed row ── */
+.seedRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.seedLabel { font-size: 0.72rem; color: #668; }
+.seedInput {
+  width: 80px;
+  padding: 3px 6px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 3px;
+  color: #dde;
+  font-size: 0.76rem;
+  text-align: center;
+}
+.seedInput:focus { outline: none; border-color: #8866cc; }
+.seedRandom {
+  padding: 3px 8px;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5a;
+  border-radius: 3px;
+  color: #88a;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.seedRandom:hover { border-color: #8866cc; color: #ddf; }
+
+/* ── Generate button ── */
+.generateBtn {
+  padding: 8px;
+  background: #2a4a2a;
+  border: 1px solid #4a9a4a;
+  border-radius: 6px;
+  color: #9f9;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: 100%;
+}
+.generateBtn:hover:not(:disabled) { background: #3a6a3a; }
+.generateBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Export button ── */
+.exportBtn {
+  padding: 7px;
+  background: #1a2a3a;
+  border: 1px solid #3a7aaa;
+  border-radius: 6px;
+  color: #7af;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  width: 100%;
+}
+.exportBtn:hover:not(:disabled) { background: #2a3a5a; }
+.exportBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Status ── */
+.status {
+  font-size: 0.72rem;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+.statusOk    { color: #6c6; background: #1a2a1a; }
+.statusError { color: #f88; background: #2a1a1a; }
+
+/* ── Log ── */
+.logToggle {
+  font-size: 0.74rem;
+  color: #778;
+  cursor: pointer;
+  background: #0e0e18;
+  border: 1px solid #2a2a3a;
+  border-radius: 5px;
+  padding: 5px 10px;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s, color 0.12s;
+}
+.logToggle:hover { background: #141428; color: #aab; border-color: #445; }
+
+.logBox {
+  background: #080812;
+  border: 1px solid #272736;
+  border-radius: 6px;
+  padding: 8px 6px;
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.logLine {
+  font-family: 'Consolas', 'Fira Mono', monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Zeilentypen */
+.logRoom   { color: #88ccff; background: rgba(40,80,140,0.18); font-weight: 600; }
+.logPlaced { color: #77ee88; }
+.logSlot   { color: #aabbee; }
+.logGroup  { color: #cc99ff; }
+.logWarn   { color: #ffaa44; background: rgba(120,60,0,0.22); }
+.logSkip   { color: #ff6666; background: rgba(100,20,20,0.18); }
+.logOther  { color: #556677; }
+
+/* ── Result summary ── */
+.resultSummary {
+  font-size: 0.72rem;
+  color: #88a;
+  background: #141422;
+  border: 1px solid #2a2a3a;
+  border-radius: 4px;
+  padding: 6px 8px;
+}
+
+/* InternalName shown next to display name */
+.roomInternalName {
+  font-size: 0.66rem;
+  color: #556;
+  font-style: italic;
+}

@@ -26,16 +26,37 @@ public class SlotFootprint
     public int Width  { get; set; } = 1;
     /// <summary>Anzahl Zellen vertikal (Zeilen).</summary>
     public int Height { get; set; } = 1;
+    /// <summary>
+    /// Darf dieser Slot um 90° gedreht platziert werden?
+    /// Nur relevant bei nicht-quadratischem Footprint (Width ≠ Height).
+    /// </summary>
+    public bool CanRotate { get; set; } = false;
 }
 
 /// <summary>Platzierungsregeln für einen Slot.</summary>
 public class PlacementRules
 {
-    public bool NearWall   { get; set; }
-    public bool NearDoor   { get; set; }
-    public bool NearWindow { get; set; }
-    public bool CenterRoom { get; set; }
-    public bool CornerOnly { get; set; }
+    public bool NearWall    { get; set; }
+    public bool NearDoor    { get; set; }
+    public bool NearWindow  { get; set; }
+    public bool CenterRoom  { get; set; }
+    public bool CornerOnly  { get; set; }
+    /// <summary>
+    /// Darf dieser Slot auf Pfad-Zellen (Laufwegen) platziert werden?
+    /// false (Standard): Möbel mit HasCollision=true werden von Pfad-Zellen ferngehalten.
+    /// true: Pfad-Zellen sind erlaubt (z.B. Teppiche ohne Kollision).
+    /// </summary>
+    public bool AllowOnPath { get; set; } = false;
+
+    /// <summary>
+    /// Ausrichtung zur Wand (nur relevant wenn NearWall=true).
+    /// "perpendicular": Rücken an Wand, Vorderseite in den Raum (Bett, Schreibtisch).
+    ///   Bevorzugt Tile-Variante mit langer Achse senkrecht zur Wand.
+    /// "parallel": Längsseite entlang der Wand (Sofa, Regal).
+    ///   Bevorzugt Tile-Variante mit langer Achse parallel zur Wand.
+    /// "any": automatisch (Standard).
+    /// </summary>
+    public string WallAlignment { get; set; } = "any";
 }
 
 /// <summary>Min/Max-Anzahl eines Slots für eine bestimmte Raumgröße.</summary>
@@ -44,6 +65,18 @@ public class SlotCount
     public int Min { get; set; } = 0;
     /// <summary>-1 = unbegrenzt</summary>
     public int Max { get; set; } = -1;
+}
+
+/// <summary>
+/// Eine Anker-Regel: verknüpft einen Slot mit einem anderen Slot oder einer SlotGroupId.
+/// Positions enthält die erlaubten Positionen (OR – Generator wählt eine davon).
+/// </summary>
+public class AnchorRule
+{
+    /// <summary>Slot-ID eines anderen Slots ODER eine SlotGroupId.</summary>
+    public string AnchorTarget { get; set; } = string.Empty;
+    /// <summary>Erlaubte relative Positionen (OR: Generator wählt eine). Leer = beliebig.</summary>
+    public List<string> Positions { get; set; } = [];
 }
 
 /// <summary>Ein Slot-Eintrag in der RoomType-Konfiguration (Ansatz A: verknüpfte Einzel-Slots).</summary>
@@ -111,6 +144,14 @@ public class RoomTypeSlot
     /// Höherer Wert → wird häufiger gewählt.
     /// </summary>
     public int GroupWeight { get; set; } = 5;
+
+    /// <summary>
+    /// Fallback-Platzierungsregeln (geordnete Liste).
+    /// Wenn PlacementRules keine freie Zelle findet, versucht der Generator
+    /// diese Regeln der Reihe nach als Alternativen.
+    /// Nur bei Required=true relevant – optionale Slots werden einfach weggelassen.
+    /// </summary>
+    public List<PlacementRules> FallbackRules { get; set; } = [];
 }
 
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>

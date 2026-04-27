@@ -64,6 +64,7 @@ public class TbxParserService : ITbxParserService
                         "stairs"  => FloorObjectType.Stairs,
                         _         => FloorObjectType.Other
                     },
+                    OriginalType = typeStr,
                     X    = ParseInt(obj.Attribute("x")?.Value),
                     Y    = ParseInt(obj.Attribute("y")?.Value),
                     Dir  = Enum.TryParse<Direction>(dirStr, true, out var dir) ? dir : Direction.N,

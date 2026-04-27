@@ -7,7 +7,8 @@
         "label": "Bed small",
         "footprint": {
           "width": 1,
-          "height": 2
+          "height": 2,
+          "canRotate": true
         },
         "required": true,
         "priority": 0,
@@ -39,26 +40,48 @@
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
-          "nearWindow": true,
+          "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "perpendicular"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
           "isLow"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "bedroom_beds",
         "slotGroupMode": "one-of",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": [
+          {
+            "nearWall": false,
+            "nearDoor": false,
+            "nearWindow": false,
+            "centerRoom": false,
+            "cornerOnly": true,
+            "allowOnPath": false,
+            "wallAlignment": "any"
+          },
+          {
+            "nearWall": false,
+            "nearDoor": false,
+            "nearWindow": false,
+            "centerRoom": false,
+            "cornerOnly": false,
+            "allowOnPath": false,
+            "wallAlignment": "any"
+          }
+        ]
       },
       {
         "id": "slot_bed_main_large",
         "label": "Bed large",
         "footprint": {
           "width": 2,
-          "height": 2
+          "height": 2,
+          "canRotate": false
         },
         "required": true,
         "priority": 0,
@@ -90,26 +113,48 @@
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
-          "nearWindow": true,
+          "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
           "isLow"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "bedroom_beds",
         "slotGroupMode": "one-of",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": [
+          {
+            "nearWall": false,
+            "nearDoor": false,
+            "nearWindow": false,
+            "centerRoom": false,
+            "cornerOnly": true,
+            "allowOnPath": false,
+            "wallAlignment": "any"
+          },
+          {
+            "nearWall": false,
+            "nearDoor": false,
+            "nearWindow": false,
+            "centerRoom": false,
+            "cornerOnly": false,
+            "allowOnPath": false,
+            "wallAlignment": "any"
+          }
+        ]
       },
       {
         "id": "slot_cabinet",
         "label": "Cabinet",
         "footprint": {
           "width": 1,
-          "height": 2
+          "height": 2,
+          "canRotate": true
         },
         "required": false,
         "priority": 1,
@@ -143,22 +188,25 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "parallel"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_bed_table_left",
         "label": "Bed Table left",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 2,
@@ -185,31 +233,34 @@
           }
         },
         "allowedCategories": {
-          "Beds": 5
+          "Bedtable": 5
         },
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
           "isLow"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_bed_table_right",
         "label": "Bed Table right",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 2,
@@ -236,31 +287,34 @@
           }
         },
         "allowedCategories": {
-          "Beds": 5
+          "Bedtable": 5
         },
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
           "isLow"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_seating",
         "label": "Seating",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 3,
@@ -287,30 +341,32 @@
           }
         },
         "allowedCategories": {
-          "Chair": 5,
-          "Sofa": 5
+          "Chair": 5
         },
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
-          "nearWindow": true,
+          "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_lamps_radio",
         "label": "Lamps Radio",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 3,
@@ -345,24 +401,27 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture2",
         "requiredProperties": [
           "isTableTop"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_mirror",
         "label": "Mirror",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 3,
@@ -396,24 +455,83 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Wallfurniture",
         "requiredProperties": [
           "isWallMounted"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5
+        "anchorRules": [],
+        "slotGroupId": "bedroom_mirrors",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": []
+      },
+      {
+        "id": "slot_mirror_long",
+        "label": "Mirror Long",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 3,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Mirror": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isWallMounted",
+          "isHigh",
+          "isLow"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "bedroom_mirrors",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_pictures",
         "label": "Pictures",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 4,
@@ -447,24 +565,28 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
-        "requiredLayer": "Wallfurniture2",
+        "requiredLayer": "Wallfurniture",
         "requiredProperties": [
-          "isWallMounted"
+          "isWallMounted",
+          "isHigh"
         ],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_plants",
         "label": "Plants",
         "footprint": {
           "width": 1,
-          "height": 1
+          "height": 1,
+          "canRotate": false
         },
         "required": false,
         "priority": 4,
@@ -496,24 +618,27 @@
         "placementRules": {
           "nearWall": true,
           "nearDoor": false,
-          "nearWindow": true,
+          "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_rugs",
         "label": "Rugs",
         "footprint": {
           "width": 2,
-          "height": 3
+          "height": 3,
+          "canRotate": true
         },
         "required": false,
         "priority": 5,
@@ -547,22 +672,25 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": true,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
         "requiredLayer": "FloorFurniture",
         "requiredProperties": [],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "bedroom_rugs",
         "slotGroupMode": "one-of",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       },
       {
         "id": "slot_rugs_small",
         "label": "Rugs Small",
         "footprint": {
           "width": 2,
-          "height": 2
+          "height": 2,
+          "canRotate": false
         },
         "required": false,
         "priority": 5,
@@ -596,15 +724,17 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": true,
-          "cornerOnly": false
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "wallAlignment": "any"
         },
         "requiredLayer": "FloorFurniture",
         "requiredProperties": [],
-        "anchorSlotId": "",
-        "anchorPosition": "",
+        "anchorRules": [],
         "slotGroupId": "bedroom_rugs",
         "slotGroupMode": "one-of",
-        "groupWeight": 5
+        "groupWeight": 5,
+        "fallbackRules": []
       }
     ]
   }

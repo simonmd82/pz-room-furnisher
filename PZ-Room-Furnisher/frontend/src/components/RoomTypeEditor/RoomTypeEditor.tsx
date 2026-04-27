@@ -3,7 +3,7 @@ import {
   SIZE_KEYS, ANCHOR_POSITIONS, REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
 } from '../../types/roomTypes';
-import type { AnchorRule, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
+import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories } from '../../api/settingsApi';
 import { getGroups } from '../../api/tilesApi';
@@ -64,12 +64,25 @@ const SLOT_INFO_TEXT = `\
   werden automatisch mitgezogen wenn ihr Haupt-Slot gewählt wird).`;
 
 const PLACEMENT_RULE_LABELS: Record<string, string> = {
-  nearWall:   'An der Wand',
-  nearDoor:   'An einer Tür',
-  nearWindow: 'An einem Fenster',
-  centerRoom: 'Raummitte',
-  cornerOnly: 'Nur in Ecken',
+  nearWall:    'An der Wand',
+  nearDoor:    'An einer Tür',
+  nearWindow:  'An einem Fenster',
+  centerRoom:  'Raummitte',
+  cornerOnly:  'Nur in Ecken',
 };
+const PLACEMENT_RULE_DESCRIPTIONS: Record<string, string> = {
+  nearWall:    'Slot muss an einer Wand platziert werden.',
+  nearDoor:    'Slot muss in der Nähe einer Tür platziert werden.',
+  nearWindow:  'Slot muss in der Nähe eines Fensters platziert werden.',
+  centerRoom:  'Slot muss in der Raummitte platziert werden.',
+  cornerOnly:  'Slot darf nur in einer Ecke platziert werden.',
+};
+
+const WALL_ALIGNMENT_OPTIONS: { value: PlacementRules['wallAlignment']; label: string; title: string }[] = [
+  { value: 'any',          label: 'Automatisch',  title: 'Generator wählt die beste passende Tile-Variante – keine Richtungseinschränkung.' },
+  { value: 'perpendicular',label: '⊥ Senkrecht',  title: 'Rücken an der Wand, Vorderseite zeigt in den Raum.\nDie lange Achse geht in den Raum hinein (z.B. Bett, Schreibtisch, WC).\nBevorzugt Tile-Varianten mit fpH > fpW bei N/S-Wand.' },
+  { value: 'parallel',     label: '∥ Parallel',   title: 'Längsseite entlang der Wand.\nDas Möbelstück läuft parallel zur Wand (z.B. Sofa, Regal, Kommode).\nBevorzugt Tile-Varianten mit fpW > fpH bei N/S-Wand.' },
+];
 
 const SIZE_LABELS: Record<string, string> = {
   XS: '1–4 Felder', S: '5–12 Felder', M: '13–25 Felder', L: '26–50 Felder', XL: '51+ Felder',
@@ -227,8 +240,28 @@ export function RoomTypeEditor() {
     updateAnchorRule(slotIdx, ruleIdx, { positions });
   };
 
-  const duplicateSlot = (idx: number) => {
+  // ── Fallback-Regel Helpers ──
+  const addFallbackRule = (slotIdx: number) => {
     if (!draft) return;
+    const rules = [...(draft.slots[slotIdx].fallbackRules ?? []), defaultPlacementRules()];
+    updateSlot(slotIdx, { fallbackRules: rules });
+  };
+
+  const removeFallbackRule = (slotIdx: number, fbIdx: number) => {
+    if (!draft) return;
+    const rules = (draft.slots[slotIdx].fallbackRules ?? []).filter((_, i) => i !== fbIdx);
+    updateSlot(slotIdx, { fallbackRules: rules });
+  };
+
+  const updateFallbackRule = (slotIdx: number, fbIdx: number, patch: Partial<PlacementRules>) => {
+    if (!draft) return;
+    const rules = (draft.slots[slotIdx].fallbackRules ?? []).map((r, i) =>
+      i === fbIdx ? { ...r, ...patch } : r
+    );
+    updateSlot(slotIdx, { fallbackRules: rules });
+  };
+
+  const duplicateSlot = (idx: number) => {    if (!draft) return;
     const copy = { ...draft.slots[idx], id: draft.slots[idx].id ? draft.slots[idx].id + '_copy' : '' };
     const newSlots = [...draft.slots];
     newSlots.splice(idx + 1, 0, copy);
@@ -608,12 +641,19 @@ export function RoomTypeEditor() {
 
                   {/* ── Platzierungsregeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6 }}>
-                    <span className={s.slotGroupLabel}>Platzierungsregeln</span>
+                    <span className={s.slotGroupLabel}>
+                      Platzierungsregeln
+                      <span
+                        title="Alle aktiven Regeln werden mit AND verknüpft – eine Zelle muss ALLE gesetzten Bedingungen gleichzeitig erfüllen.\n\nAusnahme: 'Raummitte' und 'An der Wand mit Orientierung' sind Soft-Präferenzen (bevorzugt, aber kein harter Ausschluss)."
+                        style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
+                      >ℹ</span>
+                    </span>
                   </div>
                   <div className={s.chipGroup}>
                     {(Object.keys(PLACEMENT_RULE_LABELS) as (keyof typeof PLACEMENT_RULE_LABELS)[]).map(key => (
                       <span key={key}
                         className={`${s.chip} ${slot.placementRules[key as keyof typeof slot.placementRules] ? s.chipActive : ''}`}
+                        title={PLACEMENT_RULE_DESCRIPTIONS[key]}
                         onClick={() => updateSlot(idx, {
                           placementRules: {
                             ...slot.placementRules,
@@ -624,6 +664,72 @@ export function RoomTypeEditor() {
                       </span>
                     ))}
                   </div>
+                  {/* AND-Hinweis: nur wenn >1 harte Regel aktiv */}
+                  {(['nearWall','nearDoor','nearWindow','cornerOnly'] as const)
+                    .filter(k => slot.placementRules[k]).length > 1 && (
+                    <div className={s.slotHint} style={{ marginTop: 3, color: '#f4a261' }}>
+                      ⚠ AND-Verknüpfung: Zelle muss{' '}
+                      {(['nearWall','nearDoor','nearWindow','cornerOnly'] as const)
+                        .filter(k => slot.placementRules[k])
+                        .map(k => PLACEMENT_RULE_LABELS[k])
+                        .join(' UND ')}
+                      {' '}gleichzeitig erfüllen. Falls keine Zelle passt → [WARN] im Log.
+                    </div>
+                  )}
+
+                  {/* ── Pfad-Option ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, alignItems: 'center', gap: 8 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: slot.placementRules.allowOnPath ? '#7fd3ff' : '#889' }}
+                      title="Wenn aktiv: Möbel dieses Slots dürfen auch auf Laufwegen (Pfadzellen) platziert werden. Standard: Möbel mit Kollision werden von Pfaden ferngehalten.">
+                      <input
+                        type="checkbox"
+                        checked={slot.placementRules.allowOnPath ?? false}
+                        onChange={() => updateSlot(idx, {
+                          placementRules: { ...slot.placementRules, allowOnPath: !(slot.placementRules.allowOnPath ?? false) }
+                        })}
+                        style={{ accentColor: '#4d9fcc' }}
+                      />
+                      🚶 Auf Laufweg erlaubt
+                      <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>(überschreibt Kollisions-Sperre)</span>
+                    </label>
+                  </div>
+
+                  {/* ── Wandausrichtung (nur bei nearWall) ── */}
+                  {slot.placementRules.nearWall && (
+                    <div style={{ marginTop: 6 }}>
+                      <div className={s.slotRow} style={{ marginBottom: 3 }}>
+                        <span className={s.slotGroupLabel}>
+                          Wandausrichtung
+                          <span
+                            title={"Bestimmt, wie das Möbelstück relativ zur Wand ausgerichtet wird.\n\n• Automatisch: Generator wählt die beste passende Tile-Variante.\n• Senkrecht (⊥): Rücken an der Wand, Vorderseite zeigt in den Raum.\n  Für Möbel die in den Raum ragen (Bett, Schreibtisch, WC).\n  Bevorzugt Tile-Variante mit langer Achse senkrecht zur Wand.\n• Parallel (∥): Längsseite entlang der Wand.\n  Für Möbel die entlang der Wand stehen (Sofa, Regal, Kommode).\n  Bevorzugt Tile-Variante mit langer Achse parallel zur Wand.\n\nHinweis: Benötigt Tile-Varianten in der VariantGroup mit korrekten TileLayout-Dimensionen."}
+                            style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
+                          >ℹ</span>
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {WALL_ALIGNMENT_OPTIONS.map(opt => {
+                          const active = (slot.placementRules.wallAlignment ?? 'any') === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              title={opt.title}
+                              onClick={() => updateSlot(idx, {
+                                placementRules: { ...slot.placementRules, wallAlignment: opt.value }
+                              })}
+                              style={{
+                                fontSize: '0.75rem', padding: '2px 10px', borderRadius: 4, cursor: 'pointer',
+                                border: active ? '1.5px solid #6af' : '1px solid #445',
+                                background: active ? '#1a2d3d' : '#1a1a1a',
+                                color: active ? '#7fd3ff' : '#778',
+                                fontWeight: active ? 600 : 400,
+                              }}>
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* ── Erlaubter Layer & Erforderliche Eigenschaften ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
@@ -779,6 +885,82 @@ export function RoomTypeEditor() {
                       )}
                     </div>
                   ))}
+
+                  {/* ── Fallback-Platzierungsregeln ── */}
+                  <div className={s.slotRow} style={{ marginTop: 8, justifyContent: 'space-between' }}>
+                    <span className={s.slotGroupLabel}>
+                      Fallback-Regeln
+                      <span
+                        title={"Wenn die primären Platzierungsregeln keine freie Zelle finden,\nversucht der Generator diese Regeln der Reihe nach als Alternative.\n\n• Jede Fallback-Regel ist ein vollständiger Satz Platzierungsregeln.\n• Nur relevant bei Pflicht-Slots – optionale Slots werden einfach weggelassen.\n• Beispiel: Primär an Wand → Fallback 1: freie Platzierung (keine Einschränkung)."}
+                        style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
+                      >ℹ</span>
+                    </span>
+                    <button
+                      className={s.addSlotBtn}
+                      style={{ fontSize: '0.7rem', padding: '2px 8px' }}
+                      onClick={() => addFallbackRule(idx)}>
+                      + Fallback
+                    </button>
+                  </div>
+
+                  {(!slot.fallbackRules || slot.fallbackRules.length === 0) && (
+                    <div className={s.slotHint}>
+                      Kein Fallback – schlägt Platzierung fehl, wird der Slot übersprungen
+                      {slot.required && <span style={{ color: '#f4a261' }}> (⚠ Pflicht-Slot!)</span>}
+                    </div>
+                  )}
+
+                  {(slot.fallbackRules ?? []).map((fbRule, fbIdx) => {
+                    const activeFbKeys = (Object.keys(fbRule) as (keyof typeof fbRule)[])
+                      .filter(k => k !== 'allowOnPath' && fbRule[k]);
+                    return (
+                      <div key={fbIdx} className={s.anchorRuleCard} style={{ borderColor: '#664' }}>
+                        <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span className={s.slotGroupLabel} style={{ color: '#ca8' }}>
+                            Fallback {fbIdx + 1}
+                            {activeFbKeys.length > 0
+                              ? `: ${activeFbKeys.map(k => PLACEMENT_RULE_LABELS[k] ?? k).join(', ')}`
+                              : ': freie Platzierung'}
+                          </span>
+                          <button className={s.removeSlotBtn} onClick={() => removeFallbackRule(idx, fbIdx)}>✕</button>
+                        </div>
+                        <div className={s.chipGroup}>
+                          {(Object.keys(PLACEMENT_RULE_LABELS) as Array<keyof PlacementRules & string>).map(key => (
+                            <span key={key}
+                              className={`${s.chip} ${fbRule[key] ? s.chipActive : ''}`}
+                              title={PLACEMENT_RULE_DESCRIPTIONS[key]}
+                              onClick={() => updateFallbackRule(idx, fbIdx, { [key]: !fbRule[key] } as Partial<PlacementRules>)}>
+                              {PLACEMENT_RULE_LABELS[key]}
+                            </span>
+                          ))}
+                          <span
+                            className={`${s.chip} ${fbRule.allowOnPath ? s.chipActive : ''}`}
+                            title="Darf auf Pfadzellen platziert werden (z.B. Teppiche)"
+                            onClick={() => updateFallbackRule(idx, fbIdx, { allowOnPath: !fbRule.allowOnPath })}>
+                            Auf Pfad
+                          </span>
+                        </div>
+                        {fbRule.nearWall && (
+                          <div style={{ display: 'flex', gap: 5, marginTop: 5, alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.72rem', color: '#778' }}>Wandausrichtung:</span>
+                            {WALL_ALIGNMENT_OPTIONS.map(opt => {
+                              const active = (fbRule.wallAlignment ?? 'any') === opt.value;
+                              return (
+                                <button key={opt.value} title={opt.title}
+                                  onClick={() => updateFallbackRule(idx, fbIdx, { wallAlignment: opt.value })}
+                                  style={{
+                                    fontSize: '0.7rem', padding: '1px 8px', borderRadius: 3, cursor: 'pointer',
+                                    border: active ? '1.5px solid #6af' : '1px solid #445',
+                                    background: active ? '#1a2d3d' : '#1a1a1a',
+                                    color: active ? '#7fd3ff' : '#778',
+                                  }}>{opt.label}</button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
                 </>)} {/* end isCollapsed */}
               </div>
@@ -847,6 +1029,10 @@ export function RoomTypeEditor() {
     </div>
   );
 }
+
+
+
+
 
 
 

@@ -3,8 +3,10 @@ export type SizeKey = typeof SIZE_KEYS[number];
 
 /** Exakter Platzbedarf eines Slots in Zellen (Breite × Höhe). */
 export interface SlotFootprint {
-  width:  number;
-  height: number;
+  width:     number;
+  height:    number;
+  /** Darf der Slot um 90° gedreht werden? Nur sinnvoll bei nicht-quadratischem Footprint. */
+  canRotate: boolean;
 }
 
 /** Häufig verwendete Footprints als Schnellauswahl im Editor. */
@@ -59,11 +61,28 @@ export const REQUIRED_PROPERTIES = [
 export type RequiredProperty = typeof REQUIRED_PROPERTIES[number];
 
 export interface PlacementRules {
-  nearWall:   boolean;
-  nearDoor:   boolean;
-  nearWindow: boolean;
-  centerRoom: boolean;
-  cornerOnly: boolean;
+  nearWall:    boolean;
+  nearDoor:    boolean;
+  nearWindow:  boolean;
+  centerRoom:  boolean;
+  cornerOnly:  boolean;
+  /**
+   * Darf dieser Slot auf Pfad-Zellen (Laufwegen) platziert werden?
+   * false (Standard): Möbel mit hasCollision werden von Pfadzellen ferngehalten.
+   * true: Pfadzellen sind erlaubt (z.B. Teppiche ohne Kollision).
+   */
+  allowOnPath: boolean;
+  /**
+   * Ausrichtung zur Wand (nur relevant wenn nearWall=true).
+   * 'perpendicular': Rücken an der Wand, Vorderseite zeigt in den Raum.
+   *   Die lange Achse des Möbelstücks geht in den Raum hinein (Bett, Schreibtisch, WC).
+   *   → bevorzugt Tile-Variante mit fpH > fpW bei N/S-Wand (bzw. fpW > fpH bei E/W-Wand).
+   * 'parallel': Längsseite entlang der Wand.
+   *   Die lange Achse läuft parallel zur Wand (Sofa, Regal, Kommode).
+   *   → bevorzugt Tile-Variante mit fpW > fpH bei N/S-Wand (bzw. fpH > fpW bei E/W-Wand).
+   * 'any': Generator wählt passende Variante automatisch (Standard).
+   */
+  wallAlignment: 'perpendicular' | 'parallel' | 'any';
 }
 
 export interface SlotCount {
@@ -119,6 +138,13 @@ export interface RoomTypeSlot {
    * Höherer Wert → wird häufiger gewählt. Nur relevant wenn slotGroupId gesetzt.
    */
   groupWeight: number;
+  /**
+   * Fallback-Platzierungsregeln (geordnete Liste).
+   * Wenn placementRules keine freie Zelle findet, versucht der Generator
+   * diese Regeln der Reihe nach als Alternativen.
+   * Nur bei required=true relevant – optionale Slots werden einfach weggelassen.
+   */
+  fallbackRules: PlacementRules[];
 }
 
 export interface RoomTypeConfig {
@@ -129,7 +155,7 @@ export interface RoomTypeConfig {
 export type RoomTypeConfigMap = Record<string, RoomTypeConfig>;
 
 export function defaultPlacementRules(): PlacementRules {
-  return { nearWall: false, nearDoor: false, nearWindow: false, centerRoom: false, cornerOnly: false };
+  return { nearWall: false, nearDoor: false, nearWindow: false, centerRoom: false, cornerOnly: false, allowOnPath: false, wallAlignment: 'any' };
 }
 
 export function defaultCountBySize(): Record<SizeKey, SlotCount> {
@@ -146,7 +172,7 @@ export function defaultSlot(): RoomTypeSlot {
   return {
     id: '',
     label: '',
-    footprint: { width: 1, height: 1 },
+    footprint: { width: 1, height: 1, canRotate: false },
     required: false,
     priority: 0,
     countBySize: defaultCountBySize(),
@@ -158,6 +184,7 @@ export function defaultSlot(): RoomTypeSlot {
     slotGroupId: '',
     slotGroupMode: '',
     groupWeight: 5,
+    fallbackRules: [],
   };
 }
 

@@ -18,6 +18,8 @@ export type ObjectType = 'Door' | 'Window' | 'Stairs' | 'Other';
 
 export interface FloorObject {
   type: ObjectType;
+  /** Raw type string from TBX for round-trip export */
+  originalType: string;
   x: number;
   y: number;
   dir: DirectionType;
@@ -76,6 +78,24 @@ export interface Building {
   height: number;
   rooms: Room[];
   floors: Floor[];
+}
+
+// ── Furnishing ────────────────────────────────────────────────────────────────
+
+export interface PlacedFurnitureItem {
+  floorIndex: number;
+  col: number;
+  row: number;
+  tileId: string;
+  layer: string;
+  orient: string;
+  /** Slot-ID aus dem Raumtyp-Konfigurator, z.B. "slot_bed_main_small" */
+  slotId: string;
+}
+
+export interface FurnishResult {
+  placements: PlacedFurnitureItem[];
+  log: string[];
 }
 
 

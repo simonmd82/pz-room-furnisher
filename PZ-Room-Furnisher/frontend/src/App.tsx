@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileUpload } from './components/FileUpload';
 import { FloorSelector } from './components/FloorSelector';
@@ -7,8 +7,12 @@ import { TileBrowser } from './components/TileBrowser/TileBrowser';
 import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser';
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
 import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
-import type { Building, Floor } from './types/building';
+import FurnishPanel from './components/FurnishPanel/FurnishPanel';
+import type { Building, Floor, PlacedFurnitureItem } from './types/building';
+import type { TileConfigMap, TileSheetInfo } from './types/tiles';
+import { getTileConfig, getSheets } from './api/tilesApi';
 import './App.css';
+import s from './components/FurnishPanel/FurnishPanel.module.css';
 
 const LANGS = [
   { code: 'de', label: 'DE ' },
@@ -61,15 +65,43 @@ function countTotalAccessibleRooms(building: Building): number {
   return total;
 }
 
+/** Bestimmt die CSS-Klasse anhand des Zeilenpräfixes */
+function logLineClass(line: string, styles: Record<string, string>): string {
+  const t = line.trimStart();
+  if (t.startsWith('[ROOM]'))   return styles.logRoom;
+  if (t.startsWith('[PLACED]')) return styles.logPlaced;
+  if (t.startsWith('[SLOT]'))   return styles.logSlot;
+  if (t.startsWith('[GROUP]'))  return styles.logGroup;
+  if (t.startsWith('[WARN]'))   return styles.logWarn;
+  if (t.startsWith('[SKIP]'))   return styles.logSkip;
+  return styles.logOther;
+}
+
 function App() {
   const { t, i18n } = useTranslation();
-  const [building, setBuilding] = useState<Building | null>(null);
+  const [building, setBuilding]         = useState<Building | null>(null);
+  const [fileName, setFileName]         = useState('building');
   const [selectedFloor, setSelectedFloor] = useState(0);
-  const [activeTab, setActiveTab] = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'settings'>('building');
+  const [activeTab, setActiveTab]       = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'settings'>('building');
+  const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
+  const [tileConfig, setTileConfig]     = useState<TileConfigMap | undefined>(undefined);
+  const [sheetInfos, setSheetInfos]     = useState<TileSheetInfo[] | undefined>(undefined);
+  const [generatorLog, setGeneratorLog] = useState<string[]>([]);
+  const [logOpen, setLogOpen]           = useState(false);
 
-  const handleBuildingLoaded = (b: Building) => {
+  // Load tile config + sheet metadata once on mount (needed for furniture preview)
+  useEffect(() => {
+    getTileConfig().then(setTileConfig).catch(console.error);
+    getSheets().then(r => setSheetInfos(r.sheets)).catch(console.error);
+  }, []);
+
+  const handleBuildingLoaded = (b: Building, name: string) => {
     setBuilding(b);
+    setFileName(name);
     setSelectedFloor(0);
+    setPlacements([]);
+    setGeneratorLog([]);
+    setLogOpen(false);
   };
 
   /** Called by GridRenderer after a single room's path was regenerated. */
@@ -179,23 +211,54 @@ function App() {
             </section>
 
             <section className="floor-section">
-              <FloorSelector
-                floors={building.floors}
-                selected={selectedFloor}
-                onSelect={setSelectedFloor}
+              <FurnishPanel
+                building={building}
+                fileName={fileName}
+                onPlacementsChanged={setPlacements}
+                onLogChanged={log => { setGeneratorLog(log); setLogOpen(true); }}
               />
-              {floor
-                ? <GridRenderer
-                    floor={floor}
-                    rooms={building.rooms}
-                    cellSize={40}
-                    building={building}
-                    floorIndex={selectedFloor}
-                    onFloorUpdated={handleFloorUpdated}
-                  />
-                : <p className="no-floor">{t('floor.noGrid')}</p>
-              }
+
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                <FloorSelector
+                  floors={building.floors}
+                  selected={selectedFloor}
+                  onSelect={setSelectedFloor}
+                />
+                {floor
+                  ? <GridRenderer
+                      floor={floor}
+                      rooms={building.rooms}
+                      cellSize={40}
+                      building={building}
+                      floorIndex={selectedFloor}
+                      onFloorUpdated={handleFloorUpdated}
+                      furniturePlacements={placements.filter(p => p.floorIndex === selectedFloor)}
+                      tileConfig={tileConfig}
+                      sheetInfos={sheetInfos}
+                    />
+                  : <p className="no-floor">{t('floor.noGrid')}</p>
+                }
+              </div>
+
             </section>
+
+            {/* ── Generator-Log (volle Breite unterhalb) ── */}
+            {generatorLog.length > 0 && (
+              <section>
+                <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>
+                  {logOpen ? '▼' : '▶'} Generator-Log ({generatorLog.length} Zeilen)
+                </button>
+                {logOpen && (
+                  <div className={s.logBox} style={{ maxHeight: '420px' }}>
+                    {generatorLog.map((line, i) => (
+                      <div key={i} className={`${s.logLine} ${logLineClass(line, s as Record<string, string>)}`}>
+                        {line}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
           </>
         )}
       </main>

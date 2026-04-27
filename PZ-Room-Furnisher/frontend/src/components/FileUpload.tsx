@@ -5,7 +5,7 @@ import type { Building } from '../types/building';
 import styles from './FileUpload.module.css';
 
 interface Props {
-  onBuildingLoaded: (building: Building) => void;
+  onBuildingLoaded: (building: Building, fileName: string) => void;
 }
 
 export function FileUpload({ onBuildingLoaded }: Props) {
@@ -21,7 +21,7 @@ export function FileUpload({ onBuildingLoaded }: Props) {
     setFileName(file.name);
     try {
       const building = await uploadTbx(file);
-      onBuildingLoaded(building);
+      onBuildingLoaded(building, file.name);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error');
     } finally {

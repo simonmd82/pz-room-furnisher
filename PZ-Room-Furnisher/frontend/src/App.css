@@ -78,9 +78,10 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 1400px;
+  max-width: 1800px;
   width: 100%;
   margin: 0 auto;
+  min-height: 0;
 }
 
 .upload-section {
@@ -118,8 +119,11 @@
 
 .floor-section {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .no-floor {

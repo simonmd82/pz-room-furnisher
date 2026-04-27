@@ -11,3 +11,7 @@ dist/
 .vs/
 .idea/
 *.suo
+
+# Local AI memory / context notes
+Memory/
+
