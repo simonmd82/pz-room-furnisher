@@ -5,15 +5,30 @@ using backend.Models;
 public interface IPathfinderService
 {
     void ComputePaths(Building building, int floorIndex, int? seed = null);
-    int[][] ComputeRoomPath(Building building, int floorIndex, int roomIndex1Based, int? seed = null);
+    int[][] ComputeRoomPath(Building building, int floorIndex, int roomIndex1Based, int? seed = null, string pathStyle = "wall");
 }
 
 public class PathfinderService : IPathfinderService
 {
-    private const float CostOpen    = 1.0f;
-    private const float CostWallAdj = 0.4f;
-    private const float CostCorner  = 0.3f;
-    private const int   StairSpan   = 5;
+    // Kosten-Konstanten für pathStyle "wall" (Standard)
+    private const float CostOpen_Wall    = 1.0f;
+    private const float CostWallAdj_Wall = 0.4f;
+    private const float CostCorner_Wall  = 0.3f;
+    private const float Jitter_Wall      = 0.15f;
+
+    // Kosten-Konstanten für pathStyle "center" (Mitte bevorzugt)
+    private const float CostOpen_Center    = 0.4f;
+    private const float CostWallAdj_Center = 1.2f;
+    private const float CostCorner_Center  = 1.5f;
+    private const float Jitter_Center      = 0.15f;
+
+    // Kosten-Konstanten für pathStyle "random" (stark zufällig)
+    private const float CostOpen_Random    = 1.0f;
+    private const float CostWallAdj_Random = 1.0f;
+    private const float CostCorner_Random  = 1.0f;
+    private const float Jitter_Random      = 0.80f;
+
+    private const int StairSpan = 5;
 
     public void ComputePaths(Building building, int floorIndex, int? seed = null)
     {
@@ -31,12 +46,12 @@ public class PathfinderService : IPathfinderService
             floor.PathsByRoom[ri] = ComputeForRoom(floor, ri, doorWps, stairBlocked, seed);
     }
 
-    public int[][] ComputeRoomPath(Building building, int floorIndex, int roomIndex1Based, int? seed = null)
+    public int[][] ComputeRoomPath(Building building, int floorIndex, int roomIndex1Based, int? seed = null, string pathStyle = "wall")
     {
         var floor        = building.Floors[floorIndex];
         var doorWps      = BuildDoorWaypoints(floor);
         var stairBlocked = BuildStairBlockedCells(floor, building, floorIndex);
-        var cells        = ComputeForRoom(floor, roomIndex1Based, doorWps, stairBlocked, seed);
+        var cells        = ComputeForRoom(floor, roomIndex1Based, doorWps, stairBlocked, seed, pathStyle);
         floor.PathsByRoom ??= [];
         floor.PathsByRoom[roomIndex1Based] = cells;
         return [.. cells];
@@ -102,7 +117,8 @@ public class PathfinderService : IPathfinderService
         Floor floor, int roomIndex1Based,
         Dictionary<int, List<(int col, int row)>> doorWps,
         HashSet<(int, int)> stairBlocked,
-        int? seed)
+        int? seed,
+        string pathStyle = "wall")
     {
         var grid = floor.RoomGrid;
         int rows = grid.Length;
@@ -116,7 +132,15 @@ public class PathfinderService : IPathfinderService
 
         if (roomCells.Count == 0) return [];
 
-        var costMap = BuildCostMap(roomCells);
+        var costMap = BuildCostMap(roomCells, pathStyle);
+
+        // Jitter-Stärke je nach PathStyle
+        float jitterMax = pathStyle switch
+        {
+            "center" => Jitter_Center,
+            "random" => Jitter_Random,
+            _        => Jitter_Wall,
+        };
 
         // Collect waypoints: doors
         var waypointSet = new HashSet<(int, int)>();
@@ -156,7 +180,7 @@ public class PathfinderService : IPathfinderService
         var rng    = new Random(seed ?? Environment.TickCount);
         var jitter = new Dictionary<(int, int), float>();
         foreach (var cell in roomCells)
-            jitter[cell] = (float)(rng.NextDouble() * 0.15);
+            jitter[cell] = (float)(rng.NextDouble() * jitterMax);
 
         // Chain: [0→1], [1→2], …
         var pathSet = new HashSet<(int, int)>();
@@ -169,8 +193,13 @@ public class PathfinderService : IPathfinderService
         return pathSet.Select(c => new int[] { c.Item1, c.Item2 }).ToList();
     }
 
-    private static Dictionary<(int, int), float> BuildCostMap(HashSet<(int col, int row)> roomCells)
+    private static Dictionary<(int, int), float> BuildCostMap(HashSet<(int col, int row)> roomCells, string pathStyle = "wall")
     {
+        // Kosten je nach PathStyle wählen
+        float costOpen    = pathStyle switch { "center" => CostOpen_Center,    "random" => CostOpen_Random,    _ => CostOpen_Wall    };
+        float costWallAdj = pathStyle switch { "center" => CostWallAdj_Center, "random" => CostWallAdj_Random, _ => CostWallAdj_Wall };
+        float costCorner  = pathStyle switch { "center" => CostCorner_Center,  "random" => CostCorner_Random,  _ => CostCorner_Wall  };
+
         var map = new Dictionary<(int, int), float>();
         int[] dx = [-1, 1, 0, 0];
         int[] dy = [0, 0, -1, 1];
@@ -181,7 +210,7 @@ public class PathfinderService : IPathfinderService
             for (int d = 0; d < 4; d++)
                 if (roomCells.Contains((c + dx[d], r + dy[d]))) open++;
 
-            map[(c, r)] = open switch { 0 or 1 => CostCorner, 2 => CostWallAdj, _ => CostOpen };
+            map[(c, r)] = open switch { 0 or 1 => costCorner, 2 => costWallAdj, _ => costOpen };
         }
         return map;
     }
@@ -222,7 +251,7 @@ public class PathfinderService : IPathfinderService
                 if (!passable.Contains(nb)) continue;
 
                 float tentG = gScore[cur]
-                    + costMap.GetValueOrDefault(nb, CostOpen)
+                    + costMap.GetValueOrDefault(nb, CostOpen_Wall)
                     + jitter.GetValueOrDefault(nb, 0);
 
                 if (!gScore.TryGetValue(nb, out float ex) || tentG < ex)

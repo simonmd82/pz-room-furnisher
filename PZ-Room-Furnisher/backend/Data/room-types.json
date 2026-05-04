@@ -67,13 +67,15 @@
           {
             "nearWall": false,
             "nearDoor": false,
-            "nearWindow": false,
+            "nearWindow": true,
             "centerRoom": false,
             "cornerOnly": false,
             "allowOnPath": false,
             "wallAlignment": "any"
           }
-        ]
+        ],
+        "blocksPlacement": true,
+        "colorGroupId": ""
       },
       {
         "id": "slot_bed_main_large",
@@ -140,13 +142,15 @@
           {
             "nearWall": false,
             "nearDoor": false,
-            "nearWindow": false,
+            "nearWindow": true,
             "centerRoom": false,
             "cornerOnly": false,
             "allowOnPath": false,
             "wallAlignment": "any"
           }
-        ]
+        ],
+        "blocksPlacement": true,
+        "colorGroupId": ""
       },
       {
         "id": "slot_cabinet",
@@ -193,12 +197,17 @@
           "wallAlignment": "parallel"
         },
         "requiredLayer": "Furniture",
-        "requiredProperties": [],
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision"
+        ],
         "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": ""
       },
       {
         "id": "slot_bed_table_left",
@@ -248,11 +257,20 @@
         "requiredProperties": [
           "isLow"
         ],
-        "anchorRules": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "bedroom_beds",
+            "positions": [
+              "HeadLeft"
+            ]
+          }
+        ],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": ""
       },
       {
         "id": "slot_bed_table_right",
@@ -302,11 +320,20 @@
         "requiredProperties": [
           "isLow"
         ],
-        "anchorRules": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "bedroom_beds",
+            "positions": [
+              "HeadRight"
+            ]
+          }
+        ],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": ""
       },
       {
         "id": "slot_seating",
@@ -358,7 +385,9 @@
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_lamps_radio",
@@ -413,7 +442,9 @@
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_mirror",
@@ -467,7 +498,9 @@
         "slotGroupId": "bedroom_mirrors",
         "slotGroupMode": "one-of",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_mirror_long",
@@ -523,7 +556,9 @@
         "slotGroupId": "bedroom_mirrors",
         "slotGroupMode": "one-of",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_pictures",
@@ -578,7 +613,9 @@
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_plants",
@@ -630,7 +667,9 @@
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_rugs",
@@ -682,7 +721,9 @@
         "slotGroupId": "bedroom_rugs",
         "slotGroupMode": "one-of",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "colorGroupId": "none"
       },
       {
         "id": "slot_rugs_small",
@@ -734,8 +775,20 @@
         "slotGroupId": "bedroom_rugs",
         "slotGroupMode": "one-of",
         "groupWeight": 5,
-        "fallbackRules": []
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "colorGroupId": "none"
       }
-    ]
+    ],
+    "pathStyle": "wall",
+    "colorGroupId": "bedroom_main",
+    "colorPalettes": {
+      "bedroom_main": [
+        "Beige",
+        "Black",
+        "Brown",
+        "White"
+      ]
+    }
   }
 }

@@ -5,6 +5,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Memory", "Memory", "{9C1DE163-F389-49FC-95FA-57FCC5610060}"
 	ProjectSection(SolutionItems) = preProject
 		Memory\project-context.md = Memory\project-context.md
+		Memory\placement-logic.md = Memory\placement-logic.md
 	EndProjectSection
 EndProject
 Global

@@ -1,4 +1,5 @@
-﻿import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Building, PlacedFurnitureItem } from '../../types/building';
 import { generateFurnishing, exportTbx } from '../../api/furnishApi';
 import type { RoomSelection } from '../../api/furnishApi';
@@ -12,20 +13,24 @@ interface Props {
   onLogChanged?: (log: string[]) => void;
 }
 
-/** Collect all (floorIndex, roomIndex1Based) pairs that appear in the building. */
-function collectRooms(building: Building): { floorIndex: number; roomIndex1Based: number }[] {
-  const seen = new Set<string>();
-  const result: { floorIndex: number; roomIndex1Based: number }[] = [];
+interface RoomEntry { floorIndex: number; roomIndex1Based: number; }
+
+/** Collect rooms grouped by floor, sorted by floorIndex then roomIndex. */
+function collectRoomsByFloor(building: Building): Map<number, RoomEntry[]> {
+  const map = new Map<number, RoomEntry[]>();
   for (const floor of building.floors) {
+    const seen = new Set<number>();
     for (const row of floor.roomGrid) {
       for (const idx of row) {
-        if (idx <= 0) continue;
-        const key = `${floor.index}:${idx}`;
-        if (!seen.has(key)) { seen.add(key); result.push({ floorIndex: floor.index, roomIndex1Based: idx }); }
+        if (idx <= 0 || seen.has(idx)) continue;
+        seen.add(idx);
+        if (!map.has(floor.index)) map.set(floor.index, []);
+        map.get(floor.index)!.push({ floorIndex: floor.index, roomIndex1Based: idx });
       }
     }
   }
-  return result.sort((a, b) => a.floorIndex - b.floorIndex || a.roomIndex1Based - b.roomIndex1Based);
+  for (const rooms of map.values()) rooms.sort((a, b) => a.roomIndex1Based - b.roomIndex1Based);
+  return new Map([...map.entries()].sort((a, b) => a[0] - b[0]));
 }
 
 /** Count cells of a room on a floor */
@@ -57,6 +62,7 @@ function tbxColorToCss(color: string | undefined): string {
 }
 
 export default function FurnishPanel({ building, fileName, onPlacementsChanged, onLogChanged }: Props) {
+  const { t } = useTranslation();
   const [knownTypes, setKnownTypes]     = useState<string[]>([]);
   const [selected, setSelected]         = useState<Set<string>>(new Set());
   const [overrides, setOverrides]       = useState<Record<string, string>>({});
@@ -70,7 +76,20 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
   }, []);
 
-  const allRooms = useMemo(() => collectRooms(building), [building]);
+  const roomsByFloor  = useMemo(() => collectRoomsByFloor(building), [building]);
+  const allRoomsFlat  = useMemo(() => [...roomsByFloor.values()].flat(), [roomsByFloor]);
+
+  const selKey = (floorIndex: number, roomIndex1Based: number) => `${floorIndex}:${roomIndex1Based}`;
+
+  /** Unique internalNames across all rooms, sorted */
+  const uniqueTypes = useMemo(() => {
+    const types = new Set<string>();
+    for (const e of allRoomsFlat) {
+      const name = building.rooms[e.roomIndex1Based - 1]?.internalName;
+      if (name) types.add(name);
+    }
+    return [...types].sort();
+  }, [allRoomsFlat, building.rooms]);
 
   const toggleRoom = (key: string) => setSelected(prev => {
     const next = new Set(prev);
@@ -78,7 +97,56 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
     return next;
   });
 
-  const selKey = (floorIndex: number, roomIndex1Based: number) => `${floorIndex}:${roomIndex1Based}`;
+  const toggleFloor = (floorIndex: number) => {
+    const keys = (roomsByFloor.get(floorIndex) ?? []).map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const allSel = keys.every(k => selected.has(k));
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (allSel) keys.forEach(k => next.delete(k));
+      else keys.forEach(k => next.add(k));
+      return next;
+    });
+  };
+
+  const toggleByType = (typeName: string) => {
+    const keys = allRoomsFlat
+      .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
+      .map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const allSel = keys.every(k => selected.has(k));
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (allSel) keys.forEach(k => next.delete(k));
+      else keys.forEach(k => next.add(k));
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    const allKeys = allRoomsFlat.map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const allSel  = allKeys.every(k => selected.has(k));
+    setSelected(allSel ? new Set() : new Set(allKeys));
+  };
+
+  const floorCheckState = (floorIndex: number): 'all' | 'some' | 'none' => {
+    const keys = (roomsByFloor.get(floorIndex) ?? []).map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const n = keys.filter(k => selected.has(k)).length;
+    if (n === 0) return 'none';
+    if (n === keys.length) return 'all';
+    return 'some';
+  };
+
+  const typeIsActive = (typeName: string) => {
+    const keys = allRoomsFlat
+      .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
+      .map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    return keys.length > 0 && keys.every(k => selected.has(k));
+  };
+
+  const allSel = allRoomsFlat.length > 0 && allRoomsFlat.every(e => selected.has(selKey(e.floorIndex, e.roomIndex1Based)));
+
+  const floorLabel = (floorIndex: number) =>
+    floorIndex === 0 ? t('floor.ground') : t('floor.upper', { n: floorIndex });
+
 
   const handleGenerate = async () => {
     const selections: RoomSelection[] = [];
@@ -86,7 +154,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
       const [f, r] = key.split(':').map(Number);
       selections.push({ floorIndex: f, roomIndex1Based: r, roomTypeOverride: overrides[key] ?? '' });
     }
-    if (selections.length === 0) { setStatus({ msg: 'Bitte mindestens einen Raum auswählen.', ok: false }); return; }
+    if (selections.length === 0) { setStatus({ msg: t('furnishPanel.noRoomSelected'), ok: false }); return; }
 
     setRunning(true); setStatus(null);
     try {
@@ -94,7 +162,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
       setPlacements(result.placements);
       onPlacementsChanged(result.placements);
       onLogChanged?.(result.log);
-      setStatus({ msg: `✓ ${result.placements.length} Tiles platziert in ${selections.length} Räumen.`, ok: true });
+      setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: result.placements.length, rooms: selections.length }), ok: true });
     } catch (e) {
       setStatus({ msg: `Fehler: ${String(e)}`, ok: false });
     } finally {
@@ -107,9 +175,9 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
     setExporting(true);
     try {
       await exportTbx(building, placements, fileName);
-      setStatus({ msg: '✓ TBX heruntergeladen.', ok: true });
+      setStatus({ msg: `✓ ${t('furnishPanel.exportOk')}`, ok: true });
     } catch (e) {
-      setStatus({ msg: `Export-Fehler: ${String(e)}`, ok: false });
+      setStatus({ msg: t('furnishPanel.exportError', { error: String(e) }), ok: false });
     } finally {
       setExporting(false);
     }
@@ -117,78 +185,107 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
 
   return (
     <div className={s.panel}>
-      <p className={s.panelTitle}>🛋 Möblierung generieren</p>
+      <p className={s.panelTitle}>{t('furnishPanel.title')}</p>
 
-      {/* ── Room selection ── */}
-      <span className={s.sectionLabel}>Räume auswählen</span>
+      {/* ── Quick-select toolbar ── */}
+      <span className={s.sectionLabel}>{t('furnishPanel.selectRooms')}</span>
+      <div className={s.typeToolbar}>
+        <button
+          className={`${s.typeBtn} ${allSel ? s.typeBtnActive : ''}`}
+          onClick={toggleAll}
+          title={allSel ? t('furnishPanel.deselectAll') : t('furnishPanel.selectAll')}
+        >
+          {t('furnishPanel.selectAll')}
+        </button>
+        {uniqueTypes.map(typeName => (
+          <button
+            key={typeName}
+            className={`${s.typeBtn} ${typeIsActive(typeName) ? s.typeBtnActive : ''}`}
+            onClick={() => toggleByType(typeName)}
+            title={typeName}
+          >
+            {typeName}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Room list grouped by floor ── */}
       <div className={s.roomList}>
-        {allRooms.map(({ floorIndex, roomIndex1Based }) => {
-          const key          = selKey(floorIndex, roomIndex1Based);
-          const room         = building.rooms[roomIndex1Based - 1];
-          const cells        = roomCellCount(building, floorIndex, roomIndex1Based);
-          const sizeKey      = classifySize(cells);
-          const typeName     = overrides[key] || room?.internalName || '';
-          const displayName  = room?.name || `Raum ${roomIndex1Based}`;
-          const hasMatch     = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
-          const isSel        = selected.has(key);
-          const colorCss     = tbxColorToCss(room?.color);
+        {[...roomsByFloor.entries()].map(([floorIndex, rooms]) => (
+          <div key={floorIndex} className={s.floorGroup}>
 
-          return (
-            <div key={key}>
-              <div
-                className={`${s.roomRow} ${isSel ? s.roomRowSelected : ''}`}
-                onClick={() => toggleRoom(key)}>
-                <input
-                  type="checkbox"
-                  className={s.roomRowCheck}
-                  checked={isSel}
-                  onChange={() => toggleRoom(key)}
-                  onClick={e => e.stopPropagation()}
-                />
-                {/* Color swatch */}
-                <span
-                  className={s.roomColorSwatch}
-                  style={{ background: colorCss }}
-                  title={`Farbe: ${room?.color}`}
-                />
-                <span className={s.roomRowName} title={`${displayName} (${room?.internalName})`}>
-                  {displayName}
-                  {room?.internalName && room.internalName !== displayName && (
-                    <span className={s.roomInternalName}> · {room.internalName}</span>
-                  )}
-                </span>
-                <span className={s.roomRowBadge} title={`${cells} Zellen`}>{SIZE_LABELS[sizeKey]}</span>
-                {building.floors.length > 1 && (
-                  <span className={s.roomRowBadge}>E{floorIndex}</span>
-                )}
-                {!hasMatch && typeName && (
-                  <span className={s.roomRowNoMatch} title={`Kein passender Raumtyp für „${typeName}"`}>⚠</span>
-                )}
-              </div>
-
-              {/* Override input when selected */}
-              {isSel && (
-                <input
-                  className={s.overrideInput}
-                  placeholder={`Raumtyp: ${typeName || 'unbekannt'}`}
-                  value={overrides[key] ?? ''}
-                  list="knownTypesList"
-                  onChange={e => setOverrides(prev => ({ ...prev, [key]: e.target.value }))}
-                />
-              )}
+            {/* Floor header */}
+            <div className={s.floorHeader} onClick={() => toggleFloor(floorIndex)}>
+              <FloorCheckbox state={floorCheckState(floorIndex)} />
+              <span className={s.floorLabel}>{floorLabel(floorIndex)}</span>
+              <span className={s.floorRoomCount}>{rooms.length}</span>
             </div>
-          );
-        })}
+
+            {/* Room rows */}
+            {rooms.map(({ floorIndex: fi, roomIndex1Based }) => {
+              const key         = selKey(fi, roomIndex1Based);
+              const room        = building.rooms[roomIndex1Based - 1];
+              const cells       = roomCellCount(building, fi, roomIndex1Based);
+              const sizeKey     = classifySize(cells);
+              const typeName    = overrides[key] || room?.internalName || '';
+              const displayName = room?.name || `Raum ${roomIndex1Based}`;
+              const hasMatch    = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
+              const isSel       = selected.has(key);
+              const colorCss    = tbxColorToCss(room?.color);
+
+              return (
+                <div key={key}>
+                  <div
+                    className={`${s.roomRow} ${isSel ? s.roomRowSelected : ''}`}
+                    onClick={() => toggleRoom(key)}>
+                    <input
+                      type="checkbox"
+                      className={s.roomRowCheck}
+                      checked={isSel}
+                      onChange={() => toggleRoom(key)}
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <span
+                      className={s.roomColorSwatch}
+                      style={{ background: colorCss }}
+                      title={`Farbe: ${room?.color}`}
+                    />
+                    <span className={s.roomRowName} title={`${displayName} (${room?.internalName})`}>
+                      {displayName}
+                      {room?.internalName && room.internalName !== displayName && (
+                        <span className={s.roomInternalName}> · {room.internalName}</span>
+                      )}
+                    </span>
+                    <span className={s.roomRowBadge} title={`${cells} Zellen`}>{SIZE_LABELS[sizeKey]}</span>
+                    {!hasMatch && typeName && (
+                      <span className={s.roomRowNoMatch} title={`Kein passender Raumtyp für „${typeName}"`}>⚠</span>
+                    )}
+                  </div>
+
+                  {isSel && (
+                    <input
+                      className={s.overrideInput}
+                      placeholder={`Raumtyp: ${typeName || 'unbekannt'}`}
+                      value={overrides[key] ?? ''}
+                      list="knownTypesList"
+                      onChange={e => setOverrides(prev => ({ ...prev, [key]: e.target.value }))}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       <datalist id="knownTypesList">
-        {knownTypes.map(t => <option key={t} value={t} />)}
+        {knownTypes.map(tn => <option key={tn} value={tn} />)}
       </datalist>
 
       {/* ── Seed ── */}
-      <span className={s.sectionLabel}>Seed</span>
+      <span className={s.sectionLabel}>{t('furnishPanel.seed')}</span>
       <div className={s.seedRow}>
-        <span className={s.seedLabel}>Seed</span>
+        <span className={s.seedLabel}>{t('furnishPanel.seed')}</span>
         <input
           type="number"
           className={s.seedInput}
@@ -198,7 +295,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
         <button
           className={s.seedRandom}
           onClick={() => setSeed(Math.floor(Math.random() * 999999))}
-          title="Zufälligen Seed würfeln">
+          title={t('furnishPanel.randomSeed')}>
           🎲
         </button>
       </div>
@@ -208,20 +305,22 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
         className={s.generateBtn}
         disabled={running || selected.size === 0}
         onClick={handleGenerate}>
-        {running ? '⏳ Generiert…' : `✨ ${selected.size} Raum${selected.size !== 1 ? 'räume' : ''} möblieren`}
+        {running
+          ? `⏳ ${t('furnishPanel.generating')}`
+          : `✨ ${t('furnishPanel.generate', { count: selected.size })}`}
       </button>
 
       {/* ── Result summary + export ── */}
       {placements.length > 0 && (
         <>
           <div className={s.resultSummary}>
-            {placements.length} Tiles platziert
+            {t('furnishPanel.tilesPlacedSummary', { count: placements.length })}
           </div>
           <button
             className={s.exportBtn}
             disabled={exporting}
             onClick={handleExport}>
-            {exporting ? '⏳ Exportiert…' : '💾 Möblierte TBX exportieren'}
+            {exporting ? `⏳ ${t('furnishPanel.exporting')}` : t('furnishPanel.exportTbx')}
           </button>
         </>
       )}
@@ -233,6 +332,25 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
         </div>
       )}
     </div>
+  );
+}
+
+/** Floor header checkbox – supports indeterminate state */
+function FloorCheckbox({ state }: { state: 'all' | 'some' | 'none' }) {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    ref.current.indeterminate = state === 'some';
+    ref.current.checked       = state === 'all';
+  }, [state]);
+  return (
+    <input
+      type="checkbox"
+      ref={ref}
+      className={s.floorCheck}
+      onClick={e => e.stopPropagation()}
+      readOnly
+    />
   );
 }
 

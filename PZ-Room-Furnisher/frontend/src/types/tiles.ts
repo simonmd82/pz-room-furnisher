@@ -66,6 +66,7 @@ export interface TileDefinition {
   hasCollision:  boolean;
   canStack:      boolean;
   isTableTop:    boolean;
+  isLootContainer: boolean;
   // ── Randomiser meta ───────────────────────────────────────────────────
   /** Colour tags for grouping similar-looking furniture */
   colors: string[];
@@ -88,27 +89,30 @@ export const TILE_PROPERTIES = [
   'hasCollision',
   'canStack',
   'isTableTop',
+  'isLootContainer',
 ] as const;
 export type TileProperty = typeof TILE_PROPERTIES[number];
 
 export const TILE_PROPERTY_LABELS_DE: Record<TileProperty, string> = {
-  isHigh:        'Hoch',
-  isLow:         'Niedrig',
-  isWallMounted: 'Wandmontiert',
-  hasSurface:    'Hat Oberfläche',
-  hasCollision:  'Hat Kollision',
-  canStack:      'Stapelbar',
-  isTableTop:    'Tischfläche',
+  isHigh:          'Hoch',
+  isLow:           'Niedrig',
+  isWallMounted:   'Wandmontiert',
+  hasSurface:      'Hat Oberfläche',
+  hasCollision:    'Hat Kollision',
+  canStack:        'Stapelbar',
+  isTableTop:      'Tischfläche',
+  isLootContainer: 'Loot-Container',
 };
 
 export const TILE_PROPERTY_LABELS_EN: Record<TileProperty, string> = {
-  isHigh:        'High',
-  isLow:         'Low',
-  isWallMounted: 'Wall mounted',
-  hasSurface:    'Has surface',
-  hasCollision:  'Has collision',
-  canStack:      'Can stack',
-  isTableTop:    'Table top',
+  isHigh:          'High',
+  isLow:           'Low',
+  isWallMounted:   'Wall mounted',
+  hasSurface:      'Has surface',
+  hasCollision:    'Has collision',
+  canStack:        'Can stack',
+  isTableTop:      'Table top',
+  isLootContainer: 'Loot container',
 };
 
 /** Number of columns in the layout grid. */
@@ -152,19 +156,10 @@ export function defaultDefinition(tileId: string): TileDefinition {
     hasCollision:  true,
     canStack:      false,
     isTableTop:    false,
+    isLootContainer: false,
     colors: [],
     roomTypes: [],
     variantGroup: '',
     styleTags: [],
   };
 }
-
-
-
-
-
-
-
-
-
-

@@ -152,6 +152,24 @@ public class RoomTypeSlot
     /// Nur bei Required=true relevant – optionale Slots werden einfach weggelassen.
     /// </summary>
     public List<PlacementRules> FallbackRules { get; set; } = [];
+
+    /// <summary>
+    /// Wenn false, werden die Footprint-Zellen nach Platzierung NICHT in occupied eingetragen.
+    /// Nachfolgende Slots können dieselben Zellen belegen (z.B. Möbel auf Teppich).
+    /// Standard: true.
+    /// </summary>
+    public bool BlocksPlacement { get; set; } = true;
+
+    /// <summary>
+    /// Farbgruppen-ID für kohärente Farbwahl.
+    ///   Leer    = erbt ColorGroupId vom Raumtyp (RoomTypeConfig.ColorGroupId).
+    ///   "none"  = kein Farbfilter für diesen Slot (überschreibt den Raum-Default).
+    ///   Anderer Wert = eigene Gruppe (z.B. "accent") – unabhängig vom Raum-Default.
+    /// Beim ersten platzierten Slot einer Gruppe wird die Farbe aus dem Tile-Pool gezogen
+    /// und für alle Folge-Slots der Gruppe als Filter verwendet. Kein Match → Fallback auf
+    /// ungefilterten Pool (Slot wird nicht weggelassen).
+    /// </summary>
+    public string ColorGroupId { get; set; } = string.Empty;
 }
 
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>
@@ -159,5 +177,29 @@ public class RoomTypeConfig
 {
     public string RoomType            { get; set; } = string.Empty;
     public List<RoomTypeSlot> Slots   { get; set; } = [];
-}
 
+    /// <summary>
+    /// Pfadstil für die Laufwegberechnung in diesem Raumtyp.
+    /// "wall"   : wandnaher Pfad (Standard) – A* bevorzugt wandnahe Zellen.
+    /// "center" : mittig   – A* bevorzugt Zellen in der Raummitte.
+    /// "random" : zufällig – hoher Jitter-Faktor, kein Richtungs-Bias.
+    /// </summary>
+    public string PathStyle           { get; set; } = "wall";
+
+    /// <summary>
+    /// Standard-Farbgruppen-ID für alle Slots dieses Raumtyps.
+    /// Slots können den Wert erben (leere ColorGroupId) oder überschreiben.
+    /// Leer = kein Farbfilter als Standard (Slots müssen explizit eine Gruppe setzen).
+    /// </summary>
+    public string ColorGroupId        { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Erlaubte Farbpaletten pro Farbgruppen-ID.
+    /// key   = colorGroupId (z.B. "bedroom_main")
+    /// value = Liste erlaubter Farb-Tags (z.B. ["Brown", "White", "Black"]).
+    /// Der Generator wählt vor der Slot-Platzierung eine zufällige Farbe aus der Liste
+    /// und filtert alle Slots dieser Gruppe auf diese Farbe.
+    /// Leer oder Gruppe nicht vorhanden → Farbe wird vom ersten platzierten Slot übernommen.
+    /// </summary>
+    public Dictionary<string, List<string>> ColorPalettes { get; set; } = new();
+}

@@ -404,7 +404,9 @@ export function FurnitureBrowser() {
                       </div>
 
                       <div className={s.entryMeta}>
-                        <span className={s.entryOrient}>{entry.orient}</span>
+                        <span className={s.entryOrient} title={`TXT: ${entry.orient}`}>
+                          {viewDefs[entry.rootTileId]?.orientation || entry.orient}
+                        </span>
                         <span className={s.entryDims}>{cols}×{rows}</span>
                         <span className={s.entryRoot} title={entry.rootTileId}>
                            {entry.rootTileId.split('_').slice(-2).join('_')}

@@ -139,6 +139,13 @@ export interface RoomTypeSlot {
    */
   groupWeight: number;
   /**
+   * Farbgruppen-ID für kohärente Farbwahl.
+   * Leer   = erbt colorGroupId vom Raumtyp.
+   * "none" = kein Farbfilter für diesen Slot (überschreibt den Raum-Default).
+   * Anderer Wert = eigene Gruppe (z.B. "accent").
+   */
+  colorGroupId: string;
+  /**
    * Fallback-Platzierungsregeln (geordnete Liste).
    * Wenn placementRules keine freie Zelle findet, versucht der Generator
    * diese Regeln der Reihe nach als Alternativen.
@@ -148,8 +155,17 @@ export interface RoomTypeSlot {
 }
 
 export interface RoomTypeConfig {
-  roomType: string;
-  slots:    RoomTypeSlot[];
+  roomType:      string;
+  slots:         RoomTypeSlot[];
+  pathStyle:     'wall' | 'center' | 'random';
+  colorGroupId:  string;
+  /**
+   * Erlaubte Farben pro Farbgruppen-ID.
+   * key = colorGroupId, value = Liste von Farb-Tags (z.B. ["Brown", "White"]).
+   * Der Generator wählt vor dem Slot-Loop zufällig eine Farbe aus der Liste.
+   * Leer oder Gruppe fehlt → Farbe wird vom ersten platzierten Möbel übernommen.
+   */
+  colorPalettes: Record<string, string[]>;
 }
 
 export type RoomTypeConfigMap = Record<string, RoomTypeConfig>;
@@ -184,12 +200,12 @@ export function defaultSlot(): RoomTypeSlot {
     slotGroupId: '',
     slotGroupMode: '',
     groupWeight: 5,
+    blocksPlacement: true,
+    colorGroupId: '',
     fallbackRules: [],
   };
 }
 
 export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
-  return { roomType, slots: [] };
+  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [] };
 }
-
-

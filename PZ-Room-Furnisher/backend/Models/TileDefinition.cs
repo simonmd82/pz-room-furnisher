@@ -29,6 +29,12 @@ public class TileDefinition
     public bool CanStack        { get; set; } = false;
     /// <summary>True if this tile is a table-top surface (on top of another object).</summary>
     public bool IsTableTop      { get; set; } = false;
+    /// <summary>
+    /// True if this tile is a loot container (Schrank, Truhe, etc.).
+    /// Der Generator prüft dann, ob jede Footprint-Zelle von mindestens einer
+    /// freien Nachbarzelle aus erreichbar bleibt (Moore-Nachbarschaft, Reichweite 1).
+    /// </summary>
+    public bool IsLootContainer { get; set; } = false;
 
     // ── Randomiser meta ───────────────────────────────────────────────────
     /// <summary>Colour tags, e.g. ["Brown","Wood"]</summary>
@@ -39,5 +45,12 @@ public class TileDefinition
     public string VariantGroup       { get; set; } = string.Empty;
     /// <summary>Style tags – stored but not yet consumed by the generator</summary>
     public List<string> StyleTags    { get; set; } = [];
+    /// <summary>
+    /// Erlaubte Orientierungen für dieses Tile (z.B. ["E","S"] für Bilder/Poster).
+    /// Leer = alle 4 Richtungen erlaubt.
+    /// </summary>
+    public List<string> AllowedOrients { get; set; } = [];
 }
+
+
 

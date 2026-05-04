@@ -48,6 +48,14 @@
     "tiles": "Tile Browser",
     "furniture": "Furniture Templates"
   },
+  "roomTypeEditor": {
+    "pathStyle": {
+      "label":  "Path style",
+      "wall":   "Wall-hugging (default)",
+      "center": "Room centre",
+      "random": "Random"
+    }
+  },
   "tileBrowser": {
     "tilesPath": "PZ Tiles folder",
     "setPath": "Set",

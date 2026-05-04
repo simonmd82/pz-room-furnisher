@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   SIZE_KEYS, ANCHOR_POSITIONS, REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
@@ -6,7 +7,7 @@ import {
 import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories } from '../../api/settingsApi';
-import { getGroups } from '../../api/tilesApi';
+import { getGroups, getColors } from '../../api/tilesApi';
 import { TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
 import s from './RoomTypeEditor.module.css';
 
@@ -92,9 +93,11 @@ const SIZE_EXAMPLES: Record<string, string> = {
 };
 
 export function RoomTypeEditor() {
+  const { t } = useTranslation();
   const [configs, setConfigs]         = useState<RoomTypeConfigMap>({});
   const [knownRooms, setKnownRooms]   = useState<string[]>([]);
   const [availGroups, setAvailGroups] = useState<string[]>(FALLBACK_GROUPS);
+  const [availColors, setAvailColors] = useState<string[]>([]);
   const [selected, setSelected]       = useState<string | null>(null);
   const [draft, setDraft]             = useState<RoomTypeConfig | null>(null);
   const [dirty, setDirty]             = useState(false);
@@ -113,6 +116,7 @@ export function RoomTypeEditor() {
       const merged = Array.from(new Set([...cats, ...tileGroups]));
       setAvailGroups(merged.length > 0 ? merged : FALLBACK_GROUPS);
     }).catch(console.error);
+    getColors().then(setAvailColors).catch(console.error);
   }, []);
 
   const selectRoom = useCallback((rt: string) => {
@@ -120,6 +124,9 @@ export function RoomTypeEditor() {
     setDraft(configs[rt]
       ? {
           ...configs[rt],
+          pathStyle:     configs[rt].pathStyle    ?? 'wall',
+          colorGroupId:  configs[rt].colorGroupId ?? '',
+          colorPalettes: configs[rt].colorPalettes ?? {},
           slots: configs[rt].slots.map(sl => {
             // Migration: alte anchorSlotId/anchorPosition → anchorRules
             const legacyAnchor = (sl as any).anchorSlotId as string | undefined;
@@ -292,6 +299,8 @@ export function RoomTypeEditor() {
       // Fehlende / null-Felder aus dem Backend normalisieren
       const saved: RoomTypeConfig = {
         ...raw,
+        colorGroupId:  raw.colorGroupId  ?? '',
+        colorPalettes: raw.colorPalettes ?? {},
         slots: raw.slots.map(sl => ({
           ...defaultSlot(),
           ...sl,
@@ -299,7 +308,9 @@ export function RoomTypeEditor() {
           allowedCategories:  { ...(sl.allowedCategories ?? {}) },
           placementRules:     { ...defaultPlacementRules(), ...(sl.placementRules ?? {}) },
           requiredProperties: [...(sl.requiredProperties ?? [])],
-          anchorRules:        sl.anchorRules ?? [],
+              anchorRules:        sl.anchorRules ?? [],
+              blocksPlacement:    sl.blocksPlacement ?? true,
+              colorGroupId:       sl.colorGroupId    ?? '',
         })),
       };
       setConfigs(prev => ({ ...prev, [saved.roomType]: saved }));
@@ -392,6 +403,84 @@ export function RoomTypeEditor() {
                 <button className={s.deleteBtn} onClick={handleDelete}>Löschen</button>
               )}
             </div>
+
+            {/* PathStyle-Selector */}
+            <div className={s.pathStyleRow}>
+              <label className={s.pathStyleLabel} title="Bestimmt welche Raumzellen als Laufweg markiert werden. Wandnah = Möbel können Pfad nicht blockieren. Raummitte = offener Bereich bleibt frei. Zufällig = maximale Variation.">
+                {t('roomTypeEditor.pathStyle.label')}
+              </label>
+              <select
+                className={s.pathStyleSelect}
+                value={draft.pathStyle ?? 'wall'}
+                onChange={e => {
+                  setDraft({ ...draft, pathStyle: e.target.value as 'wall' | 'center' | 'random' });
+                  setDirty(true);
+                }}>
+                <option value="wall">{t('roomTypeEditor.pathStyle.wall')}</option>
+                <option value="center">{t('roomTypeEditor.pathStyle.center')}</option>
+                <option value="random">{t('roomTypeEditor.pathStyle.random')}</option>
+              </select>
+            </div>
+
+            {/* Farbgruppe (Raum-Ebene) */}
+            <div className={s.pathStyleRow}>
+              <label className={s.pathStyleLabel}
+                title="Standard-Farbgruppen-ID für alle Slots dieses Raumtyps. Slots mit leerer colorGroupId erben diesen Wert. Leer = kein Farbfilter als Standard.">
+                🎨 Farbgruppe (Raum-Default)
+              </label>
+              <input
+                className={s.slotSizeInput}
+                style={{ flex: 1, minWidth: 0 }}
+                placeholder="z.B. bedroom_main (leer = kein Default)"
+                value={draft.colorGroupId ?? ''}
+                onChange={e => { setDraft({ ...draft, colorGroupId: e.target.value }); setDirty(true); }}
+              />
+            </div>
+
+            {/* Farbpalette (Raum-Ebene) – Multi-Select */}
+            {draft.colorGroupId && (
+              <div className={s.pathStyleRow} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
+                <label className={s.pathStyleLabel}
+                  title={`Erlaubte Farben für Gruppe „${draft.colorGroupId}". Der Generator wählt vor dem Slot-Loop zufällig eine der ausgewählten Farben. Keine Auswahl = Farbe wird vom ersten platzierten Möbel übernommen.`}>
+                  🎨 Farbpalette für „{draft.colorGroupId}"
+                </label>
+                <div className={s.chipGroup}>
+                  {availColors.length === 0 && (
+                    <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
+                      Keine Farben verfügbar – Möbel-Vorlagen mit Farb-Tags eintragen
+                    </span>
+                  )}
+                  {availColors.map(color => {
+                    const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
+                    const active  = palette.includes(color);
+                    return (
+                      <span key={color}
+                        className={`${s.chip} ${active ? s.chipActive : ''}`}
+                        title={active ? `„${color}" entfernen` : `„${color}" hinzufügen`}
+                        onClick={() => {
+                          const current = draft.colorPalettes?.[draft.colorGroupId] ?? [];
+                          const next    = active
+                            ? current.filter(c => c !== color)
+                            : [...current, color];
+                          setDraft({
+                            ...draft,
+                            colorPalettes: { ...(draft.colorPalettes ?? {}), [draft.colorGroupId]: next },
+                          });
+                          setDirty(true);
+                        }}>
+                        {color}
+                      </span>
+                    );
+                  })}
+                </div>
+                {(() => {
+                  const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
+                  if (palette.length === 0)
+                    return <div className={s.slotHint} style={{ color: '#888' }}>Keine Auswahl → Farbe vom ersten platzierten Möbel</div>;
+                  return <div className={s.slotHint} style={{ color: '#8c8' }}>✓ {palette.length} Farbe{palette.length !== 1 ? 'n' : ''} → zufällige Auswahl bei jedem Raum</div>;
+                })()}
+              </div>
+            )}
 
             <div className={s.slotsHeader}>
               <span className={s.slotsLabel}>Slots ({draft.slots.length})</span>
@@ -794,8 +883,7 @@ export function RoomTypeEditor() {
                     </>)}
                   </div>
                   {slot.slotGroupId && (() => {
-                    const groupSize = draft.slots.filter(sl => sl.slotGroupId === slot.slotGroupId).length;
-                    const allRequired = draft.slots
+                    const groupSize = draft.slots.filter(sl => sl.slotGroupId === slot.slotGroupId).length;                    const allRequired = draft.slots
                       .filter(sl => sl.slotGroupId === slot.slotGroupId)
                       .every(sl => sl.required);
                     const mixedRequired = !allRequired && draft.slots
@@ -817,6 +905,28 @@ export function RoomTypeEditor() {
                       </>
                     );
                   })()}
+
+                  {/* ── Farbgruppe (Slot-Ebene) ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
+                    <span className={s.slotGroupLabel}
+                      title={'Farbgruppen-ID für diesen Slot.\n\n• Leer = erbt den Raum-Default\n• "none" = kein Farbfilter (z.B. Stuhl, Spiegel)\n• Eigener Wert = eigene Gruppe (z.B. "accent" für Teppich)\n\nDer erste Slot einer Gruppe legt die Farbe fest. Alle Folge-Slots der gleichen Gruppe filtern ihre Tiles auf diese Farbe.'}>
+                      🎨 Farbgruppe
+                      <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
+                    </span>
+                    <input
+                      className={s.slotSizeInput}
+                      style={{ flex: 2 }}
+                      placeholder={`leer = erbt "${draft.colorGroupId || '—'}" | "none" = kein Filter`}
+                      value={slot.colorGroupId ?? ''}
+                      onChange={e => updateSlot(idx, { colorGroupId: e.target.value })}
+                    />
+                    {(() => {
+                      const effectiveGroup = slot.colorGroupId === 'none' ? null
+                        : slot.colorGroupId || draft.colorGroupId || null;
+                      if (!effectiveGroup) return <span className={s.slotHint} style={{ color: '#556' }}>kein Filter</span>;
+                      return <span className={s.slotHint} style={{ color: '#8c8' }}>→ Gruppe „{effectiveGroup}"</span>;
+                    })()}
+                  </div>
 
                   {/* ── Anker-Regeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, justifyContent: 'space-between' }}>
@@ -1029,6 +1139,8 @@ export function RoomTypeEditor() {
     </div>
   );
 }
+
+
 
 
 

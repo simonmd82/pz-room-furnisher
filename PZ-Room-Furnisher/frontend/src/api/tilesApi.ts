@@ -71,3 +71,9 @@ export async function getGroups(): Promise<string[]> {
   return r.json();
 }
 
+/** Returns distinct non-empty color tags from all saved tile definitions. */
+export async function getColors(): Promise<string[]> {
+  const r = await fetch(`${BASE}/colors`);
+  if (!r.ok) return [];
+  return r.json();
+}

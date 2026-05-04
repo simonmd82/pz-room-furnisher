@@ -48,6 +48,14 @@
     "tiles": "Tile-Browser",
     "furniture": "Möbel-Vorlagen"
   },
+  "roomTypeEditor": {
+    "pathStyle": {
+      "label":  "Laufweg-Stil",
+      "wall":   "Wandnah (Standard)",
+      "center": "Raummitte",
+      "random": "Zufällig"
+    }
+  },
   "tileBrowser": {
     "tilesPath": "PZ Tiles-Ordner",
     "setPath": "Setzen",

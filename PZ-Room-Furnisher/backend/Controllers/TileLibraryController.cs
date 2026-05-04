@@ -141,6 +141,20 @@ public class TileLibraryController : ControllerBase
         return Ok(groups);
     }
 
+    // ── Distinct colors from tile definitions ─────────────────────────────
+
+    [HttpGet("colors")]
+    public IActionResult GetColors()
+    {
+        var colors = _cfg.GetAll().Values
+            .SelectMany(d => d.Colors)
+            .Where(c => !string.IsNullOrWhiteSpace(c))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        return Ok(colors);
+    }
+
     // ── Tile definitions ─────────────────────────────────────────────────
 
     [HttpGet("config")]
