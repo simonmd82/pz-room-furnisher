@@ -75,6 +75,8 @@
           }
         ],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": ""
       },
       {
@@ -150,6 +152,8 @@
           }
         ],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": ""
       },
       {
@@ -207,6 +211,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": ""
       },
       {
@@ -255,21 +261,25 @@
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
-          "isLow"
+          "isLow",
+          "isTableTop"
         ],
         "anchorRules": [
           {
             "anchorTarget": "bedroom_beds",
             "positions": [
               "HeadLeft"
-            ]
+            ],
+            "orient": "match"
           }
         ],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
         "colorGroupId": ""
       },
       {
@@ -318,21 +328,25 @@
         },
         "requiredLayer": "Furniture",
         "requiredProperties": [
-          "isLow"
+          "isLow",
+          "isTableTop"
         ],
         "anchorRules": [
           {
             "anchorTarget": "bedroom_beds",
             "positions": [
               "HeadRight"
-            ]
+            ],
+            "orient": "match"
           }
         ],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
         "colorGroupId": ""
       },
       {
@@ -387,11 +401,13 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
         "id": "slot_lamps_radio",
-        "label": "Lamps Radio",
+        "label": "Lamps Radio Left",
         "footprint": {
           "width": 1,
           "height": 1,
@@ -435,16 +451,89 @@
           "wallAlignment": "any"
         },
         "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "isTableTop"
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_left",
+            "positions": [
+              "Center"
+            ],
+            "orient": "match"
+          }
         ],
-        "anchorRules": [],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
-        "colorGroupId": "none"
+        "softBlocks": false,
+        "requiresSlot": "slot_bed_table_left",
+        "colorGroupId": "lamp_radio_colors"
+      },
+      {
+        "id": "slot_lamps_radio_right",
+        "label": "Lamps Radio Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 3,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Lamp": 7,
+          "Appliance": 3
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_right",
+            "positions": [
+              "Center"
+            ],
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_bed_table_right",
+        "colorGroupId": "lamp_radio_colors"
       },
       {
         "id": "slot_mirror",
@@ -500,6 +589,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
@@ -558,6 +649,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
@@ -615,6 +708,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
@@ -638,15 +733,15 @@
           },
           "M": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "L": {
             "min": 0,
-            "max": 3
+            "max": 2
           },
           "XL": {
             "min": 0,
-            "max": 4
+            "max": 2
           }
         },
         "allowedCategories": {
@@ -669,6 +764,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
@@ -680,7 +777,7 @@
           "canRotate": true
         },
         "required": false,
-        "priority": 5,
+        "priority": 0,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -688,7 +785,7 @@
           },
           "S": {
             "min": 0,
-            "max": 1
+            "max": 0
           },
           "M": {
             "min": 0,
@@ -723,6 +820,8 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": false,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
       },
       {
@@ -734,7 +833,7 @@
           "canRotate": false
         },
         "required": false,
-        "priority": 5,
+        "priority": 0,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -777,15 +876,476 @@
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": false,
+        "softBlocks": false,
+        "requiresSlot": "",
         "colorGroupId": "none"
+      },
+      {
+        "id": "slot_standing_lamp",
+        "label": "Standing Lamp",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 6,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Lamp": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
       }
     ],
-    "pathStyle": "wall",
+    "pathStyle": "center",
     "colorGroupId": "bedroom_main",
     "colorPalettes": {
       "bedroom_main": [
         "Beige",
         "Black",
+        "Brown",
+        "White"
+      ],
+      "lamp_radio_colors": [
+        "Beige",
+        "Black",
+        "Blue",
+        "Brown",
+        "Red",
+        "White"
+      ]
+    }
+  },
+  "Diningroom": {
+    "roomType": "Diningroom",
+    "slots": [
+      {
+        "id": "slot_table_small",
+        "label": "Small Table",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 1,
+            "max": 1
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Table": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": true,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "table_group",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      },
+      {
+        "id": "slot_table_medium",
+        "label": "Medium Table",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Table": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": true,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "table_group",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      },
+      {
+        "id": "chair_small_table_left",
+        "label": "Chair Small Table Left",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 1,
+            "max": 1
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Chair": 5,
+          "DiningChair": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table_small",
+            "positions": [
+              "Left"
+            ],
+            "orient": "opposite"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      },
+      {
+        "id": "chair_medium_table_left",
+        "label": "Chair Medium Table Left",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Chair": 5,
+          "DiningChair": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table_medium",
+            "positions": [
+              "Left"
+            ],
+            "orient": "opposite"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      },
+      {
+        "id": "chair_medium_table_right",
+        "label": "Chair Medium Table Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Chair": 5,
+          "DiningChair": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table_medium",
+            "positions": [
+              "Right"
+            ],
+            "orient": "opposite"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      },
+      {
+        "id": "chair_small_table_right",
+        "label": "Chair Small Table Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 1,
+            "max": 1
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Chair": 5,
+          "DiningChair": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table_small",
+            "positions": [
+              "Right"
+            ],
+            "orient": "opposite"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": ""
+      }
+    ],
+    "pathStyle": "wall",
+    "colorGroupId": "dining_room_colors",
+    "colorPalettes": {
+      "b": [
+        "Black",
+        "Brown"
+      ],
+      "dining_room_colors": [
+        "Black",
+        "Beige",
         "Brown",
         "White"
       ]

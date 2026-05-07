@@ -77,6 +77,14 @@ public class AnchorRule
     public string AnchorTarget { get; set; } = string.Empty;
     /// <summary>Erlaubte relative Positionen (OR: Generator wählt eine). Leer = beliebig.</summary>
     public List<string> Positions { get; set; } = [];
+    /// <summary>
+    /// Ausrichtung des verankerten Slots relativ zum Anker.
+    /// "match"    = gleiche Ausrichtung wie der Anker-Slot (z.B. Nachttisch neben Bett).
+    /// "opposite" = entgegengesetzte Ausrichtung (z.B. Stuhl zeigt zum Tisch).
+    /// "N"/"S"/"E"/"W" = fixe Ausrichtung.
+    /// Leer / null = tile.Orientation (bisheriges Verhalten).
+    /// </summary>
+    public string? Orient { get; set; }
 }
 
 /// <summary>Ein Slot-Eintrag in der RoomType-Konfiguration (Ansatz A: verknüpfte Einzel-Slots).</summary>
@@ -159,6 +167,23 @@ public class RoomTypeSlot
     /// Standard: true.
     /// </summary>
     public bool BlocksPlacement { get; set; } = true;
+
+    /// <summary>
+    /// Wenn true und BlocksPlacement=false, werden die Footprint-Zellen in softOccupied eingetragen.
+    /// Normale Slots (kein RequiresSlot) respektieren softOccupied und landen nicht auf diesen Zellen.
+    /// Slots mit RequiresSlot ignorieren softOccupied – sie dürfen bewusst auf das Ankermöbel platziert werden.
+    /// Typischer Einsatz: Nachttisch (blocksPlacement:false, softBlocks:true).
+    /// Standard: false.
+    /// </summary>
+    public bool SoftBlocks { get; set; } = false;
+
+    /// <summary>
+    /// Bedingte Abhängigkeit: Dieser Slot wird nur versucht wenn der Slot mit dieser ID
+    /// (oder SlotGroupId) zuvor erfolgreich platziert wurde.
+    /// Nützlich für Objekte die eine Oberfläche benötigen (Lampe → Tisch, Waschbecken → Unterschrank).
+    /// Leer = keine Abhängigkeit (Standard-Verhalten).
+    /// </summary>
+    public string RequiresSlot { get; set; } = string.Empty;
 
     /// <summary>
     /// Farbgruppen-ID für kohärente Farbwahl.

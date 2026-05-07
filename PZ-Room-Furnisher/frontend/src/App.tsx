@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+﻿import { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileUpload } from './components/FileUpload';
 import { FloorSelector } from './components/FloorSelector';
@@ -125,6 +125,40 @@ function App() {
     [floor],
   );
 
+  /** Sheet-Metadaten neu laden – z.B. nach Setzen des Tiles-Pfads nach App-Start. */
+  const reloadSheets = () => {
+    getSheets().then(r => { if (r.configured) setSheetInfos(r.sheets); }).catch(console.error);
+  };
+
+  /** Tab wechseln - beim Zurueckwechseln zum Building-Tab sheetInfos nachladen */
+  const handleTabChange = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+    if (tab === 'building') reloadSheets();
+  };
+
+  // Dynamische cellSize: Grid an verfuegbaren Platz anpassen
+  const gridWrapperRef = useRef<HTMLDivElement>(null);
+  const [gridArea, setGridArea] = useState({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = gridWrapperRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      setGridArea({ w: el.clientWidth, h: el.clientHeight });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const gridCols = floor?.roomGrid[0]?.length ?? 1;
+  const gridRows = floor?.roomGrid.length ?? 1;
+  const GRID_RESERVED_H = 160;
+  const dynCellSize =
+    gridArea.w > 0 && gridArea.h > 0
+      ? Math.max(8, Math.floor(Math.min(
+          gridArea.w / gridCols,
+          (gridArea.h - GRID_RESERVED_H) / gridRows,
+        )))
+      : 40;
+
   return (
     <div className="app">
       <header className="app-header">
@@ -148,31 +182,31 @@ function App() {
         <div className="tab-bar">
           <button
             className={`tab-btn ${activeTab === 'building' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('building')}
+            onClick={() => handleTabChange('building')}
           >
             🏠 {t('tabs.building')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'tiles' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('tiles')}
+            onClick={() => handleTabChange('tiles')}
           >
             🖼 {t('tabs.tiles')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'furniture' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('furniture')}
+            onClick={() => handleTabChange('furniture')}
           >
             📋 {t('tabs.furniture')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'roomtypes' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('roomtypes')}
+            onClick={() => handleTabChange('roomtypes')}
           >
             🏠 Raumtypen
           </button>
           <button
             className={`tab-btn ${activeTab === 'settings' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('settings')}
+            onClick={() => handleTabChange('settings')}
           >
             ⚙ Einstellungen
           </button>
@@ -214,11 +248,15 @@ function App() {
               <FurnishPanel
                 building={building}
                 fileName={fileName}
-                onPlacementsChanged={setPlacements}
+                onPlacementsChanged={newPlacements => {
+                  setPlacements(newPlacements);
+                  // Falls sheetInfos noch leer (Tiles-Pfad nach App-Start gesetzt), nachladen
+                  if (!sheetInfos || sheetInfos.length === 0) reloadSheets();
+                }}
                 onLogChanged={log => { setGeneratorLog(log); setLogOpen(true); }}
               />
 
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <div ref={gridWrapperRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <FloorSelector
                   floors={building.floors}
                   selected={selectedFloor}
@@ -228,7 +266,7 @@ function App() {
                   ? <GridRenderer
                       floor={floor}
                       rooms={building.rooms}
-                      cellSize={40}
+                      cellSize={dynCellSize}
                       building={building}
                       floorIndex={selectedFloor}
                       onFloorUpdated={handleFloorUpdated}
@@ -240,25 +278,28 @@ function App() {
                 }
               </div>
 
+              {/* Log-Panel rechts neben Grid */}
+              {generatorLog.length > 0 && (
+                <div className="log-panel">
+                  <div className="log-panel-header">
+                    <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>
+                      {logOpen ? '▼' : '▶'} Log ({generatorLog.length})
+                    </button>
+                  </div>
+                  {logOpen && (
+                    <div className={s.logBox} style={{ flex: 1, maxHeight: 'none', overflow: 'auto' }}>
+                      {generatorLog.map((line, i) => (
+                        <div key={i} className={`${s.logLine} ${logLineClass(line, s as Record<string, string>)}`}>
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
             </section>
 
-            {/* ── Generator-Log (volle Breite unterhalb) ── */}
-            {generatorLog.length > 0 && (
-              <section>
-                <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>
-                  {logOpen ? '▼' : '▶'} Generator-Log ({generatorLog.length} Zeilen)
-                </button>
-                {logOpen && (
-                  <div className={s.logBox} style={{ maxHeight: '420px' }}>
-                    {generatorLog.map((line, i) => (
-                      <div key={i} className={`${s.logLine} ${logLineClass(line, s as Record<string, string>)}`}>
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            )}
           </>
         )}
       </main>

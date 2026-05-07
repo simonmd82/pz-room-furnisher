@@ -14,7 +14,19 @@ public record RoomSelection(
 public record FurnishRequest(
     Building            Building,
     List<RoomSelection> RoomSelections,
-    int?                Seed = null);
+    int?                Seed       = null,
+    /// <summary>
+    /// Möblierungsdichte: ein zufälliger Wert aus [DensityMin, DensityMax] wird pro Aufruf gezogen.
+    /// 0.0 = nur Pflicht-Slots auf Minimum · 1.0 = alle optionalen Slots auf Maximum.
+    /// Beide Werte im Bereich 0–1, DensityMin ≤ DensityMax.
+    /// </summary>
+    float               DensityMin     = 0f,
+    float               DensityMax     = 1f,
+    /// <summary>
+    /// true  = Jeder Raum bekommt einen eigenen Zufallswert aus [DensityMin, DensityMax].
+    /// false = Ein einziger Wert wird pro Aufruf gezogen und für alle Räume verwendet (Standard).
+    /// </summary>
+    bool                DensityPerRoom = false);
 
 /// <summary>A single tile placed on the grid.</summary>
 public record PlacedFurnitureItem(
@@ -64,8 +76,23 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var allTiles   = _tileSvc.GetAll();
         var roomTypes  = _roomTypeSvc.GetAll();
 
+        // Möblierungsdichte: zufälliger Wert aus [DensityMin, DensityMax].
+        // DensityPerRoom=false: ein einziger Wert für alle Räume – einheitliches Bild.
+        // DensityPerRoom=true:  jeder Raum bekommt seinen eigenen Zufallswert.
+        float dMin    = Math.Clamp(req.DensityMin, 0f, 1f);
+        float dMax    = Math.Clamp(req.DensityMax, 0f, 1f);
+        double DrawDensity() => dMin >= dMax ? dMin : dMin + rng.NextDouble() * (dMax - dMin);
+        // Wenn Min≠Max oder DensityPerRoom aktiv → jeder Raum bekommt einen eigenen Zufallswert.
+        bool perRoom  = req.DensityPerRoom || dMin < dMax;
+        double density = DrawDensity();
+        log.Add($"[DENSITY] range=[{dMin:P0}–{dMax:P0}] perRoom={perRoom} (flag={req.DensityPerRoom}) → initial={density:P0}");
+
         foreach (var sel in req.RoomSelections)
         {
+            // Neuen Density-Wert pro Raum ziehen wenn Range variabel oder Toggle aktiv.
+            if (perRoom)
+                density = DrawDensity();
+
             var floor = req.Building.Floors.FirstOrDefault(f => f.Index == sel.FloorIndex);
             if (floor is null) { log.Add($"[SKIP] Floor {sel.FloorIndex} not found."); continue; }
 
@@ -97,17 +124,18 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             var cellWalls   = ComputeWallDirections(roomCells);
             var doorCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
             var windowCells = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
-            var occupied    = new HashSet<(int, int)>();
+            var occupied     = new HashSet<(int, int)>();
+            var softOccupied = new HashSet<(int, int)>();
 
             // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
             var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
                 ? path.Select(p => (p[0], p[1])).ToHashSet()
                 : new HashSet<(int, int)>();
 
-            log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells");
+            log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, density {density:P0}");
 
             // 3. Slot selection
-            var slotsToPlace = SelectSlots(config, roomSize, rng, log);
+            var slotsToPlace = SelectSlots(config, roomSize, rng, log, density);
 
             // 4. Place each slot
             var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
@@ -127,8 +155,18 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
             foreach (var (slot, count) in slotsToPlace)
                 for (int n = 0; n < count; n++)
+                {
+                    // Abhängigkeitsprüfung: requiresSlot = Slot oder SlotGroupId muss zuvor
+                    // erfolgreich platziert worden sein (Eintrag in anchorMap).
+                    if (!string.IsNullOrEmpty(slot.RequiresSlot)
+                        && !anchorMap.ContainsKey(slot.RequiresSlot))
+                    {
+                        log.Add($"  [SKIP] '{slot.Id}': requiresSlot='{slot.RequiresSlot}' wurde nicht platziert");
+                        continue;
+                    }
                     PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, allTiles, anchorMap, colorMap, config, placements, log, rng, configKey);
+                        pathCells, occupied, softOccupied, allTiles, anchorMap, colorMap, config, placements, log, rng, configKey);
+                }
         }
 
         return new FurnishResult(placements, log);
@@ -139,7 +177,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     // =========================================================================
 
     private static List<(RoomTypeSlot slot, int count)> SelectSlots(
-        RoomTypeConfig config, string roomSize, Random rng, List<string> log)
+        RoomTypeConfig config, string roomSize, Random rng, List<string> log, double density = 1.0)
     {
         var result       = new List<(RoomTypeSlot, int)>();
         var groupWinners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -151,7 +189,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         {
             var variants = grp.ToList();
             var totalW   = variants.Sum(s => s.GroupWeight);
-            if (totalW <= 0) totalW = variants.Count; // fallback: equal weight
+            if (totalW <= 0) totalW = variants.Count;
             int acc = 0, roll = rng.Next(totalW);
             var winner = variants[0];
             foreach (var v in variants) { acc += v.GroupWeight; if (roll < acc) { winner = v; break; } }
@@ -167,12 +205,40 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             if (!slot.CountBySize.TryGetValue(roomSize, out var cnt))
                 cnt = new SlotCount { Min = 0, Max = 0 };
 
-            int max   = cnt.Max == -1 ? 99 : cnt.Max;
-            int count = max <= 0 ? 0 : slot.Required ? Math.Max(cnt.Min, 1) : rng.Next(cnt.Min, max + 1);
+            int max = cnt.Max == -1 ? 99 : cnt.Max;
+
+            // Required: immer mindestens 1, unabhängig von Density.
+            // Optional: linear interpoliert zwischen Min und Max anhand der Density.
+            //   density=0.0 → count=Min  (minimal möbliert)
+            //   density=1.0 → count=Max  (maximal möbliert)
+            int count;
+            if (max <= 0)
+            {
+                count = 0;
+            }
+            else if (slot.Required)
+            {
+                // Required: immer mindestens 1, unabhängig von Density
+                count = Math.Max(cnt.Min, 1);
+            }
+            else if (cnt.Min == 0 && max == 1)
+            {
+                // Einzelner optionaler Slot (0–1): Würfelwurf mit density als Wahrscheinlichkeit
+                count = rng.NextDouble() < density ? 1 : 0;
+            }
+            else
+            {
+                // Multi-Slot (0–N oder M–N): linear zwischen Min und Max interpolieren
+                // Bei density=1.0 exakt Max zurückgeben (Float-Rounding vermeiden)
+                count = density >= 1.0
+                    ? max
+                    : (int)Math.Round(cnt.Min + density * (max - cnt.Min));
+            }
+
             if (count <= 0) continue;
 
             result.Add((slot, count));
-            log.Add($"  [SLOT] '{slot.Id}' ({slot.Label}): {count}× (min {cnt.Min}, max {cnt.Max})");
+            log.Add($"  [SLOT] '{slot.Id}' ({slot.Label}): {count}× (min {cnt.Min}, max {max}, density {density:P0})");
         }
 
         return result;
@@ -189,6 +255,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> doorCells, HashSet<(int, int)> windowCells,
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
+        HashSet<(int, int)> softOccupied,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
         Dictionary<string, string> colorMap,
@@ -231,14 +298,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         // Resolve anchor rule
         (int col, int row, int fpW, int fpH, string orient)? anchorInfo = null;
-        string? anchorPos = null;
+        string? anchorPos    = null;
+        string? anchorOrientRule = null;   // "match" | "opposite" | "N/S/E/W" | null
+        // Kumulative Ablehnungszähler für [WARN]-Log (nur im else-Zweig gefüllt, sonst 0)
+        int totalNoVariant = 0, totalNoFit = 0, totalNoWallDir = 0, totalFits = 0, totalPath = 0, totalLoot = 0;
+        int totalDoor = 0, totalWindow = 0, totalConnectivity = 0;
         if (slot.AnchorRules?.Count > 0)
         {
             foreach (var rule in slot.AnchorRules)
                 if (!string.IsNullOrEmpty(rule.AnchorTarget) && anchorMap.TryGetValue(rule.AnchorTarget, out var ap))
                 {
-                    anchorInfo = ap;
-                    anchorPos  = rule.Positions.Count > 0 ? rule.Positions[rng.Next(rule.Positions.Count)] : null;
+                    anchorInfo       = ap;
+                    anchorPos        = rule.Positions.Count > 0 ? rule.Positions[rng.Next(rule.Positions.Count)] : null;
+                    anchorOrientRule = rule.Orient;
                     break;
                 }
         }
@@ -246,13 +318,36 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var tile = SelectTile(candidates, slot, rng);
         if (tile is null) return;
 
-        // fpW/fpH of baseTile (used for anchor offset calculation only)
-        int fpW = tile.TileLayout.Count > 0 ? (tile.TileLayout[0]?.Count ?? 1) : 1;
-        int fpH = tile.TileLayout.Count;
-
         (int col, int row, string orient, TileDefinition placedTile, int rejNoVariant, int rejNoFit, int rejDoor, int rejWindow, int rejConnectivity)? result;
         if (anchorInfo.HasValue && anchorPos != null)
         {
+            // 1. Ziel-Orientierung zuerst berechnen – sie bestimmt Variante und Dimensionen.
+            string anchoredOrient = anchorOrientRule switch
+            {
+                "match"    => anchorInfo.Value.orient,
+                "opposite" => anchorInfo.Value.orient switch
+                              { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
+                "N" or "S" or "E" or "W" => anchorOrientRule,
+                _          => tile.Orientation,
+            };
+
+            // 2. Passende Orientierungsvariante aus der VariantGroup wählen, BEVOR
+            //    Dimensionen und Position berechnet werden.
+            //    SelectTile wählt einen zufälligen Vertreter; dessen Orientation und
+            //    TileLayout können von anchoredOrient abweichen (z.B. 1×2 statt 2×1).
+            TileDefinition finalTile = tile;
+            if (!string.IsNullOrEmpty(tile.VariantGroup))
+            {
+                var match = allTiles.Values.FirstOrDefault(t =>
+                    t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    t.Orientation.Equals(anchoredOrient, StringComparison.OrdinalIgnoreCase));
+                if (match is not null) finalTile = match;
+            }
+
+            // 3. Dimensionen aus der KORREKTEN Variante ableiten
+            int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+            int fpH = finalTile.TileLayout.Count;
+
             var p = ComputeAnchoredPosition(anchorInfo.Value.col, anchorInfo.Value.row,
                 anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, anchorPos, anchorInfo.Value.orient);
 
@@ -260,32 +355,37 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             if (p.HasValue)
             {
                 var (ac, ar) = p.Value;
+
+                // requiresSlot-Slots ignorieren softOccupied bewusst:
+                // Sie dürfen auf dem Ankermöbel (z.B. Nachttisch mit softBlocks=true) platziert werden.
                 bool anchorValid =
-                    // Footprint muss in den Raum passen und nicht bereits belegt sein
-                    FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied)
-                    // Türbereich freilassen (außer NearDoor-Slot)
+                    FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied)  // kein softOccupied!
                     && (slot.PlacementRules.NearDoor
                         || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
-                    // Laufweg schützen: Möbel mit Kollision dürfen nicht auf Pfadzellen stehen
                     && (slot.PlacementRules.AllowOnPath
-                        || !tile.HasCollision
+                        || !finalTile.HasCollision
                         || pathCells.Count == 0
                         || !FootprintTouchesCells(ac, ar, fpW, fpH, pathCells))
-                    // Fensterschutz: hohe Möbel nicht vor Fenster (außer NearWindow-Slot)
                     && (slot.PlacementRules.NearWindow
-                        || !tile.IsHigh
+                        || !finalTile.IsHigh
                         || windowCells.Count == 0
                         || !FootprintTouchesCells(ac, ar, fpW, fpH, windowCells));
 
                 if (anchorValid)
-                    result = (ac, ar, tile.Orientation, tile, 0, 0, 0, 0, 0);
+                    result = (ac, ar, anchoredOrient, finalTile, 0, 0, 0, 0, 0);
             }
         }
         else
         {
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                pathCells, occupied, tile, allTiles, slot.PlacementRules, rng);
+                pathCells, occupied, softOccupied, tile, allTiles, slot.PlacementRules, rng,
+                out var primaryRej);
+            totalNoVariant = primaryRej.noVariant;
+            totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
+            totalPath = primaryRej.noPath; totalLoot = primaryRej.noLoot;
+            totalNoFit = totalNoWallDir + totalFits + totalPath + totalLoot;
+            totalDoor = primaryRej.door; totalWindow = primaryRej.window; totalConnectivity = primaryRej.connectivity;
 
             // Fallback chain: iterate FallbackRules in order if primary failed
             if (result is null && slot.FallbackRules?.Count > 0)
@@ -294,7 +394,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 {
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, tile, allTiles, fbRules, rng);
+                        pathCells, occupied, softOccupied, tile, allTiles, fbRules, rng,
+                        out var fbRej);
+                    totalNoVariant += fbRej.noVariant;
+                    totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
+                    totalPath += fbRej.noPath; totalLoot += fbRej.noLoot;
+                    totalNoFit = totalNoWallDir + totalFits + totalPath + totalLoot;
+                    totalDoor += fbRej.door; totalWindow += fbRej.window; totalConnectivity += fbRej.connectivity;
                     if (result != null)
                         log.Add($"    [FALLBACK {fb + 1}] '{slot.Id}': used fallback rule #{fb + 1}");
                 }
@@ -312,7 +418,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     $"orient='{tile.Orientation}' fp={tileFpW}×{tileFpH} variantGroup='{tile.VariantGroup}' | " +
                     $"roomCells={roomCells.Count} free={freeCells} wallCells={wallCells} freeWall={freeWall} " +
                     $"nearWall={slot.PlacementRules.NearWall} wallAlignment='{slot.PlacementRules.WallAlignment}' " +
-                    $"candidates={candidates.Count}");
+                    $"candidates={candidates.Count} | " +
+                    $"rejNoVariant={totalNoVariant} rejNoFit={totalNoFit}" +
+                    $"(wallDir={totalNoWallDir} fits={totalFits} path={totalPath} loot={totalLoot}) " +
+                    $"rejDoor={totalDoor} rejWindow={totalWindow} rejConnectivity={totalConnectivity}");
             return;
         }
 
@@ -332,6 +441,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 placements.Add(new PlacedFurnitureItem(floorIndex, col + c, row + r, tid, placedTile.Layer, orient, slot.Id));
                 if (slot.BlocksPlacement)
                     occupied.Add((col + c, row + r));
+                else if (slot.SoftBlocks)
+                    softOccupied.Add((col + c, row + r));
             }
         }
 
@@ -451,24 +562,26 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> doorCells, HashSet<(int, int)> windowCells,
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
+        HashSet<(int, int)> softOccupied,
         TileDefinition baseTile,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         PlacementRules rules,
-        Random rng)
+        Random rng,
+        out (int noVariant, int noWallDir, int noFits, int noPath, int noLoot, int door, int window, int connectivity) rejCounters)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
         if (rules.NearWall)
         {
-            // Erweiterte Wandnähe-Prüfung: Ankerzelle ODER Footprint berührt Wand.
-            // Wichtig für mehrzelliges Mobiliar (z.B. 2×2-Bett), dessen Ankerzelle
-            // innen liegt, obwohl der Footprint die Wand tangiert.
-            int fw = slot.Footprint.Width, fh = slot.Footprint.Height;
-            bool canRot = slot.Footprint.CanRotate;
-            pool = pool.Where(c =>
-                cellWalls.ContainsKey(c) ||
-                FootprintTouchesWall(c.col, c.row, fw, fh, cellWalls) ||
-                (canRot && FootprintTouchesWall(c.col, c.row, fh, fw, cellWalls)));
+            // NearWall: Nur echte Wandzellen (Zellen mit mindestens einer Wand-Richtung) in den Pool.
+            // Hintergrund: ComputeWallAnchor erwartet die Wandzelle als Eingabe und verschiebt
+            // den Footprint-Anker so, dass das Möbel in den Raum hinein expandiert.
+            // Interior-Zellen (keine eigenen Wandeinträge) würden von ComputeWallAnchor falsch
+            // versetzt, da sie nicht die Rückseite des Möbels repräsentieren.
+            // Mehrzelliges Mobiliar (z.B. 2×2-Bett) wird korrekt abgedeckt: die aktuelle
+            // Wandzelle (z.B. (3,11) S-Wand) liefert via ComputeWallAnchor(S,2,2) den Anker
+            // (3,10), so dass der Footprint (3,10)–(4,11) die Wand berührt.
+            pool = pool.Where(c => cellWalls.ContainsKey(c));
         }
         if (rules.NearDoor)   pool = pool.Where(c => doorCells.Contains(c));
         if (rules.NearWindow) pool = pool.Where(c => windowCells.Contains(c));
@@ -492,7 +605,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         for (int i = poolList.Count - 1; i > 0; i--)
         { int j = rng.Next(i + 1); (poolList[i], poolList[j]) = (poolList[j], poolList[i]); }
 
-        int rejNoVariant = 0, rejNoFit = 0, rejDoor = 0, rejWindow = 0, rejConnectivity = 0;
+        int rejNoVariant = 0, rejNoWallDir = 0, rejFits = 0, rejPath = 0, rejLoot = 0, rejDoor = 0, rejWindow = 0, rejConnectivity = 0;
         foreach (var cell in poolList)
         {
             var resolved = ResolveVariantForCell(
@@ -523,15 +636,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // verhindert z.B. dass ein 2×1-Schrank bei einer Interior-Zelle nahe der S-Wand
             // durch die E-Wand fälschlicherweise validated wird (Bug: Schrank in Raummitte).
             if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
-            { rejNoFit++; continue; }
+            { rejNoWallDir++; continue; }
 
-            if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied)) { rejNoFit++; continue; }
+            if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied)) { rejFits++; continue; }
 
             // Pfad-Schutz auf Footprint-Ebene: Der Pool-Filter oben prüft nur die Ankerzelle.
             // Nach ComputeWallAnchor kann der verschobene Anker Pfadzellen überdecken
             // (z.B. cell=(4,4), wallDir=S, anchor=(4,3) = Pfadzelle).
             if (!rules.AllowOnPath && resolvedTile.HasCollision && pathCells.Count > 0
-                && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, pathCells)) { rejNoFit++; continue; }
+                && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, pathCells)) { rejPath++; continue; }
 
             // Türbereich freilassen: kein Möbel-Footprint darf eine Türzelle überdecken,
             // außer der Slot ist explizit NearDoor (z.B. Garderobenhalter an der Tür).
@@ -547,7 +660,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // Verhindert dass Spieler nach Platzierung keinen Zugriff mehr auf den Container hat.
             if (resolvedTile.IsLootContainer
                 && !LootContainerReachable(anchorCol, anchorRow, fpW, fpH, roomCells, occupied))
-            { rejNoFit++; continue; }
+            { rejLoot++; continue; }
 
             // Raumzusammenhang: Nach Platzierung müssen alle begehbaren Raumzellen noch
             // zusammenhängend erreichbar sein (8-Nachbarschaft, da PZ diagonales Gehen erlaubt).
@@ -557,9 +670,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, doorCells))
             { rejConnectivity++; continue; }
 
-            return (anchorCol, anchorRow, orient, resolvedTile, rejNoVariant, rejNoFit, rejDoor, rejWindow, rejConnectivity);
+            rejCounters = (rejNoVariant, rejNoWallDir, rejFits, rejPath, rejLoot, rejDoor, rejWindow, rejConnectivity);
+            int noFitSum = rejNoWallDir + rejFits + rejPath + rejLoot;
+            return (anchorCol, anchorRow, orient, resolvedTile, rejNoVariant, noFitSum, rejDoor, rejWindow, rejConnectivity);
         }
 
+        rejCounters = (rejNoVariant, rejNoWallDir, rejFits, rejPath, rejLoot, rejDoor, rejWindow, rejConnectivity);
         return null;
     }
 
@@ -579,17 +695,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (!rules.NearWall)
             return (baseTile, baseTile.Orientation, Direction.N);
 
-        // Wandrichtung bestimmen: erst an der Ankerzelle, dann im Footprint des Tiles.
-        // Für mehrzelliges Mobiliar (z.B. 2×2-Bett) liegt die Ankerzelle oft innen,
-        // während erst der Footprint die Wand berührt.
+        // Wandrichtung bestimmen: an der Ankerzelle selbst.
+        // Mit dem bereinigten Pool-Filter kommen nur echte Wandzellen (cellWalls-Einträge)
+        // in den Pool; die Fallback-Logik via FootprintWallDirs ist daher Schutzcode
+        // für den Fall, dass ein nicht-Wandzellen-Eintrag doch hier ankommt.
         HashSet<Direction>? wallDirs;
         if (!cellWalls.TryGetValue(cell, out wallDirs) || wallDirs.Count == 0)
         {
+            // Sicherheitsnetz: Footprint-Wände prüfen (sollte mit korrektem Pool nicht nötig sein)
             int fpW = baseTile.TileLayout.Count > 0 ? (baseTile.TileLayout[0]?.Count ?? 1) : 1;
             int fpH = baseTile.TileLayout.Count;
             wallDirs = FootprintWallDirs(cell.col, cell.row, fpW, fpH, cellWalls);
             if (wallDirs.Count == 0)
-                return (baseTile, baseTile.Orientation, Direction.N);
+                return null; // Keine Wandrichtung bestimmbar → Zelle ablehnen (zählt als rejNoVariant)
         }
 
         // Wandrichtung bestimmen: bevorzugt die, die zum Rücken des BaseTile passt
@@ -676,13 +794,23 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         };
     }
 
+    /// <param name="softOccupied">
+    /// Optionale soft-belegte Zellen (blocksPlacement:false, softBlocks:true).
+    /// Normale Slots respektieren diese Zellen und landen nicht darauf.
+    /// requiresSlot-Slots übergeben hier null – sie dürfen bewusst auf softOccupied-Zellen landen.
+    /// </param>
     private static bool FitsFootprint(int col, int row, int fpW, int fpH,
-        HashSet<(int, int)> roomCells, HashSet<(int, int)> occupied)
+        HashSet<(int, int)> roomCells, HashSet<(int, int)> occupied,
+        HashSet<(int, int)>? softOccupied = null)
     {
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
-                if (!roomCells.Contains((col + c, row + r)) || occupied.Contains((col + c, row + r)))
-                    return false;
+            {
+                var cell = (col + c, row + r);
+                if (!roomCells.Contains(cell)) return false;
+                if (occupied.Contains(cell))   return false;
+                if (softOccupied?.Contains(cell) == true) return false;
+            }
         return true;
     }
 
@@ -1011,6 +1139,42 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

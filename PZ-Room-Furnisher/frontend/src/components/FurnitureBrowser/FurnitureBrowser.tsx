@@ -551,6 +551,21 @@ export function FurnitureBrowser() {
               );
             })()}
 
+            {/* Erlaubte Wandrichtungen */}
+            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+              <span className={s.fieldLabel}>Erlaubte Wandrichtungen <span className={s.fieldHint}>(leer = alle)</span></span>
+              <div className={s.chipGroup}>
+                {(['N','S','E','W'] as const).map(o => {
+                  const st = arrState(d => d.allowedOrients ?? [], o);
+                  return (
+                    <span key={o}
+                      className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                      onClick={() => toggleArrayField('allowedOrients', o)}>{o}</span>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Layer */}
             {(() => {
               const mixed  = isMixed(d => d.layer);

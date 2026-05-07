@@ -71,6 +71,9 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
+  const [densityMin, setDensityMin]       = useState<number>(50);
+  const [densityMax, setDensityMax]       = useState<number>(100);
+  const [densityPerRoom, setDensityPerRoom] = useState<boolean>(false);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
@@ -158,7 +161,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
 
     setRunning(true); setStatus(null);
     try {
-      const result = await generateFurnishing(building, selections, seed);
+      const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityPerRoom);
       setPlacements(result.placements);
       onPlacementsChanged(result.placements);
       onLogChanged?.(result.log);
@@ -299,6 +302,44 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
           🎲
         </button>
       </div>
+
+      {/* ── Density ── */}
+      <span className={s.sectionLabel}>{t('furnishPanel.density')}</span>
+      <div className={s.densityRow}>
+        <span className={s.densityLabel}>{t('furnishPanel.densityMin')} {densityMin}%</span>
+        <input
+          type="range" min={0} max={100} step={5}
+          value={densityMin}
+          className={s.densitySlider}
+          onChange={e => {
+            const v = +e.target.value;
+            setDensityMin(v);
+            if (v > densityMax) setDensityMax(v);
+          }}
+        />
+      </div>
+      <div className={s.densityRow}>
+        <span className={s.densityLabel}>{t('furnishPanel.densityMax')} {densityMax}%</span>
+        <input
+          type="range" min={0} max={100} step={5}
+          value={densityMax}
+          className={s.densitySlider}
+          onChange={e => {
+            const v = +e.target.value;
+            setDensityMax(v);
+            if (v < densityMin) setDensityMin(v);
+          }}
+        />
+      </div>
+      <p className={s.densityHint}>{t('furnishPanel.densityHint', { min: densityMin, max: densityMax })}</p>
+      <label className={s.densityToggle}>
+        <input
+          type="checkbox"
+          checked={densityPerRoom}
+          onChange={e => setDensityPerRoom(e.target.checked)}
+        />
+        {t('furnishPanel.densityPerRoom')}
+      </label>
 
       {/* ── Generate ── */}
       <button

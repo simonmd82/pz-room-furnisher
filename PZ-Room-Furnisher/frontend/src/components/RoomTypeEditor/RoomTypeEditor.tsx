@@ -92,6 +92,27 @@ const SIZE_EXAMPLES: Record<string, string> = {
   XS: 'Bad, Klo', S: 'Kleines Zimmer', M: 'Schlafzimmer', L: 'Wohnzimmer', XL: 'Halle, Garage',
 };
 
+/**
+ * Erklärung der Anker-Positionen.
+ * Bezugspunkt: Perspektive vom Fußende zum Kopfende.
+ * Beispiel Bett (Orient S = Kopf oben/Norden, Füße unten/Süden):
+ *   HeadLeft  = links vom Kopfende  (West-Seite oben)
+ *   HeadRight = rechts vom Kopfende (Ost-Seite oben)
+ *   FootLeft  = links vom Fußende   (West-Seite unten)
+ *   FootRight = rechts vom Fußende  (Ost-Seite unten)
+ */
+const ANCHOR_POSITION_TITLES: Record<string, string> = {
+  HeadLeft:  'Links vom Kopfende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): West-Seite oben → Nachttisch links\nBeispiel Bett (W): Nord-Seite rechts → Nachttisch oben',
+  HeadRight: 'Rechts vom Kopfende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): Ost-Seite oben → Nachttisch rechts\nBeispiel Bett (W): Süd-Seite rechts → Nachttisch unten',
+  FootLeft:  'Links vom Fußende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): West-Seite unten\nBeispiel Schreibtisch: Stuhl links vor dem Tisch',
+  FootRight: 'Rechts vom Fußende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): Ost-Seite unten\nBeispiel Schreibtisch: Stuhl rechts vor dem Tisch',
+  Left:      'Linke Längsseite des Ankers (orient-abhängig)\n\nBei N/S-Orient: Westseite\nBei E/W-Orient: Nordseite',
+  Right:     'Rechte Längsseite des Ankers (orient-abhängig)\n\nBei N/S-Orient: Ostseite\nBei E/W-Orient: Südseite',
+  Above:     'Direkt oberhalb des Anker-Footprints (orient-unabhängig)\nAnker-Breite wird zentriert',
+  Below:     'Direkt unterhalb des Anker-Footprints (orient-unabhängig)\nAnker-Breite wird zentriert',
+  Center:    'Mittig auf dem Anker-Footprint (orient-unabhängig)\nIdeal für Objekte die auf einer Oberfläche stehen sollen',
+};
+
 export function RoomTypeEditor() {
   const { t } = useTranslation();
   const [configs, setConfigs]         = useState<RoomTypeConfigMap>({});
@@ -310,6 +331,7 @@ export function RoomTypeEditor() {
           requiredProperties: [...(sl.requiredProperties ?? [])],
               anchorRules:        sl.anchorRules ?? [],
               blocksPlacement:    sl.blocksPlacement ?? true,
+              softBlocks:         sl.softBlocks      ?? false,
               colorGroupId:       sl.colorGroupId    ?? '',
         })),
       };
@@ -390,10 +412,8 @@ export function RoomTypeEditor() {
         </div>
       </div>
 
-      {/* ── Right: editor + ref footer ── */}
-      <div className={s.rightPane}>
-        {/* ── Center: editor ── */}
-        <div className={s.editorPanel}>
+      {/* ── Center: editor ── */}
+      <div className={s.editorPanel}>
           {!draft ? (
             <div className={s.hint}>← Raumtyp auswählen oder neu anlegen</div>
           ) : (<>
@@ -783,6 +803,42 @@ export function RoomTypeEditor() {
                     </label>
                   </div>
 
+                  {/* ── Blockiert Zelle ── */}
+                  <div className={s.slotRow} style={{ marginTop: 4, alignItems: 'center', gap: 8 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.blocksPlacement ?? true) ? '#889' : '#7fd3ff' }}
+                      title={'Wenn aktiv (Standard): Die belegten Zellen werden nach Platzierung als „belegt" markiert – andere Slots können diese Zellen nicht mehr nutzen.\n\nWenn deaktiviert: Zellen bleiben frei, andere Slots können dieselbe Zelle belegen.\nBenötigt für Objekte die auf anderen Möbeln stehen:\n• Tischlampe auf Nachttisch → blocksPlacement: AUS\n• Radio auf Kommode → blocksPlacement: AUS\n• Waschbecken auf Unterschrank → blocksPlacement: AUS'}>
+                      <input
+                        type="checkbox"
+                        checked={slot.blocksPlacement ?? true}
+                        onChange={() => updateSlot(idx, { blocksPlacement: !(slot.blocksPlacement ?? true) })}
+                        style={{ accentColor: '#4d9fcc' }}
+                      />
+                      📦 Blockiert Zelle
+                      <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
+                        {(slot.blocksPlacement ?? true) ? '(andere Slots können diese Zelle nicht belegen)' : '⚡ aus – Möbel können gestapelt werden'}
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* ── Soft-Block (nur wenn blocksPlacement: false) ── */}
+                  {!(slot.blocksPlacement ?? true) && (
+                    <div className={s.slotRow} style={{ marginTop: 4, marginLeft: 16, alignItems: 'center', gap: 8 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.softBlocks ?? false) ? '#f0c060' : '#667' }}
+                        title={'Wenn aktiv: Zellen gehen in softOccupied.\nNormale Slots landen nicht darauf.\nSlots mit requiresSlot (z.B. Lampe via AnchorRules) ignorieren softOccupied und dürfen darauf platziert werden.\n\nTypischer Einsatz: Nachttisch\n  blocksPlacement: AUS + Soft-Block: EIN\n\nTeppich: blocksPlacement: AUS + Soft-Block: AUS (alles darf drauf)'}>
+                        <input
+                          type="checkbox"
+                          checked={slot.softBlocks ?? false}
+                          onChange={() => updateSlot(idx, { softBlocks: !(slot.softBlocks ?? false) })}
+                          style={{ accentColor: '#f0c060' }}
+                        />
+                        🔒 Soft-Block
+                        <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
+                          {(slot.softBlocks ?? false) ? '(nur requiresSlot-Slots dürfen darauf)' : '(aus – alles darf auf dieser Zelle landen)'}
+                        </span>
+                      </label>
+                    </div>
+                  )}
+
                   {/* ── Wandausrichtung (nur bei nearWall) ── */}
                   {slot.placementRules.nearWall && (
                     <div style={{ marginTop: 6 }}>
@@ -872,7 +928,7 @@ export function RoomTypeEditor() {
                           title={
                             slot.required
                               ? 'Wertebereich: 1–10\n\nGewichtung bestimmt die Auswahlwahrscheinlichkeit innerhalb der Varianten-Gruppe.\n\nDieser Slot ist Pflicht (✅) – der Generator wählt GARANTIERT eine Variante aus der Gruppe. Das Gewicht steuert NUR, welche Variante gewählt wird, nicht ob eine platziert wird.'
-                              : 'Wertebereich: 1–10\n\nGewichtung bestimmt die Auswahlwahrscheinlichkeit innerhalb der Varianten-Gruppe.\n\nDieser Slot ist optional (☐) – der Generator entscheidet anhand von Priorität und Raumgröße, ob die Gruppe überhaupt gezogen wird. Wenn ja, bestimmt das Gewicht die Variante.\n\nBeispiel: Gewicht 3 vs. 2 → 60% vs. 40% Wahrscheinlichkeit.'
+                              : 'Wertebereich: 1–10\n\nGewichtung bestimmt die Auswahlwahrscheinlichkeit innerhalb der Varianten-Gruppe.\n\nDieser Slot ist optional (☐) – der Generator entscheidet anhand von Priorität und Raumgröße, ob die Gruppe überhaupt gezogen wird. Wenn ja, bestimmt das Gewicht die Variante.'
                           }
                           style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem' }}
                         >ℹ</span>
@@ -928,6 +984,74 @@ export function RoomTypeEditor() {
                     })()}
                   </div>
 
+                  {/* ── Farbpalette für slot-spezifische Gruppe ── */}
+                  {(() => {
+                    const slotGroup = slot.colorGroupId;
+                    if (!slotGroup || slotGroup === 'none' || slotGroup === draft.colorGroupId)
+                      return null;
+                    const palette = draft.colorPalettes?.[slotGroup] ?? [];
+                    return (
+                      <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <label className={s.pathStyleLabel}
+                          title={`Erlaubte Farben für Gruppe „${slotGroup}". Der Generator wählt vor dem Slot-Loop zufällig eine der ausgewählten Farben. Keine Auswahl = Farbe wird vom ersten platzierten Möbel übernommen.`}>
+                          🎨 Palette für „{slotGroup}"
+                        </label>
+                        <div className={s.chipGroup}>
+                          {availColors.length === 0 && (
+                            <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
+                              Keine Farben verfügbar – Möbel-Vorlagen mit Farb-Tags eintragen
+                            </span>
+                          )}
+                          {availColors.map(color => {
+                            const active = palette.includes(color);
+                            return (
+                              <span key={color}
+                                className={`${s.chip} ${active ? s.chipActive : ''}`}
+                                title={active ? `„${color}" entfernen` : `„${color}" hinzufügen`}
+                                onClick={() => {
+                                  const next = active
+                                    ? palette.filter(c => c !== color)
+                                    : [...palette, color];
+                                  setDraft({
+                                    ...draft,
+                                    colorPalettes: { ...(draft.colorPalettes ?? {}), [slotGroup]: next },
+                                  });
+                                  setDirty(true);
+                                }}>
+                                {color}
+                              </span>
+                            );
+                          })}
+                        </div>
+                        {palette.length === 0
+                          ? <div className={s.slotHint} style={{ color: '#888' }}>Keine Auswahl → Farbe vom ersten platzierten Möbel</div>
+                          : <div className={s.slotHint} style={{ color: '#8c8' }}>✓ {palette.length} Farbe{palette.length !== 1 ? 'n' : ''} → zufällige Auswahl</div>
+                        }
+                      </div>
+                    );
+                  })()}
+
+                  {/* ── Benötigt Slot ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
+                    <span className={s.slotGroupLabel}
+                      title={'Dieser Slot wird nur versucht wenn der genannte Slot (ID oder Gruppen-ID) zuvor erfolgreich platziert wurde.\n\nBeispiele:\n• Tischlampe → id des Schreibtisch-Slots\n• Waschbecken → id des Unterschrank-Slots\n• Mikrowelle → id des Küchenzeilen-Slots\n\nAnders als AnchorRules: bestimmt nur OB der Slot versucht wird, nicht wo er landet.'}>
+                      🔗 Benötigt Slot
+                      <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
+                    </span>
+                    <input
+                      className={s.slotSizeInput}
+                      style={{ flex: 2 }}
+                      list={`anchor-targets-${idx}`}
+                      placeholder="Slot-ID oder Gruppen-ID (leer = unabhängig)"
+                      value={slot.requiresSlot ?? ''}
+                      onChange={e => updateSlot(idx, { requiresSlot: e.target.value })}
+                    />
+                    {slot.requiresSlot
+                      ? <span className={s.slotHint} style={{ color: '#fa8' }}>⚠ nur wenn „{slot.requiresSlot}" platziert</span>
+                      : <span className={s.slotHint} style={{ color: '#556' }}>unabhängig</span>
+                    }
+                  </div>
+
                   {/* ── Anker-Regeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, justifyContent: 'space-between' }}>
                     <span className={s.slotGroupLabel}>
@@ -978,6 +1102,7 @@ export function RoomTypeEditor() {
                         {ANCHOR_POSITIONS.map(pos => (
                           <span key={pos}
                             className={`${s.chip} ${rule.positions.includes(pos) ? s.chipActive : ''}`}
+                            title={ANCHOR_POSITION_TITLES[pos]}
                             onClick={() => toggleAnchorPosition(idx, rIdx, pos)}>
                             {pos}
                           </span>
@@ -988,6 +1113,22 @@ export function RoomTypeEditor() {
                           ↕ ODER: Generator wählt eine der {rule.positions.length} erlaubten Positionen
                         </div>
                       )}
+                      <div className={s.slotRow} style={{ gap: 6, marginTop: 4 }}>
+                        <span className={s.slotGroupLabel} style={{ minWidth: 60 }}>Ausrichtung</span>
+                        <select
+                          className={s.slotSizeInput}
+                          value={rule.orient ?? ''}
+                          onChange={e => updateAnchorRule(idx, rIdx, { orient: e.target.value as AnchorRule['orient'] })}
+                        >
+                          <option value="">— Tile-Standard —</option>
+                          <option value="match">match (wie Anker)</option>
+                          <option value="opposite">opposite (gegenüber)</option>
+                          <option value="N">N (Nord)</option>
+                          <option value="S">S (Süd)</option>
+                          <option value="E">E (Ost)</option>
+                          <option value="W">W (West)</option>
+                        </select>
+                      </div>
                       {rule.anchorTarget && rule.positions.length > 0 && (
                         <div className={s.slotHint} style={{ marginTop: 2, color: '#8c8' }}>
                           📎 „{rule.anchorTarget}" → {rule.positions.join(' | ')}
@@ -1090,8 +1231,8 @@ export function RoomTypeEditor() {
           </>)}
         </div>
 
-        {/* ── Ref footer (horizontal) ── */}
-        <div className={s.refPanel}>
+      {/* ── Right: ref panel ── */}
+      <div className={s.refPanel}>
           {/* Footprint-Kacheln */}
           <div style={{ flexShrink: 0 }}>
             <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 6 }}>Häufige Footprints</div>
@@ -1135,10 +1276,16 @@ export function RoomTypeEditor() {
             <strong>Kategorien leer</strong> = alle passenden.
           </p>
         </div>
-      </div>
     </div>
   );
 }
+
+
+
+
+
+
+
 
 
 

@@ -90,7 +90,13 @@
     "delete": "Definition löschen",
     "tileLayout": "Tile-Layout",
     "tileLayoutHint": "Zelle anklicken → dann Sprite im Sheet anklicken zum Zuweisen. Automatischer Vorschub zur nächsten Zelle."
+  },
+  "furnishPanel": {
+    "density":        "Möblierungsdichte",
+    "densityMin":     "Min",
+    "densityMax":     "Max",
+    "densityHint":    "Pro Generierung wird ein Zufallswert zwischen {{min}} % und {{max}} % gezogen.",
+    "densityPerRoom": "Dichte pro Raum individuell würfeln"
   }
 }
-
 

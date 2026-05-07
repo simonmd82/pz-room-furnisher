@@ -46,6 +46,14 @@ export interface AnchorRule {
   anchorTarget: string;
   /** Erlaubte Positionen (OR: Generator wählt eine). Leer = beliebig */
   positions: AnchorPosition[];
+  /**
+   * Ausrichtung des verankerten Slots relativ zum Anker.
+   * "match"    = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
+   * "opposite" = entgegengesetzt (z.B. Stuhl zeigt zum Tisch).
+   * "N"/"S"/"E"/"W" = fixe Ausrichtung.
+   * Leer/undefined = tile.Orientation (bisheriges Verhalten).
+   */
+  orient?: 'match' | 'opposite' | 'N' | 'S' | 'E' | 'W' | '';
 }
 
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */
@@ -152,6 +160,18 @@ export interface RoomTypeSlot {
    * Nur bei required=true relevant – optionale Slots werden einfach weggelassen.
    */
   fallbackRules: PlacementRules[];
+  /**
+   * Wenn false: Footprint-Zellen werden NICHT in occupied eingetragen.
+   * Andere Slots können dieselbe Zelle belegen (z.B. Möbel auf Teppich). Standard: true.
+   */
+  blocksPlacement: boolean;
+  /**
+   * Wenn true (und blocksPlacement:false): Zellen gehen in softOccupied.
+   * Normale Slots respektieren softOccupied und landen nicht darauf.
+   * Slots mit requiresSlot ignorieren softOccupied (dürfen darauf platziert werden).
+   * Typischer Einsatz: Nachttisch (blocksPlacement:false, softBlocks:true). Standard: false.
+   */
+  softBlocks: boolean;
 }
 
 export interface RoomTypeConfig {
@@ -201,6 +221,8 @@ export function defaultSlot(): RoomTypeSlot {
     slotGroupMode: '',
     groupWeight: 5,
     blocksPlacement: true,
+    softBlocks:      false,
+    requiresSlot: '',
     colorGroupId: '',
     fallbackRules: [],
   };
@@ -209,3 +231,5 @@ export function defaultSlot(): RoomTypeSlot {
 export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
   return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [] };
 }
+
+

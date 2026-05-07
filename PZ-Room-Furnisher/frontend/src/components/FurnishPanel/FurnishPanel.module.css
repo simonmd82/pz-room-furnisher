@@ -235,3 +235,47 @@
   color: #556;
   font-style: italic;
 }
+
+/* ── Density sliders ── */
+.densityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.densityLabel {
+  flex-shrink: 0;
+  width: 52px;
+  font-size: 0.7rem;
+  color: #99aacc;
+  text-align: right;
+}
+
+.densitySlider {
+  flex: 1;
+  accent-color: #8866ff;
+  cursor: pointer;
+}
+
+.densityHint {
+  font-size: 0.65rem;
+  color: #556;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.densityToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: #99aacc;
+  cursor: pointer;
+  user-select: none;
+}
+
+.densityToggle input {
+  accent-color: #8866ff;
+  cursor: pointer;
+}
+

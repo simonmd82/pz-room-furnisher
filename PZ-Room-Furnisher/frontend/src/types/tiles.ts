@@ -160,6 +160,8 @@ export function defaultDefinition(tileId: string): TileDefinition {
     colors: [],
     roomTypes: [],
     variantGroup: '',
+    allowedOrients: [],
     styleTags: [],
   };
 }
+

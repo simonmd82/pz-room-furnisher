@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: dark;
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 16px;
@@ -13,7 +13,16 @@
 }
 
 .app {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Vollbild-Tab (Tile-Browser, Moebel-Vorlagen) */
+.tab-full {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -82,6 +91,7 @@
   width: 100%;
   margin: 0 auto;
   min-height: 0;
+  overflow: hidden;
 }
 
 .upload-section {
@@ -152,5 +162,24 @@
 }
 .tab-btn:hover  { background: #1a1a2e; color: #aab; }
 .tab-active     { background: #1a1a2e; border-color: #3a3a5a; color: #fff; font-weight: 600; }
+
+/* ── Generator-Log Panel (rechts neben Grid) ── */
+.log-panel {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  flex-shrink: 0;
+  background: #080812;
+  border-left: 1px solid #2a2a3a;
+  overflow: hidden;
+}
+.log-panel-header {
+  flex-shrink: 0;
+}
+.log-panel .log-panel-header button {
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid #2a2a3a;
+}
 
 

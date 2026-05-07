@@ -12,11 +12,14 @@ export async function generateFurnishing(
   building: Building,
   roomSelections: RoomSelection[],
   seed?: number,
+  densityMin = 0,
+  densityMax = 1,
+  densityPerRoom = false,
 ): Promise<FurnishResult> {
   const res = await fetch(`${API_BASE}/furnish/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ building, roomSelections, seed: seed ?? null }),
+    body: JSON.stringify({ building, roomSelections, seed: seed ?? null, densityMin, densityMax, densityPerRoom }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json() as Promise<FurnishResult>;
