@@ -226,9 +226,10 @@ export function RoomTypeEditor() {
     updateSlot(slotIdx, { allowedCategories: cats });
   };
 
-  const setCategoryWeight = (slotIdx: number, group: string, weight: number) => {
+  const setCategoryWeight = (slotIdx: number, group: string, weight: number, clamp = true) => {
     if (!draft) return;
-    const cats = { ...draft.slots[slotIdx].allowedCategories, [group]: Math.max(1, Math.min(10, weight)) };
+    const v = clamp ? Math.max(1, Math.min(10, weight)) : Math.max(1, weight);
+    const cats = { ...draft.slots[slotIdx].allowedCategories, [group]: v };
     updateSlot(slotIdx, { allowedCategories: cats });
   };
 
@@ -588,15 +589,17 @@ export function RoomTypeEditor() {
 
                   {/* Footprint: Schnellauswahl + manuelle Eingabe */}
                   <span className={s.slotGroupLabel} style={{ whiteSpace: 'nowrap' }}>B×H</span>
-                  <input type="number" min={1} max={5} className={s.slotNumInput}
+                  <input type="number" min={1} max={20} className={s.slotNumInput}
                     title="Breite (Spalten)"
                     value={slot.footprint.width}
-                    onChange={e => updateSlot(idx, { footprint: { ...slot.footprint, width: Math.max(1, Math.min(5, +e.target.value)) } })} />
+                    onChange={e => { const v = +e.target.value; if (v >= 1) updateSlot(idx, { footprint: { ...slot.footprint, width: v } }); }}
+                    onBlur={e => updateSlot(idx, { footprint: { ...slot.footprint, width: Math.max(1, Math.min(20, +e.target.value)) } })} />
                   <span style={{ color: '#446' }}>×</span>
-                  <input type="number" min={1} max={5} className={s.slotNumInput}
+                  <input type="number" min={1} max={20} className={s.slotNumInput}
                     title="Höhe (Zeilen)"
                     value={slot.footprint.height}
-                    onChange={e => updateSlot(idx, { footprint: { ...slot.footprint, height: Math.max(1, Math.min(5, +e.target.value)) } })} />
+                    onChange={e => { const v = +e.target.value; if (v >= 1) updateSlot(idx, { footprint: { ...slot.footprint, height: v } }); }}
+                    onBlur={e => updateSlot(idx, { footprint: { ...slot.footprint, height: Math.max(1, Math.min(20, +e.target.value)) } })} />
                   {/* canRotate toggle – nur sinnvoll bei nicht-quadratischen Footprints */}
                   {slot.footprint.width !== slot.footprint.height && (
                     <span
@@ -731,7 +734,8 @@ export function RoomTypeEditor() {
                       </span>
                       <input type="number" min={1} max={10} className={s.slotNumInput}
                         value={w}
-                        onChange={e => setCategoryWeight(idx, cat, +e.target.value)} />
+                        onChange={e => setCategoryWeight(idx, cat, +e.target.value, false)}
+                        onBlur={e => setCategoryWeight(idx, cat, +e.target.value, true)} />
                       <span className={s.slotHint} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         Gewicht <span style={{ color: '#446', fontSize: '0.68rem' }}>(1–10)</span>
                         <span
@@ -935,7 +939,8 @@ export function RoomTypeEditor() {
                       </span>
                       <input type="number" min={1} max={10} className={s.slotNumInput}
                         value={slot.groupWeight}
-                        onChange={e => updateSlot(idx, { groupWeight: Math.max(1, Math.min(10, +e.target.value)) })} />
+                        onChange={e => { const v = +e.target.value; if (v >= 1) updateSlot(idx, { groupWeight: v }); }}
+                        onBlur={e => updateSlot(idx, { groupWeight: Math.max(1, Math.min(10, +e.target.value)) })} />
                     </>)}
                   </div>
                   {slot.slotGroupId && (() => {
@@ -1031,6 +1036,26 @@ export function RoomTypeEditor() {
                     );
                   })()}
 
+                  {/* ── Tile-Gruppe (gleicher Variantensatz) ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
+                    <span className={s.slotGroupLabel}
+                      title={'Tile-Gruppen-ID für kohärente Modellwahl.\n\nAlle Slots mit gleicher tileGroupId stammen aus derselben VariantGroup (Tile-Ebene).\n\n• Leer = keine Bindung (jeder Slot wählt unabhängig)\n• Wert = z.B. "dining_chairs" – erster Slot friert VariantGroup ein, alle weiteren filtern darauf.\n\nBeispiel: 4 Stühle am Tisch → alle bekommen denselben Stuhltyp (chair_beige_01).'}>
+                      🪑 Tile-Gruppe
+                      <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
+                    </span>
+                    <input
+                      className={s.slotSizeInput}
+                      style={{ flex: 2 }}
+                      placeholder="z.B. dining_chairs (leer = kein Variantenzwang)"
+                      value={slot.tileGroupId ?? ''}
+                      onChange={e => updateSlot(idx, { tileGroupId: e.target.value })}
+                    />
+                    {slot.tileGroupId
+                      ? <span className={s.slotHint} style={{ color: '#ac8' }}>→ Gruppe „{slot.tileGroupId}"</span>
+                      : <span className={s.slotHint} style={{ color: '#556' }}>unabhängig</span>
+                    }
+                  </div>
+
                   {/* ── Benötigt Slot ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
@@ -1121,6 +1146,7 @@ export function RoomTypeEditor() {
                           onChange={e => updateAnchorRule(idx, rIdx, { orient: e.target.value as AnchorRule['orient'] })}
                         >
                           <option value="">— Tile-Standard —</option>
+                          <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
                           <option value="match">match (wie Anker)</option>
                           <option value="opposite">opposite (gegenüber)</option>
                           <option value="N">N (Nord)</option>
@@ -1129,6 +1155,25 @@ export function RoomTypeEditor() {
                           <option value="W">W (West)</option>
                         </select>
                       </div>
+                      {/* Offset entlang der Kante – nur für LongSide/ShortSide sinnvoll */}
+                      {rule.positions.some(p => ['LongSide0','LongSide1','ShortSide0','ShortSide1'].includes(p)) && (
+                        <div className={s.slotRow} style={{ gap: 6, marginTop: 4 }}>
+                          <span className={s.slotGroupLabel} style={{ minWidth: 60 }}
+                            title="Versatz entlang der Ankerkante.\n0 = erste Zelle, 1 = zweite, -1 = letzte Zelle usw.">
+                            Offset ℹ
+                          </span>
+                          <input
+                            type="number"
+                            className={s.slotSizeInput}
+                            style={{ width: 60 }}
+                            value={rule.offsetAlongAnchor ?? 0}
+                            onChange={e => updateAnchorRule(idx, rIdx, { offsetAlongAnchor: parseInt(e.target.value) || 0 })}
+                          />
+                          <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
+                            0=erste · 1=zweite · -1=letzte
+                          </span>
+                        </div>
+                      )}
                       {rule.anchorTarget && rule.positions.length > 0 && (
                         <div className={s.slotHint} style={{ marginTop: 2, color: '#8c8' }}>
                           📎 „{rule.anchorTarget}" → {rule.positions.join(' | ')}
@@ -1279,6 +1324,7 @@ export function RoomTypeEditor() {
     </div>
   );
 }
+
 
 
 

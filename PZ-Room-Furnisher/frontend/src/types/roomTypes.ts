@@ -33,6 +33,8 @@ export type FurnitureLayer = typeof FURNITURE_LAYERS[number];
 export const ANCHOR_POSITIONS = [
   'HeadLeft', 'HeadRight', 'FootLeft', 'FootRight',
   'Left', 'Right', 'Above', 'Below', 'Center',
+  // Footprint-relative Positionen (unabhängig von Orientierung)
+  'LongSide0', 'LongSide1', 'ShortSide0', 'ShortSide1',
 ] as const;
 export type AnchorPosition = typeof ANCHOR_POSITIONS[number];
 
@@ -47,13 +49,19 @@ export interface AnchorRule {
   /** Erlaubte Positionen (OR: Generator wählt eine). Leer = beliebig */
   positions: AnchorPosition[];
   /**
+   * Versatz entlang der Ankerkante (nur für LongSide0/1, ShortSide0/1).
+   * 0 = erste Zelle, 1 = zweite, -1 = letzte, -2 = vorletzte usw.
+   */
+  offsetAlongAnchor?: number;
+  /**
    * Ausrichtung des verankerten Slots relativ zum Anker.
-   * "match"    = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
-   * "opposite" = entgegengesetzt (z.B. Stuhl zeigt zum Tisch).
+   * "match"        = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
+   * "opposite"     = entgegengesetzt (z.B. Stuhl zeigt vom Tisch weg).
+   * "facingAnchor" = Slot zeigt immer zum Anker hin (automatisch aus Position+Footprint).
    * "N"/"S"/"E"/"W" = fixe Ausrichtung.
    * Leer/undefined = tile.Orientation (bisheriges Verhalten).
    */
-  orient?: 'match' | 'opposite' | 'N' | 'S' | 'E' | 'W' | '';
+  orient?: 'match' | 'opposite' | 'facingAnchor' | 'N' | 'S' | 'E' | 'W' | '';
 }
 
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */
@@ -224,6 +232,7 @@ export function defaultSlot(): RoomTypeSlot {
     softBlocks:      false,
     requiresSlot: '',
     colorGroupId: '',
+    tileGroupId:  '',
     fallbackRules: [],
   };
 }

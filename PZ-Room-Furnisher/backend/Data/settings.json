@@ -27,12 +27,12 @@
     "Bathroom",
     "Bedroom",
     "Diningroom",
-    "Garage",
+    "Garagestorage",
     "Hallway",
     "Kitchen",
+    "Laundry",
     "LivingRoom",
     "Office",
-    "Restaurant",
     "Storage"
   ]
 }

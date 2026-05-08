@@ -78,6 +78,11 @@ public class AnchorRule
     /// <summary>Erlaubte relative Positionen (OR: Generator wählt eine). Leer = beliebig.</summary>
     public List<string> Positions { get; set; } = [];
     /// <summary>
+    /// Versatz entlang der Ankerkante (nur für LongSide0/1 und ShortSide0/1).
+    /// 0 = erste Zelle, 1 = zweite, -1 = letzte, -2 = vorletzte usw.
+    /// </summary>
+    public int OffsetAlongAnchor { get; set; } = 0;
+    /// <summary>
     /// Ausrichtung des verankerten Slots relativ zum Anker.
     /// "match"    = gleiche Ausrichtung wie der Anker-Slot (z.B. Nachttisch neben Bett).
     /// "opposite" = entgegengesetzte Ausrichtung (z.B. Stuhl zeigt zum Tisch).
@@ -195,6 +200,16 @@ public class RoomTypeSlot
     /// ungefilterten Pool (Slot wird nicht weggelassen).
     /// </summary>
     public string ColorGroupId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Tile-Varianten-Gruppen-ID für kohärente Modellwahl (gleicher Variantensatz).
+    /// Slots mit gleicher TileGroupId erzwingen, dass alle Tiles aus derselben VariantGroup stammen.
+    ///   Leer  = keine Bindung (jeder Slot wählt unabhängig).
+    ///   Wert  = z.B. "dining_chairs" – der erste Slot der Gruppe friert die VariantGroup ein
+    ///           (z.B. "chair_beige_01"), alle Folge-Slots filtern ihre Kandidaten auf genau
+    ///           diese VariantGroup. Kein Match → ungefilterten Pool behalten.
+    /// </summary>
+    public string TileGroupId { get; set; } = string.Empty;
 }
 
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>

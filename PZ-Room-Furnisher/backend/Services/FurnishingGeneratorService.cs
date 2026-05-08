@@ -140,6 +140,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // 4. Place each slot
             var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
             var colorMap   = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var variantMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Farbpalette pre-seeden: für jede Gruppe mit definierter Palette
             // wird JETZT eine zufällige Farbe festgelegt – vor dem ersten Slot.
@@ -165,7 +166,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         continue;
                     }
                     PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, allTiles, anchorMap, colorMap, config, placements, log, rng, configKey);
+                        pathCells, occupied, softOccupied, allTiles, anchorMap, colorMap, variantMap, config, placements, log, rng, configKey);
                 }
         }
 
@@ -259,6 +260,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
         Dictionary<string, string> colorMap,
+        Dictionary<string, string> variantMap,
         RoomTypeConfig config,
         List<PlacedFurnitureItem> placements, List<string> log, Random rng,
         string roomTypeName = "")
@@ -296,10 +298,28 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // else: kein Match → ungefilterten Pool behalten (Slot wird nicht verworfen)
         }
 
+        // ── TileGroup-Filter ───────────────────────────────────────────────────
+        // Erzwingt gleichen VariantGroup-Wert für alle Slots mit derselben TileGroupId.
+        if (!string.IsNullOrEmpty(slot.TileGroupId)
+            && variantMap.TryGetValue(slot.TileGroupId, out var requiredVariantGroup)
+            && !string.IsNullOrEmpty(requiredVariantGroup))
+        {
+            var grouped = candidates
+                .Where(t => t.VariantGroup.Equals(requiredVariantGroup, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (grouped.Count > 0)
+            {
+                candidates = grouped;
+                log.Add($"    [TILEGROUP] '{slot.Id}': group='{slot.TileGroupId}' → filter variantGroup='{requiredVariantGroup}' ({grouped.Count} tiles)");
+            }
+            // else: kein Match → ungefilterten Pool behalten
+        }
+
         // Resolve anchor rule
         (int col, int row, int fpW, int fpH, string orient)? anchorInfo = null;
-        string? anchorPos    = null;
-        string? anchorOrientRule = null;   // "match" | "opposite" | "N/S/E/W" | null
+        string? anchorPos        = null;
+        string? anchorOrientRule = null;   // "match" | "opposite" | "facingAnchor" | "N/S/E/W" | null
+        int     anchorOffset     = 0;      // offsetAlongAnchor für LongSide/ShortSide
         // Kumulative Ablehnungszähler für [WARN]-Log (nur im else-Zweig gefüllt, sonst 0)
         int totalNoVariant = 0, totalNoFit = 0, totalNoWallDir = 0, totalFits = 0, totalPath = 0, totalLoot = 0;
         int totalDoor = 0, totalWindow = 0, totalConnectivity = 0;
@@ -311,6 +331,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     anchorInfo       = ap;
                     anchorPos        = rule.Positions.Count > 0 ? rule.Positions[rng.Next(rule.Positions.Count)] : null;
                     anchorOrientRule = rule.Orient;
+                    anchorOffset     = rule.OffsetAlongAnchor;
                     break;
                 }
         }
@@ -322,14 +343,17 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (anchorInfo.HasValue && anchorPos != null)
         {
             // 1. Ziel-Orientierung zuerst berechnen – sie bestimmt Variante und Dimensionen.
+            //    "facingAnchor" wird anhand der Position und des Anker-Footprints aufgelöst.
             string anchoredOrient = anchorOrientRule switch
             {
-                "match"    => anchorInfo.Value.orient,
-                "opposite" => anchorInfo.Value.orient switch
-                              { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
+                "match"        => anchorInfo.Value.orient,
+                "opposite"     => anchorInfo.Value.orient switch
+                                  { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
+                "facingAnchor" => ResolveFacingAnchorOrient(anchorPos, anchorInfo.Value.fpW, anchorInfo.Value.fpH) ?? tile.Orientation,
                 "N" or "S" or "E" or "W" => anchorOrientRule,
-                _          => tile.Orientation,
+                _              => tile.Orientation,
             };
+            log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorFpW={anchorInfo.Value.fpW} anchorFpH={anchorInfo.Value.fpH} → anchoredOrient='{anchoredOrient}'");
 
             // 2. Passende Orientierungsvariante aus der VariantGroup wählen, BEVOR
             //    Dimensionen und Position berechnet werden.
@@ -349,7 +373,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             int fpH = finalTile.TileLayout.Count;
 
             var p = ComputeAnchoredPosition(anchorInfo.Value.col, anchorInfo.Value.row,
-                anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, anchorPos, anchorInfo.Value.orient);
+                anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, anchorPos, anchorInfo.Value.orient, anchorOffset);
 
             result = null;
             if (p.HasValue)
@@ -457,6 +481,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 colorMap[effectiveColorGroup] = firstColor;
                 log.Add($"    [COLOR] '{slot.Id}': group='{effectiveColorGroup}' locked to '{firstColor}'");
+            }
+        }
+
+        // VariantGroup der TileGroup beim ersten Slot einfrieren
+        if (!string.IsNullOrEmpty(slot.TileGroupId) && !variantMap.ContainsKey(slot.TileGroupId))
+        {
+            if (!string.IsNullOrEmpty(placedTile.VariantGroup))
+            {
+                variantMap[slot.TileGroupId] = placedTile.VariantGroup;
+                log.Add($"    [TILEGROUP] '{slot.Id}': group='{slot.TileGroupId}' locked to variantGroup='{placedTile.VariantGroup}'");
             }
         }
 
@@ -592,18 +626,24 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (!rules.AllowOnPath && baseTile.HasCollision && pathCells.Count > 0)
             pool = pool.Where(c => !pathCells.Contains(c));
 
-        if (rules.CenterRoom)
-        {
-            float cx = roomCells.Average(c => (float)c.Item1);
-            float cy = roomCells.Average(c => (float)c.Item2);
-            pool = pool.OrderBy(c => Math.Abs(c.Item1 - cx) + Math.Abs(c.Item2 - cy));
-        }
-
         var poolList = pool.Distinct().ToList();
 
-        // Shuffle for randomness
-        for (int i = poolList.Count - 1; i > 0; i--)
-        { int j = rng.Next(i + 1); (poolList[i], poolList[j]) = (poolList[j], poolList[i]); }
+        if (rules.CenterRoom)
+        {
+            // Abstand zur Raummitte aufsteigend sortieren + kleinen Jitter für Varianz.
+            // KEIN vollständiger Shuffle – sonst wird die Sortierung zunichte gemacht.
+            float cx = roomCells.Average(c => (float)c.Item1);
+            float cy = roomCells.Average(c => (float)c.Item2);
+            poolList = poolList
+                .OrderBy(c => Math.Abs(c.Item1 - cx) + Math.Abs(c.Item2 - cy) + rng.NextDouble() * 0.9)
+                .ToList();
+        }
+        else
+        {
+            // Shuffle for randomness
+            for (int i = poolList.Count - 1; i > 0; i--)
+            { int j = rng.Next(i + 1); (poolList[i], poolList[j]) = (poolList[j], poolList[i]); }
+        }
 
         int rejNoVariant = 0, rejNoWallDir = 0, rejFits = 0, rejPath = 0, rejLoot = 0, rejDoor = 0, rejWindow = 0, rejConnectivity = 0;
         foreach (var cell in poolList)
@@ -908,6 +948,35 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         _           => null,
     };
 
+    /// <summary>
+    /// Löst "facingAnchor" auf: gibt die Orientierung zurück, mit der ein Slot zum Anker
+    /// hin schaut, abhängig von Position und Anker-Footprint-Verhältnis (aw × ah).
+    ///
+    ///   LongSide0: bei horiz. Anker (aw≥ah) → Norden → Stuhl zeigt nach S
+    ///              bei vert.  Anker (ah>aw) → Westen → Stuhl zeigt nach E
+    ///   LongSide1: bei horiz. → Süden  → N | bei vert. → Osten  → W
+    ///   ShortSide0: bei horiz. → Westen → E | bei vert. → Norden → S
+    ///   ShortSide1: bei horiz. → Osten  → W | bei vert. → Süden  → N
+    ///   Above/Below/Left/Right: direkte Auflösung.
+    /// </summary>
+    private static string? ResolveFacingAnchorOrient(string position, int aw, int ah)
+    {
+        bool wide = aw > ah;
+        bool tall = ah > aw;
+        return position switch
+        {
+            "LongSide0"  => wide || (!tall) ? "S" : "E",
+            "LongSide1"  => wide || (!tall) ? "N" : "W",
+            "ShortSide0" => wide ? "E" : "S",
+            "ShortSide1" => wide ? "W" : "N",
+            "Above"      => "S",
+            "Below"      => "N",
+            "Left"       => "E",
+            "Right"      => "W",
+            _            => null,
+        };
+    }
+
     // =========================================================================
     // Anchor position offset calculation
     // =========================================================================
@@ -939,7 +1008,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     /// Rückgabe: top-left-Anker des dep-Footprints (depW × depH).
     /// </summary>
     private static (int col, int row)? ComputeAnchoredPosition(
-        int ac, int ar, int aw, int ah, int depW, int depH, string position, string anchorOrient)
+        int ac, int ar, int aw, int ah, int depW, int depH, string position, string anchorOrient, int offset = 0)
     {
         return position switch
         {
@@ -958,8 +1027,37 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             "Above"     => (ac + (aw - depW) / 2, ar - depH),
             "Below"     => (ac + (aw - depW) / 2, ar + ah),
             "Center"    => (ac + (aw - depW) / 2, ar + (ah - depH) / 2),
+            // ── Footprint-relative Positionen mit optionalem Offset entlang der Kante ──
+            // offset=0 → erste Zelle, offset=1 → zweite Zelle, usw.
+            // Negative Werte: letztes-N → offset=-1 letztes, -2 vorletztes, usw.
+            // (normalisiert: offset < 0 → aw/ah + offset − für negative Indizes)
+            "LongSide0" => aw >= ah
+                            ? ((int, int)?)(ac + NormOffset(offset, aw, depW), ar - depH)          // Norden
+                            : (ac - depW,  ar + NormOffset(offset, ah, depH)),                      // Westen
+            "LongSide1" => aw >= ah
+                            ? ((int, int)?)(ac + NormOffset(offset, aw, depW), ar + ah)             // Süden
+                            : (ac + aw,    ar + NormOffset(offset, ah, depH)),                      // Osten
+            "ShortSide0" => aw >= ah
+                            ? ((int, int)?)(ac - depW,  ar + NormOffset(offset, ah, depH))          // Westen
+                            : (ac + NormOffset(offset, aw, depW), ar - depH),                       // Norden
+            "ShortSide1" => aw >= ah
+                            ? ((int, int)?)(ac + aw,    ar + NormOffset(offset, ah, depH))          // Osten
+                            : (ac + NormOffset(offset, aw, depW), ar + ah),                         // Süden
             _           => null,
         };
+    }
+
+    /// <summary>
+    /// Berechnet den Zell-Offset entlang einer Ankerkante.
+    /// Bei offset=0 → erste Zelle (kein Versatz).
+    /// Negative Werte: letztes - |offset| (z.B. -1 = letzte Zelle der Kante).
+    /// anchorLen = Länge der Ankerkante, depLen = Tiefe des dep-Footprints.
+    /// </summary>
+    private static int NormOffset(int offset, int anchorLen, int depLen)
+    {
+        if (offset >= 0) return offset;
+        // -1 = letzte mögliche Position, -2 = vorletzte, usw.
+        return anchorLen - depLen + offset + 1;
     }
 
     // Kopfende oben (S) / unten (N) / rechts (W) / links (E)
@@ -1139,6 +1237,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -12772,5 +12772,641 @@
       "W",
       "S"
     ]
+  },
+  "furniture_storage_02_033": {
+    "tileId": "furniture_storage_02_033",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_storage_02_033"
+      ],
+      [
+        "furniture_storage_02_032"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom"
+    ],
+    "variantGroup": "cabinet_dining_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_034": {
+    "tileId": "furniture_storage_02_034",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_storage_02_034",
+        "furniture_storage_02_035"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom"
+    ],
+    "variantGroup": "cabinet_dining_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_038": {
+    "tileId": "furniture_storage_02_038",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_storage_02_038",
+        "furniture_storage_02_039"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom"
+    ],
+    "variantGroup": "cabinet_dining_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_037": {
+    "tileId": "furniture_storage_02_037",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_storage_02_037"
+      ],
+      [
+        "furniture_storage_02_036"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom"
+    ],
+    "variantGroup": "cabinet_dining_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_01_053": {
+    "tileId": "furniture_storage_01_053",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_storage_01_053"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sidetable_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_01_054": {
+    "tileId": "furniture_storage_01_054",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_storage_01_054"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sidetable_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_01_055": {
+    "tileId": "furniture_storage_01_055",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_storage_01_055"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sidetable_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_01_052": {
+    "tileId": "furniture_storage_01_052",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_storage_01_052"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sidetable_brown_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_001": {
+    "tileId": "furniture_storage_02_001",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_storage_02_001"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Grey"
+    ],
+    "roomTypes": [
+      "Storage",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_003": {
+    "tileId": "furniture_storage_02_003",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_storage_02_003"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Grey"
+    ],
+    "roomTypes": [
+      "Storage",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_000": {
+    "tileId": "furniture_storage_02_000",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_storage_02_000"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Grey"
+    ],
+    "roomTypes": [
+      "Storage",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_002": {
+    "tileId": "furniture_storage_02_002",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_storage_02_002"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Grey"
+    ],
+    "roomTypes": [
+      "Storage",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_009": {
+    "tileId": "furniture_storage_02_009",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_storage_02_009"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_011": {
+    "tileId": "furniture_storage_02_011",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_storage_02_011"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_010": {
+    "tileId": "furniture_storage_02_010",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_storage_02_010"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_008": {
+    "tileId": "furniture_storage_02_008",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_storage_02_008"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_029": {
+    "tileId": "furniture_storage_02_029",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_storage_02_029"
+      ]
+    ],
+    "group": "Storage",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Bedroom",
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_031": {
+    "tileId": "furniture_storage_02_031",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_storage_02_031"
+      ]
+    ],
+    "group": "Storage",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Bedroom",
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_030": {
+    "tileId": "furniture_storage_02_030",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_storage_02_030"
+      ]
+    ],
+    "group": "Storage",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Bedroom",
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
+  },
+  "furniture_storage_02_028": {
+    "tileId": "furniture_storage_02_028",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_storage_02_028"
+      ]
+    ],
+    "group": "Storage",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Bedroom",
+      "Garagestorage",
+      "Storage"
+    ],
+    "variantGroup": "",
+    "styleTags": [],
+    "allowedOrients": []
   }
 }
