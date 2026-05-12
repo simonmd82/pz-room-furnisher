@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  SIZE_KEYS, ANCHOR_POSITIONS, REQUIRED_PROPERTIES, FURNITURE_LAYERS,
+  SIZE_KEYS, ANCHOR_POSITIONS, ANCHOR_POSITION_TOOLTIPS, ANCHOR_ORIENT_TOOLTIPS,
+  REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
 } from '../../types/roomTypes';
 import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
@@ -101,17 +102,6 @@ const SIZE_EXAMPLES: Record<string, string> = {
  *   FootLeft  = links vom Fußende   (West-Seite unten)
  *   FootRight = rechts vom Fußende  (Ost-Seite unten)
  */
-const ANCHOR_POSITION_TITLES: Record<string, string> = {
-  HeadLeft:  'Links vom Kopfende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): West-Seite oben → Nachttisch links\nBeispiel Bett (W): Nord-Seite rechts → Nachttisch oben',
-  HeadRight: 'Rechts vom Kopfende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): Ost-Seite oben → Nachttisch rechts\nBeispiel Bett (W): Süd-Seite rechts → Nachttisch unten',
-  FootLeft:  'Links vom Fußende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): West-Seite unten\nBeispiel Schreibtisch: Stuhl links vor dem Tisch',
-  FootRight: 'Rechts vom Fußende des Ankers\n(vom Fußende aus gesehen)\n\nBeispiel Bett (S): Ost-Seite unten\nBeispiel Schreibtisch: Stuhl rechts vor dem Tisch',
-  Left:      'Linke Längsseite des Ankers (orient-abhängig)\n\nBei N/S-Orient: Westseite\nBei E/W-Orient: Nordseite',
-  Right:     'Rechte Längsseite des Ankers (orient-abhängig)\n\nBei N/S-Orient: Ostseite\nBei E/W-Orient: Südseite',
-  Above:     'Direkt oberhalb des Anker-Footprints (orient-unabhängig)\nAnker-Breite wird zentriert',
-  Below:     'Direkt unterhalb des Anker-Footprints (orient-unabhängig)\nAnker-Breite wird zentriert',
-  Center:    'Mittig auf dem Anker-Footprint (orient-unabhängig)\nIdeal für Objekte die auf einer Oberfläche stehen sollen',
-};
 
 export function RoomTypeEditor() {
   const { t } = useTranslation();
@@ -128,6 +118,12 @@ export function RoomTypeEditor() {
   const [infoOpen, setInfoOpen]       = useState(false);
   /** Indices der eingeklappten Slot-Karten */
   const [collapsedSlots, setCollapsedSlots] = useState<Set<number>>(new Set());
+  /** Drag & Drop: Index des aktuell gezogenen Slots */
+  const dragIndexRef = useRef<number | null>(null);
+  /** Index des Slots über dem der Cursor gerade schwebt */
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  /** Zwischenablage: kopierter Slot + Quellenraum */
+  const [copiedSlot, setCopiedSlot] = useState<{ slot: RoomTypeSlot; fromRoom: string } | null>(null);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setConfigs(cfgs)).catch(console.error);
@@ -210,6 +206,33 @@ export function RoomTypeEditor() {
     setCollapsedSlots(prev => {
       const next = new Set<number>();
       prev.forEach(i => { if (i < idx) next.add(i); else if (i > idx) next.add(i - 1); });
+      return next;
+    });
+  };
+
+  const reorderSlots = (fromIdx: number, toIdx: number) => {
+    if (!draft || fromIdx === toIdx) return;
+    const slots = [...draft.slots];
+    const [moved] = slots.splice(fromIdx, 1);
+    slots.splice(toIdx, 0, moved);
+    setDraft({ ...draft, slots });
+    setDirty(true);
+    // Collapsed-Indices remappen
+    setCollapsedSlots(prev => {
+      const next = new Set<number>();
+      prev.forEach(i => {
+        if (i === fromIdx) {
+          next.add(toIdx);
+        } else {
+          let newI = i;
+          if (fromIdx < toIdx) {
+            if (i > fromIdx && i <= toIdx) newI = i - 1;
+          } else {
+            if (i >= toIdx && i < fromIdx) newI = i + 1;
+          }
+          next.add(newI);
+        }
+      });
       return next;
     });
   };
@@ -301,6 +324,28 @@ export function RoomTypeEditor() {
       const next = new Set<number>();
       prev.forEach(i => { next.add(i <= idx ? i : i + 1); });
       return next; // Duplikat (idx+1) ist nicht in Set → aufgeklappt
+    });
+  };
+
+  const copySlot = (idx: number) => {
+    if (!draft) return;
+    setCopiedSlot({ slot: { ...draft.slots[idx] }, fromRoom: draft.roomType });
+  };
+
+  const pasteSlot = () => {
+    if (!draft || !copiedSlot) return;
+    const copy: RoomTypeSlot = {
+      ...copiedSlot.slot,
+      id: copiedSlot.slot.id ? copiedSlot.slot.id + '_copy' : '',
+    };
+    const newIdx = draft.slots.length;
+    setDraft({ ...draft, slots: [...draft.slots, copy] });
+    setDirty(true);
+    // Alle bestehenden einklappen, eingefügten aufklappen
+    setCollapsedSlots(prev => {
+      const next = new Set<number>();
+      for (let i = 0; i < newIdx; i++) next.add(i);
+      return next;
     });
   };
 
@@ -434,12 +479,13 @@ export function RoomTypeEditor() {
                 className={s.pathStyleSelect}
                 value={draft.pathStyle ?? 'wall'}
                 onChange={e => {
-                  setDraft({ ...draft, pathStyle: e.target.value as 'wall' | 'center' | 'random' });
+                  setDraft({ ...draft, pathStyle: e.target.value as 'wall' | 'center' | 'random' | 'doorOnly' });
                   setDirty(true);
                 }}>
                 <option value="wall">{t('roomTypeEditor.pathStyle.wall')}</option>
                 <option value="center">{t('roomTypeEditor.pathStyle.center')}</option>
                 <option value="random">{t('roomTypeEditor.pathStyle.random')}</option>
+                <option value="doorOnly">{t('roomTypeEditor.pathStyle.doorOnly')}</option>
               </select>
             </div>
 
@@ -518,6 +564,26 @@ export function RoomTypeEditor() {
               <pre className={s.infoPanel}>{SLOT_INFO_TEXT}</pre>
             )}
 
+            {/* ── Zwischenablage-Banner ── */}
+            {copiedSlot && (
+              <div className={s.pasteBar}>
+                <span className={s.pasteBarIcon}>📋</span>
+                <span className={s.pasteBarText}>
+                  Zwischenablage:{' '}
+                  <strong>{copiedSlot.slot.id || copiedSlot.slot.label || '(kein Name)'}</strong>
+                  {copiedSlot.fromRoom !== draft?.roomType && (
+                    <span className={s.pasteBarFrom}> aus „{copiedSlot.fromRoom}"</span>
+                  )}
+                </span>
+                <button className={s.pasteSlotBtn} onClick={pasteSlot}
+                  title={`Slot „${copiedSlot.slot.id || copiedSlot.slot.label || 'kopiert'}" am Ende einfügen`}>
+                  ↓ Einfügen
+                </button>
+                <button className={s.pasteBarClearBtn} title="Zwischenablage leeren"
+                  onClick={() => setCopiedSlot(null)}>✕</button>
+              </div>
+            )}
+
             {draft.slots.length === 0 && (
               <div className={s.hint} style={{ padding: '12px' }}>Noch keine Slots – klicke "+ Slot hinzufügen"</div>
             )}
@@ -540,11 +606,18 @@ export function RoomTypeEditor() {
                 });
                 return (
               <div key={idx}
-                className={`${s.slotCard} ${slot.required ? s.slotCardRequired : ''} ${slot.slotGroupId ? s.slotCardGrouped : ''}`}
-                style={groupColor ? { '--group-color': groupColor } as React.CSSProperties : undefined}>
+                className={`${s.slotCard} ${slot.required ? s.slotCardRequired : ''} ${slot.slotGroupId ? s.slotCardGrouped : ''} ${dragOverIdx === idx && dragIndexRef.current !== idx ? s.slotCardDragOver : ''}`}
+                style={groupColor ? { '--group-color': groupColor } as React.CSSProperties : undefined}
+                onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (dragOverIdx !== idx) setDragOverIdx(idx); }}
+                onDrop={e => { e.preventDefault(); if (dragIndexRef.current !== null) reorderSlots(dragIndexRef.current, idx); dragIndexRef.current = null; setDragOverIdx(null); }}
+                onDragEnd={() => { dragIndexRef.current = null; setDragOverIdx(null); }}>
 
                 {/* ── Zusammengeklappte Zusammenfassung (immer sichtbar) ── */}
-                <div className={s.slotSummaryBar} onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
+                <div className={s.slotSummaryBar}
+                  draggable
+                  onDragStart={e => { dragIndexRef.current = idx; e.dataTransfer.effectAllowed = 'move'; }}
+                  onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
+                  <span className={s.dragHandle} title="Slot verschieben" onClick={e => e.stopPropagation()}>⠿</span>
                   <span className={s.slotIndex}>#{idx + 1}</span>
                   <span className={s.collapseToggleIcon}>{isCollapsed ? '▶' : '▼'}</span>
                   <span className={s.slotSummaryId} style={{ color: slot.id ? '#aac' : '#446', fontStyle: slot.id ? 'normal' : 'italic' }}>
@@ -578,6 +651,8 @@ export function RoomTypeEditor() {
                   <span style={{ flex: 1 }} />
                   <button className={s.duplicateSlotBtn} title="Slot duplizieren"
                     onClick={e => { e.stopPropagation(); duplicateSlot(idx); }}>⎘</button>
+                  <button className={s.copySlotBtn} title="Slot in Zwischenablage kopieren (auch in andere Raumkonfiguration einfügbar)"
+                    onClick={e => { e.stopPropagation(); copySlot(idx); }}>📋</button>
                   <button className={s.removeSlotBtn}
                     onClick={e => { e.stopPropagation(); removeSlot(idx, slot.label || slot.id); }}>✕</button>
                 </div>
@@ -1127,7 +1202,7 @@ export function RoomTypeEditor() {
                         {ANCHOR_POSITIONS.map(pos => (
                           <span key={pos}
                             className={`${s.chip} ${rule.positions.includes(pos) ? s.chipActive : ''}`}
-                            title={ANCHOR_POSITION_TITLES[pos]}
+                            title={ANCHOR_POSITION_TOOLTIPS[pos]}
                             onClick={() => toggleAnchorPosition(idx, rIdx, pos)}>
                             {pos}
                           </span>
@@ -1139,16 +1214,25 @@ export function RoomTypeEditor() {
                         </div>
                       )}
                       <div className={s.slotRow} style={{ gap: 6, marginTop: 4 }}>
-                        <span className={s.slotGroupLabel} style={{ minWidth: 60 }}>Ausrichtung</span>
+                        <span className={s.slotGroupLabel} style={{ minWidth: 60 }}>
+                          Ausrichtung
+                          <span
+                            title={rule.orient ? (ANCHOR_ORIENT_TOOLTIPS[rule.orient] ?? '') : ANCHOR_ORIENT_TOOLTIPS['']}
+                            style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
+                          >ℹ</span>
+                        </span>
                         <select
                           className={s.slotSizeInput}
                           value={rule.orient ?? ''}
                           onChange={e => updateAnchorRule(idx, rIdx, { orient: e.target.value as AnchorRule['orient'] })}
                         >
                           <option value="">— Tile-Standard —</option>
-                          <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
                           <option value="match">match (wie Anker)</option>
                           <option value="opposite">opposite (gegenüber)</option>
+                          <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
+                          <option value="openSideFacing">openSideFacing (aus gewählter openSide abgeleitet)</option>
+                          <option value="cwPerpendicular">cwPerpendicular (↻ senkrecht: S→E, E→N, …)</option>
+                          <option value="ccwPerpendicular">ccwPerpendicular (↺ senkrecht: S→W, W→N, …)</option>
                           <option value="N">N (Nord)</option>
                           <option value="S">S (Süd)</option>
                           <option value="E">E (Ost)</option>

@@ -557,6 +557,26 @@ export function TileBrowser() {
                 onChange={e => setEditDef({ ...editDef, variantGroup: e.target.value })} />
             </div>
 
+            {/* Fenster-Sperrkante */}
+            <div className={s.fieldRow}>
+              <span className={s.fieldLabel}>
+                Fenster-Sperrkante
+                <span
+                  className={s.infoIcon}
+                  title="Nur diese Kante darf kein Fenster beruehren"
+                  aria-label="Info: Nur diese Kante darf kein Fenster beruehren"
+                >ⓘ</span>
+              </span>
+              <select
+                className={s.fieldSelect}
+                value={editDef.windowBlockedEdge ?? ''}
+                onChange={e => setEditDef({ ...editDef, windowBlockedEdge: e.target.value as TileDefinition['windowBlockedEdge'] })}
+              >
+                <option value="">Keine (Standardregel)</option>
+                {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
+              </select>
+            </div>
+
             {/* Style tags */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>Style-Tags <span className={s.fieldHint}>(gespeichert, noch nicht aktiv)</span></span>
@@ -589,5 +609,8 @@ export function TileBrowser() {
     </div>
   );
 }
+
+
+
 
 

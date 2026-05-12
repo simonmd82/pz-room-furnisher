@@ -160,6 +160,16 @@ public class PathfinderService : IPathfinderService
 
         var waypoints = waypointSet.ToList();
 
+        // pathStyle "doorOnly": Nur Tür-/Waypoint-Zellen reservieren,
+        // kein A*-Pfad zwischen den Punkten.
+        if (pathStyle.Equals("doorOnly", StringComparison.OrdinalIgnoreCase))
+        {
+            return waypointSet
+                .Where(roomCells.Contains)
+                .Select(c => new int[] { c.Item1, c.Item2 })
+                .ToList();
+        }
+
         // Fewer than 2 waypoints → extend with farthest room cell
         if (waypoints.Count < 2)
         {

@@ -10,11 +10,13 @@ public class BuildingController : ControllerBase
 {
     private readonly ITbxParserService _parser;
     private readonly IPathfinderService _pathfinder;
+    private readonly IRoomTypeConfigService _roomTypeCfg;
 
-    public BuildingController(ITbxParserService parser, IPathfinderService pathfinder)
+    public BuildingController(ITbxParserService parser, IPathfinderService pathfinder, IRoomTypeConfigService roomTypeCfg)
     {
         _parser = parser;
         _pathfinder = pathfinder;
+        _roomTypeCfg = roomTypeCfg;
     }
 
     /// <summary>
@@ -35,9 +37,15 @@ public class BuildingController : ControllerBase
         {
             using var stream = file.OpenReadStream();
             var building = _parser.Parse(stream);
-            // Auto-compute paths for every floor
+            // Auto-compute paths for every floor using room-specific PathStyle.
             for (int fi = 0; fi < building.Floors.Count; fi++)
-                _pathfinder.ComputePaths(building, fi);
+            {
+                foreach (var ri in GetRoomIndicesOnFloor(building, fi))
+                {
+                    var style = ResolvePathStyle(building, ri);
+                    _pathfinder.ComputeRoomPath(building, fi, ri, null, style);
+                }
+            }
             return Ok(building);
         }
         catch (Exception ex)
@@ -55,7 +63,11 @@ public class BuildingController : ControllerBase
     {
         try
         {
-            _pathfinder.ComputePaths(req.Building, req.FloorIndex, req.Seed);
+            foreach (var ri in GetRoomIndicesOnFloor(req.Building, req.FloorIndex))
+            {
+                var style = ResolvePathStyle(req.Building, ri);
+                _pathfinder.ComputeRoomPath(req.Building, req.FloorIndex, ri, req.Seed, style);
+            }
             return Ok(req.Building.Rooms);
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
@@ -67,9 +79,40 @@ public class BuildingController : ControllerBase
     {
         try
         {
-            var cells = _pathfinder.ComputeRoomPath(req.Building, req.FloorIndex, req.RoomIndex1Based, req.Seed);
+            var style = ResolvePathStyle(req.Building, req.RoomIndex1Based);
+            var cells = _pathfinder.ComputeRoomPath(req.Building, req.FloorIndex, req.RoomIndex1Based, req.Seed, style);
             return Ok(cells);
         }
         catch (Exception ex) { return BadRequest(ex.Message); }
+    }
+
+    private static IEnumerable<int> GetRoomIndicesOnFloor(Building building, int floorIndex)
+    {
+        if (floorIndex < 0 || floorIndex >= building.Floors.Count)
+            return Enumerable.Empty<int>();
+
+        return building.Floors[floorIndex]
+            .RoomGrid
+            .SelectMany(row => row)
+            .Where(ri => ri > 0)
+            .Distinct();
+    }
+
+    private string ResolvePathStyle(Building building, int roomIndex1Based)
+    {
+        if (roomIndex1Based < 1 || roomIndex1Based > building.Rooms.Count)
+            return "wall";
+
+        var room = building.Rooms[roomIndex1Based - 1];
+        var all = _roomTypeCfg.GetAll();
+
+        var key = all.Keys.FirstOrDefault(k => k.Equals(room.InternalName, StringComparison.OrdinalIgnoreCase))
+               ?? all.Keys.FirstOrDefault(k => k.Equals(room.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (key is null)
+            return "wall";
+
+        var style = all[key].PathStyle;
+        return string.IsNullOrWhiteSpace(style) ? "wall" : style;
     }
 }

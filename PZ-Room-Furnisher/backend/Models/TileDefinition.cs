@@ -50,7 +50,13 @@ public class TileDefinition
     /// Leer = alle 4 Richtungen erlaubt.
     /// </summary>
     public List<string> AllowedOrients { get; set; } = [];
+    /// <summary>
+    /// Optionale fensterkritische Kante (N|E|S|W). Wenn gesetzt, darf nur diese
+    /// Kante keine Fensterzellen berühren.
+    /// </summary>
+    public string WindowBlockedEdge { get; set; } = string.Empty;
 }
+
 
 
 

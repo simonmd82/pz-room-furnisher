@@ -35,8 +35,52 @@ export const ANCHOR_POSITIONS = [
   'Left', 'Right', 'Above', 'Below', 'Center',
   // Footprint-relative Positionen (unabhängig von Orientierung)
   'LongSide0', 'LongSide1', 'ShortSide0', 'ShortSide1',
+  // Orientierungsabhaengige Seiten relativ zur Blickrichtung des Ankers
+  'leftPerpendicular', 'rightPerpendicular',
+  // Generische offene Seite: testet bevorzugte Seite, dann Fallback-Seite
+  'openSidePlacement',
+  // Orientierungsabhängige Eckwand-Position (für PZ-Wandsystem)
+  'perpendicularSide',
 ] as const;
 export type AnchorPosition = typeof ANCHOR_POSITIONS[number];
+
+/**
+ * Tooltips für alle Ankerpositionen (für (i)-Anzeige im Editor).
+ */
+export const ANCHOR_POSITION_TOOLTIPS: Record<AnchorPosition, string> = {
+  HeadLeft:          'Links neben dem Kopfende des Ankers (orient-abhängig)',
+  HeadRight:         'Rechts neben dem Kopfende des Ankers (orient-abhängig)',
+  FootLeft:          'Links neben dem Fußende des Ankers (orient-abhängig)',
+  FootRight:         'Rechts neben dem Fußende des Ankers (orient-abhängig)',
+  Left:              'Linke Seite des Ankers entlang der Längsachse',
+  Right:             'Rechte Seite des Ankers entlang der Längsachse',
+  Above:             'Direkt oberhalb des Ankers (orient-unabhängig)',
+  Below:             'Direkt unterhalb des Ankers (orient-unabhängig)',
+  Center:            'Gleiche Zelle wie der Anker (für gestapelte Layer, z.B. Wandelemente)',
+  LongSide0:         'Lange Seite 0: Nordseite (horiz. Anker) oder Westseite (vert. Anker)',
+  LongSide1:         'Lange Seite 1: Südseite (horiz. Anker) oder Ostseite (vert. Anker)',
+  ShortSide0:        'Kurze Seite 0: Westseite (horiz. Anker) oder Nordseite (vert. Anker)',
+  ShortSide1:        'Kurze Seite 1: Ostseite (horiz. Anker) oder Südseite (vert. Anker)',
+  leftPerpendicular:  'Senkrecht links relativ zur Blickrichtung des Ankers.\nN→W, E→N, S→E, W→S.',
+  rightPerpendicular: 'Senkrecht rechts relativ zur Blickrichtung des Ankers.\nN→E, E→S, S→W, W→N.',
+  openSidePlacement:  'Offene Seite mit Fallback:\nW/E → zuerst Sued, dann Nord\nN/S → zuerst West, dann Ost.\nNimmt die erste gueltige Seite.',
+  perpendicularSide:  'Legacy-Alias fuer leftPerpendicular (bestehende Konfigurationen).',
+};
+
+/**
+ * Tooltips für alle orient-Optionen einer AnchorRule.
+ */
+export const ANCHOR_ORIENT_TOOLTIPS: Record<string, string> = {
+  '':               'Tile-Standard: Orientierung aus der Tile-Definition.',
+  match:            'Gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).',
+  opposite:         'Entgegengesetzte Ausrichtung (N↔S, E↔W).',
+  facingAnchor:     'Slot zeigt automatisch zum Anker hin (aus Position+Footprint abgeleitet).',
+  openSideFacing:   'Leitet die Orientierung aus der bei openSidePlacement gewählten Seite ab:\nN→S, S→N, E→W, W→E.',
+  cwPerpendicular:  'Uhrzeigersinn senkrecht: S→E, E→N, N→W, W→S.\nFür Eckwände: Dusche orient S (N-Wand) → Eckwand orient E.',
+  ccwPerpendicular: 'Gegen Uhrzeigersinn senkrecht: S→W, W→N, N→E, E→S.\nAlternative Eckwand-Seite.',
+  N: 'Fixe Ausrichtung Nord.', S: 'Fixe Ausrichtung Süd.',
+  E: 'Fixe Ausrichtung Ost.',  W: 'Fixe Ausrichtung West.',
+};
 
 /**
  * Eine Anker-Regel: verknüpft diesen Slot mit einem anderen Slot oder einer Gruppe.
@@ -61,7 +105,7 @@ export interface AnchorRule {
    * "N"/"S"/"E"/"W" = fixe Ausrichtung.
    * Leer/undefined = tile.Orientation (bisheriges Verhalten).
    */
-  orient?: 'match' | 'opposite' | 'facingAnchor' | 'N' | 'S' | 'E' | 'W' | '';
+  orient?: 'match' | 'opposite' | 'facingAnchor' | 'openSideFacing' | 'cwPerpendicular' | 'ccwPerpendicular' | 'N' | 'S' | 'E' | 'W' | '';
 }
 
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */

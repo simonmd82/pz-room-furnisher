@@ -339,6 +339,57 @@
   title: "Slot duplizieren";
 }
 .duplicateSlotBtn:hover { background: #1a2a1a; color: #8fc; }
+
+/* ── Copy-to-clipboard button ── */
+.copySlotBtn {
+  padding: 2px 7px;
+  background: none;
+  border: 1px solid #1a3a4a;
+  border-radius: 3px;
+  color: #4aaecc;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+.copySlotBtn:hover { background: #0e2030; color: #7fd3ff; border-color: #2a6a9a; }
+
+/* ── Paste banner ── */
+.pasteBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: #0e1e2e;
+  border: 1px solid #2a5a7a;
+  border-left: 3px solid #4aaecc;
+  border-radius: 5px;
+}
+.pasteBarIcon { font-size: 0.85rem; flex-shrink: 0; }
+.pasteBarText { font-size: 0.74rem; color: #8bc; flex: 1; }
+.pasteBarFrom { color: #6a9; font-style: italic; }
+.pasteSlotBtn {
+  padding: 3px 10px;
+  background: #0e2838;
+  border: 1px solid #4aaecc;
+  border-radius: 4px;
+  color: #7fd3ff;
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.pasteSlotBtn:hover { background: #163a50; }
+.pasteBarClearBtn {
+  padding: 2px 6px;
+  background: none;
+  border: 1px solid #2a3a3a;
+  border-radius: 3px;
+  color: #556;
+  cursor: pointer;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+.pasteBarClearBtn:hover { color: #f88; border-color: #5a2a2a; background: #1a0e0e; }
 .slotCardBody {
   padding: 8px 10px;
   display: flex;

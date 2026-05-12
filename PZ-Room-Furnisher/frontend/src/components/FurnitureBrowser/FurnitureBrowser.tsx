@@ -553,9 +553,9 @@ export function FurnitureBrowser() {
 
             {/* Erlaubte Wandrichtungen */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Erlaubte Wandrichtungen <span className={s.fieldHint}>(leer = alle)</span></span>
+              <span className={s.fieldLabel}>Erlaubte Platzierungsrichtungen <span className={s.fieldHint}>(leer = alle)</span></span>
               <div className={s.chipGroup}>
-                {(['N','S','E','W'] as const).map(o => {
+                {(['N','S','E','W','NW','NE','SW','SE'] as const).map(o => {
                   const st = arrState(d => d.allowedOrients ?? [], o);
                   return (
                     <span key={o}
@@ -565,6 +565,38 @@ export function FurnitureBrowser() {
                 })}
               </div>
             </div>
+
+            {/* Fenster-Sperrkante */}
+            {(() => {
+              const mixed  = isMixed(d => d.windowBlockedEdge ?? '');
+              const curVal = sv(d => d.windowBlockedEdge ?? '');
+              return (
+                <div className={s.fieldRow}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>
+                    Fenster-Sperrkante{mixed ? ' ⚠' : ''}
+                    <span
+                      className={s.infoIcon}
+                      title="Nur diese Kante darf kein Fenster beruehren"
+                      aria-label="Info: Nur diese Kante darf kein Fenster beruehren"
+                    >ⓘ</span>
+                  </span>
+                  <select
+                    className={s.fieldSelect}
+                    style={mixStyle(mixed)}
+                    value={mixed ? '__mixed__' : (curVal ?? '')}
+                    onChange={e => {
+                      if (e.target.value !== '__mixed__') {
+                        applyField('windowBlockedEdge', e.target.value as TileDefinition['windowBlockedEdge']);
+                      }
+                    }}
+                  >
+                    {mixed && <option value="__mixed__" disabled>— Verschiedene —</option>}
+                    <option value="">Keine (Standardregel)</option>
+                    {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
+                  </select>
+                </div>
+              );
+            })()}
 
             {/* Layer */}
             {(() => {

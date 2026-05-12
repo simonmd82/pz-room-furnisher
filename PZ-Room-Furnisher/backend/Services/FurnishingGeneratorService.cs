@@ -124,8 +124,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             var cellWalls   = ComputeWallDirections(roomCells);
             var doorCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
             var windowCells = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
-            var occupied     = new HashSet<(int, int)>();
-            var softOccupied = new HashSet<(int, int)>();
+            var occupied         = new HashSet<(int, int)>();
+            var softOccupied     = new HashSet<(int, int)>();
+            var physicalOccupied = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
 
             // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
             var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
@@ -166,7 +167,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         continue;
                     }
                     PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, allTiles, anchorMap, colorMap, variantMap, config, placements, log, rng, configKey);
+                        pathCells, occupied, softOccupied, physicalOccupied, allTiles, anchorMap, colorMap, variantMap, config, placements, log, rng, configKey);
                 }
         }
 
@@ -257,6 +258,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
         HashSet<(int, int)> softOccupied,
+        HashSet<(int, int)> physicalOccupied,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
         Dictionary<string, string> colorMap,
@@ -342,68 +344,117 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         (int col, int row, string orient, TileDefinition placedTile, int rejNoVariant, int rejNoFit, int rejDoor, int rejWindow, int rejConnectivity)? result;
         if (anchorInfo.HasValue && anchorPos != null)
         {
-            // 1. Ziel-Orientierung zuerst berechnen – sie bestimmt Variante und Dimensionen.
-            //    "facingAnchor" wird anhand der Position und des Anker-Footprints aufgelöst.
-            string anchoredOrient = anchorOrientRule switch
+            // 1. Ziel-Orientierung berechnen. Bei openSideFacing wird die Orientierung
+            //    aus der tatsaechlich gewaehlten openSidePlacement-Seite abgeleitet.
+            string ResolveAnchoredOrient(char? chosenOpenSide = null) => anchorOrientRule switch
             {
-                "match"        => anchorInfo.Value.orient,
-                "opposite"     => anchorInfo.Value.orient switch
-                                  { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
-                "facingAnchor" => ResolveFacingAnchorOrient(anchorPos, anchorInfo.Value.fpW, anchorInfo.Value.fpH) ?? tile.Orientation,
+                "match"            => anchorInfo.Value.orient,
+                "opposite"         => anchorInfo.Value.orient switch
+                                      { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
+                // Im Uhrzeigersinn senkrecht: S→E, E→N, N→W, W→S
+                // Nützlich für Wände in Ecken: Dusche an N-Wand (orient S) → Eckwand orient E
+                "cwPerpendicular"  => anchorInfo.Value.orient switch
+                                      { "S" => "E", "E" => "N", "N" => "W", "W" => "S", _ => tile.Orientation },
+                // Gegen den Uhrzeigersinn senkrecht: S→W, W→N, N→E, E→S
+                "ccwPerpendicular" => anchorInfo.Value.orient switch
+                                      { "S" => "W", "W" => "N", "N" => "E", "E" => "S", _ => tile.Orientation },
+                // Leitet die Orientierung aus der tatsächlich gewählten openSide ab.
+                // Mapping Side->Orient:
+                //   W->S, E->N, N->E, S->W
+                "openSideFacing"   => chosenOpenSide switch
+                                      {
+                                          // Side = gewaehlte Wandkante, Orient = Blickrichtung vom Rand in den Raum.
+                                          'N' => "S",
+                                          'S' => "N",
+                                          'E' => "W",
+                                          'W' => "E",
+                                          _   => tile.Orientation,
+                                      },
+                "facingAnchor"     => ResolveFacingAnchorOrient(anchorPos, anchorInfo.Value.fpW, anchorInfo.Value.fpH) ?? tile.Orientation,
                 "N" or "S" or "E" or "W" => anchorOrientRule,
-                _              => tile.Orientation,
+                _                  => tile.Orientation,
             };
-            log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorFpW={anchorInfo.Value.fpW} anchorFpH={anchorInfo.Value.fpH} → anchoredOrient='{anchoredOrient}'");
 
-            // 2. Passende Orientierungsvariante aus der VariantGroup wählen, BEVOR
-            //    Dimensionen und Position berechnet werden.
-            //    SelectTile wählt einen zufälligen Vertreter; dessen Orientation und
-            //    TileLayout können von anchoredOrient abweichen (z.B. 1×2 statt 2×1).
-            TileDefinition finalTile = tile;
-            if (!string.IsNullOrEmpty(tile.VariantGroup))
+            TileDefinition ResolveFinalTile(string desiredOrient)
             {
+                if (string.IsNullOrEmpty(tile.VariantGroup)) return tile;
                 var match = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
-                    t.Orientation.Equals(anchoredOrient, StringComparison.OrdinalIgnoreCase));
-                if (match is not null) finalTile = match;
+                    t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
+                return match ?? tile;
             }
 
-            // 3. Dimensionen aus der KORREKTEN Variante ableiten
-            int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
-            int fpH = finalTile.TileLayout.Count;
-
-            var p = ComputeAnchoredPosition(anchorInfo.Value.col, anchorInfo.Value.row,
-                anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, anchorPos, anchorInfo.Value.orient, anchorOffset);
-
             result = null;
-            if (p.HasValue)
+            bool TryAnchorPosition(int ac, int ar, string anchoredOrient, TileDefinition finalTile, int fpW, int fpH, char? chosenOpenSide = null)
             {
-                var (ac, ar) = p.Value;
-
                 // requiresSlot-Slots ignorieren softOccupied bewusst:
                 // Sie dürfen auf dem Ankermöbel (z.B. Nachttisch mit softBlocks=true) platziert werden.
-                bool anchorValid =
-                    FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied)  // kein softOccupied!
-                    && (slot.PlacementRules.NearDoor
-                        || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
-                    && (slot.PlacementRules.AllowOnPath
-                        || !finalTile.HasCollision
-                        || pathCells.Count == 0
-                        || !FootprintTouchesCells(ac, ar, fpW, fpH, pathCells))
-                    && (slot.PlacementRules.NearWindow
-                        || !finalTile.IsHigh
-                        || windowCells.Count == 0
-                        || !FootprintTouchesCells(ac, ar, fpW, fpH, windowCells));
+                bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied);  // kein softOccupied!
+                bool doorOk = slot.PlacementRules.NearDoor
+                              || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells);
+                bool pathOk = slot.PlacementRules.AllowOnPath
+                              || !finalTile.HasCollision
+                              || pathCells.Count == 0
+                              || !FootprintTouchesCells(ac, ar, fpW, fpH, pathCells);
+                bool winOk  = slot.PlacementRules.NearWindow
+                              || !ViolatesWindowPlacement(ac, ar, fpW, fpH, finalTile, anchoredOrient, windowCells);
+                bool anchorValid = fitOk && doorOk && pathOk && winOk;
 
                 if (anchorValid)
+                {
                     result = (ac, ar, anchoredOrient, finalTile, 0, 0, 0, 0, 0);
+                    return true;
+                }
+
+                var sideSuffix = chosenOpenSide.HasValue ? $" side='{chosenOpenSide.Value}'" : string.Empty;
+                log.Add($"    [ANCHOR-FAIL] '{slot.Id}': pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} path={pathOk} window={winOk}");
+                return false;
+            }
+
+            if (anchorPos.Equals("openSidePlacement", StringComparison.OrdinalIgnoreCase))
+            {
+                foreach (var side in ComputeOpenSideOrder(anchorInfo.Value.orient))
+                {
+                    var anchoredOrient = ResolveAnchoredOrient(side);
+                    var finalTile = ResolveFinalTile(anchoredOrient);
+                    int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+                    int fpH = finalTile.TileLayout.Count;
+                    var pos = ComputeOpenSidePosition(anchorInfo.Value.col, anchorInfo.Value.row,
+                        anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, side);
+
+                    log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='openSidePlacement' side='{side}' -> anchoredOrient='{anchoredOrient}'");
+                    if (TryAnchorPosition(pos.col, pos.row, anchoredOrient, finalTile, fpW, fpH, side))
+                        break;
+                }
+                if (result is null)
+                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}': openSidePlacement found no valid side for orient='{anchorInfo.Value.orient}'");
+            }
+            else
+            {
+                var anchoredOrient = ResolveAnchoredOrient();
+                log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorFpW={anchorInfo.Value.fpW} anchorFpH={anchorInfo.Value.fpH} -> anchoredOrient='{anchoredOrient}'");
+                var finalTile = ResolveFinalTile(anchoredOrient);
+                int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+                int fpH = finalTile.TileLayout.Count;
+                var p = ComputeAnchoredPosition(anchorInfo.Value.col, anchorInfo.Value.row,
+                    anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, anchorPos, anchorInfo.Value.orient, anchorOffset);
+
+                if (p.HasValue)
+                {
+                    var (ac, ar) = p.Value;
+                    TryAnchorPosition(ac, ar, anchoredOrient, finalTile, fpW, fpH);
+                }
+                else
+                {
+                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}': ComputeAnchoredPosition returned null for anchorPos='{anchorPos}'");
+                }
             }
         }
         else
         {
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                pathCells, occupied, softOccupied, tile, allTiles, slot.PlacementRules, rng,
+                pathCells, occupied, softOccupied, physicalOccupied, tile, allTiles, slot.PlacementRules, rng, log,
                 out var primaryRej);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
@@ -418,7 +469,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 {
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, tile, allTiles, fbRules, rng,
+                        pathCells, occupied, softOccupied, physicalOccupied, tile, allTiles, fbRules, rng, log,
                         out var fbRej);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
@@ -467,6 +518,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     occupied.Add((col + c, row + r));
                 else if (slot.SoftBlocks)
                     softOccupied.Add((col + c, row + r));
+                // Physikalische Belegung: unabhängig von BlocksPlacement, nur nach HasCollision
+                if (placedTile.HasCollision)
+                    physicalOccupied.Add((col + c, row + r));
             }
         }
 
@@ -597,12 +651,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
         HashSet<(int, int)> softOccupied,
+        HashSet<(int, int)> physicalOccupied,
         TileDefinition baseTile,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         PlacementRules rules,
         Random rng,
+        List<string>? debugLog,
         out (int noVariant, int noWallDir, int noFits, int noPath, int noLoot, int door, int window, int connectivity) rejCounters)
     {
+        bool traceBathtub = slot.Id.Equals("slot_bathtub", StringComparison.OrdinalIgnoreCase);
         IEnumerable<(int col, int row)> pool = roomCells;
 
         if (rules.NearWall)
@@ -648,71 +705,89 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int rejNoVariant = 0, rejNoWallDir = 0, rejFits = 0, rejPath = 0, rejLoot = 0, rejDoor = 0, rejWindow = 0, rejConnectivity = 0;
         foreach (var cell in poolList)
         {
-            var resolved = ResolveVariantForCell(
-                baseTile, cell, cellWalls, allTiles, rules);
+            var variants = ResolveVariantsForCell(baseTile, cell, cellWalls, allTiles, rules, slot.Required);
+            if (variants.Count == 0) { rejNoVariant++; continue; }
 
-            // Keine passende Orientierungsvariante für diese Wandzelle → überspringen
-            if (resolved is null) { rejNoVariant++; continue; }
+            for (int variantIndex = 0; variantIndex < variants.Count; variantIndex++)
+            {
+                var (resolvedTile, orient, wallDir) = variants[variantIndex];
+                int fpW = resolvedTile.TileLayout.Count > 0 ? (resolvedTile.TileLayout[0]?.Count ?? 1) : 1;
+                int fpH = resolvedTile.TileLayout.Count;
 
-            var (resolvedTile, orient, wallDir) = resolved.Value;
+                // Bei NearWall: Wandzelle = Rückseite des Möbels.
+                // ComputeWallAnchor verschiebt den Footprint-Anker so dass das Möbel
+                // in den Raum hinein expandiert (statt über die Wand hinaus).
+                // Ohne NearWall: Ankerzelle = cell, kein Offset nötig.
+                var (anchorCol, anchorRow) = rules.NearWall
+                    ? ComputeWallAnchor(cell, wallDir, fpW, fpH)
+                    : (cell.col, cell.row);
 
-            int fpW = resolvedTile.TileLayout.Count > 0 ? (resolvedTile.TileLayout[0]?.Count ?? 1) : 1;
-            int fpH = resolvedTile.TileLayout.Count;
+                // Wandnähe-Validierung nach Anchor-Verschiebung:
+                // Der erweiterte Pool-Filter nimmt auch innenliegende Zellen auf, deren Footprint
+                // (vom Slot-Footprint aus) eine Wand berührt. Nach Variantenauflösung und
+                // ComputeWallAnchor kann der tatsächliche Footprint aber keinen Wandkontakt mehr haben
+                // (andere Größe/Orientierung). Solche Positionen ablehnen.
+                // Wichtig: Prüfung gegen die KONKRETE wallDir, nicht nur irgendeine Wand –
+                // verhindert z.B. dass ein 2×1-Schrank bei einer Interior-Zelle nahe der S-Wand
+                // durch die E-Wand fälschlicherweise validated wird (Bug: Schrank in Raummitte).
+                if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
+                { rejNoWallDir++; continue; }
 
-            // Bei NearWall: Wandzelle = Rückseite des Möbels.
-            // ComputeWallAnchor verschiebt den Footprint-Anker so dass das Möbel
-            // in den Raum hinein expandiert (statt über die Wand hinaus).
-            // Ohne NearWall: Ankerzelle = cell, kein Offset nötig.
-            var (anchorCol, anchorRow) = rules.NearWall
-                ? ComputeWallAnchor(cell, wallDir, fpW, fpH)
-                : (cell.col, cell.row);
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied))
+                {
+                    rejFits++;
+                    if (traceBathtub && debugLog is not null)
+                        debugLog.Add($"    [TRACE] '{slot.Id}': reject FITS cell=({cell.col},{cell.row}) anchor=({anchorCol},{anchorRow}) orient='{orient}' fp={fpW}x{fpH}");
+                    continue;
+                }
 
-            // Wandnähe-Validierung nach Anchor-Verschiebung:
-            // Der erweiterte Pool-Filter nimmt auch innenliegende Zellen auf, deren Footprint
-            // (vom Slot-Footprint aus) eine Wand berührt. Nach Variantenauflösung und
-            // ComputeWallAnchor kann der tatsächliche Footprint aber keinen Wandkontakt mehr haben
-            // (andere Größe/Orientierung). Solche Positionen ablehnen.
-            // Wichtig: Prüfung gegen die KONKRETE wallDir, nicht nur irgendeine Wand –
-            // verhindert z.B. dass ein 2×1-Schrank bei einer Interior-Zelle nahe der S-Wand
-            // durch die E-Wand fälschlicherweise validated wird (Bug: Schrank in Raummitte).
-            if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
-            { rejNoWallDir++; continue; }
+                // Pfad-Schutz auf Footprint-Ebene: Der Pool-Filter oben prüft nur die Ankerzelle.
+                // Nach ComputeWallAnchor kann der verschobene Anker Pfadzellen überdecken
+                // (z.B. cell=(4,4), wallDir=S, anchor=(4,3) = Pfadzelle).
+                if (!rules.AllowOnPath && resolvedTile.HasCollision && pathCells.Count > 0
+                    && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, pathCells)) { rejPath++; continue; }
 
-            if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied)) { rejFits++; continue; }
+                // Türbereich freilassen: kein Möbel-Footprint darf eine Türzelle überdecken,
+                // außer der Slot ist explizit NearDoor (z.B. Garderobenhalter an der Tür).
+                if (!rules.NearDoor && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, doorCells)) { rejDoor++; continue; }
 
-            // Pfad-Schutz auf Footprint-Ebene: Der Pool-Filter oben prüft nur die Ankerzelle.
-            // Nach ComputeWallAnchor kann der verschobene Anker Pfadzellen überdecken
-            // (z.B. cell=(4,4), wallDir=S, anchor=(4,3) = Pfadzelle).
-            if (!rules.AllowOnPath && resolvedTile.HasCollision && pathCells.Count > 0
-                && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, pathCells)) { rejPath++; continue; }
+                // Fensterschutz:
+                // - Standard: IsHigh darf keine Fensterzellen berühren.
+                // - Mit WindowBlockedEdge: nur diese Kante ist gesperrt (z.B. Armaturseite).
+                if (!rules.NearWindow
+                    && ViolatesWindowPlacement(anchorCol, anchorRow, fpW, fpH, resolvedTile, orient, windowCells))
+                { rejWindow++; continue; }
 
-            // Türbereich freilassen: kein Möbel-Footprint darf eine Türzelle überdecken,
-            // außer der Slot ist explizit NearDoor (z.B. Garderobenhalter an der Tür).
-            if (!rules.NearDoor && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, doorCells)) { rejDoor++; continue; }
+                // Loot-Erreichbarkeit: Jede Zelle des Footprints muss von mindestens einer
+                // freien Nachbarzelle aus erreichbar sein (Moore-Nachbarschaft, Reichweite 1).
+                // Verhindert dass Spieler nach Platzierung keinen Zugriff mehr auf den Container hat.
+                if (resolvedTile.IsLootContainer
+                    && !LootContainerReachable(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied))
+                { rejLoot++; continue; }
 
-            // Fensterschutz: hohe Möbel (IsHigh) blockieren Fenster und dürfen daher nicht
-            // vor Fensterzellen platziert werden – außer der Slot ist explizit NearWindow.
-            if (!rules.NearWindow && resolvedTile.IsHigh && windowCells.Count > 0
-                && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, windowCells)) { rejWindow++; continue; }
+                // Raumzusammenhang: Nach Platzierung müssen alle begehbaren Raumzellen noch
+                // zusammenhängend erreichbar sein (8-Nachbarschaft, da PZ diagonales Gehen erlaubt).
+                // Verhindert dass Möbel mit Kollision Raumbereiche von der Tür abschneiden –
+                // z.B. ein Bett das eine Ecke in einem nicht-rechteckigen Raum isoliert.
+                if (resolvedTile.HasCollision
+                    && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, doorCells))
+                {
+                    rejConnectivity++;
+                    if (traceBathtub && debugLog is not null)
+                        debugLog.Add($"    [TRACE] '{slot.Id}': reject CONNECTIVITY cell=({cell.col},{cell.row}) anchor=({anchorCol},{anchorRow}) orient='{orient}' fp={fpW}x{fpH}");
+                    continue;
+                }
 
-            // Loot-Erreichbarkeit: Jede Zelle des Footprints muss von mindestens einer
-            // freien Nachbarzelle aus erreichbar sein (Moore-Nachbarschaft, Reichweite 1).
-            // Verhindert dass Spieler nach Platzierung keinen Zugriff mehr auf den Container hat.
-            if (resolvedTile.IsLootContainer
-                && !LootContainerReachable(anchorCol, anchorRow, fpW, fpH, roomCells, occupied))
-            { rejLoot++; continue; }
+                if (traceBathtub && debugLog is not null)
+                    debugLog.Add($"    [TRACE] '{slot.Id}': accept cell=({cell.col},{cell.row}) anchor=({anchorCol},{anchorRow}) orient='{orient}' fp={fpW}x{fpH}");
 
-            // Raumzusammenhang: Nach Platzierung müssen alle begehbaren Raumzellen noch
-            // zusammenhängend erreichbar sein (8-Nachbarschaft, da PZ diagonales Gehen erlaubt).
-            // Verhindert dass Möbel mit Kollision Raumbereiche von der Tür abschneiden –
-            // z.B. ein Bett das eine Ecke in einem nicht-rechteckigen Raum isoliert.
-            if (resolvedTile.HasCollision
-                && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, doorCells))
-            { rejConnectivity++; continue; }
+                if (slot.Required && rules.NearWall && variantIndex > 0 && debugLog is not null)
+                    debugLog.Add($"    [TRACE] '{slot.Id}': required-fallback orientation='{orient}' used at cell=({cell.col},{cell.row}) (variant {variantIndex + 1}/{variants.Count})");
 
-            rejCounters = (rejNoVariant, rejNoWallDir, rejFits, rejPath, rejLoot, rejDoor, rejWindow, rejConnectivity);
-            int noFitSum = rejNoWallDir + rejFits + rejPath + rejLoot;
-            return (anchorCol, anchorRow, orient, resolvedTile, rejNoVariant, noFitSum, rejDoor, rejWindow, rejConnectivity);
+                rejCounters = (rejNoVariant, rejNoWallDir, rejFits, rejPath, rejLoot, rejDoor, rejWindow, rejConnectivity);
+                int noFitSum = rejNoWallDir + rejFits + rejPath + rejLoot;
+                return (anchorCol, anchorRow, orient, resolvedTile, rejNoVariant, noFitSum, rejDoor, rejWindow, rejConnectivity);
+            }
         }
 
         rejCounters = (rejNoVariant, rejNoWallDir, rejFits, rejPath, rejLoot, rejDoor, rejWindow, rejConnectivity);
@@ -724,17 +799,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     /// Gibt null zurück wenn keine passende Orientierungsvariante gefunden wurde –
     /// die Zelle wird dann von FindFreeCell übersprungen.
     /// </summary>
-    private static (TileDefinition tile, string orient, Direction wallDir)? ResolveVariantForCell(
+    private static Direction? ResolveWallDirForCell(
         TileDefinition baseTile,
         (int col, int row) cell,
-        Dictionary<(int, int), HashSet<Direction>> cellWalls,
-        IReadOnlyDictionary<string, TileDefinition> allTiles,
-        PlacementRules rules)
+        Dictionary<(int, int), HashSet<Direction>> cellWalls)
     {
-        // Ohne NearWall: Tile unverändert zurückgeben (wallDir arbiträr, wird nicht verwendet)
-        if (!rules.NearWall)
-            return (baseTile, baseTile.Orientation, Direction.N);
-
         // Wandrichtung bestimmen: an der Ankerzelle selbst.
         // Mit dem bereinigten Pool-Filter kommen nur echte Wandzellen (cellWalls-Einträge)
         // in den Pool; die Fallback-Logik via FootprintWallDirs ist daher Schutzcode
@@ -747,14 +816,36 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             int fpH = baseTile.TileLayout.Count;
             wallDirs = FootprintWallDirs(cell.col, cell.row, fpW, fpH, cellWalls);
             if (wallDirs.Count == 0)
-                return null; // Keine Wandrichtung bestimmbar → Zelle ablehnen (zählt als rejNoVariant)
+                return null; // Keine Wandrichtung bestimmbar
         }
 
         // Wandrichtung bestimmen: bevorzugt die, die zum Rücken des BaseTile passt
         var backExpected = BackWall(baseTile.Orientation);
-        Direction wallDir = (backExpected.HasValue && wallDirs.Contains(backExpected.Value))
+        return (backExpected.HasValue && wallDirs.Contains(backExpected.Value))
             ? backExpected.Value
             : wallDirs.OrderByDescending(d => d).First();
+    }
+
+    private static (TileDefinition tile, string orient, Direction wallDir)? ResolveVariantForCell(
+        TileDefinition baseTile,
+        (int col, int row) cell,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        PlacementRules rules)
+    {
+        // Ohne NearWall: Tile unverändert zurückgeben (wallDir arbiträr, wird nicht verwendet)
+        // aber AllowedOrients-Prüfung immer durchführen
+        if (!rules.NearWall)
+        {
+            if (baseTile.AllowedOrients.Count > 0
+                && !baseTile.AllowedOrients.Any(o => o.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase)))
+                return null;
+            return (baseTile, baseTile.Orientation, Direction.N);
+        }
+
+        var wallDirOpt = ResolveWallDirForCell(baseTile, cell, cellWalls);
+        if (!wallDirOpt.HasValue) return null;
+        var wallDir = wallDirOpt.Value;
 
         // Vorderseite zeigt in den Raum
         string neededOrient = WallToOrient(wallDir) ?? baseTile.Orientation;
@@ -790,6 +881,108 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         // Keine passende Variante gefunden → Zelle ablehnen
         return null;
+    }
+
+    private static List<(TileDefinition tile, string orient, Direction wallDir)> ResolveVariantsForCell(
+        TileDefinition baseTile,
+        (int col, int row) cell,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        PlacementRules rules,
+        bool requiredSlot)
+    {
+        if (rules.NearWall)
+        {
+            var one = ResolveVariantForCell(baseTile, cell, cellWalls, allTiles, rules);
+            if (!requiredSlot)
+                return one.HasValue ? [one.Value] : [];
+
+            var ordered = new List<(TileDefinition tile, string orient, Direction wallDir)>();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var wallDirOpt = ResolveWallDirForCell(baseTile, cell, cellWalls);
+            if (!wallDirOpt.HasValue) return one.HasValue ? [one.Value] : [];
+            var wallDir = wallDirOpt.Value;
+
+            if (string.IsNullOrEmpty(baseTile.VariantGroup))
+                return one.HasValue ? [one.Value] : [];
+
+            var groupVariants = allTiles.Values
+                .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var cellWallDirs = cellWalls.TryGetValue(cell, out var dirsAtCell) ? dirsAtCell : new HashSet<Direction>();
+
+            bool AllowedByOwnOrient(TileDefinition t) => t.AllowedOrients.Count == 0
+                || t.AllowedOrients.Any(o => o.Equals(t.Orientation, StringComparison.OrdinalIgnoreCase));
+
+            bool BackOnCellWall(TileDefinition t)
+            {
+                var back = BackWall(t.Orientation);
+                return back.HasValue && cellWallDirs.Contains(back.Value);
+            }
+
+            Direction CandidateWallDir(TileDefinition t)
+            {
+                var back = BackWall(t.Orientation);
+                // Immer die Rücken-Wandrichtung des Tiles verwenden.
+                // Caller stellt sicher dass BackOnCellWall=true ist.
+                return back.HasValue ? back.Value : wallDir;
+            }
+
+            // 1) Präferenz: Rücken liegt auf einer echten Wand der Kandidatenzelle + Alignment passt.
+            var strict = groupVariants
+                .Where(t => AllowedByOwnOrient(t)
+                            && BackOnCellWall(t)
+                            && MatchesAlignment(t, CandidateWallDir(t), rules.WallAlignment))
+                .OrderBy(t => 0)
+                .ThenBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ToList();
+
+            foreach (var t in strict)
+                if (seen.Add(t.TileId))
+                    ordered.Add((t, t.Orientation, CandidateWallDir(t)));
+
+            // 2) Last-resort: Rücken an echter Wand MUSS erhalten bleiben, nur WallAlignment relaxen.
+            //    Varianten ohne Wandkontakt (z.B. Dusche in SE-Ecke ohne N/W-Wand) werden
+            //    NICHT aufgenommen – physisch falsches Möbel vermeiden.
+            var relaxed = groupVariants
+                .Where(t => AllowedByOwnOrient(t) && BackOnCellWall(t))
+                .OrderBy(t => 0)
+                .ThenBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ToList();
+
+            foreach (var t in relaxed)
+                if (seen.Add(t.TileId))
+                    ordered.Add((t, t.Orientation, CandidateWallDir(t)));
+
+            return ordered;
+        }
+
+        // Ohne NearWall: Für rotierbare VariantGroups alle Orientierungsvarianten prüfen,
+        // damit 1×2/2×1-Slots (z.B. Badewanne in Ecken) nicht an einer Zufallsvariante hängen.
+        if (string.IsNullOrEmpty(baseTile.VariantGroup))
+            return [(baseTile, baseTile.Orientation, Direction.N)];
+
+        var variants = allTiles.Values
+            .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase))
+            .Where(t => t.AllowedOrients.Count == 0
+                     || t.AllowedOrients.Any(o => o.Equals(t.Orientation, StringComparison.OrdinalIgnoreCase)))
+            .OrderBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .Select(t => (t, t.Orientation, Direction.N))
+            .ToList();
+
+        if (variants.Count > 0) return variants;
+
+        // Fallback: Alle Varianten der Gruppe durch AllowedOrients rausgefiltert
+        // (z.B. orientation="E" aber allowedOrients=["W"]).
+        // baseTile nur zurückgeben wenn seine eigene Orientation durch AllowedOrients erlaubt ist –
+        // verhindert dass ein widersprüchlich konfiguriertes Tile ungefiltert landet.
+        if (baseTile.AllowedOrients.Count == 0
+            || baseTile.AllowedOrients.Any(o => o.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase)))
+            return [(baseTile, baseTile.Orientation, Direction.N)];
+
+        return [];
     }
 
     /// <summary>
@@ -874,6 +1067,92 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             for (int c = 0; c < fpW; c++)
                 if (cells.Contains((col + c, row + r))) return true;
         return false;
+    }
+
+    private static bool ViolatesWindowPlacement(
+        int col, int row, int fpW, int fpH,
+        TileDefinition tile, string placedOrient,
+        HashSet<(int, int)> windowCells)
+    {
+        if (windowCells.Count == 0) return false;
+
+        var localEdge = NormalizeEdge(tile.WindowBlockedEdge);
+        if (localEdge is not null)
+        {
+            var worldEdge = RotateEdge(localEdge, tile.Orientation, placedOrient);
+            return FootprintTouchesEdge(col, row, fpW, fpH, windowCells, worldEdge);
+        }
+
+        return tile.IsHigh && FootprintTouchesCells(col, row, fpW, fpH, windowCells);
+    }
+
+    private static bool FootprintTouchesEdge(
+        int col, int row, int fpW, int fpH,
+        HashSet<(int, int)> cells,
+        string edge)
+    {
+        if (cells.Count == 0) return false;
+        switch (edge)
+        {
+            case "N":
+                for (int c = 0; c < fpW; c++)
+                    if (cells.Contains((col + c, row))) return true;
+                return false;
+            case "S":
+                for (int c = 0; c < fpW; c++)
+                    if (cells.Contains((col + c, row + fpH - 1))) return true;
+                return false;
+            case "W":
+                for (int r = 0; r < fpH; r++)
+                    if (cells.Contains((col, row + r))) return true;
+                return false;
+            case "E":
+                for (int r = 0; r < fpH; r++)
+                    if (cells.Contains((col + fpW - 1, row + r))) return true;
+                return false;
+            default:
+                return false;
+        }
+    }
+
+    private static string RotateEdge(string edge, string fromOrient, string toOrient)
+    {
+        int steps = OrientationSteps(fromOrient, toOrient);
+        string result = edge;
+        for (int i = 0; i < steps; i++)
+            result = result switch
+            {
+                "N" => "E",
+                "E" => "S",
+                "S" => "W",
+                "W" => "N",
+                _   => result,
+            };
+        return result;
+    }
+
+    private static int OrientationSteps(string fromOrient, string toOrient)
+    {
+        int from = OrientIndex(fromOrient);
+        int to   = OrientIndex(toOrient);
+        if (from < 0 || to < 0) return 0;
+        return (to - from + 4) % 4;
+    }
+
+    private static int OrientIndex(string orient) => orient switch
+    {
+        "N" => 0,
+        "E" => 1,
+        "S" => 2,
+        "W" => 3,
+        _   => -1,
+    };
+
+    private static string? NormalizeEdge(string? edge)
+    {
+        if (string.IsNullOrWhiteSpace(edge)) return null;
+        var n = edge.Trim().ToUpperInvariant();
+        return n is "N" or "E" or "S" or "W" ? n : null;
     }
 
     /// <summary>
@@ -1043,7 +1322,79 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             "ShortSide1" => aw >= ah
                             ? ((int, int)?)(ac + aw,    ar + NormOffset(offset, ah, depH))          // Osten
                             : (ac + NormOffset(offset, aw, depW), ar + ah),                         // Süden
+            // ── Orientierungsabhängige Eck-/Seitenpositionen ─────────────────────────────
+            // leftPerpendicular/rightPerpendicular wählen die senkrechte Nachbarzelle
+            // relativ zur Blickrichtung des Ankers. Damit lassen sich beide L-Shape-Seiten
+            // stabil und getrennt konfigurieren (z.B. Dusche/Counter in jeder Ecke).
+            "leftPerpendicular" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac - depW,                  ar + (ah - depH) / 2),  // West
+                "E" => ((int, int)?)(ac + (aw - depW) / 2,       ar - depH),             // Nord
+                "S" => ((int, int)?)(ac + aw,                    ar + (ah - depH) / 2),  // Ost
+                "W" => ((int, int)?)(ac + (aw - depW) / 2,       ar + ah),               // Sued
+                _   => null,
+            },
+            "rightPerpendicular" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac + aw,                    ar + (ah - depH) / 2),  // Ost
+                "E" => ((int, int)?)(ac + (aw - depW) / 2,       ar + ah),               // Sued
+                "S" => ((int, int)?)(ac - depW,                  ar + (ah - depH) / 2),  // West
+                "W" => ((int, int)?)(ac + (aw - depW) / 2,       ar - depH),             // Nord
+                _   => null,
+            },
+            // Legacy-Kurzform: entspricht leftPerpendicular und bleibt fuer bestehende
+            // Konfigurationen erhalten.
+            "perpendicularSide" => anchorOrient switch
+            {
+                "S" => ((int, int)?)(ac + aw,                    ar + (ah - depH) / 2),  // Right
+                "E" => ((int, int)?)(ac + (aw - depW) / 2,       ar + ah),               // Below
+                "N" => ((int, int)?)(ac - depW,                  ar + (ah - depH) / 2),  // Left
+                "W" => ((int, int)?)(ac + (aw - depW) / 2,       ar - depH),             // Above
+                _   => null,
+            },
             _           => null,
+        };
+    }
+
+    /// <summary>
+    /// Liefert Kandidatenpositionen fuer "openSidePlacement" in Prioritaetsreihenfolge:
+    /// zuerst Primary, dann Secondary. Die gueltige Position wird im Caller bestimmt.
+    /// Mapping:
+    ///   Orient W/E -> S dann N
+    ///   Orient N/S -> W dann E
+    /// PZ-Projektion der Zielwandkante auf Zellen:
+    ///   W/N-Kante -> gleiche Zelle wie Anker
+    ///   E-Kante   -> rechte Nachbarzelle
+    ///   S-Kante   -> untere Nachbarzelle
+    /// </summary>
+    private static IEnumerable<char> ComputeOpenSideOrder(string anchorOrient)
+    {
+        (char primary, char secondary) = anchorOrient switch
+        {
+            "W" => ('S', 'N'),
+            "E" => ('S', 'N'),
+            "N" => ('W', 'E'),
+            "S" => ('W', 'E'),
+            _   => ('\0', '\0'),
+        };
+
+        if (primary != '\0') yield return primary;
+        if (secondary != '\0') yield return secondary;
+    }
+
+    private static (int col, int row) ComputeOpenSidePosition(
+        int ac, int ar, int aw, int ah, int depW, int depH, char side)
+    {
+        (int centerCol, int centerRow) center = (ac + (aw - depW) / 2, ar + (ah - depH) / 2);
+        return side switch
+        {
+            // N/W-Wand liegt auf der aktuellen Zelle.
+            'N' => center,
+            'W' => center,
+            // S/E-Wand wird über Nachbarzelle mit N/W-Kante repräsentiert.
+            'S' => (center.centerCol, center.centerRow + ah),
+            'E' => (center.centerCol + aw, center.centerRow),
+            _   => center,
         };
     }
 
@@ -1237,6 +1588,34 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

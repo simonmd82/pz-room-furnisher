@@ -475,6 +475,29 @@ textarea.fieldInput {
   margin-left: 4px;
 }
 
+.infoIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  border: 1px solid #445;
+  border-radius: 50%;
+  color: #889;
+  font-size: 0.62rem;
+  line-height: 1;
+  cursor: help;
+  user-select: none;
+  transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.infoIcon:hover {
+  color: #ddf;
+  border-color: #8866cc;
+  background: #1e1e3a;
+}
+
 /* ── Multi-select & dirty state ── */
 .entryCardDirty {
   box-shadow: 0 0 0 1px #664400 inset;

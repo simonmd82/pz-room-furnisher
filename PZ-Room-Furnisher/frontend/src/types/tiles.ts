@@ -43,8 +43,8 @@ export interface PlacementRules {
 export interface TileDefinition {
   tileId: string;
   label: string;
-  /** N | S | E | W | '' ('' = beliebig / keine feste Orientierung) */
-  orientation: 'N' | 'S' | 'E' | 'W' | '';
+  /** N | S | E | W | NW | NE | SW | SE | '' ('' = beliebig / keine feste Orientierung) */
+  orientation: 'N' | 'S' | 'E' | 'W' | 'NW' | 'NE' | 'SW' | 'SE' | '';
   /**
    * 2-D layout grid [row][col] of tileIds.
    * Empty string = unoccupied cell.
@@ -74,6 +74,10 @@ export interface TileDefinition {
   roomTypes: string[];
   /** Links N/S/E/W variants of the same physical object (empty = no link) */
   variantGroup: string;
+  /** Erlaubte Orientierungen für NearWall-Placement (leer = alle) */
+  allowedOrients: string[];
+  /** Optionale fensterkritische Kante (N/E/S/W), leer = keine Sonderregel */
+  windowBlockedEdge: '' | 'N' | 'E' | 'S' | 'W';
   /** Style tags – stored but not yet used by the generator */
   styleTags: string[];
 }
@@ -161,6 +165,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     roomTypes: [],
     variantGroup: '',
     allowedOrients: [],
+    windowBlockedEdge: '',
     styleTags: [],
   };
 }
