@@ -18544,8 +18544,8 @@
     "variantGroup": "low_table_brown_01",
     "styleTags": [],
     "allowedOrients": [
-      "S",
-      "N"
+      "N",
+      "S"
     ],
     "windowBlockedEdge": ""
   },
@@ -18827,14 +18827,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -18856,14 +18856,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -18885,14 +18885,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -18914,14 +18914,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -18943,14 +18943,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -18972,14 +18972,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19001,14 +19001,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19030,14 +19030,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
-    "isHigh": true,
+    "isHigh": false,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19060,14 +19060,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
     "isHigh": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19090,14 +19090,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
     "isHigh": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19122,14 +19122,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
     "isHigh": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -19154,14 +19154,14 @@
       ]
     ],
     "group": "Television",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
     "isHigh": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
-    "canStack": true,
+    "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
@@ -20284,6 +20284,342 @@
     "styleTags": [],
     "allowedOrients": [
       "N"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_002": {
+    "tileId": "furniture_tables_low_01_002",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_002"
+      ]
+    ],
+    "group": "Sidetable",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_low_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_003": {
+    "tileId": "furniture_tables_low_01_003",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_003"
+      ]
+    ],
+    "group": "Sidetable",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_low_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "S",
+      "N"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_012": {
+    "tileId": "furniture_tables_low_01_012",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_012"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_016": {
+    "tileId": "furniture_tables_low_01_016",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_016"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_018": {
+    "tileId": "furniture_tables_low_01_018",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_018"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_021": {
+    "tileId": "furniture_tables_low_01_021",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_021"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [],
+    "variantGroup": "table_low_small_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_013": {
+    "tileId": "furniture_tables_low_01_013",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_013"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_017": {
+    "tileId": "furniture_tables_low_01_017",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_017"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_019": {
+    "tileId": "furniture_tables_low_01_019",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_019"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "table_low_small_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "furniture_tables_low_01_020": {
+    "tileId": "furniture_tables_low_01_020",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_tables_low_01_020"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [],
+    "variantGroup": "table_low_small_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "N",
+      "S"
     ],
     "windowBlockedEdge": ""
   }

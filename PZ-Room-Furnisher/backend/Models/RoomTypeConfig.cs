@@ -82,10 +82,15 @@ public class AnchorRule
     /// 0 = erste Zelle, 1 = zweite, -1 = letzte, -2 = vorletzte usw.
     /// </summary>
     public int OffsetAlongAnchor { get; set; } = 0;
+    /// <summary>Mindestdistanz (in Zellen) fuer oppositeWall.</summary>
+    public int? MinOppositeWallDistance { get; set; }
+    /// <summary>Maximaldistanz (in Zellen) fuer oppositeWall. Null/&lt;=0 = ohne Limit.</summary>
+    public int? MaxOppositeWallDistance { get; set; }
     /// <summary>
     /// Ausrichtung des verankerten Slots relativ zum Anker.
-    /// "match"    = gleiche Ausrichtung wie der Anker-Slot (z.B. Nachttisch neben Bett).
-    /// "opposite" = entgegengesetzte Ausrichtung (z.B. Stuhl zeigt zum Tisch).
+    /// "match"            = gleiche Ausrichtung wie der Anker-Slot (z.B. Nachttisch neben Bett).
+    /// "parallelToAnchor" = Alias für "match"; semantisch klarer für Möbel, die parallel zum Anker stehen sollen.
+    /// "opposite"         = entgegengesetzte Ausrichtung (z.B. Stuhl zeigt zum Tisch).
     /// "N"/"S"/"E"/"W" = fixe Ausrichtung.
     /// Leer / null = tile.Orientation (bisheriges Verhalten).
     /// </summary>

@@ -274,6 +274,8 @@
               "HeadLeft"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -343,6 +345,8 @@
               "HeadRight"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -467,6 +471,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -534,6 +540,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -1153,6 +1161,8 @@
               "LongSide0"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -1220,6 +1230,8 @@
               "LongSide1"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -1287,6 +1299,8 @@
               "ShortSide0"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "opposite"
           }
         ],
@@ -1354,6 +1368,8 @@
               "ShortSide1"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -1421,6 +1437,8 @@
               "LongSide0"
             ],
             "offsetAlongAnchor": 1,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -1488,6 +1506,8 @@
               "LongSide0"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -1555,6 +1575,8 @@
               "LongSide1"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -1622,6 +1644,8 @@
               "LongSide1"
             ],
             "offsetAlongAnchor": 1,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "facingAnchor"
           }
         ],
@@ -2059,6 +2083,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -2188,6 +2214,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "opposite"
           }
         ],
@@ -2257,6 +2285,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "opposite"
           }
         ],
@@ -2618,6 +2648,8 @@
               "openSidePlacement"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "openSideFacing"
           }
         ],
@@ -2753,10 +2785,12 @@
           {
             "anchorTarget": "slot_sofa_medium",
             "positions": [
-              "LongSide1"
+              "frontOfAnchor"
             ],
             "offsetAlongAnchor": 0,
-            "orient": "match"
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "parallelToAnchor"
           }
         ],
         "slotGroupId": "",
@@ -2818,14 +2852,25 @@
           "isLow",
           "hasCollision"
         ],
-        "anchorRules": [],
-        "slotGroupId": "",
-        "slotGroupMode": "",
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_sofa_medium",
+            "positions": [
+              "oppositeWall"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": 3,
+            "maxOppositeWallDistance": 5,
+            "orient": "facingAnchor"
+          }
+        ],
+        "slotGroupId": "television_group",
+        "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
-        "requiresSlot": "",
+        "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
         "tileGroupId": ""
       },
@@ -2838,7 +2883,7 @@
           "canRotate": true
         },
         "required": false,
-        "priority": 1,
+        "priority": 0,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -2879,14 +2924,25 @@
           "hasSurface",
           "isTableTop"
         ],
-        "anchorRules": [],
-        "slotGroupId": "",
-        "slotGroupMode": "",
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_sofa_medium",
+            "positions": [
+              "oppositeWall"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": 3,
+            "maxOppositeWallDistance": 5,
+            "orient": "facingAnchor"
+          }
+        ],
+        "slotGroupId": "television_group",
+        "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
-        "requiresSlot": "",
+        "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
         "tileGroupId": ""
       },
@@ -2899,7 +2955,7 @@
           "canRotate": false
         },
         "required": false,
-        "priority": 0,
+        "priority": 1,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -2936,9 +2992,7 @@
         },
         "requiredLayer": "Furniture2",
         "requiredProperties": [
-          "isHigh",
-          "hasCollision",
-          "canStack"
+          "hasCollision"
         ],
         "anchorRules": [
           {
@@ -2947,6 +3001,8 @@
               "Center"
             ],
             "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
             "orient": "match"
           }
         ],
@@ -3369,8 +3425,8 @@
         "tileGroupId": ""
       },
       {
-        "id": "slot_shelf_small_copy",
-        "label": "Shelf Small",
+        "id": "slot_shelf_small_2",
+        "label": "Shelf Small 2",
         "footprint": {
           "width": 1,
           "height": 2,
@@ -3429,7 +3485,7 @@
         "tileGroupId": ""
       }
     ],
-    "pathStyle": "wall",
+    "pathStyle": "doorOnly",
     "colorGroupId": "",
     "colorPalettes": {
       "shelfs_color": [

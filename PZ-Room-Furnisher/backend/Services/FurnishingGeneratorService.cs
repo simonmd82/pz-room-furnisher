@@ -320,8 +320,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         // Resolve anchor rule
         (int col, int row, int fpW, int fpH, string orient)? anchorInfo = null;
         string? anchorPos        = null;
-        string? anchorOrientRule = null;   // "match" | "opposite" | "facingAnchor" | "N/S/E/W" | null
+        string? anchorOrientRule = null;   // "match" | "parallelToAnchor" | "opposite" | "facingAnchor" | "N/S/E/W" | null
         int     anchorOffset     = 0;      // offsetAlongAnchor für LongSide/ShortSide
+        int?    anchorMinOppositeWallDistance = null;
+        int?    anchorMaxOppositeWallDistance = null;
         // Kumulative Ablehnungszähler für [WARN]-Log (nur im else-Zweig gefüllt, sonst 0)
         int totalNoVariant = 0, totalNoFit = 0, totalNoWallDir = 0, totalFits = 0, totalPath = 0, totalLoot = 0;
         int totalDoor = 0, totalWindow = 0, totalConnectivity = 0;
@@ -334,6 +336,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     anchorPos        = rule.Positions.Count > 0 ? rule.Positions[rng.Next(rule.Positions.Count)] : null;
                     anchorOrientRule = rule.Orient;
                     anchorOffset     = rule.OffsetAlongAnchor;
+                    anchorMinOppositeWallDistance = rule.MinOppositeWallDistance;
+                    anchorMaxOppositeWallDistance = rule.MaxOppositeWallDistance;
                     break;
                 }
         }
@@ -348,7 +352,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             //    aus der tatsaechlich gewaehlten openSidePlacement-Seite abgeleitet.
             string ResolveAnchoredOrient(char? chosenOpenSide = null) => anchorOrientRule switch
             {
-                "match"            => anchorInfo.Value.orient,
+                "match" or "parallelToAnchor" => anchorInfo.Value.orient,
                 "opposite"         => anchorInfo.Value.orient switch
                                       { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation },
                 // Im Uhrzeigersinn senkrecht: S→E, E→N, N→W, W→S
@@ -370,7 +374,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                                           'W' => "E",
                                           _   => tile.Orientation,
                                       },
-                "facingAnchor"     => ResolveFacingAnchorOrient(anchorPos, anchorInfo.Value.fpW, anchorInfo.Value.fpH) ?? tile.Orientation,
+                "facingAnchor"     => anchorPos?.Equals("oppositeWall", StringComparison.OrdinalIgnoreCase) == true
+                                      ? (anchorInfo.Value.orient switch { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => tile.Orientation })
+                                      : ResolveFacingAnchorOrient(anchorPos ?? string.Empty, anchorInfo.Value.fpW, anchorInfo.Value.fpH, anchorInfo.Value.orient) ?? tile.Orientation,
                 "N" or "S" or "E" or "W" => anchorOrientRule,
                 _                  => tile.Orientation,
             };
@@ -378,10 +384,32 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             TileDefinition ResolveFinalTile(string desiredOrient)
             {
                 if (string.IsNullOrEmpty(tile.VariantGroup)) return tile;
-                var match = allTiles.Values.FirstOrDefault(t =>
+
+                // 1) Exakte Orientierung bevorzugen (z.B. N, S, E, W vorhanden).
+                var exact = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
                     t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
-                return match ?? tile;
+                if (exact is not null) return exact;
+
+                // 2) Falls es keine exakte Variante gibt, auf Achsen-Ebene auflösen.
+                // Viele Sets haben nur N/W als Basis, aber allowedOrients enthält N/S bzw. E/W.
+                var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
+                    t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
+                if (byAllowedOrient is not null) return byAllowedOrient;
+
+                // 3) Letzter Fallback: gleiche Achse über Orientation-Feld (NS oder EW).
+                static bool IsNorthSouth(string o) => o.Equals("N", StringComparison.OrdinalIgnoreCase)
+                                                   || o.Equals("S", StringComparison.OrdinalIgnoreCase);
+                static bool IsEastWest(string o) => o.Equals("E", StringComparison.OrdinalIgnoreCase)
+                                                 || o.Equals("W", StringComparison.OrdinalIgnoreCase);
+
+                var axisFallback = allTiles.Values.FirstOrDefault(t =>
+                    t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    ((IsNorthSouth(desiredOrient) && IsNorthSouth(t.Orientation)) ||
+                     (IsEastWest(desiredOrient) && IsEastWest(t.Orientation))));
+
+                return axisFallback ?? tile;
             }
 
             result = null;
@@ -428,6 +456,35 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 }
                 if (result is null)
                     log.Add($"    [ANCHOR-FAIL] '{slot.Id}': openSidePlacement found no valid side for orient='{anchorInfo.Value.orient}'");
+            }
+            else if (anchorPos.Equals("oppositeWall", StringComparison.OrdinalIgnoreCase))
+            {
+                var anchoredOrient = ResolveAnchoredOrient();
+                var finalTile = ResolveFinalTile(anchoredOrient);
+                int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+                int fpH = finalTile.TileLayout.Count;
+
+                int minDist = Math.Max(1, anchorMinOppositeWallDistance ?? 1);
+                int maxCfg = anchorMaxOppositeWallDistance ?? 0;
+                int maxDist = maxCfg <= 0
+                    ? int.MaxValue
+                    : Math.Max(minDist, maxCfg);
+
+                log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='oppositeWall' minDist={minDist} maxDist={(maxDist == int.MaxValue ? "inf" : maxDist.ToString())} -> anchoredOrient='{anchoredOrient}'");
+                foreach (var candidate in ComputeOppositeWallCandidates(
+                             anchorInfo.Value.col, anchorInfo.Value.row,
+                             anchorInfo.Value.fpW, anchorInfo.Value.fpH,
+                             anchorInfo.Value.orient,
+                             fpW, fpH,
+                             minDist, maxDist,
+                             roomCells))
+                {
+                    if (TryAnchorPosition(candidate.col, candidate.row, anchoredOrient, finalTile, fpW, fpH))
+                        break;
+                }
+
+                if (result is null)
+                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}': oppositeWall found no valid wall candidate for orient='{anchorInfo.Value.orient}'");
             }
             else
             {
@@ -1238,7 +1295,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     ///   ShortSide1: bei horiz. → Osten  → W | bei vert. → Süden  → N
     ///   Above/Below/Left/Right: direkte Auflösung.
     /// </summary>
-    private static string? ResolveFacingAnchorOrient(string position, int aw, int ah)
+    private static string? ResolveFacingAnchorOrient(string position, int aw, int ah, string anchorOrient)
     {
         bool wide = aw > ah;
         bool tall = ah > aw;
@@ -1252,6 +1309,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             "Below"      => "N",
             "Left"       => "E",
             "Right"      => "W",
+            "frontOfAnchor" => anchorOrient switch { "N" => "S", "S" => "N", "E" => "W", "W" => "E", _ => null },
+            "behindAnchor"  => anchorOrient switch { "N" => "N", "S" => "S", "E" => "E", "W" => "W", _ => null },
+            "leftOfAnchor"  => anchorOrient switch { "N" => "E", "S" => "W", "E" => "S", "W" => "N", _ => null },
+            "rightOfAnchor" => anchorOrient switch { "N" => "W", "S" => "E", "E" => "N", "W" => "S", _ => null },
             _            => null,
         };
     }
@@ -1306,6 +1367,39 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             "Above"     => (ac + (aw - depW) / 2, ar - depH),
             "Below"     => (ac + (aw - depW) / 2, ar + ah),
             "Center"    => (ac + (aw - depW) / 2, ar + (ah - depH) / 2),
+            // Orientierung-relative Positionen
+            "frontOfAnchor" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),
+                "S" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),
+                "E" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),
+                "W" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),
+                _   => null,
+            },
+            "behindAnchor" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),
+                "S" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),
+                "E" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),
+                "W" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),
+                _   => null,
+            },
+            "leftOfAnchor" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),
+                "S" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),
+                "E" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),
+                "W" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),
+                _   => null,
+            },
+            "rightOfAnchor" => anchorOrient switch
+            {
+                "N" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),
+                "S" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),
+                "E" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),
+                "W" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),
+                _   => null,
+            },
             // ── Footprint-relative Positionen mit optionalem Offset entlang der Kante ──
             // offset=0 → erste Zelle, offset=1 → zweite Zelle, usw.
             // Negative Werte: letztes-N → offset=-1 letztes, -2 vorletztes, usw.
@@ -1396,6 +1490,99 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             'E' => (center.centerCol + aw, center.centerRow),
             _   => center,
         };
+    }
+
+    /// <summary>
+    /// Findet Kandidaten an der gegenueberliegenden Wand in Blickrichtung des Ankers.
+    /// Kandidaten werden center-out ueber die Frontkante des Ankers geprueft.
+    /// </summary>
+    private static IEnumerable<(int col, int row)> ComputeOppositeWallCandidates(
+        int ac, int ar, int aw, int ah,
+        string anchorOrient,
+        int depW, int depH,
+        int minDist, int maxDist,
+        HashSet<(int col, int row)> roomCells)
+    {
+        Direction? facingDir = anchorOrient switch
+        {
+            "N" => Direction.N,
+            "S" => Direction.S,
+            "E" => Direction.E,
+            "W" => Direction.W,
+            _   => null,
+        };
+        if (!facingDir.HasValue) yield break;
+
+        var seen = new HashSet<(int, int)>();
+        foreach (var lane in EnumerateOppositeWallLanes(ac, ar, aw, ah, facingDir.Value))
+        {
+            int c = lane.startCol;
+            int r = lane.startRow;
+            int dist = 1;
+
+            while (roomCells.Contains((c, r)))
+            {
+                var next = facingDir.Value switch
+                {
+                    Direction.N => (c, r - 1),
+                    Direction.S => (c, r + 1),
+                    Direction.E => (c + 1, r),
+                    Direction.W => (c - 1, r),
+                    _           => (c, r),
+                };
+
+                if (!roomCells.Contains(next))
+                {
+                    if (dist >= minDist && dist <= maxDist)
+                    {
+                        var anchor = ComputeWallAnchor((c, r), facingDir.Value, depW, depH);
+                        if (seen.Add(anchor))
+                            yield return anchor;
+                    }
+                    break;
+                }
+
+                c = next.Item1;
+                r = next.Item2;
+                dist++;
+                if (dist > maxDist) break;
+            }
+        }
+    }
+
+    private static IEnumerable<(int startCol, int startRow)> EnumerateOppositeWallLanes(
+        int ac, int ar, int aw, int ah, Direction facingDir)
+    {
+        if (facingDir is Direction.N or Direction.S)
+        {
+            int centerCol = ac + (aw - 1) / 2;
+            foreach (var col in CenterOutRange(ac, aw, centerCol))
+            {
+                int startRow = facingDir == Direction.N ? ar - 1 : ar + ah;
+                yield return (col, startRow);
+            }
+            yield break;
+        }
+
+        int centerRow = ar + (ah - 1) / 2;
+        foreach (var row in CenterOutRange(ar, ah, centerRow))
+        {
+            int startCol = facingDir == Direction.W ? ac - 1 : ac + aw;
+            yield return (startCol, row);
+        }
+    }
+
+    private static IEnumerable<int> CenterOutRange(int start, int length, int center)
+    {
+        if (length <= 0) yield break;
+        yield return center;
+        for (int delta = 1; delta < length; delta++)
+        {
+            int left = center - delta;
+            int right = center + delta;
+            if (left >= start) yield return left;
+            if (right < start + length) yield return right;
+        }
     }
 
     /// <summary>
@@ -1588,6 +1775,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -39,6 +39,10 @@ export const ANCHOR_POSITIONS = [
   'leftPerpendicular', 'rightPerpendicular',
   // Generische offene Seite: testet bevorzugte Seite, dann Fallback-Seite
   'openSidePlacement',
+  // Gegenueberliegende Wand in Blickrichtung des Ankers
+  'oppositeWall',
+  // Orientierung-relative Seiten des Ankers
+  'frontOfAnchor', 'behindAnchor', 'leftOfAnchor', 'rightOfAnchor',
   // Orientierungsabhängige Eckwand-Position (für PZ-Wandsystem)
   'perpendicularSide',
 ] as const;
@@ -64,6 +68,11 @@ export const ANCHOR_POSITION_TOOLTIPS: Record<AnchorPosition, string> = {
   leftPerpendicular:  'Senkrecht links relativ zur Blickrichtung des Ankers.\nN→W, E→N, S→E, W→S.',
   rightPerpendicular: 'Senkrecht rechts relativ zur Blickrichtung des Ankers.\nN→E, E→S, S→W, W→N.',
   openSidePlacement:  'Offene Seite mit Fallback:\nW/E → zuerst Sued, dann Nord\nN/S → zuerst West, dann Ost.\nNimmt die erste gueltige Seite.',
+  oppositeWall:      'Sucht in Blickrichtung des Ankers die gegenueberliegende Wand.\nOptional begrenzbar mit min/max Distanz.',
+  frontOfAnchor:     'Direkt vor dem Anker relativ zu seiner Orientierung.',
+  behindAnchor:      'Direkt hinter dem Anker relativ zu seiner Orientierung.',
+  leftOfAnchor:      'Direkt links vom Anker relativ zu seiner Orientierung.',
+  rightOfAnchor:     'Direkt rechts vom Anker relativ zu seiner Orientierung.',
   perpendicularSide:  'Legacy-Alias fuer leftPerpendicular (bestehende Konfigurationen).',
 };
 
@@ -73,6 +82,7 @@ export const ANCHOR_POSITION_TOOLTIPS: Record<AnchorPosition, string> = {
 export const ANCHOR_ORIENT_TOOLTIPS: Record<string, string> = {
   '':               'Tile-Standard: Orientierung aus der Tile-Definition.',
   match:            'Gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).',
+  parallelToAnchor: 'Alias für match: gleiche Ausrichtung wie der Anker. Semantisch klar für Möbel, die parallel zueinander stehen sollen (z.B. TV-Tisch parallel zum Sofa).',
   opposite:         'Entgegengesetzte Ausrichtung (N↔S, E↔W).',
   facingAnchor:     'Slot zeigt automatisch zum Anker hin (aus Position+Footprint abgeleitet).',
   openSideFacing:   'Leitet die Orientierung aus der bei openSidePlacement gewählten Seite ab:\nN→S, S→N, E→W, W→E.',
@@ -97,15 +107,20 @@ export interface AnchorRule {
    * 0 = erste Zelle, 1 = zweite, -1 = letzte, -2 = vorletzte usw.
    */
   offsetAlongAnchor?: number;
+  /** Mindestdistanz fuer oppositeWall (in Zellen). */
+  minOppositeWallDistance?: number;
+  /** Maximaldistanz fuer oppositeWall (in Zellen). */
+  maxOppositeWallDistance?: number;
   /**
    * Ausrichtung des verankerten Slots relativ zum Anker.
-   * "match"        = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
-   * "opposite"     = entgegengesetzt (z.B. Stuhl zeigt vom Tisch weg).
-   * "facingAnchor" = Slot zeigt immer zum Anker hin (automatisch aus Position+Footprint).
-   * "N"/"S"/"E"/"W" = fixe Ausrichtung.
-   * Leer/undefined = tile.Orientation (bisheriges Verhalten).
+   * "match"            = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
+   * "parallelToAnchor" = Alias für "match", semantisch klarer für parallel ausgerichtete Möbel (z.B. TV-Tisch parallel zum Sofa).
+   * "opposite"         = entgegengesetzt (z.B. Stuhl zeigt vom Tisch weg).
+   * "facingAnchor"     = Slot zeigt immer zum Anker hin (automatisch aus Position+Footprint).
+   * "N"/"S"/"E"/"W"   = fixe Ausrichtung.
+   * Leer/undefined     = tile.Orientation (bisheriges Verhalten).
    */
-  orient?: 'match' | 'opposite' | 'facingAnchor' | 'openSideFacing' | 'cwPerpendicular' | 'ccwPerpendicular' | 'N' | 'S' | 'E' | 'W' | '';
+  orient?: 'match' | 'parallelToAnchor' | 'opposite' | 'facingAnchor' | 'openSideFacing' | 'cwPerpendicular' | 'ccwPerpendicular' | 'N' | 'S' | 'E' | 'W' | '';
 }
 
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */

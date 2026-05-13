@@ -1228,6 +1228,7 @@ export function RoomTypeEditor() {
                         >
                           <option value="">— Tile-Standard —</option>
                           <option value="match">match (wie Anker)</option>
+                          <option value="parallelToAnchor">parallelToAnchor (∥ parallel zum Anker)</option>
                           <option value="opposite">opposite (gegenüber)</option>
                           <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
                           <option value="openSideFacing">openSideFacing (aus gewählter openSide abgeleitet)</option>
@@ -1255,6 +1256,42 @@ export function RoomTypeEditor() {
                           />
                           <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
                             0=erste · 1=zweite · -1=letzte
+                          </span>
+                        </div>
+                      )}
+                      {rule.positions.includes('oppositeWall') && (
+                        <div className={s.slotRow} style={{ gap: 6, marginTop: 4, alignItems: 'center' }}>
+                          <span className={s.slotGroupLabel} style={{ minWidth: 60 }}
+                            title="Distanzgrenzen fuer oppositeWall in Zellen. min=1 startet direkt vor dem Anchor.">
+                            Distanz ℹ
+                          </span>
+                          <input
+                            type="number"
+                            min={1}
+                            className={s.slotSizeInput}
+                            style={{ width: 64 }}
+                            value={rule.minOppositeWallDistance ?? 1}
+                            onChange={e => updateAnchorRule(idx, rIdx, { minOppositeWallDistance: Math.max(1, parseInt(e.target.value) || 1) })}
+                            title="Minimale Distanz zur gegenueberliegenden Wand"
+                          />
+                          <span className={s.slotHint}>bis</span>
+                          <input
+                            type="number"
+                            min={1}
+                            className={s.slotSizeInput}
+                            style={{ width: 64 }}
+                            value={rule.maxOppositeWallDistance ?? ''}
+                            onChange={e => {
+                              const raw = e.target.value.trim();
+                              updateAnchorRule(idx, rIdx, {
+                                maxOppositeWallDistance: raw === '' ? undefined : Math.max(1, parseInt(raw) || 1),
+                              });
+                            }}
+                            title="Maximale Distanz (leer = ohne Limit)"
+                            placeholder="∞"
+                          />
+                          <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
+                            min..max (leer = bis zur Wand)
                           </span>
                         </div>
                       )}
