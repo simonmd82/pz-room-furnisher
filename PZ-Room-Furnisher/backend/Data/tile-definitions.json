@@ -20480,7 +20480,9 @@
     "colors": [
       "White"
     ],
-    "roomTypes": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
     "variantGroup": "table_low_small_white_01",
     "styleTags": [],
     "allowedOrients": [
@@ -20614,12 +20616,2070 @@
     "colors": [
       "White"
     ],
-    "roomTypes": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
     "variantGroup": "table_low_small_white_01",
     "styleTags": [],
     "allowedOrients": [
       "N",
       "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_057": {
+    "tileId": "appliances_cooking_01_057",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_057"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_058": {
+    "tileId": "appliances_cooking_01_058",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_058"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_059": {
+    "tileId": "appliances_cooking_01_059",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_059"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_056": {
+    "tileId": "appliances_cooking_01_056",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_056"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_060": {
+    "tileId": "appliances_cooking_01_060",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_060"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_063": {
+    "tileId": "appliances_cooking_01_063",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_063"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_062": {
+    "tileId": "appliances_cooking_01_062",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_062"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_061": {
+    "tileId": "appliances_cooking_01_061",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_061"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "coffee_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_068": {
+    "tileId": "appliances_cooking_01_068",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_068"
+      ]
+    ],
+    "group": "Appliances - Cooking",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "cooking_hood_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_071": {
+    "tileId": "appliances_cooking_01_071",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_071"
+      ]
+    ],
+    "group": "Appliances - Cooking",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "cooking_hood_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_070": {
+    "tileId": "appliances_cooking_01_070",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_070"
+      ]
+    ],
+    "group": "Appliances - Cooking",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "cooking_hood_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_069": {
+    "tileId": "appliances_cooking_01_069",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_069"
+      ]
+    ],
+    "group": "Appliances - Cooking",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "cooking_hood_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_001": {
+    "tileId": "appliances_refrigeration_01_001",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_001"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_003": {
+    "tileId": "appliances_refrigeration_01_003",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_003"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_002": {
+    "tileId": "appliances_refrigeration_01_002",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_002"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_000": {
+    "tileId": "appliances_refrigeration_01_000",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_000"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_005": {
+    "tileId": "appliances_refrigeration_01_005",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_005"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green",
+      "Blue"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_turquoise_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_007": {
+    "tileId": "appliances_refrigeration_01_007",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_007"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green",
+      "Blue"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_turquoise_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_006": {
+    "tileId": "appliances_refrigeration_01_006",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_006"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green",
+      "Blue"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_turquoise_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_004": {
+    "tileId": "appliances_refrigeration_01_004",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_004"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Green",
+      "Blue"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_turquoise_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_009": {
+    "tileId": "appliances_refrigeration_01_009",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_009"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_011": {
+    "tileId": "appliances_refrigeration_01_011",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_011"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_010": {
+    "tileId": "appliances_refrigeration_01_010",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_010"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_008": {
+    "tileId": "appliances_refrigeration_01_008",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_008"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_013": {
+    "tileId": "appliances_refrigeration_01_013",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_013"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_015": {
+    "tileId": "appliances_refrigeration_01_015",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_015"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_014": {
+    "tileId": "appliances_refrigeration_01_014",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_014"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_012": {
+    "tileId": "appliances_refrigeration_01_012",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_012"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_029": {
+    "tileId": "appliances_refrigeration_01_029",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_029"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_031": {
+    "tileId": "appliances_refrigeration_01_031",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_031"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_030": {
+    "tileId": "appliances_refrigeration_01_030",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_030"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_028": {
+    "tileId": "appliances_refrigeration_01_028",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_028"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_033": {
+    "tileId": "appliances_refrigeration_01_033",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_033"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_035": {
+    "tileId": "appliances_refrigeration_01_035",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_035"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_034": {
+    "tileId": "appliances_refrigeration_01_034",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_034"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_032": {
+    "tileId": "appliances_refrigeration_01_032",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_032"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "fridge_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_024": {
+    "tileId": "appliances_refrigeration_01_024",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_024"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Bar"
+    ],
+    "variantGroup": "fridge_small_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_026": {
+    "tileId": "appliances_refrigeration_01_026",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_026"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Bar"
+    ],
+    "variantGroup": "fridge_small_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_027": {
+    "tileId": "appliances_refrigeration_01_027",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_027"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Bar"
+    ],
+    "variantGroup": "fridge_small_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_refrigeration_01_025": {
+    "tileId": "appliances_refrigeration_01_025",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_refrigeration_01_025"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "roomTypes": [
+      "Bar"
+    ],
+    "variantGroup": "fridge_small_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_000": {
+    "tileId": "appliances_cooking_01_000",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_000"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_002": {
+    "tileId": "appliances_cooking_01_002",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_002"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_003": {
+    "tileId": "appliances_cooking_01_003",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_003"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_001": {
+    "tileId": "appliances_cooking_01_001",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_001"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_004": {
+    "tileId": "appliances_cooking_01_004",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_004"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_006": {
+    "tileId": "appliances_cooking_01_006",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_006"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_007": {
+    "tileId": "appliances_cooking_01_007",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_007"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_005": {
+    "tileId": "appliances_cooking_01_005",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_005"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "Black"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_008": {
+    "tileId": "appliances_cooking_01_008",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_008"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_010": {
+    "tileId": "appliances_cooking_01_010",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_010"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_011": {
+    "tileId": "appliances_cooking_01_011",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_011"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_009": {
+    "tileId": "appliances_cooking_01_009",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_009"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_012": {
+    "tileId": "appliances_cooking_01_012",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_012"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_014": {
+    "tileId": "appliances_cooking_01_014",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_014"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_015": {
+    "tileId": "appliances_cooking_01_015",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_015"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_013": {
+    "tileId": "appliances_cooking_01_013",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_013"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "stove_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_029": {
+    "tileId": "appliances_cooking_01_029",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_029"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_030": {
+    "tileId": "appliances_cooking_01_030",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_030"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_031": {
+    "tileId": "appliances_cooking_01_031",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_031"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_028": {
+    "tileId": "appliances_cooking_01_028",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_028"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Black",
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_black_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_025": {
+    "tileId": "appliances_cooking_01_025",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_025"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_024": {
+    "tileId": "appliances_cooking_01_024",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_024"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_026": {
+    "tileId": "appliances_cooking_01_026",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_026"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_027": {
+    "tileId": "appliances_cooking_01_027",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_027"
+      ]
+    ],
+    "group": "Microwave",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "microwave_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_032": {
+    "tileId": "appliances_cooking_01_032",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_032"
+      ]
+    ],
+    "group": "Toaster",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "toaster_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E",
+      "W"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "appliances_cooking_01_033": {
+    "tileId": "appliances_cooking_01_033",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "appliances_cooking_01_033"
+      ]
+    ],
+    "group": "Toaster",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "toaster_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "S",
+      "N"
     ],
     "windowBlockedEdge": ""
   }

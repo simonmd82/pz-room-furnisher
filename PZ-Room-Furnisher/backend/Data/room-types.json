@@ -3494,5 +3494,262 @@
         "White"
       ]
     }
+  },
+  "Kitchen": {
+    "roomType": "Kitchen",
+    "slots": [
+      {
+        "id": "slot_fridge",
+        "label": "Fridge",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Fridge": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "parallel"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_stove",
+        "label": "Stove",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "hasCollision",
+          "isLow"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter_sink",
+        "label": "Counter for Sink",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_sink",
+        "label": "Sink Kitchen",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Sink": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_sink",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_sink",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      }
+    ],
+    "pathStyle": "doorOnly",
+    "colorGroupId": "",
+    "colorPalettes": {}
   }
 }
