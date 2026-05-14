@@ -21,6 +21,62 @@ public class TbxParserService : ITbxParserService
             Height = int.Parse(root.Attribute("height")?.Value ?? "0"),
         };
 
+        // ── TBX Roundtrip-Metadaten ───────────────────────────────────────────
+
+        // Root-Attribute außer width/height in TbxMetadata übernehmen
+        foreach (var attr in root.Attributes())
+        {
+            if (attr.Name.LocalName is "width" or "height") continue;
+            building.Tbx.RootAttributes[attr.Name.LocalName] = attr.Value;
+        }
+
+        // tile_entry-Blöcke (Reihenfolge beibehalten – "floors" kommt mehrfach)
+        foreach (var entryEl in root.Elements("tile_entry"))
+        {
+            var block = new TbxTileEntryBlock
+            {
+                Category = entryEl.Attribute("category")?.Value ?? string.Empty,
+            };
+            foreach (var tileEl in entryEl.Elements("tile"))
+            {
+                block.Tiles.Add(new TbxTileEntry
+                {
+                    Enum   = tileEl.Attribute("enum")?.Value   ?? string.Empty,
+                    Tile   = tileEl.Attribute("tile")?.Value   ?? string.Empty,
+                    Offset = tileEl.Attribute("offset")?.Value ?? string.Empty,
+                });
+            }
+            building.Tbx.TileEntries.Add(block);
+        }
+
+        // user_tiles – geordnete Möbel-Tile-Liste (1-basierter Index durch Listenposition)
+        var userTilesEl = root.Element("user_tiles");
+        if (userTilesEl != null)
+        {
+            foreach (var tileEl in userTilesEl.Elements("tile"))
+            {
+                var tileName = tileEl.Attribute("tile")?.Value ?? string.Empty;
+                if (!string.IsNullOrEmpty(tileName))
+                    building.Tbx.UserTiles.Add(tileName);
+            }
+        }
+
+        // used_tiles – Raum-/Basisstruktur-Indizes
+        var usedTilesEl = root.Element("used_tiles");
+        if (usedTilesEl != null)
+        {
+            building.Tbx.UsedTiles = (usedTilesEl.Value ?? string.Empty)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(v => int.TryParse(v, out var n) ? n : -1)
+                .Where(n => n >= 0)
+                .ToList();
+        }
+
+        // used_furniture – aktuell roh beibehalten
+        var usedFurnitureEl = root.Element("used_furniture");
+        if (usedFurnitureEl != null)
+            building.Tbx.UsedFurnitureRaw = usedFurnitureEl.Value ?? string.Empty;
+
         // Parse rooms (order matters — index 1 = first room element)
         foreach (var roomEl in root.Elements("room"))
         {
@@ -49,11 +105,31 @@ public class TbxParserService : ITbxParserService
             if (roomsEl != null)
                 floor.RoomGrid = ParseGrid(roomsEl.Value);
 
+            // Attributes grid (optional – leer = alles 0)
+            var attribEl = floorEl.Element("attributes");
+            if (attribEl != null)
+                floor.AttributesGrid = ParseGrid(attribEl.Value);
+
+            // Tile-Layer-Matrizen (FloorFurniture, Furniture, Furniture2, WallFurniture, …)
+            foreach (var layerEl in floorEl.Elements("tiles"))
+            {
+                var layerName = layerEl.Attribute("layer")?.Value ?? string.Empty;
+                if (!string.IsNullOrEmpty(layerName))
+                    floor.TileLayers[layerName] = ParseGrid(layerEl.Value);
+            }
+
             // Objects (doors, windows, stairs, …)
             foreach (var obj in floorEl.Elements("object"))
             {
                 var typeStr = obj.Attribute("type")?.Value ?? string.Empty;
                 var dirStr  = obj.Attribute("dir")?.Value  ?? "N";
+
+                // Bekannte Kernfelder nicht in RawAttributes doppelt ablegen
+                var knownAttribs = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                    { "type", "x", "y", "dir", "Tile" };
+                var rawAttribs = obj.Attributes()
+                    .Where(a => !knownAttribs.Contains(a.Name.LocalName))
+                    .ToDictionary(a => a.Name.LocalName, a => a.Value);
 
                 floor.Objects.Add(new FloorObject
                 {
@@ -64,11 +140,12 @@ public class TbxParserService : ITbxParserService
                         "stairs"  => FloorObjectType.Stairs,
                         _         => FloorObjectType.Other
                     },
-                    OriginalType = typeStr,
-                    X    = ParseInt(obj.Attribute("x")?.Value),
-                    Y    = ParseInt(obj.Attribute("y")?.Value),
-                    Dir  = Enum.TryParse<Direction>(dirStr, true, out var dir) ? dir : Direction.N,
-                    Tile = obj.Attribute("Tile")?.Value ?? string.Empty,
+                    OriginalType   = typeStr,
+                    X              = ParseInt(obj.Attribute("x")?.Value),
+                    Y              = ParseInt(obj.Attribute("y")?.Value),
+                    Dir            = Enum.TryParse<Direction>(dirStr, true, out var dir) ? dir : Direction.N,
+                    Tile           = obj.Attribute("Tile")?.Value ?? string.Empty,
+                    RawAttributes  = rawAttribs,
                 });
             }
 

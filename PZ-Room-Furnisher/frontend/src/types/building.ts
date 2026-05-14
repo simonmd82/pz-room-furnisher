@@ -1,3 +1,37 @@
+// ── TBX Roundtrip-Metadata ────────────────────────────────────────────────────
+
+/** A single tile element inside a tile_entry block. */
+export interface TbxTileEntry {
+  enum: string;
+  tile: string;
+  offset: string;
+}
+
+/** A single tile_entry category block (e.g. "floors", "interior_walls", …). */
+export interface TbxTileEntryBlock {
+  category: string;
+  tiles: TbxTileEntry[];
+}
+
+/**
+ * All TBX metadata not part of the abstract building/room/floor model,
+ * preserved for lossless roundtrip export.
+ */
+export interface TbxMetadata {
+  /** All root attributes of the building element except width/height. */
+  rootAttributes: Record<string, string>;
+  /** Ordered list of tile_entry blocks ("floors" category appears multiple times). */
+  tileEntries: TbxTileEntryBlock[];
+  /** Ordered list of user tile names; 1-based TBX index = position + 1. */
+  userTiles: string[];
+  /** Raw used_tiles index list from the original TBX (building base structure). */
+  usedTiles: number[];
+  /** Raw content of used_furniture. */
+  usedFurnitureRaw: string;
+}
+
+// ── Building model ────────────────────────────────────────────────────────────
+
 export interface Room {
   id: string;
   name: string;
@@ -24,6 +58,8 @@ export interface FloorObject {
   y: number;
   dir: DirectionType;
   tile: string;
+  /** Additional raw TBX attributes (e.g. FrameTile, CurtainsTile, ShuttersTile) */
+  rawAttributes: Record<string, string>;
 }
 
 /**
@@ -61,6 +97,14 @@ export interface Floor {
   index: number;
   /** roomGrid[row][col] — 0 = outside, 1..N = room index (1-based into Building.rooms) */
   roomGrid: number[][];
+  /** Raw TBX attributes matrix (height × width). Preserved for lossless export. */
+  attributesGrid: number[][];
+  /**
+   * Raw TBX tile layer matrices keyed by layer name
+   * (e.g. Furniture, Furniture2, FloorFurniture, WallFurniture).
+   * Values are TBX user-tile indices ((height+1) × (width+1)).
+   */
+  tileLayers: Record<string, number[][]>;
   objects: FloorObject[];
   /** All doors and windows as shared cell-edges */
   edges: WallEdge[];
@@ -78,6 +122,8 @@ export interface Building {
   height: number;
   rooms: Room[];
   floors: Floor[];
+  /** TBX metadata for lossless roundtrip export. Populated by the parser. */
+  tbx: TbxMetadata;
 }
 
 // ── Furnishing ────────────────────────────────────────────────────────────────

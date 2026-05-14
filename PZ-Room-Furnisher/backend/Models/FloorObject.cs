@@ -25,4 +25,10 @@ public class FloorObject
     public int Y { get; set; }
     public Direction Dir { get; set; }
     public string Tile { get; set; } = string.Empty;
+    /// <summary>
+    /// Zusätzliche rohe XML-Attribute des TBX-Objekts (z.B. FrameTile,
+    /// CurtainsTile, ShuttersTile), damit spätere Exporte verlustarm bleiben.
+    /// Bekannte Kernfelder (type/x/y/dir/Tile) werden hier nicht doppelt geführt.
+    /// </summary>
+    public Dictionary<string, string> RawAttributes { get; set; } = [];
 }

@@ -23,6 +23,13 @@ public class Floor
     public int Index { get; set; }
     /// <summary>RoomGrid[row][col] — 0 = no room, 1..N = 1-based room index</summary>
     public int[][] RoomGrid { get; set; } = [];
+    /// <summary>Raw TBX-Attributmatrix je Zelle. 0 = kein besonderes Attribut.</summary>
+    public int[][] AttributesGrid { get; set; } = [];
+    /// <summary>
+    /// Raw TBX layer matrices, keyed by layer name (e.g. Furniture, Furniture2,
+    /// FloorFurniture, WallFurniture). Values are TBX user-tile indices.
+    /// </summary>
+    public Dictionary<string, int[][]> TileLayers { get; set; } = [];
     public List<FloorObject> Objects { get; set; } = [];
     /// <summary>All doors and windows as shared cell-edges.</summary>
     public List<WallEdge> Edges { get; set; } = [];
