@@ -157,6 +157,7 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], tileConfig, sheetInfos }: Props) {
   const { t } = useTranslation();
+  void tileConfig;
   const grid = floor.roomGrid;
 
   const [selected, setSelected] = useState<Set<number>>(new Set());

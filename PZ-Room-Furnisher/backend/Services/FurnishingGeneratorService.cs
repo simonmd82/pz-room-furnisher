@@ -8,6 +8,8 @@ namespace backend.Services;
 public record RoomSelection(
     int    FloorIndex,
     int    RoomIndex1Based,
+    int?   AnchorCol = null,
+    int?   AnchorRow = null,
     /// <summary>If non-empty, overrides room.Name for type lookup.</summary>
     string RoomTypeOverride = "");
 
@@ -36,7 +38,10 @@ public record PlacedFurnitureItem(
     string TileId,
     string Layer,
     string Orient,
-    string SlotId = "");
+    string SlotId = "",
+    int?   RoomIndex1Based = null,
+    int?   AnchorCol = null,
+    int?   AnchorRow = null);
 
 public record FurnishResult(
     List<PlacedFurnitureItem> Placements,
@@ -53,6 +58,8 @@ public interface IFurnishingGeneratorService
 
 public class FurnishingGeneratorService : IFurnishingGeneratorService
 {
+    private const int LayoutSearchNodeLimit = 20000;
+
     private readonly IRoomTypeConfigService _roomTypeSvc;
     private readonly ITileConfigService     _tileSvc;
     private readonly IPathfinderService     _pathfinder;
@@ -108,6 +115,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             { log.Add($"[SKIP] '{room.Name}' / InternalName='{room.InternalName}' (floor {sel.FloorIndex}): no RoomTypeConfig for '{typeName}'."); continue; }
 
             var config = roomTypes[configKey];
+            var layoutVariant = SelectLayoutVariant(config, rng, log);
 
             // PathStyle: Pfad neu berechnen wenn er vom Standard "wall" abweicht.
             // Beim Upload werden Pfade mit "wall" vorberechnet; für andere Stile
@@ -119,7 +127,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             }
 
             // 2. Room analysis
-            var roomCells   = GetRoomCells(floor, sel.RoomIndex1Based);
+            var roomCells   = GetRoomCells(floor, sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow);
+            if (roomCells.Count == 0)
+            {
+                var anchorInfo = sel.AnchorCol.HasValue && sel.AnchorRow.HasValue
+                    ? $" anchor=({sel.AnchorCol.Value},{sel.AnchorRow.Value})"
+                    : string.Empty;
+                log.Add($"[SKIP] '{room.Name}' (floor {sel.FloorIndex}, roomIndex {sel.RoomIndex1Based}{anchorInfo}): no matching room cells found.");
+                continue;
+            }
             var roomSize    = RoomSize.Classify(roomCells.Count);
             var cellWalls   = ComputeWallDirections(roomCells);
             var doorCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
@@ -132,28 +148,58 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
                 ? path.Select(p => (p[0], p[1])).ToHashSet()
                 : new HashSet<(int, int)>();
+            pathCells.IntersectWith(roomCells);
 
             log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, density {density:P0}");
+            if (layoutVariant is not null)
+                log.Add($"[ROOM] layout variant -> '{layoutVariant.Id}'");
 
-            // 3. Slot selection
-            var slotsToPlace = SelectSlots(config, roomSize, rng, log, density);
-
-            // 4. Place each slot
-            var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
-            var colorMap   = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            var variantMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            // Farbpalette pre-seeden: für jede Gruppe mit definierter Palette
-            // wird JETZT eine zufällige Farbe festgelegt – vor dem ersten Slot.
+            var seededColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (groupId, palette) in config.ColorPalettes)
             {
                 var valid = palette.Where(c => !string.IsNullOrEmpty(c)).ToList();
-                if (valid.Count > 0)
+                if (valid.Count == 0) continue;
+                seededColorMap[groupId] = valid[rng.Next(valid.Count)];
+                log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{seededColorMap[groupId]}' ({valid.Count} choices)");
+            }
+
+            if (layoutVariant is not null)
+            {
+                var layoutAttemptOrder = BuildLayoutAttemptOrder(config, layoutVariant, rng);
+                if (TryPlaceCompositeLayout(
+                        config,
+                        layoutVariant,
+                        layoutAttemptOrder,
+                        roomSize,
+                        density,
+                        sel.FloorIndex,
+                        roomCells,
+                        cellWalls,
+                        doorCells,
+                        windowCells,
+                        pathCells,
+                        allTiles,
+                        seededColorMap,
+                        rng,
+                        configKey,
+                        sel.RoomIndex1Based,
+                        sel.AnchorCol,
+                        sel.AnchorRow,
+                        placements,
+                        log))
                 {
-                    colorMap[groupId] = valid[rng.Next(valid.Count)];
-                    log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{colorMap[groupId]}' ({valid.Count} choices)");
+                    continue;
                 }
             }
+
+            // 3. Slot selection
+            var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
+            var slotsToPlace = SelectSlots(config, roomSize, rng, log, density, activeLayoutSlotIds);
+
+            // 4. Place each slot
+            var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
+            var colorMap   = new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase);
+            var variantMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var (slot, count) in slotsToPlace)
                 for (int n = 0; n < count; n++)
@@ -167,7 +213,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         continue;
                     }
                     PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, physicalOccupied, allTiles, anchorMap, colorMap, variantMap, config, placements, log, rng, configKey);
+                        pathCells, occupied, softOccupied, physicalOccupied, allTiles, anchorMap, colorMap, variantMap, config,
+                        sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
+                        placements, log, rng, configKey);
                 }
         }
 
@@ -179,13 +227,17 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     // =========================================================================
 
     private static List<(RoomTypeSlot slot, int count)> SelectSlots(
-        RoomTypeConfig config, string roomSize, Random rng, List<string> log, double density = 1.0)
+        RoomTypeConfig config, string roomSize, Random rng, List<string> log, double density = 1.0,
+        IReadOnlyCollection<string>? allowedSlotIds = null)
     {
         var result       = new List<(RoomTypeSlot, int)>();
         var groupWinners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var candidateSlots = allowedSlotIds is null || allowedSlotIds.Count == 0
+            ? config.Slots
+            : config.Slots.Where(s => allowedSlotIds.Contains(s.Id)).ToList();
 
         // Resolve group variants: one winner per SlotGroupId
-        foreach (var grp in config.Slots
+        foreach (var grp in candidateSlots
             .Where(s => !string.IsNullOrEmpty(s.SlotGroupId))
             .GroupBy(s => s.SlotGroupId!, StringComparer.OrdinalIgnoreCase))
         {
@@ -200,7 +252,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         }
 
         // Eligible = ungrouped + group winners; required first, then by priority
-        foreach (var slot in config.Slots
+        foreach (var slot in candidateSlots
             .Where(s => string.IsNullOrEmpty(s.SlotGroupId) || groupWinners.Contains(s.Id))
             .OrderByDescending(s => s.Required).ThenBy(s => s.Priority))
         {
@@ -246,6 +298,997 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return result;
     }
 
+    private static LayoutVariant? SelectLayoutVariant(RoomTypeConfig config, Random rng, List<string> log)
+    {
+        if (config.LayoutVariants is null || config.LayoutVariants.Count == 0)
+            return null;
+
+        var variants = config.LayoutVariants
+            .Where(v => !string.IsNullOrWhiteSpace(v.Id))
+            .ToList();
+
+        if (variants.Count == 0)
+            return null;
+
+        int totalWeight = variants.Sum(v => Math.Max(1, v.Weight));
+        if (totalWeight <= 0) totalWeight = variants.Count;
+
+        int roll = rng.Next(totalWeight);
+        int acc = 0;
+        var chosen = variants[0];
+        foreach (var v in variants)
+        {
+            acc += Math.Max(1, v.Weight);
+            if (roll < acc) { chosen = v; break; }
+        }
+
+        log.Add($"  [LAYOUT] chose '{chosen.Id}' ({chosen.Weight}/{totalWeight})" +
+                (string.IsNullOrWhiteSpace(chosen.Label) ? string.Empty : $" – {chosen.Label}"));
+        return chosen;
+    }
+
+    private static HashSet<string>? BuildLayoutSlotFilter(RoomTypeConfig config, LayoutVariant? variant, List<string>? log = null)
+    {
+        if (variant is null || variant.SlotIds is null || variant.SlotIds.Count == 0)
+            return null;
+
+        var knownSlots = config.Slots
+            .Select(s => s.Id)
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var missingCore = new List<string>();
+        foreach (var slotId in variant.SlotIds)
+        {
+            if (string.IsNullOrWhiteSpace(slotId)) continue;
+            if (knownSlots.Contains(slotId)) active.Add(slotId);
+            else missingCore.Add(slotId);
+        }
+
+        var missingCommon = new List<string>();
+        foreach (var slotId in config.CommonSlotIds ?? [])
+        {
+            if (string.IsNullOrWhiteSpace(slotId)) continue;
+            if (knownSlots.Contains(slotId)) active.Add(slotId);
+            else missingCommon.Add(slotId);
+        }
+
+        if (missingCore.Count > 0 && log is not null)
+            log.Add($"  [LAYOUT] '{variant.Id}': missing core slots ignored [{string.Join(", ", missingCore)}]");
+
+        if (missingCommon.Count > 0 && log is not null)
+            log.Add($"  [LAYOUT] '{variant.Id}': missing common slots ignored [{string.Join(", ", missingCommon)}]");
+
+        if (active.Count == 0)
+            return null;
+
+        log?.Add($"  [LAYOUT] '{variant.Id}': active slots (core+common) [{string.Join(", ", active.OrderBy(x => x))}]");
+        return active;
+    }
+
+    // =========================================================================
+    // Composite layout solver (Option A)
+    // =========================================================================
+
+    private sealed class LayoutPlacementState
+    {
+        public HashSet<(int, int)> Occupied { get; }
+        public HashSet<(int, int)> SoftOccupied { get; }
+        public HashSet<(int, int)> PhysicalOccupied { get; }
+        public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
+        public Dictionary<string, string> ColorMap { get; }
+        public Dictionary<string, string> VariantMap { get; }
+        public List<PlacedFurnitureItem> Placements { get; }
+        public List<(string SlotId, string TileId, string Orient, int Col, int Row)> SlotPlacements { get; }
+
+        public LayoutPlacementState(
+            HashSet<(int, int)> occupied,
+            HashSet<(int, int)> softOccupied,
+            HashSet<(int, int)> physicalOccupied,
+            Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
+            Dictionary<string, string> colorMap,
+            Dictionary<string, string> variantMap,
+            List<PlacedFurnitureItem> placements,
+            List<(string SlotId, string TileId, string Orient, int Col, int Row)> slotPlacements)
+        {
+            Occupied = occupied;
+            SoftOccupied = softOccupied;
+            PhysicalOccupied = physicalOccupied;
+            AnchorMap = anchorMap;
+            ColorMap = colorMap;
+            VariantMap = variantMap;
+            Placements = placements;
+            SlotPlacements = slotPlacements;
+        }
+
+        public LayoutPlacementState Clone() => new(
+            new HashSet<(int, int)>(Occupied),
+            new HashSet<(int, int)>(SoftOccupied),
+            new HashSet<(int, int)>(PhysicalOccupied),
+            new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(AnchorMap, StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, string>(ColorMap, StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, string>(VariantMap, StringComparer.OrdinalIgnoreCase),
+            new List<PlacedFurnitureItem>(Placements),
+            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>(SlotPlacements));
+    }
+
+    private sealed record LayoutPlacementCandidate(
+        int Col,
+        int Row,
+        string Orient,
+        TileDefinition Tile,
+        string EffectiveColorGroup);
+
+    private static bool TryPlaceCompositeLayout(
+        RoomTypeConfig config,
+        LayoutVariant chosenVariant,
+        IReadOnlyList<LayoutVariant> attemptOrder,
+        string roomSize,
+        double density,
+        int floorIndex,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        Dictionary<string, string> seededColorMap,
+        Random rng,
+        string roomTypeName,
+        int roomIndex1Based,
+        int? selectionAnchorCol,
+        int? selectionAnchorRow,
+        List<PlacedFurnitureItem> placements,
+        List<string> log)
+    {
+        foreach (var variant in attemptOrder)
+        {
+            var attemptLog = new List<string>();
+            var activeSlotIds = BuildLayoutSlotFilter(config, variant, attemptLog);
+            if (activeSlotIds is null || activeSlotIds.Count == 0)
+                continue;
+
+            var slotsToPlace = SelectSlots(config, roomSize, rng, attemptLog, density, activeSlotIds);
+            if (slotsToPlace.Count == 0)
+            {
+                log.Add($"  [LAYOUT] '{variant.Id}': no slots selected for full-fit attempt");
+                continue;
+            }
+
+            if (!TryPlaceCompositeLayoutVariant(
+                    variant,
+                    slotsToPlace,
+                    floorIndex,
+                    roomCells,
+                    cellWalls,
+                    doorCells,
+                    windowCells,
+                    pathCells,
+                    allTiles,
+                    config,
+                    seededColorMap,
+                    rng,
+                    roomTypeName,
+                    roomIndex1Based,
+                    selectionAnchorCol,
+                    selectionAnchorRow,
+                    out var layoutPlacements,
+                    out var placementLog,
+                    out var visitedNodes))
+            {
+                log.Add($"  [LAYOUT] '{variant.Id}': full-fit attempt failed after {visitedNodes} search nodes");
+                continue;
+            }
+
+            if (!variant.Id.Equals(chosenVariant.Id, StringComparison.OrdinalIgnoreCase))
+            {
+                log.Add($"  [LAYOUT] full-fit switched from '{chosenVariant.Id}' to '{variant.Id}'" +
+                        (string.IsNullOrWhiteSpace(variant.Label) ? string.Empty : $" – {variant.Label}"));
+            }
+
+            foreach (var line in attemptLog)
+                log.Add(line);
+            foreach (var line in placementLog)
+                log.Add(line);
+            placements.AddRange(layoutPlacements);
+            return true;
+        }
+
+        log.Add("  [LAYOUT] full-fit solver found no complete placement for the configured variants – falling back to slot-by-slot placement");
+        return false;
+    }
+
+    private static bool TryPlaceCompositeLayoutVariant(
+        LayoutVariant variant,
+        List<(RoomTypeSlot slot, int count)> slotsToPlace,
+        int floorIndex,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        RoomTypeConfig config,
+        Dictionary<string, string> seededColorMap,
+        Random rng,
+        string roomTypeName,
+        int roomIndex1Based,
+        int? selectionAnchorCol,
+        int? selectionAnchorRow,
+        out List<PlacedFurnitureItem> layoutPlacements,
+        out List<string> placementLog,
+        out int visitedNodes)
+    {
+        var orderedSlots = ExpandLayoutSlotSequence(slotsToPlace);
+        var initialState = new LayoutPlacementState(
+            new HashSet<(int, int)>(),
+            new HashSet<(int, int)>(),
+            new HashSet<(int, int)>(),
+            new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase),
+            new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            new List<PlacedFurnitureItem>(),
+            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>());
+
+        visitedNodes = 0;
+        if (!SearchCompositeLayout(
+                0,
+                orderedSlots,
+                initialState,
+                floorIndex,
+                roomCells,
+                cellWalls,
+                doorCells,
+                windowCells,
+                pathCells,
+                allTiles,
+                config,
+                rng,
+                roomTypeName,
+                roomIndex1Based,
+                selectionAnchorCol,
+                selectionAnchorRow,
+                ref visitedNodes,
+                out var finalState))
+        {
+            layoutPlacements = [];
+            placementLog = [];
+            return false;
+        }
+
+        layoutPlacements = finalState.Placements;
+        placementLog =
+        [
+            $"  [LAYOUT] '{variant.Id}': full-fit solver placed a complete layout ({orderedSlots.Count} slot instances, {visitedNodes} search nodes)"
+        ];
+        foreach (var placement in finalState.SlotPlacements)
+            placementLog.Add($"  [PLACED] '{placement.SlotId}': '{placement.TileId}' orient '{placement.Orient}' at ({placement.Col},{placement.Row})");
+
+        return true;
+    }
+
+    private static List<RoomTypeSlot> ExpandLayoutSlotSequence(List<(RoomTypeSlot slot, int count)> slotsToPlace)
+    {
+        var indexed = slotsToPlace
+            .Select((entry, index) => new { entry.slot, entry.count, index })
+            .ToList();
+
+        var slotById = indexed
+            .Where(x => !string.IsNullOrWhiteSpace(x.slot.Id))
+            .GroupBy(x => x.slot.Id, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().slot, StringComparer.OrdinalIgnoreCase);
+
+        var depthCache = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        int ComputeDepth(RoomTypeSlot slot, HashSet<string> visiting)
+        {
+            if (string.IsNullOrWhiteSpace(slot.Id)) return 0;
+            if (depthCache.TryGetValue(slot.Id, out var cached)) return cached;
+            if (!visiting.Add(slot.Id)) return 0;
+
+            int depth = 0;
+            if (!string.IsNullOrWhiteSpace(slot.RequiresSlot)
+                && slotById.TryGetValue(slot.RequiresSlot, out var requiresParent))
+            {
+                depth = Math.Max(depth, ComputeDepth(requiresParent, visiting) + 1);
+            }
+
+            foreach (var anchorTarget in slot.AnchorRules
+                         .Select(r => r.AnchorTarget)
+                         .Where(t => !string.IsNullOrWhiteSpace(t))
+                         .Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                if (slotById.TryGetValue(anchorTarget, out var anchorParent))
+                    depth = Math.Max(depth, ComputeDepth(anchorParent, visiting) + 1);
+            }
+
+            visiting.Remove(slot.Id);
+            depthCache[slot.Id] = depth;
+            return depth;
+        }
+
+        return indexed
+            .OrderBy(x => ComputeDepth(x.slot, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
+            .ThenBy(x => x.index)
+            .SelectMany(x => Enumerable.Range(0, x.count).Select(_ => x.slot))
+            .ToList();
+    }
+
+    private static List<LayoutVariant> BuildLayoutAttemptOrder(RoomTypeConfig config, LayoutVariant chosenVariant, Random rng)
+    {
+        var pool = config.LayoutVariants
+            .Where(v => !string.IsNullOrWhiteSpace(v.Id))
+            .ToList();
+
+        var order = new List<LayoutVariant>();
+        var preferred = pool.FirstOrDefault(v => v.Id.Equals(chosenVariant.Id, StringComparison.OrdinalIgnoreCase));
+        if (preferred is not null)
+        {
+            order.Add(preferred);
+            pool.Remove(preferred);
+        }
+
+        while (pool.Count > 0)
+        {
+            int totalWeight = pool.Sum(v => Math.Max(1, v.Weight));
+            int roll = rng.Next(totalWeight);
+            int acc = 0;
+            int chosenIndex = 0;
+            for (int i = 0; i < pool.Count; i++)
+            {
+                acc += Math.Max(1, pool[i].Weight);
+                if (roll < acc)
+                {
+                    chosenIndex = i;
+                    break;
+                }
+            }
+
+            order.Add(pool[chosenIndex]);
+            pool.RemoveAt(chosenIndex);
+        }
+
+        return order;
+    }
+
+    private static bool SearchCompositeLayout(
+        int index,
+        IReadOnlyList<RoomTypeSlot> orderedSlots,
+        LayoutPlacementState state,
+        int floorIndex,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        RoomTypeConfig config,
+        Random rng,
+        string roomTypeName,
+        int roomIndex1Based,
+        int? selectionAnchorCol,
+        int? selectionAnchorRow,
+        ref int visitedNodes,
+        out LayoutPlacementState finalState)
+    {
+        if (index >= orderedSlots.Count)
+        {
+            finalState = state;
+            return true;
+        }
+
+        visitedNodes++;
+        if (visitedNodes > LayoutSearchNodeLimit)
+        {
+            finalState = state;
+            return false;
+        }
+
+        var slot = orderedSlots[index];
+        var candidates = EnumerateLayoutPlacementCandidates(
+            slot,
+            roomCells,
+            cellWalls,
+            doorCells,
+            windowCells,
+            pathCells,
+            allTiles,
+            state,
+            config,
+            rng,
+            roomTypeName);
+
+        foreach (var candidate in candidates)
+        {
+            var nextState = state.Clone();
+            CommitLayoutPlacement(floorIndex, slot, candidate, roomIndex1Based, selectionAnchorCol, selectionAnchorRow, nextState);
+            if (SearchCompositeLayout(
+                    index + 1,
+                    orderedSlots,
+                    nextState,
+                    floorIndex,
+                    roomCells,
+                    cellWalls,
+                    doorCells,
+                    windowCells,
+                    pathCells,
+                    allTiles,
+                    config,
+                    rng,
+                    roomTypeName,
+                    roomIndex1Based,
+                    selectionAnchorCol,
+                    selectionAnchorRow,
+                    ref visitedNodes,
+                    out finalState))
+            {
+                return true;
+            }
+        }
+
+        finalState = state;
+        return false;
+    }
+
+    private static List<LayoutPlacementCandidate> EnumerateLayoutPlacementCandidates(
+        RoomTypeSlot slot,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        LayoutPlacementState state,
+        RoomTypeConfig config,
+        Random rng,
+        string roomTypeName)
+    {
+        if (!string.IsNullOrEmpty(slot.RequiresSlot)
+            && !state.AnchorMap.ContainsKey(slot.RequiresSlot))
+        {
+            return [];
+        }
+
+        var (tilePool, effectiveColorGroup) = PrepareLayoutTilePool(slot, allTiles, state, config, roomTypeName);
+        if (tilePool.Count == 0)
+            return [];
+
+        var orderedTiles = OrderTileCandidatesForLayout(tilePool, slot, rng);
+        var result = new List<LayoutPlacementCandidate>();
+
+        var anchorRule = ResolveActiveAnchorRule(slot, state.AnchorMap);
+        if (anchorRule is not null)
+        {
+            var anchorInfo = state.AnchorMap[anchorRule.AnchorTarget];
+            var positions = anchorRule.Positions.Count > 0
+                ? ShuffleCopy(anchorRule.Positions, rng)
+                : [];
+
+            foreach (var baseTile in orderedTiles)
+            foreach (var position in positions)
+            {
+                if (position.Equals("openSidePlacement", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var side in ComputeOpenSideOrder(anchorInfo.orient))
+                    {
+                        var orient = ResolveAnchoredOrient(anchorRule.Orient, anchorInfo, position, baseTile, side);
+                        var finalTile = ResolveFinalTileForOrient(baseTile, orient, allTiles);
+                        int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+                        int fpH = finalTile.TileLayout.Count;
+                        var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied))
+                            result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
+                    }
+
+                    continue;
+                }
+
+                if (position.Equals("oppositeWall", StringComparison.OrdinalIgnoreCase))
+                {
+                    var orient = ResolveAnchoredOrient(anchorRule.Orient, anchorInfo, position, baseTile);
+                    var finalTile = ResolveFinalTileForOrient(baseTile, orient, allTiles);
+                    int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
+                    int fpH = finalTile.TileLayout.Count;
+                    int minDist = Math.Max(1, anchorRule.MinOppositeWallDistance ?? 1);
+                    int maxDist = anchorRule.MaxOppositeWallDistance is int maxCfg && maxCfg > 0
+                        ? Math.Max(minDist, maxCfg)
+                        : int.MaxValue;
+                    foreach (var pos in ComputeOppositeWallCandidates(
+                                 anchorInfo.col,
+                                 anchorInfo.row,
+                                 anchorInfo.fpW,
+                                 anchorInfo.fpH,
+                                 anchorInfo.orient,
+                                 fpW,
+                                 fpH,
+                                 minDist,
+                                 maxDist,
+                                 roomCells))
+                    {
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied))
+                            result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
+                    }
+
+                    continue;
+                }
+
+                var anchoredOrient = ResolveAnchoredOrient(anchorRule.Orient, anchorInfo, position, baseTile);
+                var anchoredTile = ResolveFinalTileForOrient(baseTile, anchoredOrient, allTiles);
+                int depW = anchoredTile.TileLayout.Count > 0 ? (anchoredTile.TileLayout[0]?.Count ?? 1) : 1;
+                int depH = anchoredTile.TileLayout.Count;
+                var anchoredPos = ComputeAnchoredPosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, depW, depH, position, anchorInfo.orient, anchorRule.OffsetAlongAnchor);
+                if (!anchoredPos.HasValue)
+                    continue;
+
+                var (col, row) = anchoredPos.Value;
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied))
+                    result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
+            }
+
+            return DistinctLayoutCandidates(result);
+        }
+
+        foreach (var placementRules in EnumeratePlacementRuleChain(slot))
+        foreach (var baseTile in orderedTiles)
+        {
+            var candidates = EnumerateFreePlacementCandidates(
+                slot,
+                baseTile,
+                placementRules,
+                roomCells,
+                cellWalls,
+                doorCells,
+                windowCells,
+                pathCells,
+                state.Occupied,
+                state.SoftOccupied,
+                state.PhysicalOccupied,
+                allTiles,
+                rng,
+                effectiveColorGroup);
+            result.AddRange(candidates);
+        }
+
+        return DistinctLayoutCandidates(result);
+    }
+
+    private static List<LayoutPlacementCandidate> DistinctLayoutCandidates(List<LayoutPlacementCandidate> candidates)
+    {
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var result = new List<LayoutPlacementCandidate>();
+        foreach (var candidate in candidates)
+        {
+            var key = $"{candidate.Col}:{candidate.Row}:{candidate.Orient}:{candidate.Tile.TileId}";
+            if (seen.Add(key))
+                result.Add(candidate);
+        }
+
+        return result;
+    }
+
+    private static AnchorRule? ResolveActiveAnchorRule(
+        RoomTypeSlot slot,
+        Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap)
+    {
+        if (slot.AnchorRules?.Count > 0)
+        {
+            foreach (var rule in slot.AnchorRules)
+            {
+                if (!string.IsNullOrEmpty(rule.AnchorTarget) && anchorMap.ContainsKey(rule.AnchorTarget))
+                    return rule;
+            }
+        }
+
+        return null;
+    }
+
+    private static (List<TileDefinition> candidates, string effectiveColorGroup) PrepareLayoutTilePool(
+        RoomTypeSlot slot,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        LayoutPlacementState state,
+        RoomTypeConfig config,
+        string roomTypeName)
+    {
+        var candidates = FilterTiles(allTiles, slot, roomTypeName);
+        if (candidates.Count == 0)
+            return ([], string.Empty);
+
+        var effectiveColorGroup = slot.ColorGroupId switch
+        {
+            "none"               => string.Empty,
+            { Length: > 0 } cg   => cg,
+            _                    => config.ColorGroupId,
+        };
+
+        if (!string.IsNullOrEmpty(effectiveColorGroup)
+            && state.ColorMap.TryGetValue(effectiveColorGroup, out var requiredColor)
+            && !string.IsNullOrEmpty(requiredColor))
+        {
+            var colored = candidates
+                .Where(t => t.Colors.Any(c => c.Equals(requiredColor, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            if (colored.Count > 0)
+                candidates = colored;
+        }
+
+        if (!string.IsNullOrEmpty(slot.TileGroupId)
+            && state.VariantMap.TryGetValue(slot.TileGroupId, out var requiredVariantGroup)
+            && !string.IsNullOrEmpty(requiredVariantGroup))
+        {
+            var grouped = candidates
+                .Where(t => t.VariantGroup.Equals(requiredVariantGroup, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (grouped.Count > 0)
+                candidates = grouped;
+        }
+
+        return (candidates, effectiveColorGroup);
+    }
+
+    private static List<TileDefinition> OrderTileCandidatesForLayout(List<TileDefinition> candidates, RoomTypeSlot slot, Random rng)
+    {
+        if (candidates.Count <= 1)
+            return candidates.ToList();
+
+        if (slot.AllowedCategories.Count == 0)
+            return ShuffleCopy(candidates, rng);
+
+        var result = new List<TileDefinition>();
+        var byGroup = candidates
+            .GroupBy(t => t.Group, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        var weightedGroups = slot.AllowedCategories
+            .Where(kv => byGroup.ContainsKey(kv.Key))
+            .Select(kv => (Group: kv.Key, Weight: Math.Max(1, kv.Value)))
+            .ToList();
+
+        while (weightedGroups.Count > 0)
+        {
+            int totalWeight = weightedGroups.Sum(g => g.Weight);
+            int roll = rng.Next(totalWeight);
+            int acc = 0;
+            int chosenIndex = 0;
+            for (int i = 0; i < weightedGroups.Count; i++)
+            {
+                acc += weightedGroups[i].Weight;
+                if (roll < acc)
+                {
+                    chosenIndex = i;
+                    break;
+                }
+            }
+
+            var group = weightedGroups[chosenIndex].Group;
+            result.AddRange(ShuffleCopy(byGroup[group], rng));
+            weightedGroups.RemoveAt(chosenIndex);
+        }
+
+        foreach (var extra in ShuffleCopy(candidates.Where(t => result.All(r => !r.TileId.Equals(t.TileId, StringComparison.OrdinalIgnoreCase))).ToList(), rng))
+            result.Add(extra);
+
+        return result;
+    }
+
+    private static IEnumerable<PlacementRules> EnumeratePlacementRuleChain(RoomTypeSlot slot)
+    {
+        yield return slot.PlacementRules;
+        if (slot.FallbackRules is null) yield break;
+        foreach (var rules in slot.FallbackRules)
+            yield return rules;
+    }
+
+    private static List<LayoutPlacementCandidate> EnumerateFreePlacementCandidates(
+        RoomTypeSlot slot,
+        TileDefinition baseTile,
+        PlacementRules rules,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        HashSet<(int, int)> occupied,
+        HashSet<(int, int)> softOccupied,
+        HashSet<(int, int)> physicalOccupied,
+        IReadOnlyDictionary<string, TileDefinition> allTiles,
+        Random rng,
+        string effectiveColorGroup)
+    {
+        IEnumerable<(int col, int row)> pool = roomCells;
+
+        if (rules.NearWall)
+            pool = pool.Where(c => cellWalls.ContainsKey(c));
+        if (rules.NearDoor)
+            pool = pool.Where(c => doorCells.Contains(c));
+        if (rules.NearWindow)
+            pool = pool.Where(c => windowCells.Contains(c));
+        if (rules.CornerOnly)
+            pool = pool.Where(c => cellWalls.TryGetValue(c, out var w) && w.Count >= 2);
+        if (!rules.AllowOnPath && baseTile.HasCollision && pathCells.Count > 0)
+            pool = pool.Where(c => !pathCells.Contains(c));
+
+        var poolList = pool.Distinct().ToList();
+        if (rules.CenterRoom)
+        {
+            float cx = roomCells.Average(c => (float)c.Item1);
+            float cy = roomCells.Average(c => (float)c.Item2);
+            poolList = poolList
+                .OrderBy(c => Math.Abs(c.Item1 - cx) + Math.Abs(c.Item2 - cy) + rng.NextDouble() * 0.9)
+                .ToList();
+        }
+        else
+        {
+            poolList = ShuffleCopy(poolList, rng);
+        }
+
+        var result = new List<LayoutPlacementCandidate>();
+        foreach (var cell in poolList)
+        {
+            var variants = ResolveVariantsForCell(baseTile, cell, cellWalls, allTiles, rules, slot.Required);
+            foreach (var (resolvedTile, orient, wallDir) in variants)
+            {
+                int fpW = resolvedTile.TileLayout.Count > 0 ? (resolvedTile.TileLayout[0]?.Count ?? 1) : 1;
+                int fpH = resolvedTile.TileLayout.Count;
+
+                var (anchorCol, anchorRow) = rules.NearWall
+                    ? ComputeWallAnchor(cell, wallDir, fpW, fpH)
+                    : (cell.col, cell.row);
+
+                if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
+                    continue;
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied))
+                    continue;
+                if (!rules.AllowOnPath && resolvedTile.HasCollision && pathCells.Count > 0
+                    && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, pathCells))
+                    continue;
+                if (!rules.NearDoor && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, doorCells))
+                    continue;
+                if (!rules.NearWindow && ViolatesWindowPlacement(anchorCol, anchorRow, fpW, fpH, resolvedTile, orient, windowCells))
+                    continue;
+                if (resolvedTile.IsLootContainer && !LootContainerReachable(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied))
+                    continue;
+                if (resolvedTile.HasCollision && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, doorCells))
+                    continue;
+
+                result.Add(new LayoutPlacementCandidate(anchorCol, anchorRow, orient, resolvedTile, effectiveColorGroup));
+            }
+        }
+
+        return result;
+    }
+
+    private static bool IsValidAnchoredPlacement(
+        RoomTypeSlot slot,
+        int col,
+        int row,
+        int fpW,
+        int fpH,
+        string orient,
+        TileDefinition tile,
+        HashSet<(int, int)> roomCells,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        HashSet<(int, int)> doorCells,
+        HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells,
+        HashSet<(int, int)> occupied)
+    {
+        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied))
+            return false;
+        if (slot.PlacementRules.NearWall && !FootprintTouchesWall(col, row, fpW, fpH, cellWalls))
+            return false;
+        if (slot.PlacementRules.NearWall
+            && !MatchesAnchoredWallAlignment(tile, col, row, fpW, fpH, cellWalls, slot.PlacementRules.WallAlignment))
+            return false;
+        if (slot.PlacementRules.CornerOnly && !FootprintTouchesCorner(col, row, fpW, fpH, cellWalls))
+            return false;
+        if (!slot.PlacementRules.NearDoor && FootprintTouchesCells(col, row, fpW, fpH, doorCells))
+            return false;
+        if (!slot.PlacementRules.AllowOnPath && tile.HasCollision && pathCells.Count > 0
+            && FootprintTouchesCells(col, row, fpW, fpH, pathCells))
+            return false;
+        if (!slot.PlacementRules.NearWindow && ViolatesWindowPlacement(col, row, fpW, fpH, tile, orient, windowCells))
+            return false;
+        return true;
+    }
+
+    private static bool FootprintTouchesCorner(int col, int row, int fpW, int fpH,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls)
+    {
+        for (int r = 0; r < fpH; r++)
+            for (int c = 0; c < fpW; c++)
+                if (cellWalls.TryGetValue((col + c, row + r), out var dirs) && dirs.Count >= 2)
+                    return true;
+        return false;
+    }
+
+    private static bool MatchesAnchoredWallAlignment(
+        TileDefinition tile,
+        int col,
+        int row,
+        int fpW,
+        int fpH,
+        Dictionary<(int, int), HashSet<Direction>> cellWalls,
+        string alignment)
+    {
+        if (string.IsNullOrWhiteSpace(alignment)
+            || alignment.Equals("any", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        var wallDirs = FootprintWallDirs(col, row, fpW, fpH, cellWalls);
+        if (wallDirs.Count == 0)
+            return false;
+
+        foreach (var wallDir in wallDirs)
+        {
+            if (MatchesAlignment(tile, wallDir, alignment))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static string ResolveAnchoredOrient(
+        string? anchorOrientRule,
+        (int col, int row, int fpW, int fpH, string orient) anchorInfo,
+        string anchorPos,
+        TileDefinition baseTile,
+        char? chosenOpenSide = null)
+    {
+        return anchorOrientRule switch
+        {
+            "match" or "parallelToAnchor" => anchorInfo.orient,
+            "opposite" => anchorInfo.orient switch
+            {
+                "N" => "S",
+                "S" => "N",
+                "E" => "W",
+                "W" => "E",
+                _ => baseTile.Orientation,
+            },
+            "cwPerpendicular" => anchorInfo.orient switch
+            {
+                "S" => "E",
+                "E" => "N",
+                "N" => "W",
+                "W" => "S",
+                _ => baseTile.Orientation,
+            },
+            "ccwPerpendicular" => anchorInfo.orient switch
+            {
+                "S" => "W",
+                "W" => "N",
+                "N" => "E",
+                "E" => "S",
+                _ => baseTile.Orientation,
+            },
+            "openSideFacing" => chosenOpenSide switch
+            {
+                'N' => "S",
+                'S' => "N",
+                'E' => "W",
+                'W' => "E",
+                _ => baseTile.Orientation,
+            },
+            "facingAnchor" => anchorPos.Equals("oppositeWall", StringComparison.OrdinalIgnoreCase)
+                ? anchorInfo.orient switch
+                {
+                    "N" => "S",
+                    "S" => "N",
+                    "E" => "W",
+                    "W" => "E",
+                    _ => baseTile.Orientation,
+                }
+                : ResolveFacingAnchorOrient(anchorPos, anchorInfo.fpW, anchorInfo.fpH, anchorInfo.orient) ?? baseTile.Orientation,
+            "N" or "S" or "E" or "W" => anchorOrientRule,
+            _ => baseTile.Orientation,
+        };
+    }
+
+    private static TileDefinition ResolveFinalTileForOrient(
+        TileDefinition baseTile,
+        string desiredOrient,
+        IReadOnlyDictionary<string, TileDefinition> allTiles)
+    {
+        if (string.IsNullOrEmpty(baseTile.VariantGroup)) return baseTile;
+
+        var exact = allTiles.Values.FirstOrDefault(t =>
+            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
+        if (exact is not null) return exact;
+
+        var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
+            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
+        if (byAllowedOrient is not null) return byAllowedOrient;
+
+        static bool IsNorthSouth(string o) => o.Equals("N", StringComparison.OrdinalIgnoreCase)
+                                           || o.Equals("S", StringComparison.OrdinalIgnoreCase);
+        static bool IsEastWest(string o) => o.Equals("E", StringComparison.OrdinalIgnoreCase)
+                                         || o.Equals("W", StringComparison.OrdinalIgnoreCase);
+
+        var axisFallback = allTiles.Values.FirstOrDefault(t =>
+            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            ((IsNorthSouth(desiredOrient) && IsNorthSouth(t.Orientation)) ||
+             (IsEastWest(desiredOrient) && IsEastWest(t.Orientation))));
+
+        return axisFallback ?? baseTile;
+    }
+
+    private static void CommitLayoutPlacement(
+        int floorIndex,
+        RoomTypeSlot slot,
+        LayoutPlacementCandidate candidate,
+        int roomIndex1Based,
+        int? selectionAnchorCol,
+        int? selectionAnchorRow,
+        LayoutPlacementState state)
+    {
+        int fpW = candidate.Tile.TileLayout.Count > 0 ? (candidate.Tile.TileLayout[0]?.Count ?? 1) : 1;
+        int fpH = candidate.Tile.TileLayout.Count;
+
+        for (int r = 0; r < candidate.Tile.TileLayout.Count; r++)
+        {
+            var rowTiles = candidate.Tile.TileLayout[r];
+            if (rowTiles is null) continue;
+            for (int c = 0; c < rowTiles.Count; c++)
+            {
+                var tid = rowTiles[c];
+                if (string.IsNullOrEmpty(tid)) continue;
+                state.Placements.Add(new PlacedFurnitureItem(
+                    floorIndex,
+                    candidate.Col + c,
+                    candidate.Row + r,
+                    tid,
+                    candidate.Tile.Layer,
+                    candidate.Orient,
+                    slot.Id,
+                    roomIndex1Based,
+                    selectionAnchorCol,
+                    selectionAnchorRow));
+                if (slot.BlocksPlacement)
+                    state.Occupied.Add((candidate.Col + c, candidate.Row + r));
+                else if (slot.SoftBlocks)
+                    state.SoftOccupied.Add((candidate.Col + c, candidate.Row + r));
+                if (candidate.Tile.HasCollision)
+                    state.PhysicalOccupied.Add((candidate.Col + c, candidate.Row + r));
+            }
+        }
+
+        if (!string.IsNullOrEmpty(slot.Id))
+            state.AnchorMap[slot.Id] = (candidate.Col, candidate.Row, fpW, fpH, candidate.Orient);
+        if (!string.IsNullOrEmpty(slot.SlotGroupId))
+            state.AnchorMap.TryAdd(slot.SlotGroupId, (candidate.Col, candidate.Row, fpW, fpH, candidate.Orient));
+
+        if (!string.IsNullOrEmpty(candidate.EffectiveColorGroup) && !state.ColorMap.ContainsKey(candidate.EffectiveColorGroup))
+        {
+            var firstColor = candidate.Tile.Colors.FirstOrDefault(c => !string.IsNullOrEmpty(c));
+            if (!string.IsNullOrEmpty(firstColor))
+                state.ColorMap[candidate.EffectiveColorGroup] = firstColor;
+        }
+
+        if (!string.IsNullOrEmpty(slot.TileGroupId) &&
+            !state.VariantMap.ContainsKey(slot.TileGroupId) &&
+            !string.IsNullOrEmpty(candidate.Tile.VariantGroup))
+        {
+            state.VariantMap[slot.TileGroupId] = candidate.Tile.VariantGroup;
+        }
+
+        state.SlotPlacements.Add((slot.Id, candidate.Tile.TileId, candidate.Orient, candidate.Col, candidate.Row));
+    }
+
+    private static List<T> ShuffleCopy<T>(IEnumerable<T> source, Random rng)
+    {
+        var list = source.ToList();
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = rng.Next(i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+
+        return list;
+    }
+
     // =========================================================================
     // Place a single slot instance
     // =========================================================================
@@ -264,6 +1307,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         Dictionary<string, string> colorMap,
         Dictionary<string, string> variantMap,
         RoomTypeConfig config,
+        int roomIndex1Based,
+        int? selectionAnchorCol,
+        int? selectionAnchorRow,
         List<PlacedFurnitureItem> placements, List<string> log, Random rng,
         string roomTypeName = "")
     {
@@ -570,7 +1616,17 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 var tid = rowTiles[c];
                 if (string.IsNullOrEmpty(tid)) continue;
-                placements.Add(new PlacedFurnitureItem(floorIndex, col + c, row + r, tid, placedTile.Layer, orient, slot.Id));
+                placements.Add(new PlacedFurnitureItem(
+                    floorIndex,
+                    col + c,
+                    row + r,
+                    tid,
+                    placedTile.Layer,
+                    orient,
+                    slot.Id,
+                    roomIndex1Based,
+                    selectionAnchorCol,
+                    selectionAnchorRow));
                 if (slot.BlocksPlacement)
                     occupied.Add((col + c, row + r));
                 else if (slot.SoftBlocks)
@@ -914,6 +1970,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         // Prüfe ob baseTile selbst schon passt (richtiger Orient + passendes Aspektverhältnis)
         if (baseTile.Orientation.Equals(neededOrient, StringComparison.OrdinalIgnoreCase)
+            && MatchesAlignment(baseTile, wallDir, rules.WallAlignment))
+            return (baseTile, neededOrient, wallDir);
+
+        // AllowedOrients enthält neededOrient explizit → Tile ist symmetrisch/multi-direktional
+        // und kann in dieser Orientierung verwendet werden (z.B. 1×2-Regal mit allowedOrients=[W,E])
+        if (baseTile.AllowedOrients.Count > 0
+            && baseTile.AllowedOrients.Any(o => o.Equals(neededOrient, StringComparison.OrdinalIgnoreCase))
             && MatchesAlignment(baseTile, wallDir, rules.WallAlignment))
             return (baseTile, neededOrient, wallDir);
 
@@ -1644,13 +2707,37 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     // Room analysis helpers
     // =========================================================================
 
-    private static HashSet<(int col, int row)> GetRoomCells(Floor floor, int roomIndex1Based)
+    private static HashSet<(int col, int row)> GetRoomCells(Floor floor, int roomIndex1Based, int? anchorCol = null, int? anchorRow = null)
     {
         var cells = new HashSet<(int, int)>();
         for (int r = 0; r < floor.RoomGrid.Length; r++)
             for (int c = 0; c < floor.RoomGrid[r].Length; c++)
                 if (floor.RoomGrid[r][c] == roomIndex1Based) cells.Add((c, r));
-        return cells;
+
+        if (!anchorCol.HasValue || !anchorRow.HasValue)
+            return cells;
+
+        var anchor = (anchorCol.Value, anchorRow.Value);
+        if (!cells.Contains(anchor))
+            return [];
+
+        // Return only the connected component containing the selected anchor cell.
+        var component = new HashSet<(int, int)> { anchor };
+        var queue = new Queue<(int col, int row)>();
+        queue.Enqueue(anchor);
+
+        while (queue.Count > 0)
+        {
+            var (cc, cr) = queue.Dequeue();
+            foreach (var next in new[] { (cc, cr - 1), (cc, cr + 1), (cc - 1, cr), (cc + 1, cr) })
+            {
+                if (!cells.Contains(next) || !component.Add(next))
+                    continue;
+                queue.Enqueue(next);
+            }
+        }
+
+        return component;
     }
 
     private static Dictionary<(int, int), HashSet<Direction>> ComputeWallDirections(
@@ -1775,6 +2862,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

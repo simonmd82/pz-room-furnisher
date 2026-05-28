@@ -217,11 +217,41 @@ public class RoomTypeSlot
     public string TileGroupId { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// Alternative Layout-Variante für zusammengesetzte Möbel/Shapes.
+/// Eine Variante aktiviert einen Satz von Slots gemeinsam (z.B. lineare Küche, L-Sofa, U-Theke).
+/// </summary>
+public class LayoutVariant
+{
+    /// <summary>Eindeutige ID innerhalb des Raumtyps (z.B. "kitchen_l_shape").</summary>
+    public string Id { get; set; } = string.Empty;
+    /// <summary>Anzeigename für Editor/Logs.</summary>
+    public string Label { get; set; } = string.Empty;
+    /// <summary>Gewichtung innerhalb der Layout-Auswahl (1–10).</summary>
+    public int Weight { get; set; } = 5;
+    /// <summary>
+    /// Core-Slots, die in dieser Variante aktiv sind. Leer = alle Slots des Raumtyps.
+    /// So lassen sich z.B. lineare, L- oder U-Formen als alternative Shapes definieren.
+    /// </summary>
+    public List<string> SlotIds { get; set; } = [];
+}
+
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>
 public class RoomTypeConfig
 {
     public string RoomType            { get; set; } = string.Empty;
     public List<RoomTypeSlot> Slots   { get; set; } = [];
+    /// <summary>
+    /// Alternative Layout-Varianten für zusammengesetzte Möbel-Setups.
+    /// Der Generator wählt pro Raum eine Variante nach Gewicht und aktiviert nur deren Slots.
+    /// </summary>
+    public List<LayoutVariant> LayoutVariants { get; set; } = [];
+
+    /// <summary>
+    /// Gemeinsame Slots, die bei aktiver Layout-Variante zusätzlich zu deren Core-Slots
+    /// berücksichtigt werden sollen.
+    /// </summary>
+    public List<string> CommonSlotIds { get; set; } = [];
 
     /// <summary>
     /// Pfadstil für die Laufwegberechnung in diesem Raumtyp.

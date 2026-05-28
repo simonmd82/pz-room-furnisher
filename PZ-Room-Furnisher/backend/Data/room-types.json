@@ -967,6 +967,8 @@
         "tileGroupId": ""
       }
     ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
     "pathStyle": "doorOnly",
     "colorGroupId": "bedroom_main",
     "colorPalettes": {
@@ -1894,6 +1896,8 @@
         "tileGroupId": ""
       }
     ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
     "pathStyle": "wall",
     "colorGroupId": "dining_room_colors",
     "colorPalettes": {
@@ -1928,19 +1932,19 @@
             "max": 0
           },
           "S": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "M": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "L": {
-            "min": 0,
+            "min": 1,
             "max": 2
           },
           "XL": {
-            "min": 0,
+            "min": 1,
             "max": 2
           }
         },
@@ -1956,8 +1960,12 @@
           "allowOnPath": false,
           "wallAlignment": "any"
         },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [],
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "hasCollision",
+          "isLow",
+          "isTableTop"
+        ],
         "anchorRules": [],
         "slotGroupId": "counter_or_standing_sink",
         "slotGroupMode": "one-of",
@@ -1985,19 +1993,19 @@
             "max": 0
           },
           "S": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "M": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "L": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "XL": {
-            "min": 0,
+            "min": 1,
             "max": 1
           }
         },
@@ -2074,7 +2082,7 @@
           "allowOnPath": false,
           "wallAlignment": "any"
         },
-        "requiredLayer": "Furniture2",
+        "requiredLayer": "Furniture3",
         "requiredProperties": [],
         "anchorRules": [
           {
@@ -2664,6 +2672,8 @@
         "tileGroupId": ""
       }
     ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
     "pathStyle": "doorOnly",
     "colorGroupId": "",
     "colorPalettes": {}
@@ -3485,6 +3495,8 @@
         "tileGroupId": ""
       }
     ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
     "pathStyle": "doorOnly",
     "colorGroupId": "",
     "colorPalettes": {
@@ -3514,19 +3526,19 @@
             "max": 0
           },
           "S": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "M": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "L": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "XL": {
-            "min": 0,
+            "min": 1,
             "max": 2
           }
         },
@@ -3559,66 +3571,6 @@
         "tileGroupId": ""
       },
       {
-        "id": "slot_stove",
-        "label": "Stove",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 1
-          },
-          "M": {
-            "min": 0,
-            "max": 1
-          },
-          "L": {
-            "min": 0,
-            "max": 1
-          },
-          "XL": {
-            "min": 0,
-            "max": 2
-          }
-        },
-        "allowedCategories": {
-          "Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "hasCollision",
-          "isLow"
-        ],
-        "anchorRules": [],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "requiresSlot": "",
-        "colorGroupId": "",
-        "tileGroupId": ""
-      },
-      {
         "id": "slot_counter_sink",
         "label": "Counter for Sink",
         "footprint": {
@@ -3634,19 +3586,19 @@
             "max": 0
           },
           "S": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "M": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "L": {
-            "min": 0,
+            "min": 1,
             "max": 1
           },
           "XL": {
-            "min": 0,
+            "min": 1,
             "max": 2
           }
         },
@@ -3676,7 +3628,7 @@
         "blocksPlacement": false,
         "softBlocks": true,
         "requiresSlot": "",
-        "colorGroupId": "",
+        "colorGroupId": "counter_color",
         "tileGroupId": ""
       },
       {
@@ -3746,10 +3698,2147 @@
         "requiresSlot": "slot_counter_sink",
         "colorGroupId": "",
         "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter_no_top",
+        "label": "Counter no  top",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 2,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 2,
+            "max": 2
+          },
+          "L": {
+            "min": 2,
+            "max": 3
+          },
+          "XL": {
+            "min": 3,
+            "max": 3
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_sink",
+            "positions": [
+              "leftPerpendicular"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "counter_color",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter_for_appliance",
+        "label": "Counter for Appliance",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 3,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 2
+          },
+          "XL": {
+            "min": 2,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_no_top",
+            "positions": [
+              "leftPerpendicular"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "counter_color",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_appliance_for_counter",
+        "label": "Appliance for Counter",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 3
+          }
+        },
+        "allowedCategories": {
+          "Coffee": 3,
+          "Toaster": 3,
+          "Microwave": 4
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_for_appliance",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_cooking_hood",
+        "label": "Cooking Hood",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 3
+          },
+          "XL": {
+            "min": 0,
+            "max": 4
+          }
+        },
+        "allowedCategories": {
+          "Appliances - Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isWallMounted",
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter_main_2",
+        "label": "Main Counter Slot (Root)",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_line_1",
+        "label": "Counter Line 1",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_line_2",
+        "label": "Counter Line 2",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_line_1",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_line_1",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_stove_line",
+        "label": "Stove Line",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_line_2",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_line_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_l_left_corner",
+        "label": "Counter L Left Corner",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_l_left_arm_1",
+        "label": "Counter L Left Arm 1",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_left_corner",
+            "positions": [
+              "Above"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_l_left_corner",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_stove_l_left",
+        "label": "Counter Stove L left",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_left_arm_1",
+            "positions": [
+              "leftOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_l_left_arm_1",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_l_right_corner",
+        "label": "Counter L Right Corner",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_l_right_arm_1",
+        "label": "Counter L Right Arm 1",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_right_corner",
+            "positions": [
+              "Below"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_l_right_corner",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_stove_l_right",
+        "label": "Counter Stove L Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_right_arm_1",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_l_right_arm_1",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_u_left",
+        "label": "Counter U Left",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "Above"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_u_right",
+        "label": "Counter U Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "Below"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_counter_u_bridge",
+        "label": "Counter U Bridge",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_u_left",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_u_left",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
+      },
+      {
+        "id": "slot_stove_u",
+        "label": "Counter Stove U",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Cooking": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_u_bridge",
+            "positions": [
+              "rightOfAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_counter_u_bridge",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group"
       }
+    ],
+    "layoutVariants": [
+      {
+        "id": "layout_kitchen_line_shape",
+        "label": "Kitchen Line Shape",
+        "weight": 3,
+        "slotIds": [
+          "slot_counter_main_2",
+          "slot_counter_line_1",
+          "slot_counter_line_2",
+          "slot_stove_line"
+        ]
+      },
+      {
+        "id": "layout_kitchen_l_shape_left",
+        "label": "Kitchen L-Shape Left",
+        "weight": 3,
+        "slotIds": [
+          "slot_counter_main_2",
+          "slot_counter_l_left_corner",
+          "slot_counter_l_left_arm_1",
+          "slot_stove_l_left"
+        ]
+      },
+      {
+        "id": "layout_kitchen_l_shape_right",
+        "label": "Kitchen L-Shape Right",
+        "weight": 3,
+        "slotIds": [
+          "slot_counter_main_2",
+          "slot_counter_l_right_corner",
+          "slot_counter_l_right_arm_1",
+          "slot_stove_l_right"
+        ]
+      },
+      {
+        "id": "layout_kitchen_u_shape",
+        "label": "Kitchen U-Shape",
+        "weight": 1,
+        "slotIds": [
+          "slot_counter_main_2",
+          "slot_counter_u_left",
+          "slot_counter_u_right",
+          "slot_counter_u_bridge",
+          "slot_stove_u"
+        ]
+      }
+    ],
+    "commonSlotIds": [
+      "slot_fridge"
     ],
     "pathStyle": "doorOnly",
     "colorGroupId": "",
-    "colorPalettes": {}
+    "colorPalettes": {
+      "counter_color": [
+        "Beige",
+        "Black",
+        "Brown",
+        "Green",
+        "White"
+      ]
+    }
+  },
+  "Laundry": {
+    "roomType": "Laundry",
+    "slots": [
+      {
+        "id": "slot_metal_shelf_long",
+        "label": "Metal Shelf Long",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "parallel"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_metal_shelf_hanging",
+        "label": "Metal Shelf Hanging",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 2
+          },
+          "XL": {
+            "min": 2,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isWallMounted",
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_washing_machine",
+        "label": "Washing Machine",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": true,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 1,
+            "max": 1
+          },
+          "S": {
+            "min": 1,
+            "max": 1
+          },
+          "M": {
+            "min": 1,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 2
+          },
+          "XL": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        "allowedCategories": {
+          "Laundry": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasCollision",
+          "hasSurface",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter",
+        "label": "Counter",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "color_metal",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_counter_for_sink",
+        "label": "Counter for Sink",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "color_metal",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_sink",
+        "label": "Sink",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 1,
+            "max": 1
+          },
+          "XL": {
+            "min": 1,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Sink": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture3",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_for_sink",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "slot_counter_for_sink",
+        "colorGroupId": "color_metal",
+        "tileGroupId": ""
+      }
+    ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
+    "pathStyle": "doorOnly",
+    "colorGroupId": "",
+    "colorPalettes": {
+      "metal": [
+        "Metal"
+      ]
+    }
+  },
+  "Closet": {
+    "roomType": "Closet",
+    "slots": [
+      {
+        "id": "slot_shelv",
+        "label": "Shelv",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_storage_card_box",
+        "label": "Card Box Low",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "canStack",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "color_beige",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_storage_card_box_top",
+        "label": "Card Box Top",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision",
+          "canStack"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_storage_card_box",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_storage_card_box",
+        "colorGroupId": "color_beige",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_storage_wooden_crate",
+        "label": "Wooden Crate Low",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "canStack",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "color_brown",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_storage_wooden_crate_mid",
+        "label": "Wooden Crate Mid",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "hasCollision",
+          "canStack",
+          "isHigh"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_storage_wooden_crate",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_storage_wooden_crate",
+        "colorGroupId": "color_brown",
+        "tileGroupId": ""
+      },
+      {
+        "id": "slot_shelf_long",
+        "label": "Shelf Long",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 3
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": ""
+      }
+    ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
+    "pathStyle": "doorOnly",
+    "colorGroupId": "",
+    "colorPalettes": {
+      "color_beige": [
+        "Beige"
+      ],
+      "color_brown": [
+        "Brown"
+      ]
+    }
   }
 }

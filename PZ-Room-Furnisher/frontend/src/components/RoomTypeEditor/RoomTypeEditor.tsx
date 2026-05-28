@@ -122,8 +122,13 @@ export function RoomTypeEditor() {
   const dragIndexRef = useRef<number | null>(null);
   /** Index des Slots über dem der Cursor gerade schwebt */
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
-  /** Zwischenablage: kopierter Slot + Quellenraum */
-  const [copiedSlot, setCopiedSlot] = useState<{ slot: RoomTypeSlot; fromRoom: string } | null>(null);
+   /** Zwischenablage: kopierter Slot + Quellenraum */
+   const [copiedSlot, setCopiedSlot] = useState<{ slot: RoomTypeSlot; fromRoom: string } | null>(null);
+   /** Drag & Drop für Layout-Varianten: welche Variante/Slot wird gerade gezogen */
+   const dragLayoutVariantRef = useRef<{ variantIdx: number; slotIdx: number } | null>(null);
+   const [dragOverLayoutSlot, setDragOverLayoutSlot] = useState<{ variantIdx: number; slotIdx: number } | null>(null);
+   /** Welche Varianten-Drop-Zone ist gerade im Hover-Modus */
+   const [dragOverLayoutVariant, setDragOverLayoutVariant] = useState<number | null>(null);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setConfigs(cfgs)).catch(console.error);
@@ -144,6 +149,8 @@ export function RoomTypeEditor() {
           pathStyle:     configs[rt].pathStyle    ?? 'wall',
           colorGroupId:  configs[rt].colorGroupId ?? '',
           colorPalettes: configs[rt].colorPalettes ?? {},
+          layoutVariants: configs[rt].layoutVariants ?? [],
+          commonSlotIds: configs[rt].commonSlotIds ?? [],
           slots: configs[rt].slots.map(sl => {
             // Migration: alte anchorSlotId/anchorPosition → anchorRules
             const legacyAnchor = (sl as any).anchorSlotId as string | undefined;
@@ -153,10 +160,11 @@ export function RoomTypeEditor() {
               : legacyAnchor
                 ? [{ anchorTarget: legacyAnchor, positions: legacyPos ? [legacyPos as typeof ANCHOR_POSITIONS[number]] : [] }]
                 : [];
+            const fp = sl.footprint ?? {};
             return {
               ...defaultSlot(),
               ...sl,
-              footprint: { width: 1, height: 1, ...(sl.footprint ?? {}) },
+              footprint: { width: fp.width ?? 1, height: fp.height ?? 1, canRotate: fp.canRotate ?? false },
               allowedCategories: { ...(sl.allowedCategories ?? {}) },
               placementRules: { ...defaultPlacementRules(), ...(sl.placementRules ?? {}) },
               requiredProperties: [...(sl.requiredProperties ?? [])],
@@ -168,10 +176,9 @@ export function RoomTypeEditor() {
     setDirty(false);
     setStatus(null);
     // Alle Slots beim Raumwechsel einklappen
-    setCollapsedSlots(prev => {
+    setCollapsedSlots(() => {
       if (configs[rt]) {
-        const all = new Set<number>(configs[rt].slots.map((_, i) => i));
-        return all;
+        return new Set<number>(configs[rt].slots.map((_, i) => i));
       }
       return new Set();
     });
@@ -189,12 +196,94 @@ export function RoomTypeEditor() {
     setDraft({ ...draft, slots: [...draft.slots, defaultSlot()] });
     setDirty(true);
     // Alle bestehenden einklappen, neuen aufklappen
-    setCollapsedSlots(prev => {
+    setCollapsedSlots(() => {
       const next = new Set<number>();
       for (let i = 0; i < newIdx; i++) next.add(i);
       return next;
     });
   };
+
+  const addLayoutVariant = () => {
+    if (!draft) return;
+    const next = [...(draft.layoutVariants ?? []), { id: '', label: '', weight: 5, slotIds: [] }];
+    setDraft({ ...draft, layoutVariants: next });
+    setDirty(true);
+  };
+
+  const updateLayoutVariant = (idx: number, patch: Partial<NonNullable<RoomTypeConfig['layoutVariants']>[number]>) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    variants[idx] = { ...variants[idx], ...patch };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+   const removeLayoutVariant = (idx: number) => {
+     if (!draft) return;
+     if (!window.confirm(`Layout-Variante #${idx + 1} wirklich löschen?`)) return;
+     const variants = [...(draft.layoutVariants ?? [])];
+     variants.splice(idx, 1);
+     setDraft({ ...draft, layoutVariants: variants });
+     setDirty(true);
+   };
+
+   const addSlotToLayoutVariant = (variantIdx: number, slotId: string) => {
+     if (!draft) return;
+     const variants = [...(draft.layoutVariants ?? [])];
+     const variant = variants[variantIdx];
+     if (!variant) return;
+     if (!variant.slotIds.includes(slotId)) {
+       variant.slotIds = [...variant.slotIds, slotId];
+       setDraft({ ...draft, layoutVariants: variants });
+       setDirty(true);
+     }
+   };
+
+   const removeSlotFromLayoutVariant = (variantIdx: number, slotId: string) => {
+     if (!draft) return;
+     const variants = [...(draft.layoutVariants ?? [])];
+     const variant = variants[variantIdx];
+     if (!variant) return;
+     variant.slotIds = variant.slotIds.filter(id => id !== slotId);
+     setDraft({ ...draft, layoutVariants: variants });
+     setDirty(true);
+   };
+
+   const reorderLayoutVariantSlots = (variantIdx: number, fromIdx: number, toIdx: number) => {
+     if (!draft || fromIdx === toIdx) return;
+     const variants = [...(draft.layoutVariants ?? [])];
+     const variant = variants[variantIdx];
+     if (!variant) return;
+     const slots = [...variant.slotIds];
+     const [moved] = slots.splice(fromIdx, 1);
+     slots.splice(toIdx, 0, moved);
+     variant.slotIds = slots;
+     setDraft({ ...draft, layoutVariants: variants });
+     setDirty(true);
+   };
+
+   const addCommonSlot = (slotId: string) => {
+     if (!draft || !slotId) return;
+     const current = draft.commonSlotIds ?? [];
+     if (current.includes(slotId)) return;
+     setDraft({ ...draft, commonSlotIds: [...current, slotId] });
+     setDirty(true);
+   };
+
+   const removeCommonSlot = (slotId: string) => {
+     if (!draft) return;
+     setDraft({ ...draft, commonSlotIds: (draft.commonSlotIds ?? []).filter(id => id !== slotId) });
+     setDirty(true);
+   };
+
+   const reorderCommonSlots = (fromIdx: number, toIdx: number) => {
+     if (!draft || fromIdx === toIdx) return;
+     const items = [...(draft.commonSlotIds ?? [])];
+     const [moved] = items.splice(fromIdx, 1);
+     items.splice(toIdx, 0, moved);
+     setDraft({ ...draft, commonSlotIds: items });
+     setDirty(true);
+   };
 
   const removeSlot = (idx: number, slotLabel: string) => {
     if (!draft) return;
@@ -342,7 +431,7 @@ export function RoomTypeEditor() {
     setDraft({ ...draft, slots: [...draft.slots, copy] });
     setDirty(true);
     // Alle bestehenden einklappen, eingefügten aufklappen
-    setCollapsedSlots(prev => {
+    setCollapsedSlots(() => {
       const next = new Set<number>();
       for (let i = 0; i < newIdx; i++) next.add(i);
       return next;
@@ -357,7 +446,7 @@ export function RoomTypeEditor() {
       const name = draft.slots[missingLayer].label || draft.slots[missingLayer].id || `#${missingLayer + 1}`;
       setStatus(`⚠ Slot „${name}" hat keinen Layer – bitte Layer auswählen.`);
       // Slot aufklappen damit der Nutzer ihn sieht
-      setCollapsedSlots(prev => { const next = new Set(prev); next.delete(missingLayer); return next; });
+        setCollapsedSlots(prev => { const next = new Set(prev); next.delete(missingLayer); return next; });
       return;
     }
     setSaving(true); setStatus(null);
@@ -368,18 +457,23 @@ export function RoomTypeEditor() {
         ...raw,
         colorGroupId:  raw.colorGroupId  ?? '',
         colorPalettes: raw.colorPalettes ?? {},
-        slots: raw.slots.map(sl => ({
-          ...defaultSlot(),
-          ...sl,
-          footprint:          { width: 1, height: 1, ...(sl.footprint ?? {}) },
-          allowedCategories:  { ...(sl.allowedCategories ?? {}) },
-          placementRules:     { ...defaultPlacementRules(), ...(sl.placementRules ?? {}) },
-          requiredProperties: [...(sl.requiredProperties ?? [])],
-              anchorRules:        sl.anchorRules ?? [],
-              blocksPlacement:    sl.blocksPlacement ?? true,
-              softBlocks:         sl.softBlocks      ?? false,
-              colorGroupId:       sl.colorGroupId    ?? '',
-        })),
+        layoutVariants: raw.layoutVariants ?? [],
+        commonSlotIds: raw.commonSlotIds ?? [],
+        slots: raw.slots.map(sl => {
+          const fp = sl.footprint ?? {};
+          return {
+            ...defaultSlot(),
+            ...sl,
+            footprint:         { width: fp.width ?? 1, height: fp.height ?? 1, canRotate: fp.canRotate ?? false },
+            allowedCategories: { ...(sl.allowedCategories ?? {}) },
+            placementRules:    { ...defaultPlacementRules(), ...(sl.placementRules ?? {}) },
+            requiredProperties: [...(sl.requiredProperties ?? [])],
+            anchorRules:       sl.anchorRules ?? [],
+            blocksPlacement:   sl.blocksPlacement ?? true,
+            softBlocks:        sl.softBlocks ?? false,
+            colorGroupId:      sl.colorGroupId ?? '',
+          };
+        }),
       };
       setConfigs(prev => ({ ...prev, [saved.roomType]: saved }));
       setDraft(saved); setDirty(false); setStatus('✓ Gespeichert');
@@ -425,8 +519,6 @@ export function RoomTypeEditor() {
     setStatus(null);
   };
 
-  const allRooms = knownRooms;
-
   return (
     <div className={s.layout}>
       {/* ── Left: list ── */}
@@ -435,7 +527,7 @@ export function RoomTypeEditor() {
           <span className={s.panelTitle}>🏠 Raumtypen</span>
         </div>
         <div className={s.list}>
-          {allRooms.map(rt => (
+          {knownRooms.map(rt => (
             <div key={rt} className={`${s.listItem} ${selected === rt ? s.listItemActive : ''}`}
               onClick={() => selectRoom(rt)}>
               <span className={s.listItemName}>{rt}</span>
@@ -612,11 +704,15 @@ export function RoomTypeEditor() {
                 onDrop={e => { e.preventDefault(); if (dragIndexRef.current !== null) reorderSlots(dragIndexRef.current, idx); dragIndexRef.current = null; setDragOverIdx(null); }}
                 onDragEnd={() => { dragIndexRef.current = null; setDragOverIdx(null); }}>
 
-                {/* ── Zusammengeklappte Zusammenfassung (immer sichtbar) ── */}
-                <div className={s.slotSummaryBar}
-                  draggable
-                  onDragStart={e => { dragIndexRef.current = idx; e.dataTransfer.effectAllowed = 'move'; }}
-                  onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
+                 {/* ── Zusammengeklappte Zusammenfassung (immer sichtbar) ── */}
+                 <div className={s.slotSummaryBar}
+                   draggable
+                   onDragStart={e => {
+                     dragIndexRef.current = idx;
+                     e.dataTransfer.effectAllowed = 'move';
+                     e.dataTransfer.setData('text/plain', slot.id);
+                   }}
+                   onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
                   <span className={s.dragHandle} title="Slot verschieben" onClick={e => e.stopPropagation()}>⠿</span>
                   <span className={s.slotIndex}>#{idx + 1}</span>
                   <span className={s.collapseToggleIcon}>{isCollapsed ? '▶' : '▼'}</span>
@@ -1384,6 +1480,258 @@ export function RoomTypeEditor() {
               ); // end return slot card
               }); // end map
             })()} {/* end IIFE */}
+
+            {/* ── Layout-Varianten ── */}
+            <div className={s.slotsHeader} style={{ marginTop: 12 }}>
+              <span className={s.slotsLabel}>Layout-Varianten ({(draft.layoutVariants ?? []).length})</span>
+              <button className={s.addSlotBtn} onClick={addLayoutVariant}>+ Variante</button>
+            </div>
+
+            <div className={s.anchorRuleCard}>
+              <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
+                <span className={s.slotGroupLabel}>
+                  Common-Slots
+                  <span style={{ color: '#446', fontSize: '0.68rem', marginLeft: 6 }}>
+                    ({(draft.commonSlotIds ?? []).length})
+                  </span>
+                </span>
+              </div>
+
+              {(draft.commonSlotIds ?? []).length > 0 ? (
+                <div className={s.chipGroup} style={{ marginBottom: 6 }}>
+                  {(draft.commonSlotIds ?? []).map((slotId, slotIdx) => {
+                    const slotObj = draft.slots.find(slt => slt.id === slotId);
+                    return (
+                      <div key={`${slotId}-${slotIdx}`} className={s.chip} title={slotObj ? `${slotId} (${slotObj.label})` : slotId}>
+                        {slotId}
+                        <span
+                          style={{ marginLeft: 6, cursor: 'pointer', color: '#f88', fontSize: '0.8rem' }}
+                          onClick={() => removeCommonSlot(slotId)}
+                        >
+                          ✕
+                        </span>
+                        <span
+                          style={{ marginLeft: 6, cursor: slotIdx > 0 ? 'pointer' : 'default', color: slotIdx > 0 ? '#8ac' : '#556', fontSize: '0.8rem' }}
+                          onClick={() => slotIdx > 0 && reorderCommonSlots(slotIdx, slotIdx - 1)}
+                        >
+                          ↑
+                        </span>
+                        <span
+                          style={{ marginLeft: 4, cursor: slotIdx < (draft.commonSlotIds ?? []).length - 1 ? 'pointer' : 'default', color: slotIdx < (draft.commonSlotIds ?? []).length - 1 ? '#8ac' : '#556', fontSize: '0.8rem' }}
+                          onClick={() => slotIdx < (draft.commonSlotIds ?? []).length - 1 && reorderCommonSlots(slotIdx, slotIdx + 1)}
+                        >
+                          ↓
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.68rem', color: '#556', fontStyle: 'italic', marginBottom: 6 }}>
+                  Keine Common-Slots definiert
+                </div>
+              )}
+
+              <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>Verfügbare Slots zum Hinzufügen:</div>
+              <div className={s.chipGroup} style={{ gap: 3, maxHeight: 86, overflowY: 'auto' }}>
+                {draft.slots.map((slot, slotIdx) => {
+                  const isAdded = (draft.commonSlotIds ?? []).includes(slot.id);
+                  return (
+                    <span
+                      key={`common-${slot.id}-${slotIdx}`}
+                      className={`${s.chip} ${isAdded ? s.chipActive : ''}`}
+                      style={{ cursor: isAdded ? 'default' : 'pointer', opacity: isAdded ? 0.5 : 1 }}
+                      title={slot.label ? `${slot.id} - ${slot.label}` : slot.id}
+                      onClick={() => !isAdded && addCommonSlot(slot.id)}
+                    >
+                      {slot.id || '(keine ID)'}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <div className={s.slotHint} style={{ marginTop: 4 }}>
+                💡 Common-Slots laufen bei aktiver Layout-Variante immer zusätzlich zu den Variant-Core-Slots.
+              </div>
+            </div>
+
+            {(draft.layoutVariants ?? []).length === 0 && (
+              <div className={s.hint} style={{ padding: '10px 12px' }}>
+                Keine Layout-Varianten definiert – der Generator behandelt die Slots dann normal.
+              </div>
+            )}
+
+            {(draft.layoutVariants ?? []).map((variant, idx) => (
+              <div key={idx} className={s.anchorRuleCard}>
+                <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span className={s.slotGroupLabel}>Variante {idx + 1}</span>
+                  <button className={s.removeSlotBtn} onClick={() => removeLayoutVariant(idx)}>✕</button>
+                </div>
+
+                <div className={s.slotRow} style={{ gap: 8, flexWrap: 'wrap' }}>
+                  <span className={s.slotGroupLabel}>ID</span>
+                  <input
+                    className={s.slotSizeInput}
+                    style={{ flex: 2, minWidth: 180 }}
+                    placeholder="z.B. kitchen_l_shape"
+                    value={variant.id}
+                    onChange={e => updateLayoutVariant(idx, { id: e.target.value })}
+                  />
+                  <span className={s.slotGroupLabel}>Label</span>
+                  <input
+                    className={s.slotSizeInput}
+                    style={{ flex: 3, minWidth: 220 }}
+                    placeholder="z.B. L-Shape Küche"
+                    value={variant.label}
+                    onChange={e => updateLayoutVariant(idx, { label: e.target.value })}
+                  />
+                </div>
+
+                <div className={s.slotRow} style={{ gap: 8, marginTop: 4, alignItems: 'center' }}>
+                  <span className={s.slotGroupLabel}>Gewicht</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    className={s.slotNumInput}
+                    value={variant.weight ?? 5}
+                    onChange={e => updateLayoutVariant(idx, { weight: Math.max(1, parseInt(e.target.value) || 1) })}
+                    onBlur={e => updateLayoutVariant(idx, { weight: Math.max(1, Math.min(10, parseInt(e.target.value) || 5)) })}
+                  />
+                  <span className={s.slotHint}>1–10</span>
+                </div>
+
+                 <div className={s.slotRow} style={{ gap: 8, marginTop: 4, alignItems: 'flex-start', flexDirection: 'column' }}>
+                   <span className={s.slotGroupLabel}>
+                     Slots{' '}
+                     <span style={{ color: '#446', fontSize: '0.65rem' }}>
+                       ({(variant.slotIds ?? []).length} von {draft.slots.length})
+                     </span>
+                   </span>
+                   
+                   {/* Drop-Zone für Slots */}
+                   <div
+                     className={`${s.slotDropZone} ${dragOverLayoutVariant === idx ? s.dragOver : ''}`}
+                     onDragEnter={() => setDragOverLayoutVariant(idx)}
+                     onDragLeave={() => setDragOverLayoutVariant(null)}
+                     onDragOver={e => {
+                       e.preventDefault();
+                       e.dataTransfer.dropEffect = 'copy';
+                       setDragOverLayoutVariant(idx);
+                     }}
+                     onDrop={e => {
+                       e.preventDefault();
+                       const slotData = e.dataTransfer.getData('text/plain');
+                       if (slotData) addSlotToLayoutVariant(idx, slotData);
+                       setDragOverLayoutVariant(null);
+                     }}
+                   >
+                     <div style={{ fontSize: '0.7rem', color: '#668', marginBottom: 6 }}>
+                       📌 Ziehe Slot-IDs hier rein oder verwende die Liste unten
+                     </div>
+                     
+                     {/* Display existing slots as draggable chips */}
+                     {(variant.slotIds ?? []).length > 0 ? (
+                       <div className={s.chipGroup} style={{ marginBottom: 4 }}>
+                         {(variant.slotIds ?? []).map((slotId, slotIdx) => {
+                           const slotObj = draft.slots.find(s => s.id === slotId);
+                           const isOver = dragOverLayoutSlot?.variantIdx === idx && dragOverLayoutSlot?.slotIdx === slotIdx;
+                           return (
+                             <div
+                               key={slotId}
+                               draggable
+                               onDragStart={e => {
+                                 dragLayoutVariantRef.current = { variantIdx: idx, slotIdx };
+                                 e.dataTransfer.effectAllowed = 'move';
+                               }}
+                               onDragOver={e => {
+                                 e.preventDefault();
+                                 e.dataTransfer.dropEffect = 'move';
+                                 setDragOverLayoutSlot({ variantIdx: idx, slotIdx });
+                               }}
+                               onDrop={e => {
+                                 e.preventDefault();
+                                 if (dragLayoutVariantRef.current?.variantIdx === idx) {
+                                   reorderLayoutVariantSlots(idx, dragLayoutVariantRef.current.slotIdx, slotIdx);
+                                 }
+                                 dragLayoutVariantRef.current = null;
+                                 setDragOverLayoutSlot(null);
+                               }}
+                               onDragEnd={() => {
+                                 dragLayoutVariantRef.current = null;
+                                 setDragOverLayoutSlot(null);
+                               }}
+                               className={`${s.chip} ${isOver ? s.chipDragOver : ''}`}
+                               style={{ 
+                                 cursor: 'grab',
+                                 opacity: isOver ? 0.7 : 1,
+                                 borderColor: isOver ? '#8866cc' : undefined,
+                               }}
+                               title={slotObj ? `${slotId} (${slotObj.label})` : slotId}
+                             >
+                               ⠿ {slotId}
+                               <span
+                                 style={{
+                                   marginLeft: 4,
+                                   cursor: 'pointer',
+                                   color: '#f88',
+                                   fontSize: '0.8rem',
+                                 }}
+                                 onClick={e => {
+                                   e.stopPropagation();
+                                   removeSlotFromLayoutVariant(idx, slotId);
+                                 }}
+                               >
+                                 ✕
+                               </span>
+                             </div>
+                           );
+                         })}
+                       </div>
+                     ) : (
+                       <div style={{ fontSize: '0.68rem', color: '#556', fontStyle: 'italic', textAlign: 'center', padding: '8px' }}>
+                         Noch keine Slots hinzugefügt
+                       </div>
+                     )}
+                   </div>
+                   
+                   {/* Verfügbare Slots zum Hinzufügen */}
+                   <div style={{ marginTop: 6, width: '100%' }}>
+                     <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>Verfügbare Slots zum Hinzufügen:</div>
+                     <div className={s.chipGroup} style={{ gap: 3, maxHeight: 100, overflowY: 'auto' }}>
+                       {draft.slots.map(slot => {
+                         const isAdded = (variant.slotIds ?? []).includes(slot.id);
+                         return (
+                           <span
+                             key={slot.id}
+                             draggable
+                             onDragStart={e => {
+                               e.dataTransfer.effectAllowed = 'copy';
+                               e.dataTransfer.setData('text/plain', slot.id);
+                             }}
+                             title={slot.label ? `${slot.id} - ${slot.label}` : slot.id}
+                             className={`${s.chip} ${isAdded ? s.chipActive : ''}`}
+                             style={{ 
+                               cursor: isAdded ? 'default' : 'grab',
+                               opacity: isAdded ? 0.5 : 1,
+                             }}
+                             onClick={() => {
+                               if (!isAdded) addSlotToLayoutVariant(idx, slot.id);
+                             }}
+                           >
+                             {slot.id || '(keine ID)'}
+                           </span>
+                         );
+                       })}
+                     </div>
+                   </div>
+                 </div>
+
+                   <div className={s.slotHint} style={{ marginTop: 4 }}>
+                    💡 Variante = Core-Slots für das Shape. Common-Slots werden zusätzlich aus der globalen Common-Liste ergänzt.
+                 </div>
+              </div>
+            ))}
 
             <button className={s.saveBtn} disabled={!dirty || saving} onClick={handleSave}>
               {saving ? 'Speichert…' : `💾 ${draft.roomType} speichern`}

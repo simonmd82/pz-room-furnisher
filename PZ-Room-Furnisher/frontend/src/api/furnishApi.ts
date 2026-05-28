@@ -5,6 +5,8 @@ const API_BASE = '/api';
 export interface RoomSelection {
   floorIndex: number;
   roomIndex1Based: number;
+  anchorCol?: number;
+  anchorRow?: number;
   roomTypeOverride: string;
 }
 
@@ -48,4 +50,5 @@ export async function exportTbx(
   a.click();
   URL.revokeObjectURL(url);
 }
+
 

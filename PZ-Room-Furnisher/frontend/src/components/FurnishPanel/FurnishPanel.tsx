@@ -13,34 +13,91 @@ interface Props {
   onLogChanged?: (log: string[]) => void;
 }
 
-interface RoomEntry { floorIndex: number; roomIndex1Based: number; }
+interface RoomEntry {
+  floorIndex: number;
+  roomIndex1Based: number;
+  anchorCol: number;
+  anchorRow: number;
+  cellCount: number;
+  instanceNo: number;
+  instanceTotal: number;
+}
 
-/** Collect rooms grouped by floor, sorted by floorIndex then roomIndex. */
+/** Collect room instances (connected components) grouped by floor. */
 function collectRoomsByFloor(building: Building): Map<number, RoomEntry[]> {
   const map = new Map<number, RoomEntry[]>();
+
   for (const floor of building.floors) {
-    const seen = new Set<number>();
-    for (const row of floor.roomGrid) {
-      for (const idx of row) {
-        if (idx <= 0 || seen.has(idx)) continue;
-        seen.add(idx);
-        if (!map.has(floor.index)) map.set(floor.index, []);
-        map.get(floor.index)!.push({ floorIndex: floor.index, roomIndex1Based: idx });
+    const visited = new Set<string>();
+    const entries: RoomEntry[] = [];
+    const indexCounts = new Map<number, number>();
+
+    const rows = floor.roomGrid.length;
+    const cols = floor.roomGrid[0]?.length ?? 0;
+    const inBounds = (c: number, r: number) => r >= 0 && r < rows && c >= 0 && c < cols;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const idx = floor.roomGrid[r]?.[c] ?? 0;
+        if (idx <= 0) continue;
+
+        const startKey = `${c},${r}`;
+        if (visited.has(startKey)) continue;
+
+        // Flood-fill one connected component for this room index.
+        const queue: Array<[number, number]> = [[c, r]];
+        visited.add(startKey);
+        let cellCount = 0;
+
+        while (queue.length > 0) {
+          const [cc, cr] = queue.shift()!;
+          cellCount++;
+          const neighbors: Array<[number, number]> = [[cc + 1, cr], [cc - 1, cr], [cc, cr + 1], [cc, cr - 1]];
+          for (const [nc, nr] of neighbors) {
+            if (!inBounds(nc, nr)) continue;
+            if ((floor.roomGrid[nr]?.[nc] ?? 0) !== idx) continue;
+            const k = `${nc},${nr}`;
+            if (visited.has(k)) continue;
+            visited.add(k);
+            queue.push([nc, nr]);
+          }
+        }
+
+        indexCounts.set(idx, (indexCounts.get(idx) ?? 0) + 1);
+        entries.push({
+          floorIndex: floor.index,
+          roomIndex1Based: idx,
+          anchorCol: c,
+          anchorRow: r,
+          cellCount,
+          instanceNo: 0,
+          instanceTotal: 0,
+        });
       }
     }
+
+    const runningNo = new Map<number, number>();
+    for (const entry of entries) {
+      const nextNo = (runningNo.get(entry.roomIndex1Based) ?? 0) + 1;
+      runningNo.set(entry.roomIndex1Based, nextNo);
+      entry.instanceNo = nextNo;
+      entry.instanceTotal = indexCounts.get(entry.roomIndex1Based) ?? 1;
+    }
+
+    if (entries.length > 0) map.set(floor.index, entries);
   }
-  for (const rooms of map.values()) rooms.sort((a, b) => a.roomIndex1Based - b.roomIndex1Based);
+
+  for (const rooms of map.values()) {
+    rooms.sort((a, b) => {
+      if (a.roomIndex1Based !== b.roomIndex1Based) return a.roomIndex1Based - b.roomIndex1Based;
+      if (a.anchorRow !== b.anchorRow) return a.anchorRow - b.anchorRow;
+      return a.anchorCol - b.anchorCol;
+    });
+  }
+
   return new Map([...map.entries()].sort((a, b) => a[0] - b[0]));
 }
 
-/** Count cells of a room on a floor */
-function roomCellCount(building: Building, floorIndex: number, roomIndex1Based: number): number {
-  const floor = building.floors.find(f => f.index === floorIndex);
-  if (!floor) return 0;
-  let n = 0;
-  for (const row of floor.roomGrid) for (const idx of row) if (idx === roomIndex1Based) n++;
-  return n;
-}
 
 const SIZE_LABELS: Record<string, string> = {
   XS: 'XS ≤4', S: 'S ≤12', M: 'M ≤25', L: 'L ≤50', XL: 'XL 50+',
@@ -82,7 +139,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   const roomsByFloor  = useMemo(() => collectRoomsByFloor(building), [building]);
   const allRoomsFlat  = useMemo(() => [...roomsByFloor.values()].flat(), [roomsByFloor]);
 
-  const selKey = (floorIndex: number, roomIndex1Based: number) => `${floorIndex}:${roomIndex1Based}`;
+  const selKey = (entry: RoomEntry) => `${entry.floorIndex}:${entry.roomIndex1Based}:${entry.anchorCol}:${entry.anchorRow}`;
 
   /** Unique internalNames across all rooms, sorted */
   const uniqueTypes = useMemo(() => {
@@ -101,7 +158,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   });
 
   const toggleFloor = (floorIndex: number) => {
-    const keys = (roomsByFloor.get(floorIndex) ?? []).map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const keys = (roomsByFloor.get(floorIndex) ?? []).map(selKey);
     const allSel = keys.every(k => selected.has(k));
     setSelected(prev => {
       const next = new Set(prev);
@@ -114,7 +171,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   const toggleByType = (typeName: string) => {
     const keys = allRoomsFlat
       .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
-      .map(e => selKey(e.floorIndex, e.roomIndex1Based));
+      .map(selKey);
     const allSel = keys.every(k => selected.has(k));
     setSelected(prev => {
       const next = new Set(prev);
@@ -125,13 +182,13 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   };
 
   const toggleAll = () => {
-    const allKeys = allRoomsFlat.map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const allKeys = allRoomsFlat.map(selKey);
     const allSel  = allKeys.every(k => selected.has(k));
     setSelected(allSel ? new Set() : new Set(allKeys));
   };
 
   const floorCheckState = (floorIndex: number): 'all' | 'some' | 'none' => {
-    const keys = (roomsByFloor.get(floorIndex) ?? []).map(e => selKey(e.floorIndex, e.roomIndex1Based));
+    const keys = (roomsByFloor.get(floorIndex) ?? []).map(selKey);
     const n = keys.filter(k => selected.has(k)).length;
     if (n === 0) return 'none';
     if (n === keys.length) return 'all';
@@ -141,11 +198,11 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   const typeIsActive = (typeName: string) => {
     const keys = allRoomsFlat
       .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
-      .map(e => selKey(e.floorIndex, e.roomIndex1Based));
+      .map(selKey);
     return keys.length > 0 && keys.every(k => selected.has(k));
   };
 
-  const allSel = allRoomsFlat.length > 0 && allRoomsFlat.every(e => selected.has(selKey(e.floorIndex, e.roomIndex1Based)));
+  const allSel = allRoomsFlat.length > 0 && allRoomsFlat.every(e => selected.has(selKey(e)));
 
   const floorLabel = (floorIndex: number) =>
     floorIndex === 0 ? t('floor.ground') : t('floor.upper', { n: floorIndex });
@@ -154,8 +211,14 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
   const handleGenerate = async () => {
     const selections: RoomSelection[] = [];
     for (const key of selected) {
-      const [f, r] = key.split(':').map(Number);
-      selections.push({ floorIndex: f, roomIndex1Based: r, roomTypeOverride: overrides[key] ?? '' });
+      const [f, r, c, rr] = key.split(':').map(Number);
+      selections.push({
+        floorIndex: f,
+        roomIndex1Based: r,
+        anchorCol: c,
+        anchorRow: rr,
+        roomTypeOverride: overrides[key] ?? '',
+      });
     }
     if (selections.length === 0) { setStatus({ msg: t('furnishPanel.noRoomSelected'), ok: false }); return; }
 
@@ -225,13 +288,14 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
             </div>
 
             {/* Room rows */}
-            {rooms.map(({ floorIndex: fi, roomIndex1Based }) => {
-              const key         = selKey(fi, roomIndex1Based);
+            {rooms.map((entry) => {
+              const { roomIndex1Based, cellCount, instanceNo, instanceTotal } = entry;
+              const key         = selKey(entry);
               const room        = building.rooms[roomIndex1Based - 1];
-              const cells       = roomCellCount(building, fi, roomIndex1Based);
-              const sizeKey     = classifySize(cells);
+              const sizeKey     = classifySize(cellCount);
               const typeName    = overrides[key] || room?.internalName || '';
-              const displayName = room?.name || `Raum ${roomIndex1Based}`;
+              const baseName    = room?.name || `Raum ${roomIndex1Based}`;
+              const displayName = instanceTotal > 1 ? `${baseName} #${instanceNo}` : baseName;
               const hasMatch    = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
               const isSel       = selected.has(key);
               const colorCss    = tbxColorToCss(room?.color);
@@ -253,13 +317,13 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
                       style={{ background: colorCss }}
                       title={`Farbe: ${room?.color}`}
                     />
-                    <span className={s.roomRowName} title={`${displayName} (${room?.internalName})`}>
+                    <span className={s.roomRowName} title={`${displayName} (${room?.internalName}) @ [${entry.anchorCol},${entry.anchorRow}]`}>
                       {displayName}
                       {room?.internalName && room.internalName !== displayName && (
                         <span className={s.roomInternalName}> · {room.internalName}</span>
                       )}
                     </span>
-                    <span className={s.roomRowBadge} title={`${cells} Zellen`}>{SIZE_LABELS[sizeKey]}</span>
+                    <span className={s.roomRowBadge} title={`${cellCount} Zellen`}>{SIZE_LABELS[sizeKey]}</span>
                     {!hasMatch && typeName && (
                       <span className={s.roomRowNoMatch} title={`Kein passender Raumtyp für „${typeName}"`}>⚠</span>
                     )}

@@ -6,20 +6,20 @@ export interface SlotFootprint {
   width:     number;
   height:    number;
   /** Darf der Slot um 90° gedreht werden? Nur sinnvoll bei nicht-quadratischem Footprint. */
-  canRotate: boolean;
+  canRotate?: boolean;
 }
 
 /** Häufig verwendete Footprints als Schnellauswahl im Editor. */
 export const COMMON_FOOTPRINTS: SlotFootprint[] = [
-  { width: 1, height: 1 },
-  { width: 1, height: 2 },
-  { width: 2, height: 1 },
-  { width: 1, height: 3 },
-  { width: 3, height: 1 },
-  { width: 2, height: 2 },
-  { width: 2, height: 3 },
-  { width: 3, height: 2 },
-  { width: 3, height: 3 },
+  { width: 1, height: 1, canRotate: false },
+  { width: 1, height: 2, canRotate: true },
+  { width: 2, height: 1, canRotate: true },
+  { width: 1, height: 3, canRotate: true },
+  { width: 3, height: 1, canRotate: true },
+  { width: 2, height: 2, canRotate: false },
+  { width: 2, height: 3, canRotate: true },
+  { width: 3, height: 2, canRotate: true },
+  { width: 3, height: 3, canRotate: false },
 ];
 
 export const FURNITURE_LAYERS = [
@@ -27,7 +27,6 @@ export const FURNITURE_LAYERS = [
   'Wallfurniture', 'Wallfurniture2', 'Wallfurniture3', 'Wallfurniture4',
   'FloorOverlay', 'FloorFurniture',
 ] as const;
-export type FurnitureLayer = typeof FURNITURE_LAYERS[number];
 
 /** Relative Positionen eines verknüpften Slots zum Anker-Slot */
 export const ANCHOR_POSITIONS = [
@@ -133,7 +132,6 @@ export const REQUIRED_PROPERTIES = [
   'canStack',
   'isTableTop',
 ] as const;
-export type RequiredProperty = typeof REQUIRED_PROPERTIES[number];
 
 export interface PlacementRules {
   nearWall:    boolean;
@@ -239,12 +237,32 @@ export interface RoomTypeSlot {
    * Typischer Einsatz: Nachttisch (blocksPlacement:false, softBlocks:true). Standard: false.
    */
   softBlocks: boolean;
+    /** Nur versuchen, wenn dieser Slot / diese Gruppe bereits platziert wurde. */
+    requiresSlot: string;
+    /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
+    tileGroupId: string;
 }
+
+  /** Alternative Layout-Variante für zusammengesetzte Möbel/Shapes. */
+  export interface LayoutVariant {
+    /** Eindeutige ID innerhalb des Raumtyps, z.B. "kitchen_l_shape". */
+    id: string;
+    /** Anzeigename für Editor/Logs. */
+    label: string;
+    /** Gewichtung innerhalb der Layout-Auswahl (1–10). */
+    weight: number;
+    /** Core-Slots, die in dieser Variante aktiv sind. Leer = alle Slots des Raumtyps. */
+    slotIds: string[];
+  }
 
 export interface RoomTypeConfig {
   roomType:      string;
   slots:         RoomTypeSlot[];
-  pathStyle:     'wall' | 'center' | 'random';
+  /** Layout-Varianten für zusammengesetzte Möbel-Setups (Küche, Sofa, Theke …). */
+  layoutVariants?: LayoutVariant[];
+  /** Slots, die bei aktiver Layout-Variante zusätzlich zu den Core-Slots immer aktiv sind. */
+  commonSlotIds?: string[];
+  pathStyle:     'wall' | 'center' | 'random' | 'doorOnly';
   colorGroupId:  string;
   /**
    * Erlaubte Farben pro Farbgruppen-ID.
@@ -297,7 +315,7 @@ export function defaultSlot(): RoomTypeSlot {
 }
 
 export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
-  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [] };
+  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [], layoutVariants: [], commonSlotIds: [] };
 }
 
 

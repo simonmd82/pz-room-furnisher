@@ -5,7 +5,6 @@
   min-height: 0;
   overflow: hidden;
 }
-
 /* Wrapper: editor + ref footer */
 .rightPane {
   display: flex;
@@ -14,8 +13,7 @@
   min-height: 0;
   overflow: hidden;
 }
-
-/* ── List panel ── */
+/* -- List panel -- */
 .listPanel {
   display: flex;
   flex-direction: column;
@@ -58,7 +56,6 @@
   padding: 1px 6px;
   flex-shrink: 0;
 }
-/* Remove-button on list items – hidden by default, visible on hover */
 .listItemRemove {
   display: none;
   margin-left: 4px;
@@ -72,8 +69,7 @@
 }
 .listItem:hover .listItemRemove { display: inline; }
 .listItemRemove:hover { color: #f88; background: #2a1010; }
-
-/* ── Slot size box ── */
+/* -- Slot size box -- */
 .slotSizeBox {
   padding: 10px 12px;
   border-top: 1px solid #2a2a3a;
@@ -118,8 +114,7 @@
   font-size: 0.76rem;
 }
 .slotSizeBtn:hover { background: #3a2a6a; }
-
-/* ── Editor panel ── */
+/* -- Editor panel -- */
 .editorPanel {
   flex: 1 1 0;
   min-height: 0;
@@ -182,8 +177,7 @@
   font-size: 0.76rem;
 }
 .addSlotBtn:hover { background: #2a3a2a; }
-
-/* ── Info button + panel ── */
+/* -- Info button + panel -- */
 .infoBtn {
   padding: 2px 8px;
   background: #1a1a2e;
@@ -208,8 +202,7 @@
   font-family: inherit;
   max-width: 860px;
 }
-
-/* ── Slot card ── */
+/* -- Slot card -- */
 .slotCard {
   background: #141422;
   border: 1px solid #2a2a3a;
@@ -218,14 +211,13 @@
   margin-bottom: 8px;
 }
 .slotCardRequired { border-color: #664400; }
-/* Gruppen-markierter Slot: farbiger linker Rand via CSS-Variable */
 .slotCardGrouped  { border-left: 3px solid var(--group-color, #8866cc); }
-
-/* ── Akkordion-Zusammenfassungsleiste ── */
+.slotCardDragOver { outline: 2px solid #8866cc; outline-offset: -2px; }
+/* -- Akkordion-Zusammenfassungsleiste -- */
 .slotSummaryBar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   padding: 5px 10px;
   background: #1a1a2e;
   border-bottom: 1px solid #2a2a3a;
@@ -234,25 +226,21 @@
   min-height: 34px;
 }
 .slotSummaryBar:hover { background: #1e1e35; }
-
 .collapseToggleIcon {
   font-size: 0.6rem;
   color: #556;
   flex-shrink: 0;
 }
-
 .slotSummaryId {
   font-size: 0.75rem;
   font-family: monospace;
   flex-shrink: 0;
 }
-
 .slotSummaryLabel {
   font-size: 0.75rem;
   color: #ccd;
   flex-shrink: 0;
 }
-
 .slotSummaryBadge {
   font-size: 0.65rem;
   padding: 1px 6px;
@@ -260,21 +248,30 @@
   white-space: nowrap;
   flex-shrink: 0;
 }
-
-.slotCardHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  background: #1a1a2e;
-  border-bottom: 1px solid #2a2a3a;
-  flex-wrap: wrap;
+.dragHandle {
+  font-size: 0.85rem;
+  color: #446;
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 0 2px;
 }
+.dragHandle:hover { color: #8866cc; }
 .slotIndex {
   font-size: 0.68rem;
   color: #8866cc;
   font-weight: 700;
   min-width: 22px;
+}
+/* -- Aufgeklappter Slot-Header -- */
+.slotCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  row-gap: 8px;
+  padding: 6px 10px;
+  background: #1a1a2e;
+  border-bottom: 1px solid #2a2a3a;
+  flex-wrap: wrap;
 }
 .slotSelect {
   padding: 3px 6px;
@@ -298,9 +295,10 @@
 .slotFieldSmall {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   font-size: 0.74rem;
   color: #99a;
+  margin-right: 8px;
 }
 .slotNumInput {
   width: 50px;
@@ -313,7 +311,6 @@
   text-align: center;
 }
 .slotNumInput:focus { outline: none; border-color: #8866cc; }
-/* Spinner-Pfeile ausblenden – Eingabe per Tastatur oder direktes Tippen */
 .slotNumInput::-webkit-outer-spin-button,
 .slotNumInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .slotNumInput[type=number] { -moz-appearance: textfield; }
@@ -336,11 +333,9 @@
   color: #6a9;
   cursor: pointer;
   font-size: 0.76rem;
-  title: "Slot duplizieren";
 }
 .duplicateSlotBtn:hover { background: #1a2a1a; color: #8fc; }
-
-/* ── Copy-to-clipboard button ── */
+/* -- Copy-to-clipboard button -- */
 .copySlotBtn {
   padding: 2px 7px;
   background: none;
@@ -351,8 +346,7 @@
   font-size: 0.76rem;
 }
 .copySlotBtn:hover { background: #0e2030; color: #7fd3ff; border-color: #2a6a9a; }
-
-/* ── Paste banner ── */
+/* -- Paste banner -- */
 .pasteBar {
   display: flex;
   align-items: center;
@@ -408,10 +402,10 @@
   color: #6a9;
   margin-left: auto;
 }
-.slotGroupLabel { font-size: 0.72rem; color: #668; }
-.chipGroup { display: flex; flex-wrap: wrap; gap: 4px; }
+.slotGroupLabel { font-size: 0.72rem; color: #668; margin-right: 6px; }
+.chipGroup { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 10px;
   border: 1px solid #3a3a5a;
   background: #0e0e18;
@@ -422,8 +416,7 @@
 }
 .chip:hover { border-color: #7755bb; color: #bbb; }
 .chipActive { border-color: #8866cc; background: #2a1a4a; color: #ddf; }
-
-/* ── Save ── */
+/* -- Save -- */
 .saveBtn {
   padding: 8px;
   background: #2a4a2a;
@@ -440,8 +433,7 @@
 }
 .saveBtn:hover:not(:disabled) { background: #3a6a3a; }
 .saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* ── Ref panel (rechte Spalte) ── */
+/* -- Ref panel (rechte Spalte) -- */
 .refPanel {
   display: flex;
   flex-direction: column;
@@ -493,8 +485,7 @@
   margin: 0;
   flex-shrink: 0;
 }
-
-/* ── Size table (Min/Max per XS–XL) ── */
+/* -- Size table (Min/Max per XS-XL) -- */
 .sizeTable {
   border-collapse: collapse;
   width: auto;
@@ -527,8 +518,7 @@
   text-align: center;
 }
 .sizeNumInput:focus { outline: none; border-color: #8866cc; }
-
-/* ── Anker-Regel-Karte ── */
+/* -- Anker-Regel-Karte -- */
 .anchorRuleCard {
   background: #0e1a1e;
   border: 1px solid #2a3a3a;
@@ -540,4 +530,49 @@
   gap: 4px;
   margin-top: 4px;
 }
-
+/* -- Layout-Varianten: Drop-Zone -- */
+.slotDropZone {
+  background: #0a1014;
+  border: 2px dashed #2a5a7a;
+  border-radius: 5px;
+  padding: 8px;
+  min-height: 60px;
+  transition: background-color 0.2s, border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+.slotDropZone:hover {
+  border-color: #4a8aaa;
+  background: #0e1820;
+}
+.slotDropZone.dragOver {
+  background: #1a2a35;
+  border-color: #7fd3ff;
+  box-shadow: inset 0 0 8px rgba(127, 211, 255, 0.2);
+}
+/* -- Chip Drag-Over -- */
+.chipDragOver {
+  border-color: #8866cc !important;
+  background: #3a2a5a !important;
+}
+/* -- PathStyle row -- */
+.pathStyleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.pathStyleLabel {
+  font-size: 0.72rem;
+  color: #668;
+  white-space: nowrap;
+}
+.pathStyleSelect {
+  padding: 3px 6px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 3px;
+  color: #dde;
+  font-size: 0.78rem;
+}
+.pathStyleSelect:focus { outline: none; border-color: #8866cc; }
