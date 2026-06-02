@@ -78,7 +78,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_bed_main_large",
@@ -156,7 +157,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_cabinet",
@@ -216,7 +218,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_bed_table_left",
@@ -287,7 +290,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_bed_table_right",
@@ -358,7 +362,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_seating",
@@ -415,7 +420,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_lamps_radio",
@@ -484,7 +490,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_bed_table_left",
         "colorGroupId": "lamp_radio_colors",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_lamps_radio_right",
@@ -553,7 +560,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_bed_table_right",
         "colorGroupId": "lamp_radio_colors",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_mirror",
@@ -614,7 +622,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_mirror_long",
@@ -675,7 +684,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_pictures",
@@ -736,7 +746,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_plants",
@@ -793,7 +804,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_rugs",
@@ -850,7 +862,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_rugs_small",
@@ -907,7 +920,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_standing_lamp",
@@ -964,7 +978,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],
@@ -1048,7 +1063,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_table_medium",
@@ -1107,7 +1123,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "chair_small_table_left",
@@ -1176,7 +1193,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_small_table_right",
@@ -1245,7 +1263,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_small_table_top",
@@ -1314,7 +1333,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_small_table_bottom",
@@ -1383,7 +1403,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_medium_table_left",
@@ -1452,7 +1473,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_medium_table_left_2",
@@ -1521,7 +1543,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_medium_table_right",
@@ -1590,7 +1613,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "chair_medium_table_right_2",
@@ -1659,7 +1683,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
-        "tileGroupId": "dining_charis"
+        "tileGroupId": "dining_charis",
+        "materialGroupId": ""
       },
       {
         "id": "slot_cabinet_dining",
@@ -1719,7 +1744,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_pictures",
@@ -1779,7 +1805,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_plants",
@@ -1836,7 +1863,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_standing_lamp",
@@ -1893,7 +1921,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],
@@ -1975,7 +2004,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_standing_sink",
@@ -2036,7 +2066,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_sink",
@@ -2104,7 +2135,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_toilet",
@@ -2164,7 +2196,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_mirror",
@@ -2235,7 +2268,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_mirror_no_counter",
@@ -2306,7 +2340,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_standing_sink",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_bathtub",
@@ -2366,7 +2401,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_shower",
@@ -2423,7 +2459,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_cabinet_bathromm",
@@ -2483,7 +2520,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_trashcan",
@@ -2542,7 +2580,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_rugs_small",
@@ -2599,7 +2638,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_shower_wall_primary",
@@ -2669,7 +2709,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_shower",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],
@@ -2739,7 +2780,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_sofa_table",
@@ -2811,7 +2853,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_television_standing",
@@ -2882,7 +2925,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_table_television",
@@ -2954,7 +2998,8 @@
         "softBlocks": true,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_television",
@@ -3024,7 +3069,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_table_television",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_rugs_small",
@@ -3081,7 +3127,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_rugs",
@@ -3138,7 +3185,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_standing_lamp",
@@ -3195,7 +3243,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_pictures_small",
@@ -3255,7 +3304,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_pictures_long",
@@ -3315,7 +3365,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_plants",
@@ -3372,7 +3423,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "none",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_shelf_small",
@@ -3432,7 +3484,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "shelfs_color",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_shelf_small_2",
@@ -3492,7 +3545,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "shelfs_color",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],
@@ -3568,7 +3622,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_sink",
@@ -3629,7 +3684,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "counter_color",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_sink",
@@ -3697,7 +3753,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_sink",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_no_top",
@@ -3769,7 +3826,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "counter_color",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_for_appliance",
@@ -3841,7 +3899,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "counter_color",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_appliance_for_counter",
@@ -3911,7 +3970,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_for_appliance",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_cooking_hood",
@@ -3971,7 +4031,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_main_2",
@@ -4033,7 +4094,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_line_1",
@@ -4106,7 +4168,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_line_2",
@@ -4179,7 +4242,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_line_1",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_stove_line",
@@ -4252,7 +4316,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_line_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_l_left_corner",
@@ -4325,7 +4390,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_l_left_arm_1",
@@ -4398,7 +4464,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_l_left_corner",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_stove_l_left",
@@ -4471,7 +4538,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_l_left_arm_1",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_l_right_corner",
@@ -4544,7 +4612,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_l_right_arm_1",
@@ -4617,7 +4686,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_l_right_corner",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_stove_l_right",
@@ -4690,7 +4760,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_l_right_arm_1",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_u_left",
@@ -4763,7 +4834,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_u_right",
@@ -4836,7 +4908,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_u_bridge",
@@ -4909,7 +4982,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_u_left",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       },
       {
         "id": "slot_stove_u",
@@ -4982,7 +5056,8 @@
         "softBlocks": false,
         "requiresSlot": "slot_counter_u_bridge",
         "colorGroupId": "",
-        "tileGroupId": "counter_tile_group"
+        "tileGroupId": "counter_tile_group",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [
@@ -5108,7 +5183,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_metal_shelf_hanging",
@@ -5168,7 +5244,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_washing_machine",
@@ -5230,7 +5307,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter",
@@ -5292,7 +5370,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "color_metal",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_counter_for_sink",
@@ -5354,7 +5433,8 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "color_metal",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_sink",
@@ -5422,7 +5502,8 @@
         "softBlocks": true,
         "requiresSlot": "slot_counter_for_sink",
         "colorGroupId": "color_metal",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],
@@ -5495,7 +5576,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       },
       {
         "id": "slot_storage_card_box",
@@ -5558,7 +5640,70 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "color_beige",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
+      },
+      {
+        "id": "slot_storage_card_box_top_dummy",
+        "label": "Card Box Top Dummy",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 0
+          },
+          "M": {
+            "min": 0,
+            "max": 0
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "hasCollision",
+          "canStack",
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "group_cardbox",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "slot_storage_card_box",
+        "colorGroupId": "color_beige",
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
       },
       {
         "id": "slot_storage_card_box_top",
@@ -5622,15 +5767,16 @@
             "orient": null
           }
         ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
+        "slotGroupId": "group_cardbox",
+        "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
         "requiresSlot": "slot_storage_card_box",
         "colorGroupId": "color_beige",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
       },
       {
         "id": "slot_storage_wooden_crate",
@@ -5693,7 +5839,70 @@
         "softBlocks": true,
         "requiresSlot": "",
         "colorGroupId": "color_brown",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": "Wood"
+      },
+      {
+        "id": "slot_storage_wooden_crate_top_dummy",
+        "label": "Wooden Crate Top Dummy",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 0
+          },
+          "M": {
+            "min": 0,
+            "max": 0
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "hasCollision",
+          "canStack",
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "group_wooden_crate",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "slot_storage_wooden_crate",
+        "colorGroupId": "color_brown",
+        "tileGroupId": "",
+        "materialGroupId": "Wood"
       },
       {
         "id": "slot_storage_wooden_crate_mid",
@@ -5757,15 +5966,16 @@
             "orient": null
           }
         ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
+        "slotGroupId": "group_wooden_crate",
+        "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
         "requiresSlot": "slot_storage_wooden_crate",
         "colorGroupId": "color_brown",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": "Wood"
       },
       {
         "id": "slot_shelf_long",
@@ -5825,7 +6035,8 @@
         "softBlocks": false,
         "requiresSlot": "",
         "colorGroupId": "",
-        "tileGroupId": ""
+        "tileGroupId": "",
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [],

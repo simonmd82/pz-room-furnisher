@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { getBfPath, setBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
-import { getRoomTypeNames, getCategories } from '../../api/settingsApi';
+import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap } from '../../types/tiles';
 import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, STYLE_TAGS, TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
@@ -60,6 +60,9 @@ export function FurnitureBrowser() {
   // ── known categories (from settings) ──────────────────────────────────────
   const [knownCategories, setKnownCategories] = useState<string[]>([]);
 
+  // ── known materials (from settings) ───────────────────────────────────────
+  const [materialList, setMaterialList] = useState<string[]>([]);
+
   // ── collapsible sections ──────────────────────────────────────────────────
   const [notesOpen, setNotesOpen]     = useState(false);
   const [spritesOpen, setSpritesOpen] = useState(false);
@@ -115,6 +118,7 @@ export function FurnitureBrowser() {
     getTileConfig().then(setConfig).catch(() => {});
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
+    getMaterials().then(setMaterialList).catch(console.error);
     getSheets().then(r => {
       if (r.configured) {
         const map: Record<string, number> = {};
@@ -657,6 +661,20 @@ export function FurnitureBrowser() {
                     onClick={() => toggleArrayField('colors', c)}>{c}</span>
                 ); })}
               </div>
+            </div>
+
+            {/* Materialien */}
+            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+              <span className={s.fieldLabel}>Materialien</span>
+              <div className={s.chipGroup}>
+                {materialList.map(m => { const st = arrState(d => d.materials ?? [], m); return (
+                  <span key={m} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                    onClick={() => toggleArrayField('materials', m)}>{m}</span>
+                ); })}
+              </div>
+              {materialList.length === 0 && (
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>Keine Materialien in den Einstellungen definiert.</span>
+              )}
             </div>
 
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>

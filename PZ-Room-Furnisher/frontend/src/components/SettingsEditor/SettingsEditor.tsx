@@ -2,6 +2,7 @@
 import {
   getRoomTypeNames, saveRoomTypeNames,
   getCategories,    saveCategories,
+  getMaterials,     saveMaterials,
 } from '../../api/settingsApi';
 import s from './SettingsEditor.module.css';
 
@@ -78,11 +79,12 @@ function EditableList({
 export function SettingsEditor() {
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [materials,  setMaterials]  = useState<string[]>([]);
   const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
-    Promise.all([getRoomTypeNames(), getCategories()])
-      .then(([rt, cats]) => { setRoomTypes(rt); setCategories(cats); })
+    Promise.all([getRoomTypeNames(), getCategories(), getMaterials()])
+      .then(([rt, cats, mats]) => { setRoomTypes(rt); setCategories(cats); setMaterials(mats); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -119,6 +121,17 @@ export function SettingsEditor() {
           onSave={async updated => {
             const saved = await saveCategories(updated);
             setCategories(saved);
+          }}
+        />
+
+        <EditableList
+          title="🪵 Materialien"
+          description="Werden im Tile-Browser als Material-Tags und im Slot-Editor als Materialfilter angeboten."
+          items={materials}
+          placeholder="z.B. Holz"
+          onSave={async updated => {
+            const saved = await saveMaterials(updated);
+            setMaterials(saved);
           }}
         />
       </div>

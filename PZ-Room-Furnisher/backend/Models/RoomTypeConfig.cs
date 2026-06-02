@@ -215,6 +215,14 @@ public class RoomTypeSlot
     ///           diese VariantGroup. Kein Match → ungefilterten Pool behalten.
     /// </summary>
     public string TileGroupId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Material-Filter für diesen Slot (AND-verknüpft mit Farbfilter).
+    ///   Leer   = kein Materialfilter.
+    ///   "none" = kein Materialfilter für diesen Slot (explizit deaktiviert).
+    ///   Wert   = nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.
+    /// </summary>
+    public string MaterialGroupId { get; set; } = string.Empty;
 }
 
 /// <summary>

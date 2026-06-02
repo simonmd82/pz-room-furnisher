@@ -35,4 +35,17 @@ public class SettingsController : ControllerBase
         _svc.SetKnownCategories(categories.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList());
         return Ok(_svc.GetKnownCategories());
     }
+
+    /// <summary>Returns the list of known materials.</summary>
+    [HttpGet("materials")]
+    public IActionResult GetMaterials() => Ok(_svc.GetKnownMaterials());
+
+    /// <summary>Replaces the list of known materials.</summary>
+    [HttpPut("materials")]
+    public IActionResult SetMaterials([FromBody] List<string>? materials)
+    {
+        if (materials is null) return BadRequest("Body must be a JSON array of strings.");
+        _svc.SetKnownMaterials(materials.Where(m => !string.IsNullOrWhiteSpace(m)).Distinct().ToList());
+        return Ok(_svc.GetKnownMaterials());
+    }
 }

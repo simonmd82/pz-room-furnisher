@@ -70,6 +70,8 @@ export interface TileDefinition {
   // ── Randomiser meta ───────────────────────────────────────────────────
   /** Colour tags for grouping similar-looking furniture */
   colors: string[];
+  /** Material tags, e.g. ["Holz","Metall"] */
+  materials: string[];
   /** Room types where this furniture is appropriate */
   roomTypes: string[];
   /** Links N/S/E/W variants of the same physical object (empty = no link) */
@@ -162,6 +164,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     isTableTop:    false,
     isLootContainer: false,
     colors: [],
+    materials: [],
     roomTypes: [],
     variantGroup: '',
     allowedOrients: [],
@@ -169,4 +172,6 @@ export function defaultDefinition(tileId: string): TileDefinition {
     styleTags: [],
   };
 }
+
+
 

@@ -239,8 +239,15 @@ export interface RoomTypeSlot {
   softBlocks: boolean;
     /** Nur versuchen, wenn dieser Slot / diese Gruppe bereits platziert wurde. */
     requiresSlot: string;
-    /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
-    tileGroupId: string;
+  /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
+  tileGroupId: string;
+  /**
+   * Material-Filter für diesen Slot (AND-verknüpft mit Farbfilter).
+   *   Leer   = kein Materialfilter.
+   *   "none" = kein Materialfilter für diesen Slot (explizit deaktiviert).
+   *   Wert   = nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.
+   */
+  materialGroupId: string;
 }
 
   /** Alternative Layout-Variante für zusammengesetzte Möbel/Shapes. */
@@ -310,6 +317,7 @@ export function defaultSlot(): RoomTypeSlot {
     requiresSlot: '',
     colorGroupId: '',
     tileGroupId:  '',
+    materialGroupId: '',
     fallbackRules: [],
   };
 }

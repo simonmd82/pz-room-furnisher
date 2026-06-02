@@ -7,7 +7,7 @@ import {
 } from '../../types/roomTypes';
 import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
-import { getRoomTypeNames, saveRoomTypeNames, getCategories } from '../../api/settingsApi';
+import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
 import { TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
 import s from './RoomTypeEditor.module.css';
@@ -109,6 +109,7 @@ export function RoomTypeEditor() {
   const [knownRooms, setKnownRooms]   = useState<string[]>([]);
   const [availGroups, setAvailGroups] = useState<string[]>(FALLBACK_GROUPS);
   const [availColors, setAvailColors] = useState<string[]>([]);
+  const [availMaterials, setAvailMaterials] = useState<string[]>([]);
   const [selected, setSelected]       = useState<string | null>(null);
   const [draft, setDraft]             = useState<RoomTypeConfig | null>(null);
   const [dirty, setDirty]             = useState(false);
@@ -139,6 +140,7 @@ export function RoomTypeEditor() {
       setAvailGroups(merged.length > 0 ? merged : FALLBACK_GROUPS);
     }).catch(console.error);
     getColors().then(setAvailColors).catch(console.error);
+    getMaterials().then(setAvailMaterials).catch(console.error);
   }, []);
 
   const selectRoom = useCallback((rt: string) => {
@@ -472,6 +474,7 @@ export function RoomTypeEditor() {
             blocksPlacement:   sl.blocksPlacement ?? true,
             softBlocks:        sl.softBlocks ?? false,
             colorGroupId:      sl.colorGroupId ?? '',
+            materialGroupId:   sl.materialGroupId ?? '',
           };
         }),
       };
@@ -1224,6 +1227,43 @@ export function RoomTypeEditor() {
                     {slot.tileGroupId
                       ? <span className={s.slotHint} style={{ color: '#ac8' }}>→ Gruppe „{slot.tileGroupId}"</span>
                       : <span className={s.slotHint} style={{ color: '#556' }}>unabhängig</span>
+                    }
+                  </div>
+
+                  {/* ── Material-Filter ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
+                    <span className={s.slotGroupLabel}
+                      title={'Material-Filter: Nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.\n\n• Leer = kein Materialfilter (Standard)\n• "none" = kein Filter für diesen Slot (explizit deaktiviert)\n• Wert = nur Tiles aus diesem Material\n\nAND-verknüpft mit dem Farbfilter.'}>
+                      🪵 Materialfilter
+                      <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
+                    </span>
+                    {availMaterials.length > 0 ? (
+                      <select
+                        className={s.slotSizeInput}
+                        style={{ flex: 2 }}
+                        value={slot.materialGroupId ?? ''}
+                        onChange={e => updateSlot(idx, { materialGroupId: e.target.value })}
+                      >
+                        <option value="">— kein Filter —</option>
+                        <option value="none">none (explizit deaktiviert)</option>
+                        {availMaterials.map(m => (
+                          <option key={m} value={m}>{m}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        className={s.slotSizeInput}
+                        style={{ flex: 2 }}
+                        placeholder='leer = kein Filter, "none" = deaktiviert'
+                        value={slot.materialGroupId ?? ''}
+                        onChange={e => updateSlot(idx, { materialGroupId: e.target.value })}
+                      />
+                    )}
+                    {slot.materialGroupId && slot.materialGroupId !== 'none'
+                      ? <span className={s.slotHint} style={{ color: '#c8a' }}>→ nur „{slot.materialGroupId}"</span>
+                      : slot.materialGroupId === 'none'
+                        ? <span className={s.slotHint} style={{ color: '#888' }}>deaktiviert</span>
+                        : <span className={s.slotHint} style={{ color: '#556' }}>kein Filter</span>
                     }
                   </div>
 

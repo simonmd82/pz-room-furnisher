@@ -9,6 +9,8 @@ public interface ISettingsService
     void         SetKnownRoomTypes(List<string> names);
     List<string> GetKnownCategories();
     void         SetKnownCategories(List<string> categories);
+    List<string> GetKnownMaterials();
+    void         SetKnownMaterials(List<string> materials);
 }
 
 public class SettingsService : ISettingsService
@@ -29,6 +31,11 @@ public class SettingsService : ISettingsService
         "Lamp", "Plant", "Decoration", "Appliance", "Storage"
     ];
 
+    private static readonly List<string> DefaultMaterials =
+    [
+        "Holz", "Metall", "Plastik", "Stein"
+    ];
+
     public SettingsService(IWebHostEnvironment env)
     {
         _path = Path.Combine(env.ContentRootPath, "Data", "settings.json");
@@ -36,15 +43,21 @@ public class SettingsService : ISettingsService
 
     public List<string> GetKnownRoomTypes()  => ReadList("knownRoomTypes",  DefaultRoomTypes);
     public List<string> GetKnownCategories() => ReadList("knownCategories", DefaultCategories);
+    public List<string> GetKnownMaterials()  => ReadList("knownMaterials",  DefaultMaterials);
 
     public void SetKnownRoomTypes(List<string> names)       => WriteList("knownRoomTypes",  names);
     public void SetKnownCategories(List<string> categories) => WriteList("knownCategories", categories);
+    public void SetKnownMaterials(List<string> materials)   => WriteList("knownMaterials",  materials);
 
     private List<string> ReadList(string key, List<string> defaults)
     {
         try
         {
-            if (!File.Exists(_path)) return new(defaults);
+            if (!File.Exists(_path))
+            {
+                WriteList(key, new(defaults));
+                return new(defaults);
+            }
             using var doc = JsonDocument.Parse(File.ReadAllText(_path));
             if (doc.RootElement.TryGetProperty(key, out var arr))
             {
@@ -54,6 +67,8 @@ public class SettingsService : ISettingsService
                     .ToList();
                 return list.Count > 0 ? list : new(defaults);
             }
+            // Key fehlt in der Datei → Defaults persistieren
+            WriteList(key, new(defaults));
         }
         catch { }
         return new(defaults);
@@ -78,3 +93,4 @@ public class SettingsService : ISettingsService
         finally { _lock.Release(); }
     }
 }
+

@@ -49,5 +49,13 @@
     "Office",
     "Storage",
     "Closet"
+  ],
+  "knownMaterials": [
+    "Cardboard",
+    "Glass",
+    "Metal",
+    "Plastic",
+    "Stone",
+    "Wood"
   ]
 }

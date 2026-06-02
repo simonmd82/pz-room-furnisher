@@ -923,6 +923,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 candidates = grouped;
         }
 
+        if (!string.IsNullOrEmpty(slot.MaterialGroupId)
+            && !slot.MaterialGroupId.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            var matFiltered = candidates
+                .Where(t => t.Materials.Any(m => m.Equals(slot.MaterialGroupId, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            if (matFiltered.Count > 0)
+                candidates = matFiltered;
+        }
+
         return (candidates, effectiveColorGroup);
     }
 
@@ -1361,6 +1371,22 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 log.Add($"    [TILEGROUP] '{slot.Id}': group='{slot.TileGroupId}' → filter variantGroup='{requiredVariantGroup}' ({grouped.Count} tiles)");
             }
             // else: kein Match → ungefilterten Pool behalten
+        }
+
+        // ── Materialfilter ─────────────────────────────────────────────────────
+        // AND-verknüpft mit Farbfilter: nur Tiles die Material enthält werden bevorzugt.
+        if (!string.IsNullOrEmpty(slot.MaterialGroupId)
+            && !slot.MaterialGroupId.Equals("none", StringComparison.OrdinalIgnoreCase))
+        {
+            var matFiltered = candidates
+                .Where(t => t.Materials.Any(m => m.Equals(slot.MaterialGroupId, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            if (matFiltered.Count > 0)
+            {
+                candidates = matFiltered;
+                log.Add($"    [MATERIAL] '{slot.Id}': filter material='{slot.MaterialGroupId}' ({matFiltered.Count} tiles)");
+            }
+            // else: kein Match → ungefilterten Pool behalten (Slot wird nicht verworfen)
         }
 
         // Resolve anchor rule
@@ -2862,108 +2888,6 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         return visited.Count == walkable.Count;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

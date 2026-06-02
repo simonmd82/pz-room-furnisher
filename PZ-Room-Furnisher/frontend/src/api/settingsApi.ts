@@ -43,3 +43,19 @@ export async function saveCategories(categories: string[]): Promise<string[]> {
   return r.json();
 }
 
+export async function getMaterials(): Promise<string[]> {
+  const r = await fetch(`${BASE}/materials`);
+  await checkResponse(r, 'getMaterials');
+  return r.json();
+}
+
+export async function saveMaterials(materials: string[]): Promise<string[]> {
+  const r = await fetch(`${BASE}/materials`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(materials),
+  });
+  await checkResponse(r, 'saveMaterials');
+  return r.json();
+}
+

@@ -27,6 +27,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -63,6 +64,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -99,6 +101,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -135,6 +138,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -167,6 +171,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -201,6 +206,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -233,6 +239,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -267,6 +274,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -299,6 +307,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -333,6 +342,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -367,6 +377,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -399,6 +410,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -435,6 +447,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -471,6 +484,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -507,6 +521,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -543,6 +558,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -579,6 +595,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -615,6 +632,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -651,6 +669,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -683,6 +702,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -717,6 +737,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -749,6 +770,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -786,6 +808,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -821,6 +844,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -858,6 +882,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -895,6 +920,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -927,6 +955,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -958,6 +989,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -993,6 +1027,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1023,6 +1060,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1055,6 +1095,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1086,6 +1129,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1116,6 +1162,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1151,6 +1200,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1183,6 +1235,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1214,6 +1269,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1249,6 +1307,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1279,6 +1338,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1311,6 +1373,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1342,6 +1407,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1372,6 +1440,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1407,6 +1478,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1439,6 +1513,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1470,6 +1547,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1505,6 +1585,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1535,6 +1618,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1567,6 +1653,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1598,6 +1687,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1628,6 +1720,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1663,6 +1758,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1695,6 +1793,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1726,6 +1827,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1761,6 +1865,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1795,6 +1902,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1827,6 +1937,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1858,6 +1971,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1893,6 +2009,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1923,6 +2042,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -1955,6 +2077,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -1985,6 +2110,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2017,6 +2145,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2047,6 +2178,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2079,6 +2213,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2109,6 +2246,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2141,6 +2281,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2171,6 +2314,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2203,6 +2349,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2233,6 +2382,9 @@
     "isLootContainer": false,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2265,6 +2417,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2295,6 +2450,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2327,6 +2485,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2358,6 +2519,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bedroom"
     ],
@@ -2388,6 +2552,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bedroom"
@@ -2423,6 +2590,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2456,6 +2624,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2489,6 +2658,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2524,6 +2694,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2556,6 +2727,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2588,6 +2760,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2620,6 +2793,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2652,6 +2826,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2684,6 +2859,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2716,6 +2892,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2751,6 +2928,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2784,6 +2962,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2817,6 +2996,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2852,6 +3032,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2884,6 +3065,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2916,6 +3098,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2948,6 +3131,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -2980,6 +3164,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3015,6 +3200,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3048,6 +3234,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3081,6 +3268,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3116,6 +3304,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3148,6 +3337,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3180,6 +3370,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3212,6 +3403,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3244,6 +3436,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3279,6 +3472,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3312,6 +3506,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3345,6 +3540,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3380,6 +3576,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3412,6 +3609,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3444,6 +3642,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3476,6 +3675,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3508,6 +3708,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3543,6 +3744,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3578,6 +3780,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3611,6 +3814,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3644,6 +3848,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3676,6 +3881,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3708,6 +3914,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3740,6 +3947,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3772,6 +3980,7 @@
     "colors": [
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3805,6 +4014,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3838,6 +4048,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3869,6 +4080,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3900,6 +4112,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3930,6 +4143,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3960,6 +4174,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -3990,6 +4205,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4020,6 +4236,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4055,6 +4272,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4088,6 +4306,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4121,6 +4340,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4156,6 +4376,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4188,6 +4409,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4220,6 +4442,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4252,6 +4475,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4284,6 +4508,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4319,6 +4544,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4352,6 +4578,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4385,6 +4612,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4420,6 +4648,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4452,6 +4681,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4484,6 +4714,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4516,6 +4747,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4548,6 +4780,7 @@
     "colors": [
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4583,6 +4816,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4618,6 +4852,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4651,6 +4886,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4684,6 +4920,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4716,6 +4953,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4748,6 +4986,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4780,6 +5019,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4812,6 +5052,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4844,6 +5085,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4876,6 +5118,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4908,6 +5151,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4940,6 +5184,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -4972,6 +5217,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5005,6 +5251,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5038,6 +5285,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5071,6 +5319,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5104,6 +5353,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5137,6 +5387,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5170,6 +5421,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5203,6 +5455,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -5236,6 +5489,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5268,6 +5522,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5300,6 +5555,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5332,6 +5588,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5364,6 +5621,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5396,6 +5654,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5428,6 +5687,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5460,6 +5720,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom"
@@ -5492,6 +5753,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5523,6 +5785,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5554,6 +5817,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5585,6 +5849,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5616,6 +5881,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5647,6 +5913,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5678,6 +5945,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5709,6 +5977,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Office"
     ],
@@ -5741,6 +6010,7 @@
       "Grey",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5774,6 +6044,7 @@
       "Grey",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5807,6 +6078,7 @@
       "Grey",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5840,6 +6112,7 @@
       "Grey",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5873,6 +6146,7 @@
       "Brown",
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5906,6 +6180,7 @@
       "Brown",
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5939,6 +6214,7 @@
       "Brown",
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -5972,6 +6248,7 @@
       "Brown",
       "Green"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6005,6 +6282,7 @@
       "Black",
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6038,6 +6316,7 @@
       "Black",
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6071,6 +6350,7 @@
       "Black",
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6104,6 +6384,7 @@
       "Black",
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6136,6 +6417,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6168,6 +6450,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6200,6 +6483,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6232,6 +6516,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6264,6 +6549,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6296,6 +6582,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6328,6 +6615,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6360,6 +6648,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6392,6 +6681,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6424,6 +6714,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6456,6 +6747,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6488,6 +6780,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6521,6 +6814,7 @@
       "Black",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6554,6 +6848,7 @@
       "Black",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6587,6 +6882,7 @@
       "Black",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6620,6 +6916,7 @@
       "Black",
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6652,6 +6949,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6684,6 +6982,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6716,6 +7015,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6748,6 +7048,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6780,6 +7081,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6812,6 +7114,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6844,6 +7147,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6876,6 +7180,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6908,6 +7213,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6940,6 +7246,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -6972,6 +7279,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7004,6 +7312,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7036,6 +7345,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7068,6 +7378,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7100,6 +7411,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7132,6 +7444,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom"
@@ -7162,6 +7475,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7197,6 +7511,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7232,6 +7547,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7267,6 +7583,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7302,6 +7619,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7337,6 +7655,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7372,6 +7691,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7407,6 +7727,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -7444,6 +7765,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7476,6 +7798,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7508,6 +7831,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7540,6 +7864,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7572,6 +7897,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7604,6 +7930,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7636,6 +7963,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7668,6 +7996,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7698,6 +8027,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -7727,6 +8057,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -7756,6 +8087,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -7785,6 +8117,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -7816,6 +8149,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7848,6 +8182,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7880,6 +8215,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7912,6 +8248,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -7945,6 +8282,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -7977,6 +8315,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -8007,6 +8346,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -8037,6 +8377,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -8069,6 +8410,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -8099,6 +8441,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -8128,6 +8471,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8161,6 +8505,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8195,6 +8540,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8228,6 +8574,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8261,6 +8608,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8294,6 +8642,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8327,6 +8676,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8360,6 +8710,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8393,6 +8744,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8429,6 +8781,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8463,6 +8816,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8496,6 +8850,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8529,6 +8884,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8562,6 +8918,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8595,6 +8952,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8628,6 +8986,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8661,6 +9020,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8694,6 +9054,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8727,6 +9088,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8760,6 +9122,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8793,6 +9156,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -8826,6 +9190,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -8863,6 +9228,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -8900,6 +9266,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -8937,6 +9304,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -8974,6 +9342,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -9011,6 +9380,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9043,6 +9413,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9075,6 +9446,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9107,6 +9479,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9139,6 +9512,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9180,6 +9554,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9221,6 +9596,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9262,6 +9638,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9303,6 +9680,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9342,6 +9720,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9383,6 +9762,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9422,6 +9802,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9457,6 +9838,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9488,6 +9870,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9521,6 +9904,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9552,6 +9936,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9585,6 +9970,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9616,6 +10002,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Bathroom"
@@ -9651,6 +10038,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9688,6 +10076,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9725,6 +10114,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9762,6 +10152,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9799,6 +10190,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9836,6 +10228,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9873,6 +10266,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9910,6 +10304,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9947,6 +10342,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -9984,6 +10380,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10021,6 +10418,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10058,6 +10456,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10095,6 +10494,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10132,6 +10532,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10169,6 +10570,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10206,6 +10608,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10243,6 +10646,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10280,6 +10684,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10324,6 +10729,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10368,6 +10774,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10412,6 +10819,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10456,6 +10864,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10500,6 +10909,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10532,6 +10942,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10564,6 +10975,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10596,6 +11008,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10628,6 +11041,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10660,6 +11074,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10697,6 +11112,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10741,6 +11157,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10780,6 +11197,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10824,6 +11242,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10868,6 +11287,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10912,6 +11332,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10953,6 +11374,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -10992,6 +11414,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11036,6 +11459,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11077,6 +11501,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11116,6 +11541,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11153,6 +11579,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11190,6 +11617,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -11225,6 +11653,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [],
     "variantGroup": "cabinet_beige_02",
     "styleTags": [],
@@ -11253,6 +11684,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [],
     "variantGroup": "cabinet_beige_02",
     "styleTags": [],
@@ -11281,6 +11715,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [],
     "variantGroup": "cabinet_beige_02",
     "styleTags": [],
@@ -11311,6 +11748,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [],
     "variantGroup": "cabinet_beige_02",
     "styleTags": [],
@@ -11341,6 +11781,7 @@
       "Red",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11374,6 +11815,7 @@
       "Red",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11407,6 +11849,7 @@
       "Red",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11440,6 +11883,7 @@
       "Red",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11472,6 +11916,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11504,6 +11949,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11536,6 +11982,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11568,6 +12015,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11600,6 +12048,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11632,6 +12081,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11664,6 +12114,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11696,6 +12147,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11728,6 +12180,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11760,6 +12213,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11792,6 +12246,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11824,6 +12279,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11856,6 +12312,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11888,6 +12345,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11920,6 +12378,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11952,6 +12411,7 @@
     "colors": [
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -11984,6 +12444,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -12016,6 +12477,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -12048,6 +12510,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -12080,6 +12543,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
@@ -12112,6 +12576,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -12151,6 +12616,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -12191,6 +12657,7 @@
       "White",
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom",
       "Diningroom",
@@ -12231,6 +12698,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -12265,6 +12733,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -12299,6 +12768,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12334,6 +12804,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12371,6 +12842,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12406,6 +12878,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12443,6 +12916,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12478,6 +12952,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12512,6 +12987,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12551,6 +13027,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12586,6 +13063,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12623,6 +13101,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12658,6 +13137,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12695,6 +13175,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12730,6 +13211,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12767,6 +13249,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12802,6 +13285,7 @@
     "colors": [
       "Yellow"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12836,6 +13320,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12872,6 +13357,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12908,6 +13394,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12944,6 +13431,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -12980,6 +13468,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "Diningroom"
     ],
@@ -13019,6 +13508,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Diningroom",
       "LivingRoom"
@@ -13052,6 +13544,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Diningroom",
       "LivingRoom"
@@ -13084,6 +13579,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Diningroom",
@@ -13120,6 +13618,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Diningroom",
       "LivingRoom"
@@ -13152,6 +13653,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -13182,6 +13686,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "LivingRoom"
@@ -13214,6 +13721,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -13244,6 +13754,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "LivingRoom"
@@ -13276,6 +13789,9 @@
     "colors": [
       "Metal",
       "Grey"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Storage",
@@ -13311,6 +13827,9 @@
       "Metal",
       "Grey"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Storage",
       "Laundry",
@@ -13344,6 +13863,9 @@
     "colors": [
       "Metal",
       "Grey"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Storage",
@@ -13379,6 +13901,9 @@
       "Metal",
       "Grey"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Storage",
       "Laundry",
@@ -13411,6 +13936,9 @@
     "isLootContainer": true,
     "colors": [
       "Green",
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -13446,6 +13974,9 @@
       "Green",
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Garagestorage",
       "Storage"
@@ -13477,6 +14008,9 @@
     "isLootContainer": true,
     "colors": [
       "Green",
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -13512,6 +14046,9 @@
       "Green",
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Garagestorage",
       "Storage"
@@ -13543,6 +14080,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Plastic"
     ],
     "roomTypes": [
       "Bedroom",
@@ -13577,6 +14117,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Plastic"
+    ],
     "roomTypes": [
       "Bedroom",
       "Garagestorage",
@@ -13609,6 +14152,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Plastic"
     ],
     "roomTypes": [
       "Bedroom",
@@ -13643,6 +14189,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Plastic"
+    ],
     "roomTypes": [
       "Bedroom",
       "Garagestorage",
@@ -13676,6 +14225,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13707,6 +14257,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13738,6 +14289,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13769,6 +14321,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13800,6 +14353,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13831,6 +14385,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13862,6 +14417,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13893,6 +14449,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -13924,6 +14481,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry"
     ],
@@ -13955,6 +14513,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry"
     ],
@@ -13986,6 +14545,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry"
     ],
@@ -14017,6 +14577,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry"
     ],
@@ -14048,6 +14609,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14079,6 +14641,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14110,6 +14673,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14141,6 +14705,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14172,6 +14737,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14203,6 +14769,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14234,6 +14801,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14265,6 +14833,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14296,6 +14865,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Laundry"
@@ -14328,6 +14898,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Laundry"
@@ -14360,6 +14931,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Laundry"
@@ -14392,6 +14964,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Laundry"
@@ -14424,6 +14997,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -14455,6 +15029,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -14486,6 +15061,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -14517,6 +15093,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -14548,6 +15125,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -14580,6 +15158,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -14612,6 +15191,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -14644,6 +15224,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -14676,6 +15257,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14707,6 +15289,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14738,6 +15321,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14769,6 +15353,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14800,6 +15385,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14831,6 +15417,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14862,6 +15449,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14893,6 +15481,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14924,6 +15513,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14955,6 +15545,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -14986,6 +15577,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15017,6 +15609,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15049,6 +15642,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15081,6 +15675,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15115,6 +15710,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15149,6 +15745,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15180,6 +15777,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15213,6 +15811,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15244,6 +15843,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15273,6 +15873,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15302,6 +15903,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15331,6 +15933,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15360,6 +15963,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15391,6 +15995,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15422,6 +16027,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "shower_corner_wall_01",
     "styleTags": [],
@@ -15451,6 +16057,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "",
     "styleTags": [],
@@ -15478,6 +16085,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "",
     "styleTags": [],
@@ -15505,6 +16113,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "",
     "styleTags": [],
@@ -15532,6 +16141,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "",
     "styleTags": [],
@@ -15560,6 +16170,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom"
@@ -15592,6 +16205,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15622,6 +16238,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom"
@@ -15654,6 +16273,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom"
     ],
@@ -15685,6 +16307,9 @@
     "colors": [
       "Brown",
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -15719,6 +16344,9 @@
       "Brown",
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -15751,6 +16379,9 @@
     "colors": [
       "Brown",
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -15787,6 +16418,9 @@
       "Brown",
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -15821,6 +16455,9 @@
     "colors": [
       "Brown",
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -15857,6 +16494,9 @@
       "Brown",
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -15892,6 +16532,9 @@
       "Brown",
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -15925,6 +16568,9 @@
       "Brown",
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -15956,6 +16602,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -15989,6 +16638,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16020,6 +16672,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16055,6 +16710,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16088,6 +16746,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16123,6 +16784,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16157,6 +16821,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16189,6 +16856,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16219,6 +16889,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -16253,6 +16926,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -16283,6 +16959,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -16319,6 +16998,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -16351,6 +17033,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -16387,6 +17072,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -16421,6 +17109,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen",
       "Laundry"
@@ -16451,6 +17142,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -16485,6 +17179,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16517,6 +17214,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16548,6 +17248,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16583,6 +17286,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16616,6 +17322,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16651,6 +17360,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16685,6 +17397,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16716,6 +17431,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16749,6 +17467,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16781,6 +17502,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16812,6 +17536,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16847,6 +17574,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16880,6 +17610,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -16915,6 +17648,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16949,6 +17685,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -16980,6 +17719,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17013,6 +17755,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17045,6 +17790,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17076,6 +17824,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17111,6 +17862,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17144,6 +17898,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17179,6 +17936,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17213,6 +17973,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17245,6 +18008,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17275,6 +18041,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17305,6 +18074,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17335,6 +18107,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17367,6 +18142,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17399,6 +18177,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17431,6 +18212,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17463,6 +18247,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17493,6 +18280,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17524,6 +18314,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17557,6 +18350,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17588,6 +18384,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17623,6 +18422,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17656,6 +18458,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17691,6 +18496,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17725,6 +18533,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17756,6 +18567,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17789,6 +18603,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17821,6 +18638,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17852,6 +18672,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17887,6 +18710,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17920,6 +18746,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -17955,6 +18784,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -17989,6 +18821,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18020,6 +18855,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -18053,6 +18891,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18085,6 +18926,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18116,6 +18960,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -18151,6 +18998,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18184,6 +19034,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -18219,6 +19072,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18253,6 +19109,9 @@
     "colors": [
       "Brown"
     ],
+    "materials": [
+      "Wood"
+    ],
     "roomTypes": [
       "Bathroom",
       "Kitchen"
@@ -18284,6 +19143,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Bathroom",
@@ -18320,6 +19182,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18355,6 +19218,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18390,6 +19254,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18427,6 +19292,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18464,6 +19330,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18499,6 +19366,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18534,6 +19402,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18568,6 +19437,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18599,6 +19469,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18630,6 +19501,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18661,6 +19533,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18690,6 +19563,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18719,6 +19593,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18748,6 +19623,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18777,6 +19653,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18806,6 +19683,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18835,6 +19713,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18864,6 +19743,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18893,6 +19773,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18923,6 +19804,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18953,6 +19835,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -18985,6 +19868,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -19017,6 +19901,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -19048,6 +19933,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19080,6 +19966,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [],
     "variantGroup": "shelf_brown_02",
     "styleTags": [],
@@ -19109,6 +19996,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19141,6 +20029,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19173,6 +20062,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19205,6 +20095,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19237,6 +20128,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19269,6 +20161,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19301,6 +20194,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19333,6 +20227,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19365,6 +20260,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19397,6 +20293,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19429,6 +20326,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19461,6 +20359,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19493,6 +20392,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19530,6 +20430,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19565,6 +20466,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19598,6 +20500,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19631,6 +20534,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom",
       "Office"
@@ -19661,6 +20565,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19695,6 +20600,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19729,6 +20635,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19763,6 +20670,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19797,6 +20705,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19831,6 +20740,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19865,6 +20775,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19899,6 +20810,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Diningroom",
       "Bedroom",
@@ -19933,6 +20845,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -19962,6 +20875,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -19991,6 +20905,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -20020,6 +20935,7 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Bedroom"
     ],
@@ -20051,6 +20967,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "Bathroom",
       "Bedroom",
@@ -20093,6 +21010,7 @@
       "Black",
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Office"
@@ -20128,6 +21046,7 @@
       "Black",
       "Grey"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen",
       "Office"
@@ -20162,6 +21081,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20196,6 +21116,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20230,6 +21151,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20264,6 +21186,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20298,6 +21221,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20332,6 +21256,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20366,6 +21291,7 @@
     "colors": [
       "Brown"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20400,6 +21326,7 @@
     "colors": [
       "Beige"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20434,6 +21361,7 @@
     "colors": [
       "Black"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20468,6 +21396,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "LivingRoom"
     ],
@@ -20502,6 +21431,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Plastic"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20532,6 +21464,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Plastic"
     ],
     "roomTypes": [
       "Kitchen"
@@ -20564,6 +21499,9 @@
     "colors": [
       "Black"
     ],
+    "materials": [
+      "Plastic"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20594,6 +21532,9 @@
     "isLootContainer": true,
     "colors": [
       "Black"
+    ],
+    "materials": [
+      "Plastic"
     ],
     "roomTypes": [
       "Kitchen"
@@ -20627,6 +21568,9 @@
       "Black",
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20658,6 +21602,9 @@
     "colors": [
       "Black",
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -20691,6 +21638,9 @@
       "Black",
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20723,6 +21673,9 @@
       "Black",
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20754,6 +21707,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20785,6 +21739,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20816,6 +21771,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20847,6 +21803,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20878,6 +21835,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20909,6 +21867,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20940,6 +21899,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -20971,6 +21931,7 @@
     "colors": [
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21003,6 +21964,7 @@
       "Green",
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21035,6 +21997,7 @@
       "Green",
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21067,6 +22030,7 @@
       "Green",
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21099,6 +22063,7 @@
       "Green",
       "Blue"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21130,6 +22095,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21161,6 +22127,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21192,6 +22159,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21223,6 +22191,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21252,6 +22221,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21281,6 +22251,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21310,6 +22281,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21339,6 +22311,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21368,6 +22341,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21397,6 +22371,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21426,6 +22401,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21455,6 +22431,7 @@
     "isTableTop": false,
     "isLootContainer": true,
     "colors": [],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21486,6 +22463,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21517,6 +22495,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21548,6 +22527,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21579,6 +22559,7 @@
     "colors": [
       "Red"
     ],
+    "materials": [],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21611,6 +22592,7 @@
       "Black",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bar"
     ],
@@ -21643,6 +22625,7 @@
       "Black",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bar"
     ],
@@ -21675,6 +22658,7 @@
       "Black",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bar"
     ],
@@ -21707,6 +22691,7 @@
       "Black",
       "White"
     ],
+    "materials": [],
     "roomTypes": [
       "Bar"
     ],
@@ -21737,6 +22722,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -21769,6 +22757,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21800,6 +22791,9 @@
     "colors": [
       "Green"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21830,6 +22824,9 @@
     "isLootContainer": true,
     "colors": [
       "Green"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -21863,6 +22860,9 @@
       "Metal",
       "Black"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21894,6 +22894,9 @@
     "colors": [
       "Metal",
       "Black"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -21927,6 +22930,9 @@
       "Metal",
       "Black"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21959,6 +22965,9 @@
       "Metal",
       "Black"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -21989,6 +22998,9 @@
     "isLootContainer": true,
     "colors": [
       "Red"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -22021,6 +23033,9 @@
     "colors": [
       "Red"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22051,6 +23066,9 @@
     "isLootContainer": true,
     "colors": [
       "Red"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -22083,6 +23101,9 @@
     "colors": [
       "Red"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22112,6 +23133,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22145,6 +23169,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22176,6 +23203,9 @@
     "colors": [
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22205,6 +23235,9 @@
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22239,6 +23272,9 @@
       "Black",
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22269,6 +23305,9 @@
     "isLootContainer": true,
     "colors": [
       "Black",
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22303,6 +23342,9 @@
       "Black",
       "Metal"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22333,6 +23375,9 @@
     "isLootContainer": true,
     "colors": [
       "Black",
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22366,6 +23411,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22396,6 +23444,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Kitchen"
@@ -22428,6 +23479,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22459,6 +23513,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Kitchen"
     ],
@@ -22488,6 +23545,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22522,6 +23582,9 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
+      "Metal"
+    ],
+    "materials": [
       "Metal"
     ],
     "roomTypes": [
@@ -22559,6 +23622,9 @@
       "White",
       "Blue"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22590,6 +23656,9 @@
     "colors": [
       "White",
       "Blue"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Laundry"
@@ -22623,6 +23692,9 @@
       "White",
       "Blue"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22655,6 +23727,9 @@
       "White",
       "Blue"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22685,6 +23760,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Laundry"
@@ -22717,6 +23795,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22747,6 +23828,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Laundry"
@@ -22779,6 +23863,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22809,6 +23896,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Laundry"
@@ -22841,6 +23931,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22872,6 +23965,9 @@
     "colors": [
       "White"
     ],
+    "materials": [
+      "Metal"
+    ],
     "roomTypes": [
       "Laundry"
     ],
@@ -22902,6 +23998,9 @@
     "isLootContainer": true,
     "colors": [
       "White"
+    ],
+    "materials": [
+      "Metal"
     ],
     "roomTypes": [
       "Laundry"
@@ -22937,6 +24036,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -22975,6 +24075,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -23012,6 +24113,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -23046,6 +24148,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -23080,6 +24183,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -23114,6 +24218,7 @@
     "colors": [
       "Metal"
     ],
+    "materials": [],
     "roomTypes": [
       "Laundry",
       "Storage",
@@ -23148,6 +24253,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Cardboard"
+    ],
     "roomTypes": [
       "Storage",
       "Garagestorage",
@@ -23180,6 +24288,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Cardboard"
     ],
     "roomTypes": [
       "Storage",
@@ -23214,6 +24325,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Cardboard"
+    ],
     "roomTypes": [
       "Storage",
       "Garagestorage",
@@ -23246,6 +24360,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Cardboard"
     ],
     "roomTypes": [
       "Storage",
@@ -23280,6 +24397,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Cardboard"
+    ],
     "roomTypes": [
       "Storage",
       "Closet"
@@ -23311,6 +24431,9 @@
     "isLootContainer": true,
     "colors": [
       "Beige"
+    ],
+    "materials": [
+      "Cardboard"
     ],
     "roomTypes": [
       "Storage",
@@ -23344,6 +24467,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Cardboard"
+    ],
     "roomTypes": [
       "Storage",
       "Closet"
@@ -23376,6 +24502,9 @@
     "colors": [
       "Beige"
     ],
+    "materials": [
+      "Cardboard"
+    ],
     "roomTypes": [
       "Storage",
       "Closet"
@@ -23400,13 +24529,16 @@
     "isHigh": false,
     "isLow": true,
     "isWallMounted": false,
-    "hasSurface": false,
+    "hasSurface": true,
     "hasCollision": true,
     "canStack": true,
     "isTableTop": true,
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Storage",
@@ -23433,7 +24565,7 @@
       ]
     ],
     "group": "Storage",
-    "layer": "Furniture",
+    "layer": "Furniture2",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -23445,6 +24577,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Storage",
@@ -23471,7 +24606,7 @@
       ]
     ],
     "group": "Storage",
-    "layer": "Furniture",
+    "layer": "Furniture3",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -23483,6 +24618,9 @@
     "isLootContainer": true,
     "colors": [
       "Brown"
+    ],
+    "materials": [
+      "Wood"
     ],
     "roomTypes": [
       "Storage",

@@ -10,7 +10,7 @@ import {
   layoutCols, layoutRows, COLORS, STYLE_TAGS,
   TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE,
 } from '../../types/tiles';
-import { getRoomTypeNames, getCategories } from '../../api/settingsApi';
+import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { DirPicker } from './DirPicker';
 import s from './TileBrowser.module.css';
 
@@ -78,6 +78,7 @@ export function TileBrowser() {
 
   // ── room types (from settings) ────────────────────────────────────────────
   const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
+  const [materialList, setMaterialList] = useState<string[]>([]);
 
   // ── init ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -89,6 +90,7 @@ export function TileBrowser() {
       .catch(() => { /* ignore */ });
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
+    getMaterials().then(setMaterialList).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -529,6 +531,30 @@ export function TileBrowser() {
               </div>
             </div>
 
+            {/* Materials */}
+            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+              <span className={s.fieldLabel}>Materialien</span>
+              <div className={s.chipGroup}>
+                {materialList.map(m => (
+                  <span
+                    key={m}
+                    className={`${s.chip} ${(editDef.materials ?? []).includes(m) ? s.chipActive : ''}`}
+                    onClick={() => setEditDef({
+                      ...editDef,
+                      materials: (editDef.materials ?? []).includes(m)
+                        ? (editDef.materials ?? []).filter(x => x !== m)
+                        : [...(editDef.materials ?? []), m],
+                    })}
+                  >{m}</span>
+                ))}
+              </div>
+              {materialList.length === 0 && (
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>
+                  Keine Materialien in den Einstellungen definiert.
+                </span>
+              )}
+            </div>
+
             {/* Room types */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>Raumtypen</span>
@@ -609,6 +635,9 @@ export function TileBrowser() {
     </div>
   );
 }
+
+
+
 
 
 

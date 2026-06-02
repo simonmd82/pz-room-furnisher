@@ -39,6 +39,8 @@ public class TileDefinition
     // ── Randomiser meta ───────────────────────────────────────────────────
     /// <summary>Colour tags, e.g. ["Brown","Wood"]</summary>
     public List<string> Colors       { get; set; } = [];
+    /// <summary>Material tags, e.g. ["Holz","Metall"]</summary>
+    public List<string> Materials    { get; set; } = [];
     /// <summary>Applicable room types, e.g. ["Bedroom","LivingRoom"]</summary>
     public List<string> RoomTypes    { get; set; } = [];
     /// <summary>Links orientation-variants of the same physical object (empty = no link)</summary>
@@ -56,7 +58,3 @@ public class TileDefinition
     /// </summary>
     public string WindowBlockedEdge { get; set; } = string.Empty;
 }
-
-
-
-
