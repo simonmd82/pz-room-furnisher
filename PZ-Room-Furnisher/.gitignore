@@ -13,5 +13,8 @@ dist/
 *.suo
 
 # Local AI memory / context notes
-Memory/
+.claude/
+
+# Resources
+resources/
 

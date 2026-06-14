@@ -4157,7 +4157,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": null
+            "orient": "match"
           }
         ],
         "slotGroupId": "",
@@ -4231,7 +4231,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": null
+            "orient": "match"
           }
         ],
         "slotGroupId": "",
@@ -4305,7 +4305,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": null
+            "orient": "match"
           }
         ],
         "slotGroupId": "",
@@ -4359,7 +4359,7 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false,
+          "cornerOnly": true,
           "allowOnPath": false,
           "wallAlignment": "any"
         },
@@ -4379,7 +4379,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": "match"
+            "orient": "cornerFromAnchor"
           }
         ],
         "slotGroupId": "",
@@ -4448,12 +4448,12 @@
           {
             "anchorTarget": "slot_counter_l_left_corner",
             "positions": [
-              "Above"
+              "leftOfAnchor"
             ],
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": "match"
+            "orient": "perpendicularCCW"
           }
         ],
         "slotGroupId": "",
@@ -4522,7 +4522,7 @@
           {
             "anchorTarget": "slot_counter_l_left_arm_1",
             "positions": [
-              "leftOfAnchor"
+              "rightOfAnchor"
             ],
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
@@ -4581,7 +4581,7 @@
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
-          "cornerOnly": false,
+          "cornerOnly": true,
           "allowOnPath": false,
           "wallAlignment": "any"
         },
@@ -4601,7 +4601,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": "match"
+            "orient": "cornerFromAnchor"
           }
         ],
         "slotGroupId": "",
@@ -4675,7 +4675,7 @@
             "offsetAlongAnchor": 0,
             "minOppositeWallDistance": null,
             "maxOppositeWallDistance": null,
-            "orient": "match"
+            "orient": "perpendicularCCW"
           }
         ],
         "slotGroupId": "",
@@ -5064,7 +5064,7 @@
       {
         "id": "layout_kitchen_line_shape",
         "label": "Kitchen Line Shape",
-        "weight": 3,
+        "weight": 1,
         "slotIds": [
           "slot_counter_main_2",
           "slot_counter_line_1",
@@ -5075,7 +5075,7 @@
       {
         "id": "layout_kitchen_l_shape_left",
         "label": "Kitchen L-Shape Left",
-        "weight": 3,
+        "weight": 4,
         "slotIds": [
           "slot_counter_main_2",
           "slot_counter_l_left_corner",
@@ -5086,7 +5086,7 @@
       {
         "id": "layout_kitchen_l_shape_right",
         "label": "Kitchen L-Shape Right",
-        "weight": 3,
+        "weight": 4,
         "slotIds": [
           "slot_counter_main_2",
           "slot_counter_l_right_corner",

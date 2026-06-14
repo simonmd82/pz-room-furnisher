@@ -151,8 +151,6 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             pathCells.IntersectWith(roomCells);
 
             log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, density {density:P0}");
-            if (layoutVariant is not null)
-                log.Add($"[ROOM] layout variant -> '{layoutVariant.Id}'");
 
             var seededColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var (groupId, palette) in config.ColorPalettes)
@@ -186,8 +184,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         sel.AnchorCol,
                         sel.AnchorRow,
                         placements,
-                        log))
+                        log,
+                        out var usedVariant))
                 {
+                    log.Add($"[ROOM] layout variant -> '{usedVariant!.Id}'");
                     continue;
                 }
             }
@@ -440,8 +440,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int? selectionAnchorCol,
         int? selectionAnchorRow,
         List<PlacedFurnitureItem> placements,
-        List<string> log)
+        List<string> log,
+        out LayoutVariant? usedVariant)
     {
+        usedVariant = null;
         foreach (var variant in attemptOrder)
         {
             var attemptLog = new List<string>();
@@ -487,6 +489,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         (string.IsNullOrWhiteSpace(variant.Label) ? string.Empty : $" – {variant.Label}"));
             }
 
+            usedVariant = variant;
             foreach (var line in attemptLog)
                 log.Add(line);
             foreach (var line in placementLog)
@@ -1190,6 +1193,32 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     _ => baseTile.Orientation,
                 }
                 : ResolveFacingAnchorOrient(anchorPos, anchorInfo.fpW, anchorInfo.fpH, anchorInfo.orient) ?? baseTile.Orientation,
+            "cornerFromAnchor" => (anchorInfo.orient, anchorPos) switch
+            {
+                // Returns the corner POSITION (= tile orientation field = which walls the tile is against).
+                // tile-definitions convention: orientation=NW means the tile goes in the NW room corner.
+                ("S", "rightOfAnchor") => "NW", // main N wall, corner goes west → NW room corner
+                ("S", "leftOfAnchor")  => "NE", // main N wall, corner goes east → NE room corner
+                ("N", "rightOfAnchor") => "SE", // main S wall, corner goes east → SE room corner
+                ("N", "leftOfAnchor")  => "SW", // main S wall, corner goes west → SW room corner
+                ("E", "rightOfAnchor") => "SW", // main W wall, corner goes south → SW room corner
+                ("E", "leftOfAnchor")  => "NW", // main W wall, corner goes north → NW room corner
+                ("W", "rightOfAnchor") => "NE", // main E wall, corner goes north → NE room corner
+                ("W", "leftOfAnchor")  => "SE", // main E wall, corner goes south → SE room corner
+                _ => baseTile.Orientation,
+            },
+            "perpendicularCW" => anchorInfo.orient switch
+            {
+                "SE" => "W", "SW" => "N", "NE" => "S", "NW" => "E",
+                "N"  => "E", "E"  => "S", "S"  => "W", "W"  => "N",
+                _    => baseTile.Orientation,
+            },
+            "perpendicularCCW" => anchorInfo.orient switch
+            {
+                "SE" => "E", "SW" => "S", "NE" => "N", "NW" => "W",
+                "N"  => "W", "E"  => "N", "S"  => "E", "W"  => "S",
+                _    => baseTile.Orientation,
+            },
             "N" or "S" or "E" or "W" => anchorOrientRule,
             _ => baseTile.Orientation,
         };
@@ -2475,11 +2504,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             },
             "leftOfAnchor" => anchorOrient switch
             {
-                "N" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),
-                "S" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),
-                "E" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),
-                "W" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),
-                _   => null,
+                "N"  => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),          // WEST
+                "S"  => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),            // EAST
+                "E"  => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),          // NORTH
+                "W"  => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),            // SOUTH
+                "SE" => ((int, int)?)(ac + (aw - depW) / 2, ar + ah),            // SOUTH (NW corner → arm south along W wall)
+                "SW" => ((int, int)?)(ac - depW, ar + (ah - depH) / 2),          // WEST  (NE corner → arm west along N wall)
+                "NW" => ((int, int)?)(ac + (aw - depW) / 2, ar - depH),          // NORTH (SE corner → arm north along E wall)
+                "NE" => ((int, int)?)(ac + aw, ar + (ah - depH) / 2),            // EAST  (SW corner → arm east along S wall)
+                _    => null,
             },
             "rightOfAnchor" => anchorOrient switch
             {

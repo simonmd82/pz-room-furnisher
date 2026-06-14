@@ -136,6 +136,11 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
   }, []);
 
+  useEffect(() => {
+    setSelected(new Set());
+    setOverrides({});
+  }, [building]);
+
   const roomsByFloor  = useMemo(() => collectRoomsByFloor(building), [building]);
   const allRoomsFlat  = useMemo(() => [...roomsByFloor.values()].flat(), [roomsByFloor]);
 
@@ -210,8 +215,12 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
 
   const handleGenerate = async () => {
     const selections: RoomSelection[] = [];
+    const seen = new Set<string>();
     for (const key of selected) {
       const [f, r, c, rr] = key.split(':').map(Number);
+      const dedupeKey = `${f}:${r}`;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
       selections.push({
         floorIndex: f,
         roomIndex1Based: r,

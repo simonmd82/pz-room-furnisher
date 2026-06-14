@@ -119,7 +119,7 @@ export interface AnchorRule {
    * "N"/"S"/"E"/"W"   = fixe Ausrichtung.
    * Leer/undefined     = tile.Orientation (bisheriges Verhalten).
    */
-  orient?: 'match' | 'parallelToAnchor' | 'opposite' | 'facingAnchor' | 'openSideFacing' | 'cwPerpendicular' | 'ccwPerpendicular' | 'N' | 'S' | 'E' | 'W' | '';
+  orient?: 'match' | 'parallelToAnchor' | 'opposite' | 'facingAnchor' | 'openSideFacing' | 'cwPerpendicular' | 'ccwPerpendicular' | 'perpendicularCW' | 'perpendicularCCW' | 'cornerFromAnchor' | 'N' | 'S' | 'E' | 'W' | 'NW' | 'NE' | 'SW' | 'SE' | '';
 }
 
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */

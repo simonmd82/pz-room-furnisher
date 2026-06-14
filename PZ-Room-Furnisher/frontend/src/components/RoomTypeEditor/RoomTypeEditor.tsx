@@ -1368,8 +1368,15 @@ export function RoomTypeEditor() {
                           <option value="opposite">opposite (gegenüber)</option>
                           <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
                           <option value="openSideFacing">openSideFacing (aus gewählter openSide abgeleitet)</option>
-                          <option value="cwPerpendicular">cwPerpendicular (↻ senkrecht: S→E, E→N, …)</option>
-                          <option value="ccwPerpendicular">ccwPerpendicular (↺ senkrecht: S→W, W→N, …)</option>
+                          <option value="cwPerpendicular">cwPerpendicular (↻ senkrecht cardinal: S→E, E→N, …)</option>
+                          <option value="ccwPerpendicular">ccwPerpendicular (↺ senkrecht cardinal: S→W, W→N, …)</option>
+                          <option value="perpendicularCW">perpendicularCW (↻ senkrecht cardinal+diagonal: SE→W, N→E, …)</option>
+                          <option value="perpendicularCCW">perpendicularCCW (↺ senkrecht cardinal+diagonal: SE→E, N→W, …)</option>
+                          <option value="cornerFromAnchor">cornerFromAnchor (Ecke NW/NE/SW/SE aus Anker+Position)</option>
+                          <option value="NW">NW (Ecke Nordwest, fix)</option>
+                          <option value="NE">NE (Ecke Nordost, fix)</option>
+                          <option value="SW">SW (Ecke Südwest, fix)</option>
+                          <option value="SE">SE (Ecke Südost, fix)</option>
                           <option value="N">N (Nord)</option>
                           <option value="S">S (Süd)</option>
                           <option value="E">E (Ost)</option>
