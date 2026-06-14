@@ -9,7 +9,6 @@ import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, Roo
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
-import { TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
 import s from './RoomTypeEditor.module.css';
 
 const FALLBACK_GROUPS = [
@@ -29,69 +28,13 @@ function getGroupColor(groupId: string, allGroupIds: string[]): string {
   return GROUP_COLORS[idx % GROUP_COLORS.length];
 }
 
-const SLOT_INFO_TEXT = `\
-📦 Slot-Konzepte auf einen Blick
+const PLACEMENT_RULE_KEYS = ['nearWall', 'nearDoor', 'nearWindow', 'centerRoom', 'cornerOnly'] as const;
 
-• Jeder Slot ist eine „Anfrage" an den Generator.
-  Er legt fest: Größe, Kategorie, Platzierungsregeln.
-
-• Fußabdruck (B × H): Wie viele Zellen im Raum belegt werden.
-  „Drehbar" erlaubt dem Generator B und H zu tauschen.
-
-• Pflicht-Slot: Wird immer befüllt, egal wie groß der Raum.
-
-• Priorität: Optionale Slots werden in Reihenfolge der Priorität
-  gezogen (0 = zuerst). Bei gleicher Prio zufällig.
-
-• Anker-Regeln: Verknüpft diesen Slot relativ zu einem anderen.
-  – Anker-Ziel: Slot-ID eines anderen Slots ODER eine Varianten-Gruppen-ID.
-    (Gruppen-ID → der Generator nimmt den tatsächlich gewählten Slot der Gruppe.)
-  – Positionen (OR): Mehrere Positionen = Generator wählt eine davon.
-    Beispiel: HeadLeft + HeadRight → Nachttisch links oder rechts vom Bett.
-  – AND (beide Seiten gleichzeitig): Zwei separate Slots mit je einer Regel,
-    einer mit „HeadLeft", einer mit „HeadRight".
-  – Mehrere Regeln: Wenn der Anker eine Gruppen-ID ist, kann pro
-    Gruppen-Variante eine eigene Regel mit anderen Positionen hinterlegt werden.
-
-• 🔀 Varianten-Gruppe (one-of):
-  Mehrere Slots in einer Gruppe → der Generator wählt genau
-  EINE Variante aus und ignoriert die anderen.
-  Beispiel Wohnzimmer:
-    Gruppe "sitz" – Variante A: 1× Sofa (Gewicht 3)
-    Gruppe "sitz" – Variante B: Sofa + Tisch (Gewicht 2)
-  → Wahrscheinlichkeit A = 3/5, B = 2/5
-
-  Zur Variante können auch verknüpfte Anker-Slots gehören
-  (die Anker-Slots teilen keine eigene Gruppen-ID – sie
-  werden automatisch mitgezogen wenn ihr Haupt-Slot gewählt wird).`;
-
-const PLACEMENT_RULE_LABELS: Record<string, string> = {
-  nearWall:    'An der Wand',
-  nearDoor:    'An einer Tür',
-  nearWindow:  'An einem Fenster',
-  centerRoom:  'Raummitte',
-  cornerOnly:  'Nur in Ecken',
-};
-const PLACEMENT_RULE_DESCRIPTIONS: Record<string, string> = {
-  nearWall:    'Slot muss an einer Wand platziert werden.',
-  nearDoor:    'Slot muss in der Nähe einer Tür platziert werden.',
-  nearWindow:  'Slot muss in der Nähe eines Fensters platziert werden.',
-  centerRoom:  'Slot muss in der Raummitte platziert werden.',
-  cornerOnly:  'Slot darf nur in einer Ecke platziert werden.',
-};
-
-const WALL_ALIGNMENT_OPTIONS: { value: PlacementRules['wallAlignment']; label: string; title: string }[] = [
-  { value: 'any',          label: 'Automatisch',  title: 'Generator wählt die beste passende Tile-Variante – keine Richtungseinschränkung.' },
-  { value: 'perpendicular',label: '⊥ Senkrecht',  title: 'Rücken an der Wand, Vorderseite zeigt in den Raum.\nDie lange Achse geht in den Raum hinein (z.B. Bett, Schreibtisch, WC).\nBevorzugt Tile-Varianten mit fpH > fpW bei N/S-Wand.' },
-  { value: 'parallel',     label: '∥ Parallel',   title: 'Längsseite entlang der Wand.\nDas Möbelstück läuft parallel zur Wand (z.B. Sofa, Regal, Kommode).\nBevorzugt Tile-Varianten mit fpW > fpH bei N/S-Wand.' },
+const WALL_ALIGNMENT_KEYS: { value: PlacementRules['wallAlignment'] }[] = [
+  { value: 'any' },
+  { value: 'perpendicular' },
+  { value: 'parallel' },
 ];
-
-const SIZE_LABELS: Record<string, string> = {
-  XS: '1–4 Felder', S: '5–12 Felder', M: '13–25 Felder', L: '26–50 Felder', XL: '51+ Felder',
-};
-const SIZE_EXAMPLES: Record<string, string> = {
-  XS: 'Bad, Klo', S: 'Kleines Zimmer', M: 'Schlafzimmer', L: 'Wohnzimmer', XL: 'Halle, Garage',
-};
 
 /**
  * Erklärung der Anker-Positionen.
@@ -222,7 +165,7 @@ export function RoomTypeEditor() {
 
    const removeLayoutVariant = (idx: number) => {
      if (!draft) return;
-     if (!window.confirm(`Layout-Variante #${idx + 1} wirklich löschen?`)) return;
+     if (!window.confirm(t('roomTypeEditor.removeVariantConfirm', { n: idx + 1 }))) return;
      const variants = [...(draft.layoutVariants ?? [])];
      variants.splice(idx, 1);
      setDraft({ ...draft, layoutVariants: variants });
@@ -290,7 +233,7 @@ export function RoomTypeEditor() {
   const removeSlot = (idx: number, slotLabel: string) => {
     if (!draft) return;
     const name = slotLabel.trim() || `#${idx + 1}`;
-    if (!window.confirm(`Slot „${name}" wirklich löschen?`)) return;
+    if (!window.confirm(t('roomTypeEditor.removeSlotConfirm', { name }))) return;
     setDraft({ ...draft, slots: draft.slots.filter((_, i) => i !== idx) });
     setDirty(true);
     // Indizes nach dem gelöschten verschieben
@@ -446,7 +389,7 @@ export function RoomTypeEditor() {
     const missingLayer = draft.slots.findIndex(sl => !sl.requiredLayer);
     if (missingLayer !== -1) {
       const name = draft.slots[missingLayer].label || draft.slots[missingLayer].id || `#${missingLayer + 1}`;
-      setStatus(`⚠ Slot „${name}" hat keinen Layer – bitte Layer auswählen.`);
+      setStatus(t('roomTypeEditor.missingLayer', { name }));
       // Slot aufklappen damit der Nutzer ihn sieht
         setCollapsedSlots(prev => { const next = new Set(prev); next.delete(missingLayer); return next; });
       return;
@@ -479,15 +422,15 @@ export function RoomTypeEditor() {
         }),
       };
       setConfigs(prev => ({ ...prev, [saved.roomType]: saved }));
-      setDraft(saved); setDirty(false); setStatus('✓ Gespeichert');
+      setDraft(saved); setDirty(false); setStatus(t('roomTypeEditor.saved'));
       // Nach Speichern alle Slots einklappen
       setCollapsedSlots(new Set(saved.slots.map((_, i) => i)));
-    } catch (e) { setStatus('Fehler: ' + String(e)); }
+    } catch (e) { setStatus(t('roomTypeEditor.error', { error: String(e) })); }
     finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
-    if (!selected || !window.confirm(`"${selected}" wirklich löschen?`)) return;
+    if (!selected || !window.confirm(t('roomTypeEditor.deleteRoomConfirm', { room: selected }))) return;
     await deleteRoomType(selected);
     setConfigs(prev => { const n = { ...prev }; delete n[selected]; return n; });
     // also remove from knownRooms
@@ -498,7 +441,10 @@ export function RoomTypeEditor() {
   };
 
   const handleRemoveRoom = async (rt: string) => {
-    if (!window.confirm(`"${rt}" aus der Liste entfernen${configs[rt] ? ' und die gespeicherte Konfiguration löschen' : ''}?`)) return;
+    if (!window.confirm(t('roomTypeEditor.removeRoomConfirm', {
+      room: rt,
+      suffix: configs[rt] ? t('roomTypeEditor.removeRoomConfirmSuffix') : '',
+    }))) return;
     if (configs[rt]) {
       await deleteRoomType(rt);
       setConfigs(prev => { const n = { ...prev }; delete n[rt]; return n; });
@@ -527,7 +473,7 @@ export function RoomTypeEditor() {
       {/* ── Left: list ── */}
       <div className={s.listPanel}>
         <div className={s.panelHeader}>
-          <span className={s.panelTitle}>🏠 Raumtypen</span>
+          <span className={s.panelTitle}>{t('roomTypeEditor.header.title')}</span>
         </div>
         <div className={s.list}>
           {knownRooms.map(rt => (
@@ -535,7 +481,7 @@ export function RoomTypeEditor() {
               onClick={() => selectRoom(rt)}>
               <span className={s.listItemName}>{rt}</span>
               {configs[rt] && <span className={s.listItemBadge}>{configs[rt].slots.length}</span>}
-              <span className={s.listItemRemove} title={`"${rt}" entfernen`}
+              <span className={s.listItemRemove} title={t('roomTypeEditor.removeRoomFromList', { room: rt })}
                 onClick={e => { e.stopPropagation(); handleRemoveRoom(rt); }}>✕</span>
             </div>
           ))}
@@ -545,7 +491,7 @@ export function RoomTypeEditor() {
         <div style={{ padding: '8px 10px', borderTop: '1px solid #2a2a3a', display: 'flex', gap: 4 }}>
           <input
             className={s.slotSizeInput} style={{ flex: 1, width: 'auto' }}
-            placeholder="Neuer Typ…" value={newRoomName}
+            placeholder={t('roomTypeEditor.header.newTypePlaceholder')} value={newRoomName}
             onChange={e => setNewRoomName(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddNew()}
           />
@@ -556,18 +502,18 @@ export function RoomTypeEditor() {
       {/* ── Center: editor ── */}
       <div className={s.editorPanel}>
           {!draft ? (
-            <div className={s.hint}>← Raumtyp auswählen oder neu anlegen</div>
+            <div className={s.hint}>{t('roomTypeEditor.selectRoomHint')}</div>
           ) : (<>
             <div className={s.editorHeader}>
               <span className={s.editorTitle}>{draft.roomType}</span>
               {configs[draft.roomType] && (
-                <button className={s.deleteBtn} onClick={handleDelete}>Löschen</button>
+                <button className={s.deleteBtn} onClick={handleDelete}>{t('roomTypeEditor.header.delete')}</button>
               )}
             </div>
 
             {/* PathStyle-Selector */}
             <div className={s.pathStyleRow}>
-              <label className={s.pathStyleLabel} title="Bestimmt welche Raumzellen als Laufweg markiert werden. Wandnah = Möbel können Pfad nicht blockieren. Raummitte = offener Bereich bleibt frei. Zufällig = maximale Variation.">
+              <label className={s.pathStyleLabel} title={t('roomTypeEditor.pathStyleTitle')}>
                 {t('roomTypeEditor.pathStyle.label')}
               </label>
               <select
@@ -587,13 +533,13 @@ export function RoomTypeEditor() {
             {/* Farbgruppe (Raum-Ebene) */}
             <div className={s.pathStyleRow}>
               <label className={s.pathStyleLabel}
-                title="Standard-Farbgruppen-ID für alle Slots dieses Raumtyps. Slots mit leerer colorGroupId erben diesen Wert. Leer = kein Farbfilter als Standard.">
-                🎨 Farbgruppe (Raum-Default)
+                title={t('roomTypeEditor.colorGroupRoom.title')}>
+                {t('roomTypeEditor.colorGroupRoom.label')}
               </label>
               <input
                 className={s.slotSizeInput}
                 style={{ flex: 1, minWidth: 0 }}
-                placeholder="z.B. bedroom_main (leer = kein Default)"
+                placeholder={t('roomTypeEditor.colorGroupRoom.placeholder')}
                 value={draft.colorGroupId ?? ''}
                 onChange={e => { setDraft({ ...draft, colorGroupId: e.target.value }); setDirty(true); }}
               />
@@ -603,13 +549,13 @@ export function RoomTypeEditor() {
             {draft.colorGroupId && (
               <div className={s.pathStyleRow} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
                 <label className={s.pathStyleLabel}
-                  title={`Erlaubte Farben für Gruppe „${draft.colorGroupId}". Der Generator wählt vor dem Slot-Loop zufällig eine der ausgewählten Farben. Keine Auswahl = Farbe wird vom ersten platzierten Möbel übernommen.`}>
-                  🎨 Farbpalette für „{draft.colorGroupId}"
+                  title={t('roomTypeEditor.colorPalette.title', { group: draft.colorGroupId })}>
+                  {t('roomTypeEditor.colorPalette.labelRoom', { group: draft.colorGroupId })}
                 </label>
                 <div className={s.chipGroup}>
                   {availColors.length === 0 && (
                     <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
-                      Keine Farben verfügbar – Möbel-Vorlagen mit Farb-Tags eintragen
+                      {t('roomTypeEditor.colorPalette.noColors')}
                     </span>
                   )}
                   {availColors.map(color => {
@@ -618,7 +564,7 @@ export function RoomTypeEditor() {
                     return (
                       <span key={color}
                         className={`${s.chip} ${active ? s.chipActive : ''}`}
-                        title={active ? `„${color}" entfernen` : `„${color}" hinzufügen`}
+                        title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
                         onClick={() => {
                           const current = draft.colorPalettes?.[draft.colorGroupId] ?? [];
                           const next    = active
@@ -638,25 +584,25 @@ export function RoomTypeEditor() {
                 {(() => {
                   const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
                   if (palette.length === 0)
-                    return <div className={s.slotHint} style={{ color: '#888' }}>Keine Auswahl → Farbe vom ersten platzierten Möbel</div>;
-                  return <div className={s.slotHint} style={{ color: '#8c8' }}>✓ {palette.length} Farbe{palette.length !== 1 ? 'n' : ''} → zufällige Auswahl bei jedem Raum</div>;
+                    return <div className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.colorPalette.noneSelected')}</div>;
+                  return <div className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.colorPalette.selectedCount', { count: palette.length })}</div>;
                 })()}
               </div>
             )}
 
             <div className={s.slotsHeader}>
-              <span className={s.slotsLabel}>Slots ({draft.slots.length})</span>
+              <span className={s.slotsLabel}>{t('roomTypeEditor.slots.header', { count: draft.slots.length })}</span>
               <button
                 className={`${s.infoBtn} ${infoOpen ? s.infoBtnActive : ''}`}
                 onClick={() => setInfoOpen(v => !v)}
-                title="Konzepte erklären">
+                title={t('roomTypeEditor.slots.infoToggleTitle')}>
                 ℹ
               </button>
-              <button className={s.addSlotBtn} onClick={addSlot}>+ Slot hinzufügen</button>
+              <button className={s.addSlotBtn} onClick={addSlot}>{t('roomTypeEditor.slots.addSlot')}</button>
             </div>
 
             {infoOpen && (
-              <pre className={s.infoPanel}>{SLOT_INFO_TEXT}</pre>
+              <pre className={s.infoPanel}>{t('roomTypeEditor.slotInfoText')}</pre>
             )}
 
             {/* ── Zwischenablage-Banner ── */}
@@ -664,23 +610,23 @@ export function RoomTypeEditor() {
               <div className={s.pasteBar}>
                 <span className={s.pasteBarIcon}>📋</span>
                 <span className={s.pasteBarText}>
-                  Zwischenablage:{' '}
-                  <strong>{copiedSlot.slot.id || copiedSlot.slot.label || '(kein Name)'}</strong>
+                  {t('roomTypeEditor.pasteBar.clipboard')}{' '}
+                  <strong>{copiedSlot.slot.id || copiedSlot.slot.label || t('roomTypeEditor.pasteBar.noName')}</strong>
                   {copiedSlot.fromRoom !== draft?.roomType && (
-                    <span className={s.pasteBarFrom}> aus „{copiedSlot.fromRoom}"</span>
+                    <span className={s.pasteBarFrom}>{t('roomTypeEditor.pasteBar.from', { room: copiedSlot.fromRoom })}</span>
                   )}
                 </span>
                 <button className={s.pasteSlotBtn} onClick={pasteSlot}
-                  title={`Slot „${copiedSlot.slot.id || copiedSlot.slot.label || 'kopiert'}" am Ende einfügen`}>
-                  ↓ Einfügen
+                  title={t('roomTypeEditor.pasteBar.insertTitle', { name: copiedSlot.slot.id || copiedSlot.slot.label || t('roomTypeEditor.pasteBar.insertTitleFallback') })}>
+                  {t('roomTypeEditor.pasteBar.insert')}
                 </button>
-                <button className={s.pasteBarClearBtn} title="Zwischenablage leeren"
+                <button className={s.pasteBarClearBtn} title={t('roomTypeEditor.pasteBar.clearTitle')}
                   onClick={() => setCopiedSlot(null)}>✕</button>
               </div>
             )}
 
             {draft.slots.length === 0 && (
-              <div className={s.hint} style={{ padding: '12px' }}>Noch keine Slots – klicke "+ Slot hinzufügen"</div>
+              <div className={s.hint} style={{ padding: '12px' }}>{t('roomTypeEditor.slots.noSlots')}</div>
             )}
 
             {(() => {
@@ -716,22 +662,22 @@ export function RoomTypeEditor() {
                      e.dataTransfer.setData('text/plain', slot.id);
                    }}
                    onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
-                  <span className={s.dragHandle} title="Slot verschieben" onClick={e => e.stopPropagation()}>⠿</span>
+                  <span className={s.dragHandle} title={t('roomTypeEditor.slotCard.dragHandle')} onClick={e => e.stopPropagation()}>⠿</span>
                   <span className={s.slotIndex}>#{idx + 1}</span>
                   <span className={s.collapseToggleIcon}>{isCollapsed ? '▶' : '▼'}</span>
                   <span className={s.slotSummaryId} style={{ color: slot.id ? '#aac' : '#446', fontStyle: slot.id ? 'normal' : 'italic' }}>
-                    {slot.id || 'keine ID'}
+                    {slot.id || t('roomTypeEditor.slotCard.noId')}
                   </span>
                   {slot.label && <span className={s.slotSummaryLabel}>{slot.label}</span>}
                   <span className={s.slotSummaryBadge} style={{ background: slot.required ? '#2a4a2a' : '#2a2a4a', color: slot.required ? '#6c6' : '#88a' }}>
-                    {slot.required ? 'Pflicht' : 'Optional'}
+                    {slot.required ? t('roomTypeEditor.slotCard.required') : t('roomTypeEditor.slotCard.optional')}
                   </span>
                   <span className={s.slotSummaryBadge} style={{ background: '#1a2a3a', color: '#68a' }}>
                     {slot.footprint.width}×{slot.footprint.height}
                   </span>
                   {!slot.slotGroupId && !slot.required && (
                     <span className={s.slotSummaryBadge} style={{ background: '#1a1a2a', color: '#778' }}
-                      title="Priorität: Optionale Slots werden in aufsteigender Reihenfolge gezogen (0 = zuerst)">
+                      title={t('roomTypeEditor.slotCard.priorityTitle')}>
                       P{slot.priority}
                     </span>
                   )}
@@ -744,13 +690,13 @@ export function RoomTypeEditor() {
                     <span className={s.slotSummaryBadge} style={{ background: '#1a2a1a', color: '#8c8' }}>
                       📎 {slot.anchorRules.length === 1
                         ? `${slot.anchorRules[0].anchorTarget || '?'} → ${slot.anchorRules[0].positions.join('/') || '?'}`
-                        : `${slot.anchorRules.length} Anker`}
+                        : t('roomTypeEditor.slotCard.anchorBadge', { count: slot.anchorRules.length })}
                     </span>
                   )}
                   <span style={{ flex: 1 }} />
-                  <button className={s.duplicateSlotBtn} title="Slot duplizieren"
+                  <button className={s.duplicateSlotBtn} title={t('roomTypeEditor.slotCard.duplicate')}
                     onClick={e => { e.stopPropagation(); duplicateSlot(idx); }}>⎘</button>
-                  <button className={s.copySlotBtn} title="Slot in Zwischenablage kopieren (auch in andere Raumkonfiguration einfügbar)"
+                  <button className={s.copySlotBtn} title={t('roomTypeEditor.slotCard.copyToClipboard')}
                     onClick={e => { e.stopPropagation(); copySlot(idx); }}>📋</button>
                   <button className={s.removeSlotBtn}
                     onClick={e => { e.stopPropagation(); removeSlot(idx, slot.label || slot.id); }}>✕</button>
@@ -764,13 +710,13 @@ export function RoomTypeEditor() {
                   {/* Footprint: Schnellauswahl + manuelle Eingabe */}
                   <span className={s.slotGroupLabel} style={{ whiteSpace: 'nowrap' }}>B×H</span>
                   <input type="number" min={1} max={20} className={s.slotNumInput}
-                    title="Breite (Spalten)"
+                    title={t('roomTypeEditor.slotCard.widthTitle')}
                     value={slot.footprint.width}
                     onChange={e => { const v = +e.target.value; if (v >= 1) updateSlot(idx, { footprint: { ...slot.footprint, width: v } }); }}
                     onBlur={e => updateSlot(idx, { footprint: { ...slot.footprint, width: Math.max(1, Math.min(20, +e.target.value)) } })} />
                   <span style={{ color: '#446' }}>×</span>
                   <input type="number" min={1} max={20} className={s.slotNumInput}
-                    title="Höhe (Zeilen)"
+                    title={t('roomTypeEditor.slotCard.heightTitle')}
                     value={slot.footprint.height}
                     onChange={e => { const v = +e.target.value; if (v >= 1) updateSlot(idx, { footprint: { ...slot.footprint, height: v } }); }}
                     onBlur={e => updateSlot(idx, { footprint: { ...slot.footprint, height: Math.max(1, Math.min(20, +e.target.value)) } })} />
@@ -778,9 +724,9 @@ export function RoomTypeEditor() {
                   {slot.footprint.width !== slot.footprint.height && (
                     <span
                       className={`${s.chip} ${slot.footprint.canRotate ? s.chipActive : ''}`}
-                      title="Drehbar: Slot kann auch um 90° gedreht platziert werden"
+                      title={t('roomTypeEditor.slotCard.canRotateTitle')}
                       onClick={() => updateSlot(idx, { footprint: { ...slot.footprint, canRotate: !slot.footprint.canRotate } })}>
-                      ⟳ drehbar
+                      {t('roomTypeEditor.slotCard.canRotate')}
                     </span>
                   )}
                   {/* Mini-Visualisierung: bei canRotate beide Orientierungen zeigen */}
@@ -809,32 +755,32 @@ export function RoomTypeEditor() {
                   <label className={s.slotCheck}>
                     <input type="checkbox" checked={slot.required}
                       onChange={e => updateSlot(idx, { required: e.target.checked })} />
-                    Pflicht
+                    {t('roomTypeEditor.slotCard.requiredCheck')}
                   </label>
 
                   <span className={s.slotFieldSmall}>
-                    Prio
+                    {t('roomTypeEditor.slotCard.priority')}
                     <input type="number" min={0} max={99} className={s.slotNumInput}
-                      title={slot.required ? 'Priorität hat bei Pflicht-Slots keine Wirkung – Pflicht-Slots werden immer ausgeführt.' : 'Optionale Slots werden in aufsteigender Priorität gezogen (0 = zuerst).'}
+                      title={slot.required ? t('roomTypeEditor.slotCard.priorityInputTitleRequired') : t('roomTypeEditor.slotCard.priorityInputTitleOptional')}
                       value={slot.priority} onChange={e => updateSlot(idx, { priority: +e.target.value })}
                       style={slot.required ? { opacity: 0.4 } : {}} />
                   </span>
 
-                  <button className={s.duplicateSlotBtn} title="Slot duplizieren" onClick={() => duplicateSlot(idx)}>⎘</button>
+                  <button className={s.duplicateSlotBtn} title={t('roomTypeEditor.slotCard.duplicate')} onClick={() => duplicateSlot(idx)}>⎘</button>
                   <button className={s.removeSlotBtn} onClick={() => removeSlot(idx, slot.label || slot.id)}>✕</button>
                 </div>
 
                 <div className={s.slotCardBody}>
                   {/* ID & Label */}
                   <div className={s.slotRow} style={{ gap: 8 }}>
-                    <span className={s.slotGroupLabel}>ID</span>
+                    <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.idLabel')}</span>
                     <input className={s.slotSizeInput} style={{ flex: 1 }}
-                      placeholder="z.B. slot_bed_main"
+                      placeholder={t('roomTypeEditor.slotCard.idPlaceholder')}
                       value={slot.id}
                       onChange={e => updateSlot(idx, { id: e.target.value })} />
-                    <span className={s.slotGroupLabel}>Bezeichnung</span>
+                    <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.labelLabel')}</span>
                     <input className={s.slotSizeInput} style={{ flex: 2 }}
-                      placeholder="z.B. Bett"
+                      placeholder={t('roomTypeEditor.slotCard.labelPlaceholder')}
                       value={slot.label}
                       onChange={e => updateSlot(idx, { label: e.target.value })} />
                   </div>
@@ -845,11 +791,11 @@ export function RoomTypeEditor() {
                     <thead>
                       <tr>
                         <th className={s.sizeTableLead} style={{ color: '#778', fontSize: '0.68rem', fontWeight: 400, textAlign: 'right', paddingRight: 4 }}>
-                          Raumgröße →
+                          {t('roomTypeEditor.slotCard.roomSizeHeader')}
                         </th>
                         {SIZE_KEYS.map(sz => (
                           <th key={sz} className={s.sizeTableHead}
-                            title={`${sz}: ${SIZE_LABELS[sz]} (${SIZE_EXAMPLES[sz]})`}>
+                            title={`${sz}: ${t(`roomTypeEditor.sizeLabels.${sz}`)} (${t(`roomTypeEditor.sizeExamples.${sz}`)})`}>
                             {sz}
                           </th>
                         ))}
@@ -857,7 +803,7 @@ export function RoomTypeEditor() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className={s.sizeTableLead}>Min</td>
+                        <td className={s.sizeTableLead}>{t('roomTypeEditor.slotCard.min')}</td>
                         {SIZE_KEYS.map(sz => (
                           <td key={sz}>
                             <input type="number" min={0} max={99} className={s.sizeNumInput}
@@ -869,7 +815,7 @@ export function RoomTypeEditor() {
                         ))}
                       </tr>
                       <tr>
-                        <td className={s.sizeTableLead}>Max</td>
+                        <td className={s.sizeTableLead}>{t('roomTypeEditor.slotCard.max')}</td>
                         {SIZE_KEYS.map(sz => (
                           <td key={sz}>
                             <input type="number" min={-1} max={99} className={s.sizeNumInput}
@@ -883,16 +829,16 @@ export function RoomTypeEditor() {
                     </tbody>
                   </table>
                   </div>
-                  <div className={s.slotHint} style={{ marginTop: 2 }}>Max -1 = unbegrenzt</div>
+                  <div className={s.slotHint} style={{ marginTop: 2 }}>{t('roomTypeEditor.slotCard.maxUnlimitedHint')}</div>
 
                   {/* ── Erlaubte Kategorien mit Gewichtung ── */}
                   <div className={s.slotRow} style={{ marginTop: 6 }}>
                     <span className={s.slotGroupLabel}>
-                      Erlaubte Kategorien{' '}
+                      {t('roomTypeEditor.slotCard.allowedCategories')}{' '}
                       <span style={{ color: '#446', fontStyle: 'italic' }}>
                         {Object.keys(slot.allowedCategories).length === 0
-                          ? '(alle passenden)'
-                          : `(${Object.keys(slot.allowedCategories).length} gewählt)`}
+                          ? t('roomTypeEditor.slotCard.allowedCategoriesAll')
+                          : t('roomTypeEditor.slotCard.allowedCategoriesSelected', { count: Object.keys(slot.allowedCategories).length })}
                       </span>
                     </span>
                   </div>
@@ -901,7 +847,7 @@ export function RoomTypeEditor() {
                     <div key={cat} className={s.slotRow} style={{ gap: 6, marginTop: 2 }}>
                       <span
                         className={`${s.chip} ${s.chipActive}`}
-                        title="Klicken zum Entfernen"
+                        title={t('roomTypeEditor.slotCard.removeCategory')}
                         onClick={() => toggleGroup(idx, cat)}
                       >
                         {cat} ✕
@@ -911,9 +857,9 @@ export function RoomTypeEditor() {
                         onChange={e => setCategoryWeight(idx, cat, +e.target.value, false)}
                         onBlur={e => setCategoryWeight(idx, cat, +e.target.value, true)} />
                       <span className={s.slotHint} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        Gewicht <span style={{ color: '#446', fontSize: '0.68rem' }}>(1–10)</span>
+                        {t('roomTypeEditor.slotCard.weight')} <span style={{ color: '#446', fontSize: '0.68rem' }}>{t('roomTypeEditor.slotCard.weightRange')}</span>
                         <span
-                          title="Wertebereich: 1–10\n\nBestimmt, wie oft diese Kategorie gegenüber anderen erlaubten Kategorien bevorzugt wird.\n\nBeispiel: Kategorie A mit Gewicht 3 und B mit Gewicht 1 → A wird 75% der Zeit gewählt.\n\nGilt nur für die Auswahl WELCHES Tile platziert wird, nicht OB der Slot befüllt wird."
+                          title={t('roomTypeEditor.slotCard.weightInfoTitle')}
                           style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem' }}
                         >ℹ</span>
                       </span>
@@ -922,32 +868,32 @@ export function RoomTypeEditor() {
                   {/* Add category chips */}
                   <div className={s.chipGroup} style={{ marginTop: 4 }}>
                     {availGroups.filter(g => slot.allowedCategories[g] === undefined).map(g => (
-                      <span key={g} className={s.chip} title="Klicken zum Hinzufügen" onClick={() => toggleGroup(idx, g)}>{g}</span>
+                      <span key={g} className={s.chip} title={t('roomTypeEditor.slotCard.addCategory')} onClick={() => toggleGroup(idx, g)}>{g}</span>
                     ))}
                   </div>
 
                   {/* ── Platzierungsregeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6 }}>
                     <span className={s.slotGroupLabel}>
-                      Platzierungsregeln
+                      {t('roomTypeEditor.slotCard.placementRulesLabel')}
                       <span
-                        title="Alle aktiven Regeln werden mit AND verknüpft – eine Zelle muss ALLE gesetzten Bedingungen gleichzeitig erfüllen.\n\nAusnahme: 'Raummitte' und 'An der Wand mit Orientierung' sind Soft-Präferenzen (bevorzugt, aber kein harter Ausschluss)."
+                        title={t('roomTypeEditor.slotCard.placementRulesInfoTitle')}
                         style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
                       >ℹ</span>
                     </span>
                   </div>
                   <div className={s.chipGroup}>
-                    {(Object.keys(PLACEMENT_RULE_LABELS) as (keyof typeof PLACEMENT_RULE_LABELS)[]).map(key => (
+                    {PLACEMENT_RULE_KEYS.map(key => (
                       <span key={key}
                         className={`${s.chip} ${slot.placementRules[key as keyof typeof slot.placementRules] ? s.chipActive : ''}`}
-                        title={PLACEMENT_RULE_DESCRIPTIONS[key]}
+                        title={t(`roomTypeEditor.placementRules.${key}.description`)}
                         onClick={() => updateSlot(idx, {
                           placementRules: {
                             ...slot.placementRules,
                             [key]: !slot.placementRules[key as keyof typeof slot.placementRules],
                           }
                         })}>
-                        {PLACEMENT_RULE_LABELS[key]}
+                        {t(`roomTypeEditor.placementRules.${key}.label`)}
                       </span>
                     ))}
                   </div>
@@ -955,19 +901,19 @@ export function RoomTypeEditor() {
                   {(['nearWall','nearDoor','nearWindow','cornerOnly'] as const)
                     .filter(k => slot.placementRules[k]).length > 1 && (
                     <div className={s.slotHint} style={{ marginTop: 3, color: '#f4a261' }}>
-                      ⚠ AND-Verknüpfung: Zelle muss{' '}
-                      {(['nearWall','nearDoor','nearWindow','cornerOnly'] as const)
-                        .filter(k => slot.placementRules[k])
-                        .map(k => PLACEMENT_RULE_LABELS[k])
-                        .join(' UND ')}
-                      {' '}gleichzeitig erfüllen. Falls keine Zelle passt → [WARN] im Log.
+                      ⚠ {t('roomTypeEditor.slotCard.andWarning', {
+                        rules: (['nearWall','nearDoor','nearWindow','cornerOnly'] as const)
+                          .filter(k => slot.placementRules[k])
+                          .map(k => t(`roomTypeEditor.placementRules.${k}.label`))
+                          .join(t('roomTypeEditor.slotCard.andSeparator')),
+                      })}
                     </div>
                   )}
 
                   {/* ── Pfad-Option ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, alignItems: 'center', gap: 8 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: slot.placementRules.allowOnPath ? '#7fd3ff' : '#889' }}
-                      title="Wenn aktiv: Möbel dieses Slots dürfen auch auf Laufwegen (Pfadzellen) platziert werden. Standard: Möbel mit Kollision werden von Pfaden ferngehalten.">
+                      title={t('roomTypeEditor.slotCard.allowOnPathTitle')}>
                       <input
                         type="checkbox"
                         checked={slot.placementRules.allowOnPath ?? false}
@@ -976,24 +922,24 @@ export function RoomTypeEditor() {
                         })}
                         style={{ accentColor: '#4d9fcc' }}
                       />
-                      🚶 Auf Laufweg erlaubt
-                      <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>(überschreibt Kollisions-Sperre)</span>
+                      {t('roomTypeEditor.slotCard.allowOnPath')}
+                      <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>{t('roomTypeEditor.slotCard.allowOnPathSuffix')}</span>
                     </label>
                   </div>
 
                   {/* ── Blockiert Zelle ── */}
                   <div className={s.slotRow} style={{ marginTop: 4, alignItems: 'center', gap: 8 }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.blocksPlacement ?? true) ? '#889' : '#7fd3ff' }}
-                      title={'Wenn aktiv (Standard): Die belegten Zellen werden nach Platzierung als „belegt" markiert – andere Slots können diese Zellen nicht mehr nutzen.\n\nWenn deaktiviert: Zellen bleiben frei, andere Slots können dieselbe Zelle belegen.\nBenötigt für Objekte die auf anderen Möbeln stehen:\n• Tischlampe auf Nachttisch → blocksPlacement: AUS\n• Radio auf Kommode → blocksPlacement: AUS\n• Waschbecken auf Unterschrank → blocksPlacement: AUS'}>
+                      title={t('roomTypeEditor.slotCard.blocksPlacementTitle')}>
                       <input
                         type="checkbox"
                         checked={slot.blocksPlacement ?? true}
                         onChange={() => updateSlot(idx, { blocksPlacement: !(slot.blocksPlacement ?? true) })}
                         style={{ accentColor: '#4d9fcc' }}
                       />
-                      📦 Blockiert Zelle
+                      {t('roomTypeEditor.slotCard.blocksPlacement')}
                       <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
-                        {(slot.blocksPlacement ?? true) ? '(andere Slots können diese Zelle nicht belegen)' : '⚡ aus – Möbel können gestapelt werden'}
+                        {(slot.blocksPlacement ?? true) ? t('roomTypeEditor.slotCard.blocksPlacementOn') : t('roomTypeEditor.slotCard.blocksPlacementOff')}
                       </span>
                     </label>
                   </div>
@@ -1002,16 +948,16 @@ export function RoomTypeEditor() {
                   {!(slot.blocksPlacement ?? true) && (
                     <div className={s.slotRow} style={{ marginTop: 4, marginLeft: 16, alignItems: 'center', gap: 8 }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.softBlocks ?? false) ? '#f0c060' : '#667' }}
-                        title={'Wenn aktiv: Zellen gehen in softOccupied.\nNormale Slots landen nicht darauf.\nSlots mit requiresSlot (z.B. Lampe via AnchorRules) ignorieren softOccupied und dürfen darauf platziert werden.\n\nTypischer Einsatz: Nachttisch\n  blocksPlacement: AUS + Soft-Block: EIN\n\nTeppich: blocksPlacement: AUS + Soft-Block: AUS (alles darf drauf)'}>
+                        title={t('roomTypeEditor.slotCard.softBlockTitle')}>
                         <input
                           type="checkbox"
                           checked={slot.softBlocks ?? false}
                           onChange={() => updateSlot(idx, { softBlocks: !(slot.softBlocks ?? false) })}
                           style={{ accentColor: '#f0c060' }}
                         />
-                        🔒 Soft-Block
+                        {t('roomTypeEditor.slotCard.softBlock')}
                         <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
-                          {(slot.softBlocks ?? false) ? '(nur requiresSlot-Slots dürfen darauf)' : '(aus – alles darf auf dieser Zelle landen)'}
+                          {(slot.softBlocks ?? false) ? t('roomTypeEditor.slotCard.softBlockOn') : t('roomTypeEditor.slotCard.softBlockOff')}
                         </span>
                       </label>
                     </div>
@@ -1022,20 +968,20 @@ export function RoomTypeEditor() {
                     <div style={{ marginTop: 6 }}>
                       <div className={s.slotRow} style={{ marginBottom: 3 }}>
                         <span className={s.slotGroupLabel}>
-                          Wandausrichtung
+                          {t('roomTypeEditor.slotCard.wallAlignmentLabel')}
                           <span
-                            title={"Bestimmt, wie das Möbelstück relativ zur Wand ausgerichtet wird.\n\n• Automatisch: Generator wählt die beste passende Tile-Variante.\n• Senkrecht (⊥): Rücken an der Wand, Vorderseite zeigt in den Raum.\n  Für Möbel die in den Raum ragen (Bett, Schreibtisch, WC).\n  Bevorzugt Tile-Variante mit langer Achse senkrecht zur Wand.\n• Parallel (∥): Längsseite entlang der Wand.\n  Für Möbel die entlang der Wand stehen (Sofa, Regal, Kommode).\n  Bevorzugt Tile-Variante mit langer Achse parallel zur Wand.\n\nHinweis: Benötigt Tile-Varianten in der VariantGroup mit korrekten TileLayout-Dimensionen."}
+                            title={t('roomTypeEditor.slotCard.wallAlignmentInfoTitle')}
                             style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
                           >ℹ</span>
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
-                        {WALL_ALIGNMENT_OPTIONS.map(opt => {
+                        {WALL_ALIGNMENT_KEYS.map(opt => {
                           const active = (slot.placementRules.wallAlignment ?? 'any') === opt.value;
                           return (
                             <button
                               key={opt.value}
-                              title={opt.title}
+                              title={t(`roomTypeEditor.wallAlignment.${opt.value}.title`)}
                               onClick={() => updateSlot(idx, {
                                 placementRules: { ...slot.placementRules, wallAlignment: opt.value }
                               })}
@@ -1046,7 +992,7 @@ export function RoomTypeEditor() {
                                 color: active ? '#7fd3ff' : '#778',
                                 fontWeight: active ? 600 : 400,
                               }}>
-                              {opt.label}
+                              {t(`roomTypeEditor.wallAlignment.${opt.value}.label`)}
                             </button>
                           );
                         })}
@@ -1057,35 +1003,35 @@ export function RoomTypeEditor() {
                   {/* ── Erlaubter Layer & Erforderliche Eigenschaften ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}>
-                      Layer <span style={{ color: '#f66' }}>*</span>
+                      {t('roomTypeEditor.slotCard.layerLabel')} <span style={{ color: '#f66' }}>*</span>
                     </span>
                     <select className={s.slotSelect}
                       value={slot.requiredLayer}
                       style={!slot.requiredLayer ? { borderColor: '#8a3a3a', color: '#a66' } : {}}
                       onChange={e => updateSlot(idx, { requiredLayer: e.target.value })}>
-                      <option value="" disabled>– bitte wählen –</option>
+                      <option value="" disabled>{t('roomTypeEditor.slotCard.layerPlaceholder')}</option>
                       {FURNITURE_LAYERS.map(l => <option key={l} value={l}>{l}</option>)}
                     </select>
                     {!slot.requiredLayer && (
-                      <span style={{ fontSize: '0.68rem', color: '#f66' }}>Pflichtfeld</span>
+                      <span style={{ fontSize: '0.68rem', color: '#f66' }}>{t('roomTypeEditor.slotCard.layerRequired')}</span>
                     )}
                   </div>
                   <div className={s.slotRow} style={{ marginTop: 4 }}>
-                    <span className={s.slotGroupLabel}>Erforderliche Eigenschaften</span>
+                    <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.requiredPropertiesLabel')}</span>
                   </div>
                   <div className={s.chipGroup}>
                     {REQUIRED_PROPERTIES.map(prop => (
                       <span key={prop}
                         className={`${s.chip} ${slot.requiredProperties.includes(prop) ? s.chipActive : ''}`}
                         onClick={() => toggleRequiredProperty(idx, prop)}>
-                        {TILE_PROPERTY_LABELS_DE[prop]}
+                        {t(`tileBrowser.properties.${prop}`)}
                       </span>
                     ))}
                   </div>
 
                   {/* ── Varianten-Gruppe ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8, flexWrap: 'wrap' }}>
-                    <span className={s.slotGroupLabel}>Varianten-Gruppe</span>
+                    <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.variantGroupLabel')}</span>
                     <datalist id={`group-ids-${idx}`}>
                       {uniqueGroupIds.map(gid => (
                         <option key={gid} value={gid} />
@@ -1093,7 +1039,7 @@ export function RoomTypeEditor() {
                     </datalist>
                     <input className={s.slotSizeInput} style={{ flex: 2 }}
                       list={`group-ids-${idx}`}
-                      placeholder="z.B. sitz_variante (leer = kein Gruppen-Modus)"
+                      placeholder={t('roomTypeEditor.slotCard.variantGroupPlaceholder')}
                       value={slot.slotGroupId}
                       onChange={e => updateSlot(idx, {
                         slotGroupId: e.target.value,
@@ -1101,12 +1047,12 @@ export function RoomTypeEditor() {
                       })} />
                     {slot.slotGroupId && (<>
                       <span className={s.slotGroupLabel} style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        Gewicht <span style={{ color: '#446', fontSize: '0.68rem' }}>(1–10)</span>
+                        {t('roomTypeEditor.slotCard.groupWeightLabel')} <span style={{ color: '#446', fontSize: '0.68rem' }}>{t('roomTypeEditor.slotCard.groupWeightRange')}</span>
                         <span
                           title={
                             slot.required
-                              ? 'Wertebereich: 1–10\n\nGewichtung bestimmt die Auswahlwahrscheinlichkeit innerhalb der Varianten-Gruppe.\n\nDieser Slot ist Pflicht (✅) – der Generator wählt GARANTIERT eine Variante aus der Gruppe. Das Gewicht steuert NUR, welche Variante gewählt wird, nicht ob eine platziert wird.'
-                              : 'Wertebereich: 1–10\n\nGewichtung bestimmt die Auswahlwahrscheinlichkeit innerhalb der Varianten-Gruppe.\n\nDieser Slot ist optional (☐) – der Generator entscheidet anhand von Priorität und Raumgröße, ob die Gruppe überhaupt gezogen wird. Wenn ja, bestimmt das Gewicht die Variante.'
+                              ? t('roomTypeEditor.slotCard.groupWeightInfoRequired')
+                              : t('roomTypeEditor.slotCard.groupWeightInfoOptional')
                           }
                           style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem' }}
                         >ℹ</span>
@@ -1128,13 +1074,13 @@ export function RoomTypeEditor() {
                       <>
                         <div className={s.slotHint} style={{ marginTop: 2, color: groupColor }}>
                           {allRequired
-                            ? `✅🔀 Pflicht-Gruppe „${slot.slotGroupId}" – garantiert genau eine von ${groupSize} Varianten wird platziert (Gewicht: ${slot.groupWeight})`
-                            : `☐🔀 Optionale Gruppe „${slot.slotGroupId}" – eine von ${groupSize} Varianten kann platziert werden (Gewicht: ${slot.groupWeight})`
+                            ? t('roomTypeEditor.slotCard.groupRequiredHint', { group: slot.slotGroupId, count: groupSize, weight: slot.groupWeight })
+                            : t('roomTypeEditor.slotCard.groupOptionalHint', { group: slot.slotGroupId, count: groupSize, weight: slot.groupWeight })
                           }
                         </div>
                         {mixedRequired && (
                           <div className={s.slotHint} style={{ marginTop: 2, color: '#f4a261' }}>
-                            ⚠ Gruppe „{slot.slotGroupId}" hat gemischte Pflicht/Optional-Slots – alle Slots in einer Gruppe sollten denselben Pflicht-Status haben.
+                            {t('roomTypeEditor.slotCard.groupMixedWarning', { group: slot.slotGroupId })}
                           </div>
                         )}
                       </>
@@ -1144,22 +1090,22 @@ export function RoomTypeEditor() {
                   {/* ── Farbgruppe (Slot-Ebene) ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
-                      title={'Farbgruppen-ID für diesen Slot.\n\n• Leer = erbt den Raum-Default\n• "none" = kein Farbfilter (z.B. Stuhl, Spiegel)\n• Eigener Wert = eigene Gruppe (z.B. "accent" für Teppich)\n\nDer erste Slot einer Gruppe legt die Farbe fest. Alle Folge-Slots der gleichen Gruppe filtern ihre Tiles auf diese Farbe.'}>
-                      🎨 Farbgruppe
+                      title={t('roomTypeEditor.slotCard.colorGroupTitle')}>
+                      {t('roomTypeEditor.slotCard.colorGroupLabel')}
                       <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
                     </span>
                     <input
                       className={s.slotSizeInput}
                       style={{ flex: 2 }}
-                      placeholder={`leer = erbt "${draft.colorGroupId || '—'}" | "none" = kein Filter`}
+                      placeholder={t('roomTypeEditor.slotCard.colorGroupPlaceholder', { group: draft.colorGroupId || '—' })}
                       value={slot.colorGroupId ?? ''}
                       onChange={e => updateSlot(idx, { colorGroupId: e.target.value })}
                     />
                     {(() => {
                       const effectiveGroup = slot.colorGroupId === 'none' ? null
                         : slot.colorGroupId || draft.colorGroupId || null;
-                      if (!effectiveGroup) return <span className={s.slotHint} style={{ color: '#556' }}>kein Filter</span>;
-                      return <span className={s.slotHint} style={{ color: '#8c8' }}>→ Gruppe „{effectiveGroup}"</span>;
+                      if (!effectiveGroup) return <span className={s.slotHint} style={{ color: '#556' }}>{t('roomTypeEditor.slotCard.colorGroupNoFilter')}</span>;
+                      return <span className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.slotCard.colorGroupEffective', { group: effectiveGroup })}</span>;
                     })()}
                   </div>
 
@@ -1172,13 +1118,13 @@ export function RoomTypeEditor() {
                     return (
                       <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
                         <label className={s.pathStyleLabel}
-                          title={`Erlaubte Farben für Gruppe „${slotGroup}". Der Generator wählt vor dem Slot-Loop zufällig eine der ausgewählten Farben. Keine Auswahl = Farbe wird vom ersten platzierten Möbel übernommen.`}>
-                          🎨 Palette für „{slotGroup}"
+                          title={t('roomTypeEditor.colorPalette.title', { group: slotGroup })}>
+                          {t('roomTypeEditor.colorPalette.labelSlot', { group: slotGroup })}
                         </label>
                         <div className={s.chipGroup}>
                           {availColors.length === 0 && (
                             <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
-                              Keine Farben verfügbar – Möbel-Vorlagen mit Farb-Tags eintragen
+                              {t('roomTypeEditor.colorPalette.noColors')}
                             </span>
                           )}
                           {availColors.map(color => {
@@ -1186,7 +1132,7 @@ export function RoomTypeEditor() {
                             return (
                               <span key={color}
                                 className={`${s.chip} ${active ? s.chipActive : ''}`}
-                                title={active ? `„${color}" entfernen` : `„${color}" hinzufügen`}
+                                title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
                                 onClick={() => {
                                   const next = active
                                     ? palette.filter(c => c !== color)
@@ -1203,8 +1149,8 @@ export function RoomTypeEditor() {
                           })}
                         </div>
                         {palette.length === 0
-                          ? <div className={s.slotHint} style={{ color: '#888' }}>Keine Auswahl → Farbe vom ersten platzierten Möbel</div>
-                          : <div className={s.slotHint} style={{ color: '#8c8' }}>✓ {palette.length} Farbe{palette.length !== 1 ? 'n' : ''} → zufällige Auswahl</div>
+                          ? <div className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.colorPalette.noneSelected')}</div>
+                          : <div className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.colorPalette.selectedCountShort', { count: palette.length })}</div>
                         }
                       </div>
                     );
@@ -1213,28 +1159,28 @@ export function RoomTypeEditor() {
                   {/* ── Tile-Gruppe (gleicher Variantensatz) ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
-                      title={'Tile-Gruppen-ID für kohärente Modellwahl.\n\nAlle Slots mit gleicher tileGroupId stammen aus derselben VariantGroup (Tile-Ebene).\n\n• Leer = keine Bindung (jeder Slot wählt unabhängig)\n• Wert = z.B. "dining_chairs" – erster Slot friert VariantGroup ein, alle weiteren filtern darauf.\n\nBeispiel: 4 Stühle am Tisch → alle bekommen denselben Stuhltyp (chair_beige_01).'}>
-                      🪑 Tile-Gruppe
+                      title={t('roomTypeEditor.slotCard.tileGroupTitle')}>
+                      {t('roomTypeEditor.slotCard.tileGroupLabel')}
                       <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
                     </span>
                     <input
                       className={s.slotSizeInput}
                       style={{ flex: 2 }}
-                      placeholder="z.B. dining_chairs (leer = kein Variantenzwang)"
+                      placeholder={t('roomTypeEditor.slotCard.tileGroupPlaceholder')}
                       value={slot.tileGroupId ?? ''}
                       onChange={e => updateSlot(idx, { tileGroupId: e.target.value })}
                     />
                     {slot.tileGroupId
-                      ? <span className={s.slotHint} style={{ color: '#ac8' }}>→ Gruppe „{slot.tileGroupId}"</span>
-                      : <span className={s.slotHint} style={{ color: '#556' }}>unabhängig</span>
+                      ? <span className={s.slotHint} style={{ color: '#ac8' }}>{t('roomTypeEditor.slotCard.tileGroupEffective', { group: slot.tileGroupId })}</span>
+                      : <span className={s.slotHint} style={{ color: '#556' }}>{t('roomTypeEditor.slotCard.tileGroupIndependent')}</span>
                     }
                   </div>
 
                   {/* ── Material-Filter ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
-                      title={'Material-Filter: Nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.\n\n• Leer = kein Materialfilter (Standard)\n• "none" = kein Filter für diesen Slot (explizit deaktiviert)\n• Wert = nur Tiles aus diesem Material\n\nAND-verknüpft mit dem Farbfilter.'}>
-                      🪵 Materialfilter
+                      title={t('roomTypeEditor.slotCard.materialFilterTitle')}>
+                      {t('roomTypeEditor.slotCard.materialFilterLabel')}
                       <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
                     </span>
                     {availMaterials.length > 0 ? (
@@ -1244,8 +1190,8 @@ export function RoomTypeEditor() {
                         value={slot.materialGroupId ?? ''}
                         onChange={e => updateSlot(idx, { materialGroupId: e.target.value })}
                       >
-                        <option value="">— kein Filter —</option>
-                        <option value="none">none (explizit deaktiviert)</option>
+                        <option value="">{t('roomTypeEditor.slotCard.materialFilterNone')}</option>
+                        <option value="none">{t('roomTypeEditor.slotCard.materialFilterDisabledOption')}</option>
                         {availMaterials.map(m => (
                           <option key={m} value={m}>{m}</option>
                         ))}
@@ -1254,46 +1200,46 @@ export function RoomTypeEditor() {
                       <input
                         className={s.slotSizeInput}
                         style={{ flex: 2 }}
-                        placeholder='leer = kein Filter, "none" = deaktiviert'
+                        placeholder={t('roomTypeEditor.slotCard.materialFilterPlaceholder')}
                         value={slot.materialGroupId ?? ''}
                         onChange={e => updateSlot(idx, { materialGroupId: e.target.value })}
                       />
                     )}
                     {slot.materialGroupId && slot.materialGroupId !== 'none'
-                      ? <span className={s.slotHint} style={{ color: '#c8a' }}>→ nur „{slot.materialGroupId}"</span>
+                      ? <span className={s.slotHint} style={{ color: '#c8a' }}>{t('roomTypeEditor.slotCard.materialFilterActive', { material: slot.materialGroupId })}</span>
                       : slot.materialGroupId === 'none'
-                        ? <span className={s.slotHint} style={{ color: '#888' }}>deaktiviert</span>
-                        : <span className={s.slotHint} style={{ color: '#556' }}>kein Filter</span>
+                        ? <span className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.slotCard.materialFilterDisabled')}</span>
+                        : <span className={s.slotHint} style={{ color: '#556' }}>{t('roomTypeEditor.slotCard.materialFilterEmpty')}</span>
                     }
                   </div>
 
                   {/* ── Benötigt Slot ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
-                      title={'Dieser Slot wird nur versucht wenn der genannte Slot (ID oder Gruppen-ID) zuvor erfolgreich platziert wurde.\n\nBeispiele:\n• Tischlampe → id des Schreibtisch-Slots\n• Waschbecken → id des Unterschrank-Slots\n• Mikrowelle → id des Küchenzeilen-Slots\n\nAnders als AnchorRules: bestimmt nur OB der Slot versucht wird, nicht wo er landet.'}>
-                      🔗 Benötigt Slot
+                      title={t('roomTypeEditor.slotCard.requiresSlotTitle')}>
+                      {t('roomTypeEditor.slotCard.requiresSlotLabel')}
                       <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
                     </span>
                     <input
                       className={s.slotSizeInput}
                       style={{ flex: 2 }}
                       list={`anchor-targets-${idx}`}
-                      placeholder="Slot-ID oder Gruppen-ID (leer = unabhängig)"
+                      placeholder={t('roomTypeEditor.slotCard.requiresSlotPlaceholder')}
                       value={slot.requiresSlot ?? ''}
                       onChange={e => updateSlot(idx, { requiresSlot: e.target.value })}
                     />
                     {slot.requiresSlot
-                      ? <span className={s.slotHint} style={{ color: '#fa8' }}>⚠ nur wenn „{slot.requiresSlot}" platziert</span>
-                      : <span className={s.slotHint} style={{ color: '#556' }}>unabhängig</span>
+                      ? <span className={s.slotHint} style={{ color: '#fa8' }}>{t('roomTypeEditor.slotCard.requiresSlotActive', { slot: slot.requiresSlot })}</span>
+                      : <span className={s.slotHint} style={{ color: '#556' }}>{t('roomTypeEditor.slotCard.requiresSlotIndependent')}</span>
                     }
                   </div>
 
                   {/* ── Anker-Regeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, justifyContent: 'space-between' }}>
                     <span className={s.slotGroupLabel}>
-                      Anker-Regeln
+                      {t('roomTypeEditor.slotCard.anchorRulesLabel')}
                       <span
-                        title={"Verknüpft diesen Slot relativ zu einem anderen Slot oder einer Varianten-Gruppe.\n\n• Anker-Ziel: Slot-ID oder Gruppen-ID\n• Positionen (OR): Generator wählt eine davon\n• Mehrere Regeln: für verschiedene Gruppen-Varianten unterschiedliche Positionen"}
+                        title={t('roomTypeEditor.slotCard.anchorRulesInfoTitle')}
                         style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
                       >ℹ</span>
                     </span>
@@ -1301,7 +1247,7 @@ export function RoomTypeEditor() {
                       className={s.addSlotBtn}
                       style={{ fontSize: '0.7rem', padding: '2px 8px' }}
                       onClick={() => addAnchorRule(idx)}>
-                      + Regel
+                      {t('roomTypeEditor.slotCard.addRule')}
                     </button>
                   </div>
 
@@ -1313,25 +1259,25 @@ export function RoomTypeEditor() {
                       </option>
                     ))}
                     {uniqueGroupIds.map(gid => (
-                      <option key={`grp_${gid}`} value={gid}>Gruppe: {gid}</option>
+                      <option key={`grp_${gid}`} value={gid}>{t('roomTypeEditor.slotCard.groupOption', { group: gid })}</option>
                     ))}
                   </datalist>
 
                   {slot.anchorRules.length === 0 && (
-                    <div className={s.slotHint}>Kein Anker – freie Platzierung im Raum</div>
+                    <div className={s.slotHint}>{t('roomTypeEditor.slotCard.noAnchor')}</div>
                   )}
 
                   {slot.anchorRules.map((rule, rIdx) => (
                     <div key={rIdx} className={s.anchorRuleCard}>
                       <div className={s.slotRow} style={{ gap: 6 }}>
-                        <span className={s.slotGroupLabel} style={{ minWidth: 44 }}>Regel {rIdx + 1}</span>
-                        <span className={s.slotGroupLabel}>Anker</span>
+                        <span className={s.slotGroupLabel} style={{ minWidth: 44 }}>{t('roomTypeEditor.slotCard.rule', { n: rIdx + 1 })}</span>
+                        <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.anchor')}</span>
                         <input className={s.slotSizeInput} style={{ flex: 2 }}
                           list={`anchor-targets-${idx}`}
-                          placeholder="Slot-ID oder Gruppen-ID"
+                          placeholder={t('roomTypeEditor.slotCard.anchorTargetPlaceholder')}
                           value={rule.anchorTarget}
                           onChange={e => updateAnchorRule(idx, rIdx, { anchorTarget: e.target.value })} />
-                        <button className={s.removeSlotBtn}
+                        <button className={s.removeSlotBtn} title={t('roomTypeEditor.slotCard.removeRule')}
                           onClick={() => removeAnchorRule(idx, rIdx)}>✕</button>
                       </div>
                       <div className={s.chipGroup} style={{ marginTop: 4 }}>
@@ -1346,12 +1292,12 @@ export function RoomTypeEditor() {
                       </div>
                       {rule.positions.length > 1 && (
                         <div className={s.slotHint} style={{ marginTop: 3 }}>
-                          ↕ ODER: Generator wählt eine der {rule.positions.length} erlaubten Positionen
+                          {t('roomTypeEditor.slotCard.orPositions', { count: rule.positions.length })}
                         </div>
                       )}
                       <div className={s.slotRow} style={{ gap: 6, marginTop: 4 }}>
                         <span className={s.slotGroupLabel} style={{ minWidth: 60 }}>
-                          Ausrichtung
+                          {t('roomTypeEditor.slotCard.orientationLabel')}
                           <span
                             title={rule.orient ? (ANCHOR_ORIENT_TOOLTIPS[rule.orient] ?? '') : ANCHOR_ORIENT_TOOLTIPS['']}
                             style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
@@ -1362,33 +1308,33 @@ export function RoomTypeEditor() {
                           value={rule.orient ?? ''}
                           onChange={e => updateAnchorRule(idx, rIdx, { orient: e.target.value as AnchorRule['orient'] })}
                         >
-                          <option value="">— Tile-Standard —</option>
-                          <option value="match">match (wie Anker)</option>
-                          <option value="parallelToAnchor">parallelToAnchor (∥ parallel zum Anker)</option>
-                          <option value="opposite">opposite (gegenüber)</option>
-                          <option value="facingAnchor">facingAnchor (zum Anker zeigen)</option>
-                          <option value="openSideFacing">openSideFacing (aus gewählter openSide abgeleitet)</option>
-                          <option value="cwPerpendicular">cwPerpendicular (↻ senkrecht cardinal: S→E, E→N, …)</option>
-                          <option value="ccwPerpendicular">ccwPerpendicular (↺ senkrecht cardinal: S→W, W→N, …)</option>
-                          <option value="perpendicularCW">perpendicularCW (↻ senkrecht cardinal+diagonal: SE→W, N→E, …)</option>
-                          <option value="perpendicularCCW">perpendicularCCW (↺ senkrecht cardinal+diagonal: SE→E, N→W, …)</option>
-                          <option value="cornerFromAnchor">cornerFromAnchor (Ecke NW/NE/SW/SE aus Anker+Position)</option>
-                          <option value="NW">NW (Ecke Nordwest, fix)</option>
-                          <option value="NE">NE (Ecke Nordost, fix)</option>
-                          <option value="SW">SW (Ecke Südwest, fix)</option>
-                          <option value="SE">SE (Ecke Südost, fix)</option>
-                          <option value="N">N (Nord)</option>
-                          <option value="S">S (Süd)</option>
-                          <option value="E">E (Ost)</option>
-                          <option value="W">W (West)</option>
+                          <option value="">{t('roomTypeEditor.slotCard.orientTileDefault')}</option>
+                          <option value="match">{t('roomTypeEditor.slotCard.orientMatch')}</option>
+                          <option value="parallelToAnchor">{t('roomTypeEditor.slotCard.orientParallelToAnchor')}</option>
+                          <option value="opposite">{t('roomTypeEditor.slotCard.orientOpposite')}</option>
+                          <option value="facingAnchor">{t('roomTypeEditor.slotCard.orientFacingAnchor')}</option>
+                          <option value="openSideFacing">{t('roomTypeEditor.slotCard.orientOpenSideFacing')}</option>
+                          <option value="cwPerpendicular">{t('roomTypeEditor.slotCard.orientCwPerpendicular')}</option>
+                          <option value="ccwPerpendicular">{t('roomTypeEditor.slotCard.orientCcwPerpendicular')}</option>
+                          <option value="perpendicularCW">{t('roomTypeEditor.slotCard.orientPerpendicularCW')}</option>
+                          <option value="perpendicularCCW">{t('roomTypeEditor.slotCard.orientPerpendicularCCW')}</option>
+                          <option value="cornerFromAnchor">{t('roomTypeEditor.slotCard.orientCornerFromAnchor')}</option>
+                          <option value="NW">{t('roomTypeEditor.slotCard.orientNW')}</option>
+                          <option value="NE">{t('roomTypeEditor.slotCard.orientNE')}</option>
+                          <option value="SW">{t('roomTypeEditor.slotCard.orientSW')}</option>
+                          <option value="SE">{t('roomTypeEditor.slotCard.orientSE')}</option>
+                          <option value="N">{t('roomTypeEditor.slotCard.orientN')}</option>
+                          <option value="S">{t('roomTypeEditor.slotCard.orientS')}</option>
+                          <option value="E">{t('roomTypeEditor.slotCard.orientE')}</option>
+                          <option value="W">{t('roomTypeEditor.slotCard.orientW')}</option>
                         </select>
                       </div>
                       {/* Offset entlang der Kante – nur für LongSide/ShortSide sinnvoll */}
                       {rule.positions.some(p => ['LongSide0','LongSide1','ShortSide0','ShortSide1'].includes(p)) && (
                         <div className={s.slotRow} style={{ gap: 6, marginTop: 4 }}>
                           <span className={s.slotGroupLabel} style={{ minWidth: 60 }}
-                            title="Versatz entlang der Ankerkante.\n0 = erste Zelle, 1 = zweite, -1 = letzte Zelle usw.">
-                            Offset ℹ
+                            title={t('roomTypeEditor.slotCard.offsetTitle')}>
+                            {t('roomTypeEditor.slotCard.offsetLabel')}
                           </span>
                           <input
                             type="number"
@@ -1398,15 +1344,15 @@ export function RoomTypeEditor() {
                             onChange={e => updateAnchorRule(idx, rIdx, { offsetAlongAnchor: parseInt(e.target.value) || 0 })}
                           />
                           <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
-                            0=erste · 1=zweite · -1=letzte
+                            {t('roomTypeEditor.slotCard.offsetHint')}
                           </span>
                         </div>
                       )}
                       {rule.positions.includes('oppositeWall') && (
                         <div className={s.slotRow} style={{ gap: 6, marginTop: 4, alignItems: 'center' }}>
                           <span className={s.slotGroupLabel} style={{ minWidth: 60 }}
-                            title="Distanzgrenzen fuer oppositeWall in Zellen. min=1 startet direkt vor dem Anchor.">
-                            Distanz ℹ
+                            title={t('roomTypeEditor.slotCard.distanceTitle')}>
+                            {t('roomTypeEditor.slotCard.distanceLabel')}
                           </span>
                           <input
                             type="number"
@@ -1415,9 +1361,9 @@ export function RoomTypeEditor() {
                             style={{ width: 64 }}
                             value={rule.minOppositeWallDistance ?? 1}
                             onChange={e => updateAnchorRule(idx, rIdx, { minOppositeWallDistance: Math.max(1, parseInt(e.target.value) || 1) })}
-                            title="Minimale Distanz zur gegenueberliegenden Wand"
+                            title={t('roomTypeEditor.slotCard.distanceMinTitle')}
                           />
-                          <span className={s.slotHint}>bis</span>
+                          <span className={s.slotHint}>{t('roomTypeEditor.slotCard.distanceTo')}</span>
                           <input
                             type="number"
                             min={1}
@@ -1430,17 +1376,17 @@ export function RoomTypeEditor() {
                                 maxOppositeWallDistance: raw === '' ? undefined : Math.max(1, parseInt(raw) || 1),
                               });
                             }}
-                            title="Maximale Distanz (leer = ohne Limit)"
+                            title={t('roomTypeEditor.slotCard.distanceMaxTitle')}
                             placeholder="∞"
                           />
                           <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
-                            min..max (leer = bis zur Wand)
+                            {t('roomTypeEditor.slotCard.distanceHint')}
                           </span>
                         </div>
                       )}
                       {rule.anchorTarget && rule.positions.length > 0 && (
                         <div className={s.slotHint} style={{ marginTop: 2, color: '#8c8' }}>
-                          📎 „{rule.anchorTarget}" → {rule.positions.join(' | ')}
+                          {t('roomTypeEditor.slotCard.anchorSummary', { target: rule.anchorTarget, positions: rule.positions.join(' | ') })}
                         </div>
                       )}
                     </div>
@@ -1449,9 +1395,9 @@ export function RoomTypeEditor() {
                   {/* ── Fallback-Platzierungsregeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 8, justifyContent: 'space-between' }}>
                     <span className={s.slotGroupLabel}>
-                      Fallback-Regeln
+                      {t('roomTypeEditor.slotCard.fallbackRulesLabel')}
                       <span
-                        title={"Wenn die primären Platzierungsregeln keine freie Zelle finden,\nversucht der Generator diese Regeln der Reihe nach als Alternative.\n\n• Jede Fallback-Regel ist ein vollständiger Satz Platzierungsregeln.\n• Nur relevant bei Pflicht-Slots – optionale Slots werden einfach weggelassen.\n• Beispiel: Primär an Wand → Fallback 1: freie Platzierung (keine Einschränkung)."}
+                        title={t('roomTypeEditor.slotCard.fallbackRulesInfoTitle')}
                         style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}
                       >ℹ</span>
                     </span>
@@ -1459,14 +1405,14 @@ export function RoomTypeEditor() {
                       className={s.addSlotBtn}
                       style={{ fontSize: '0.7rem', padding: '2px 8px' }}
                       onClick={() => addFallbackRule(idx)}>
-                      + Fallback
+                      {t('roomTypeEditor.slotCard.addFallback')}
                     </button>
                   </div>
 
                   {(!slot.fallbackRules || slot.fallbackRules.length === 0) && (
                     <div className={s.slotHint}>
-                      Kein Fallback – schlägt Platzierung fehl, wird der Slot übersprungen
-                      {slot.required && <span style={{ color: '#f4a261' }}> (⚠ Pflicht-Slot!)</span>}
+                      {t('roomTypeEditor.slotCard.noFallback')}
+                      {slot.required && <span style={{ color: '#f4a261' }}>{t('roomTypeEditor.slotCard.noFallbackRequiredWarning')}</span>}
                     </div>
                   )}
 
@@ -1477,43 +1423,43 @@ export function RoomTypeEditor() {
                       <div key={fbIdx} className={s.anchorRuleCard} style={{ borderColor: '#664' }}>
                         <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
                           <span className={s.slotGroupLabel} style={{ color: '#ca8' }}>
-                            Fallback {fbIdx + 1}
+                            {t('roomTypeEditor.slotCard.fallback', { n: fbIdx + 1 })}
                             {activeFbKeys.length > 0
-                              ? `: ${activeFbKeys.map(k => PLACEMENT_RULE_LABELS[k] ?? k).join(', ')}`
-                              : ': freie Platzierung'}
+                              ? `: ${activeFbKeys.map(k => t(`roomTypeEditor.placementRules.${k}.label`)).join(', ')}`
+                              : t('roomTypeEditor.slotCard.fallbackFreePlacement')}
                           </span>
                           <button className={s.removeSlotBtn} onClick={() => removeFallbackRule(idx, fbIdx)}>✕</button>
                         </div>
                         <div className={s.chipGroup}>
-                          {(Object.keys(PLACEMENT_RULE_LABELS) as Array<keyof PlacementRules & string>).map(key => (
+                          {PLACEMENT_RULE_KEYS.map(key => (
                             <span key={key}
                               className={`${s.chip} ${fbRule[key] ? s.chipActive : ''}`}
-                              title={PLACEMENT_RULE_DESCRIPTIONS[key]}
+                              title={t(`roomTypeEditor.placementRules.${key}.description`)}
                               onClick={() => updateFallbackRule(idx, fbIdx, { [key]: !fbRule[key] } as Partial<PlacementRules>)}>
-                              {PLACEMENT_RULE_LABELS[key]}
+                              {t(`roomTypeEditor.placementRules.${key}.label`)}
                             </span>
                           ))}
                           <span
                             className={`${s.chip} ${fbRule.allowOnPath ? s.chipActive : ''}`}
-                            title="Darf auf Pfadzellen platziert werden (z.B. Teppiche)"
+                            title={t('roomTypeEditor.slotCard.fallbackOnPathTitle')}
                             onClick={() => updateFallbackRule(idx, fbIdx, { allowOnPath: !fbRule.allowOnPath })}>
-                            Auf Pfad
+                            {t('roomTypeEditor.slotCard.fallbackOnPath')}
                           </span>
                         </div>
                         {fbRule.nearWall && (
                           <div style={{ display: 'flex', gap: 5, marginTop: 5, alignItems: 'center' }}>
-                            <span style={{ fontSize: '0.72rem', color: '#778' }}>Wandausrichtung:</span>
-                            {WALL_ALIGNMENT_OPTIONS.map(opt => {
+                            <span style={{ fontSize: '0.72rem', color: '#778' }}>{t('roomTypeEditor.slotCard.wallAlignmentShort')}</span>
+                            {WALL_ALIGNMENT_KEYS.map(opt => {
                               const active = (fbRule.wallAlignment ?? 'any') === opt.value;
                               return (
-                                <button key={opt.value} title={opt.title}
+                                <button key={opt.value} title={t(`roomTypeEditor.wallAlignment.${opt.value}.title`)}
                                   onClick={() => updateFallbackRule(idx, fbIdx, { wallAlignment: opt.value })}
                                   style={{
                                     fontSize: '0.7rem', padding: '1px 8px', borderRadius: 3, cursor: 'pointer',
                                     border: active ? '1.5px solid #6af' : '1px solid #445',
                                     background: active ? '#1a2d3d' : '#1a1a1a',
                                     color: active ? '#7fd3ff' : '#778',
-                                  }}>{opt.label}</button>
+                                  }}>{t(`roomTypeEditor.wallAlignment.${opt.value}.label`)}</button>
                               );
                             })}
                           </div>
@@ -1530,14 +1476,14 @@ export function RoomTypeEditor() {
 
             {/* ── Layout-Varianten ── */}
             <div className={s.slotsHeader} style={{ marginTop: 12 }}>
-              <span className={s.slotsLabel}>Layout-Varianten ({(draft.layoutVariants ?? []).length})</span>
-              <button className={s.addSlotBtn} onClick={addLayoutVariant}>+ Variante</button>
+              <span className={s.slotsLabel}>{t('roomTypeEditor.layoutVariants.header', { count: (draft.layoutVariants ?? []).length })}</span>
+              <button className={s.addSlotBtn} onClick={addLayoutVariant}>{t('roomTypeEditor.layoutVariants.addVariant')}</button>
             </div>
 
             <div className={s.anchorRuleCard}>
               <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
                 <span className={s.slotGroupLabel}>
-                  Common-Slots
+                  {t('roomTypeEditor.layoutVariants.commonSlots')}
                   <span style={{ color: '#446', fontSize: '0.68rem', marginLeft: 6 }}>
                     ({(draft.commonSlotIds ?? []).length})
                   </span>
@@ -1575,11 +1521,11 @@ export function RoomTypeEditor() {
                 </div>
               ) : (
                 <div style={{ fontSize: '0.68rem', color: '#556', fontStyle: 'italic', marginBottom: 6 }}>
-                  Keine Common-Slots definiert
+                  {t('roomTypeEditor.layoutVariants.noCommonSlots')}
                 </div>
               )}
 
-              <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>Verfügbare Slots zum Hinzufügen:</div>
+              <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>{t('roomTypeEditor.layoutVariants.availableSlots')}</div>
               <div className={s.chipGroup} style={{ gap: 3, maxHeight: 86, overflowY: 'auto' }}>
                 {draft.slots.map((slot, slotIdx) => {
                   const isAdded = (draft.commonSlotIds ?? []).includes(slot.id);
@@ -1591,51 +1537,51 @@ export function RoomTypeEditor() {
                       title={slot.label ? `${slot.id} - ${slot.label}` : slot.id}
                       onClick={() => !isAdded && addCommonSlot(slot.id)}
                     >
-                      {slot.id || '(keine ID)'}
+                      {slot.id || t('roomTypeEditor.layoutVariants.noId')}
                     </span>
                   );
                 })}
               </div>
 
               <div className={s.slotHint} style={{ marginTop: 4 }}>
-                💡 Common-Slots laufen bei aktiver Layout-Variante immer zusätzlich zu den Variant-Core-Slots.
+                {t('roomTypeEditor.layoutVariants.commonSlotsHint')}
               </div>
             </div>
 
             {(draft.layoutVariants ?? []).length === 0 && (
               <div className={s.hint} style={{ padding: '10px 12px' }}>
-                Keine Layout-Varianten definiert – der Generator behandelt die Slots dann normal.
+                {t('roomTypeEditor.layoutVariants.noVariants')}
               </div>
             )}
 
             {(draft.layoutVariants ?? []).map((variant, idx) => (
               <div key={idx} className={s.anchorRuleCard}>
                 <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span className={s.slotGroupLabel}>Variante {idx + 1}</span>
-                  <button className={s.removeSlotBtn} onClick={() => removeLayoutVariant(idx)}>✕</button>
+                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.variant', { n: idx + 1 })}</span>
+                  <button className={s.removeSlotBtn} title={t('roomTypeEditor.layoutVariants.removeVariant')} onClick={() => removeLayoutVariant(idx)}>✕</button>
                 </div>
 
                 <div className={s.slotRow} style={{ gap: 8, flexWrap: 'wrap' }}>
-                  <span className={s.slotGroupLabel}>ID</span>
+                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.idLabel')}</span>
                   <input
                     className={s.slotSizeInput}
                     style={{ flex: 2, minWidth: 180 }}
-                    placeholder="z.B. kitchen_l_shape"
+                    placeholder={t('roomTypeEditor.layoutVariants.idPlaceholder')}
                     value={variant.id}
                     onChange={e => updateLayoutVariant(idx, { id: e.target.value })}
                   />
-                  <span className={s.slotGroupLabel}>Label</span>
+                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.labelLabel')}</span>
                   <input
                     className={s.slotSizeInput}
                     style={{ flex: 3, minWidth: 220 }}
-                    placeholder="z.B. L-Shape Küche"
+                    placeholder={t('roomTypeEditor.layoutVariants.labelPlaceholder')}
                     value={variant.label}
                     onChange={e => updateLayoutVariant(idx, { label: e.target.value })}
                   />
                 </div>
 
                 <div className={s.slotRow} style={{ gap: 8, marginTop: 4, alignItems: 'center' }}>
-                  <span className={s.slotGroupLabel}>Gewicht</span>
+                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.weightLabel')}</span>
                   <input
                     type="number"
                     min={1}
@@ -1645,14 +1591,14 @@ export function RoomTypeEditor() {
                     onChange={e => updateLayoutVariant(idx, { weight: Math.max(1, parseInt(e.target.value) || 1) })}
                     onBlur={e => updateLayoutVariant(idx, { weight: Math.max(1, Math.min(10, parseInt(e.target.value) || 5)) })}
                   />
-                  <span className={s.slotHint}>1–10</span>
+                  <span className={s.slotHint}>{t('roomTypeEditor.layoutVariants.weightRange')}</span>
                 </div>
 
                  <div className={s.slotRow} style={{ gap: 8, marginTop: 4, alignItems: 'flex-start', flexDirection: 'column' }}>
                    <span className={s.slotGroupLabel}>
-                     Slots{' '}
+                     {t('roomTypeEditor.layoutVariants.slotsLabel')}{' '}
                      <span style={{ color: '#446', fontSize: '0.65rem' }}>
-                       ({(variant.slotIds ?? []).length} von {draft.slots.length})
+                       {t('roomTypeEditor.layoutVariants.slotsCount', { count: (variant.slotIds ?? []).length, total: draft.slots.length })}
                      </span>
                    </span>
                    
@@ -1674,7 +1620,7 @@ export function RoomTypeEditor() {
                      }}
                    >
                      <div style={{ fontSize: '0.7rem', color: '#668', marginBottom: 6 }}>
-                       📌 Ziehe Slot-IDs hier rein oder verwende die Liste unten
+                       {t('roomTypeEditor.layoutVariants.dropZoneHint')}
                      </div>
                      
                      {/* Display existing slots as draggable chips */}
@@ -1737,14 +1683,14 @@ export function RoomTypeEditor() {
                        </div>
                      ) : (
                        <div style={{ fontSize: '0.68rem', color: '#556', fontStyle: 'italic', textAlign: 'center', padding: '8px' }}>
-                         Noch keine Slots hinzugefügt
+                         {t('roomTypeEditor.layoutVariants.noSlotsAdded')}
                        </div>
                      )}
                    </div>
-                   
+
                    {/* Verfügbare Slots zum Hinzufügen */}
                    <div style={{ marginTop: 6, width: '100%' }}>
-                     <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>Verfügbare Slots zum Hinzufügen:</div>
+                     <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>{t('roomTypeEditor.layoutVariants.availableSlots')}</div>
                      <div className={s.chipGroup} style={{ gap: 3, maxHeight: 100, overflowY: 'auto' }}>
                        {draft.slots.map(slot => {
                          const isAdded = (variant.slotIds ?? []).includes(slot.id);
@@ -1766,7 +1712,7 @@ export function RoomTypeEditor() {
                                if (!isAdded) addSlotToLayoutVariant(idx, slot.id);
                              }}
                            >
-                             {slot.id || '(keine ID)'}
+                             {slot.id || t('roomTypeEditor.layoutVariants.noId')}
                            </span>
                          );
                        })}
@@ -1775,13 +1721,13 @@ export function RoomTypeEditor() {
                  </div>
 
                    <div className={s.slotHint} style={{ marginTop: 4 }}>
-                    💡 Variante = Core-Slots für das Shape. Common-Slots werden zusätzlich aus der globalen Common-Liste ergänzt.
+                    {t('roomTypeEditor.layoutVariants.variantHint')}
                  </div>
               </div>
             ))}
 
             <button className={s.saveBtn} disabled={!dirty || saving} onClick={handleSave}>
-              {saving ? 'Speichert…' : `💾 ${draft.roomType} speichern`}
+              {saving ? t('roomTypeEditor.saving') : t('roomTypeEditor.save', { room: draft.roomType })}
             </button>
 
             {status && (
@@ -1796,7 +1742,7 @@ export function RoomTypeEditor() {
       <div className={s.refPanel}>
           {/* Footprint-Kacheln */}
           <div style={{ flexShrink: 0 }}>
-            <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 6 }}>Häufige Footprints</div>
+            <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 6 }}>{t('roomTypeEditor.refPanel.commonFootprints')}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {COMMON_FOOTPRINTS.map(fp => (
                 <div key={`${fp.width}x${fp.height}`}
@@ -1817,13 +1763,13 @@ export function RoomTypeEditor() {
 
           {/* Raumgrößen */}
           <div style={{ flexShrink: 0 }}>
-            <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 2 }}>Raumgrößen</div>
+            <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 2 }}>{t('roomTypeEditor.refPanel.roomSizes')}</div>
             <div className={s.refTable}>
-              {Object.entries(SIZE_LABELS).map(([size, range]) => (
+              {SIZE_KEYS.map(size => (
                 <div key={size} className={s.refRow}>
                   <span className={s.refSize}>{size}</span>
-                  <span className={s.refRange}>{range}</span>
-                  <span className={s.refEx}>{SIZE_EXAMPLES[size]}</span>
+                  <span className={s.refRange}>{t(`roomTypeEditor.sizeLabels.${size}`)}</span>
+                  <span className={s.refEx}>{t(`roomTypeEditor.sizeExamples.${size}`)}</span>
                 </div>
               ))}
             </div>
@@ -1831,10 +1777,10 @@ export function RoomTypeEditor() {
 
           {/* Hinweise */}
           <p className={s.refNote}>
-            <strong>Pflicht-Slots</strong> werden immer befüllt.<br />
-            <strong>Optionale Slots</strong> nach Priorität (0 = zuerst).<br />
-            <strong>Max -1</strong> = unbegrenzt.<br />
-            <strong>Kategorien leer</strong> = alle passenden.
+            <strong>{t('roomTypeEditor.refPanel.notes.required')}</strong>{t('roomTypeEditor.refPanel.notes.requiredDesc')}<br />
+            <strong>{t('roomTypeEditor.refPanel.notes.optional')}</strong>{t('roomTypeEditor.refPanel.notes.optionalDesc')}<br />
+            <strong>{t('roomTypeEditor.refPanel.notes.maxUnlimited')}</strong>{t('roomTypeEditor.refPanel.notes.maxUnlimitedDesc')}<br />
+            <strong>{t('roomTypeEditor.refPanel.notes.emptyCategories')}</strong>{t('roomTypeEditor.refPanel.notes.emptyCategoriesDesc')}
           </p>
         </div>
     </div>

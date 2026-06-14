@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getBfPath, setBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap } from '../../types/tiles';
-import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, STYLE_TAGS, TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE } from '../../types/tiles';
+import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
 import { DirPicker } from '../TileBrowser/DirPicker';
 import s from './FurnitureBrowser.module.css';
 
@@ -23,6 +24,8 @@ const ENTRY_ZOOM = 0.22; // tiny previews in entry list
 const CONF_ZOOM  = 0.30; // config panel previews
 
 export function FurnitureBrowser() {
+  const { t } = useTranslation();
+
   // ── path ─────────────────────────────────────────────────────────────
   const [pathInput, setPathInput] = useState('');
   const [pathOk, setPathOk]       = useState(false);
@@ -146,7 +149,7 @@ export function FurnitureBrowser() {
       setPathOk(r.isValid);
     } catch (e) {
       setPathOk(false);
-      setPathErr(e instanceof Error ? e.message : 'Fehler');
+      setPathErr(e instanceof Error ? e.message : t('furnitureBrowser.pathError'));
     }
   };
 
@@ -295,7 +298,7 @@ export function FurnitureBrowser() {
       <div className={s.pathBar}>
         {!backendOk ? (
           <span className={s.statusErr} style={{ flex: 1 }}>
-            ⚠ Backend nicht erreichbar
+            {t('furnitureBrowser.backendUnreachable')}
           </span>
         ) : (
           <>
@@ -305,11 +308,11 @@ export function FurnitureBrowser() {
               value={pathInput}
               onChange={e => setPathInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && applyPath(pathInput)}
-              placeholder="z.B. C:\Users\…\TileZed\BuildingFurniture.txt"
+              placeholder={t('furnitureBrowser.pathPlaceholder')}
             />
-            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title="Datei suchen">📁</button>
-            <button className={s.setBtn} onClick={() => applyPath(pathInput)}>Laden</button>
-            {pathOk && <span className={s.statusOk}>✓ {groups.length} Gruppen geladen</span>}
+            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('furnitureBrowser.browseFile')}>📁</button>
+            <button className={s.setBtn} onClick={() => applyPath(pathInput)}>{t('furnitureBrowser.load')}</button>
+            {pathOk && <span className={s.statusOk}>{t('furnitureBrowser.groupsLoaded', { count: groups.length })}</span>}
             {pathErr && <span className={s.statusErr}>✗ {pathErr}</span>}
           </>
         )}
@@ -320,18 +323,18 @@ export function FurnitureBrowser() {
         <div className={s.panelHeader}>
           <input
             className={s.searchInput}
-            placeholder="Gruppe suchen…"
+            placeholder={t('furnitureBrowser.searchGroup')}
             value={groupFilter}
             onChange={e => setGroupFilter(e.target.value)}
           />
         </div>
         <div className={s.groupList}>
-          {loading && <p className={s.hint}>Lade Gruppen…</p>}
+          {loading && <p className={s.hint}>{t('furnitureBrowser.loadingGroups')}</p>}
           {!loading && !pathOk && (
-            <p className={s.hint}>Bitte BuildingFurniture.txt Pfad setzen.</p>
+            <p className={s.hint}>{t('furnitureBrowser.setPathHint')}</p>
           )}
           {!loading && pathOk && filtered.length === 0 && (
-            <p className={s.hint}>Keine Gruppen gefunden.</p>
+            <p className={s.hint}>{t('furnitureBrowser.noGroups')}</p>
           )}
           {filtered.map(g => (
             <div
@@ -350,18 +353,18 @@ export function FurnitureBrowser() {
       <div className={s.piecePanel}>
         <div className={s.panelHeader}>
           <span className={s.panelTitle}>
-            {selGroup ? selGroup.label : 'Gruppe wählen'}
+            {selGroup ? selGroup.label : t('furnitureBrowser.selectGroup')}
           </span>
           <div className={s.pieceSubHeader}>
-            {selKeys.length > 0 && <span className={s.selCount}>{selKeys.length} ausgewählt</span>}
-            {dirtyIds.size > 0 && <span className={s.dirtyBadge}>{dirtyIds.size} ✎ ungespeichert</span>}
-            <span className={s.ctrlHint}>Strg+Klick = Mehrfachauswahl</span>
+            {selKeys.length > 0 && <span className={s.selCount}>{t('furnitureBrowser.selectedCount', { count: selKeys.length })}</span>}
+            {dirtyIds.size > 0 && <span className={s.dirtyBadge}>{t('furnitureBrowser.unsavedCount', { count: dirtyIds.size })}</span>}
+            <span className={s.ctrlHint}>{t('furnitureBrowser.ctrlClickHint')}</span>
           </div>
         </div>
         <div className={s.pieceList}>
-          {detailLoading && <p className={s.hint}>Lade…</p>}
+          {detailLoading && <p className={s.hint}>{t('furnitureBrowser.loading')}</p>}
           {!selGroup && !detailLoading && (
-            <p className={s.hint}>Eine Gruppe aus der Liste wählen.</p>
+            <p className={s.hint}>{t('furnitureBrowser.selectGroupHint')}</p>
           )}
           {detail && detail.pieces.map((piece, pi) => (
             <div key={pi} className={s.pieceBlock}>
@@ -394,7 +397,7 @@ export function FurnitureBrowser() {
                                 key={`${ri}-${ci}`}
                                 className={`${s.miniCell} ${!cellId ? s.miniCellEmpty : ''}`}
                                 style={{ width: cw, height: ch }}
-                                title={cellId || `[${ri},${ci}] leer`}
+                                title={cellId || t('furnitureBrowser.emptyCell', { row: ri, col: ci })}
                               >
                                 {cellId && spriteStyle(cellId, ENTRY_ZOOM) ? (
                                   <div style={spriteStyle(cellId, ENTRY_ZOOM)!} />
@@ -408,7 +411,7 @@ export function FurnitureBrowser() {
                       </div>
 
                       <div className={s.entryMeta}>
-                        <span className={s.entryOrient} title={`TXT: ${entry.orient}`}>
+                        <span className={s.entryOrient} title={t('furnitureBrowser.txtOrient', { orient: entry.orient })}>
                           {viewDefs[entry.rootTileId]?.orientation || entry.orient}
                         </span>
                         <span className={s.entryDims}>{cols}×{rows}</span>
@@ -435,8 +438,8 @@ export function FurnitureBrowser() {
             <div className={s.cfgHeader}>
               {selDefs.length === 1
                 ? <span className={s.cfgTileId} title={selDefs[0].tileId}>{selDefs[0].tileId}</span>
-                : <span className={s.cfgTileId}>{selDefs.length} Einträge ausgewählt</span>}
-              {selDefs.length === 1 && config[selDefs[0].tileId] && <span className={s.alreadyImported}>bereits konfiguriert</span>}
+                : <span className={s.cfgTileId}>{t('furnitureBrowser.entriesSelected', { count: selDefs.length })}</span>}
+              {selDefs.length === 1 && config[selDefs[0].tileId] && <span className={s.alreadyImported}>{t('furnitureBrowser.alreadyConfigured')}</span>}
               {dirtyIds.size > 0 && <span className={s.pendingBadge}>{dirtyIds.size} ✎</span>}
             </div>
 
@@ -455,7 +458,7 @@ export function FurnitureBrowser() {
                           const cw = Math.round(SPRITE_W * CONF_ZOOM);
                           const ch = Math.round(SPRITE_H * CONF_ZOOM);
                           return (
-                            <div key={`${ri}-${ci}`} className={s.cfgCellWrap} title={cellId || `[${ri},${ci}] leer`}>
+                            <div key={`${ri}-${ci}`} className={s.cfgCellWrap} title={cellId || t('furnitureBrowser.emptyCell', { row: ri, col: ci })}>
                               <div className={`${s.cfgCell} ${!cellId ? s.cfgCellEmptyBox : ''}`} style={{ width: cw, height: ch }}>
                                 {cellId && spriteStyle(cellId, CONF_ZOOM) ? (
                                   <div style={spriteStyle(cellId, CONF_ZOOM)!} />
@@ -464,19 +467,19 @@ export function FurnitureBrowser() {
                                 )}
                               </div>
                               <div className={s.cfgCellName} title={cellId || ''}>
-                                {cellId || <span className={s.cfgCellNameEmpty}>leer</span>}
+                                {cellId || <span className={s.cfgCellNameEmpty}>{t('furnitureBrowser.empty')}</span>}
                               </div>
                             </div>
                           );
                         })
                       )}
                     </div>
-                    <p className={s.cfgLayoutDims}>{layoutCols(def)} × {layoutRows(def)} Zellen</p>
+                    <p className={s.cfgLayoutDims}>{t('furnitureBrowser.cellsDims', { cols: layoutCols(def), rows: layoutRows(def) })}</p>
                   </div>
                   <div className={`${s.sectionTitle} ${s.collapsibleHeader}`} onClick={() => setSpritesOpen(v => !v)}>
                     <span>
-                      Verwendete Sprites
-                      <span className={s.spritesCount}> ({allIds.length} Zellen · {unique.length} eindeutig)</span>
+                      {t('furnitureBrowser.usedSprites')}
+                      <span className={s.spritesCount}> {t('furnitureBrowser.spritesCountInfo', { count: allIds.length, unique: unique.length })}</span>
                     </span>
                     <span className={`${s.collapseToggle} ${spritesOpen ? s.collapseToggleOpen : ''}`}>▶</span>
                   </div>
@@ -498,11 +501,11 @@ export function FurnitureBrowser() {
             })()}
 
             {/* ── Allgemein ── */}
-            <div className={s.sectionTitle}>Allgemein</div>
+            <div className={s.sectionTitle}>{t('tileBrowser.basic')}</div>
 
             {selDefs.length === 1 && (
               <div className={s.fieldRow}>
-                <span className={s.fieldLabel}>Bezeichnung</span>
+                <span className={s.fieldLabel}>{t('tileBrowser.label')}</span>
                 <input className={s.fieldInput} value={selDefs[0].label}
                   onChange={e => applyField('label', e.target.value)} />
               </div>
@@ -514,7 +517,7 @@ export function FurnitureBrowser() {
               const curVal = sv(d => d.group);
               return (
                 <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>Gruppe{mixed ? ' ⚠' : ''}</span>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.group')}{mixed ? ' ⚠' : ''}</span>
                   <div className={s.chipGroup}>
                     {allGroups.map(g => {
                       const isActive  = !mixed && curVal === g;
@@ -527,11 +530,11 @@ export function FurnitureBrowser() {
                     })}
                   </div>
                   <div style={{ display: 'flex', gap: 4, width: '100%' }}>
-                    <input className={s.fieldInput} placeholder="Neue Gruppe…" value={groupInput}
+                    <input className={s.fieldInput} placeholder={t('common.newGroupPlaceholder')} value={groupInput}
                       onChange={e => setGroupInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleAddGroup()}
                       style={{ flex: 1 }} />
-                    <button className={s.browseBtn} onClick={handleAddGroup} title="Gruppe hinzufügen">＋</button>
+                    <button className={s.browseBtn} onClick={handleAddGroup} title={t('common.addGroup')}>＋</button>
                   </div>
                 </div>
               );
@@ -543,12 +546,12 @@ export function FurnitureBrowser() {
               const curVal = sv(d => d.orientation);
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>Orientierung{mixed ? ' ⚠' : ''}</span>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.orientation')}{mixed ? ' ⚠' : ''}</span>
                   <select className={s.fieldSelect} style={mixStyle(mixed)}
                     value={mixed ? '__mixed__' : (curVal ?? '')}
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('orientation', e.target.value as TileDefinition['orientation']); }}>
-                    {mixed && <option value="__mixed__" disabled>— Verschiedene —</option>}
-                    <option value="">Beliebig (keine)</option>
+                    {mixed && <option value="__mixed__" disabled>{t('furnitureBrowser.mixedValues')}</option>}
+                    <option value="">{t('common.any')}</option>
                     {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
                   </select>
                 </div>
@@ -557,7 +560,7 @@ export function FurnitureBrowser() {
 
             {/* Erlaubte Wandrichtungen */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Erlaubte Platzierungsrichtungen <span className={s.fieldHint}>(leer = alle)</span></span>
+              <span className={s.fieldLabel}>{t('furnitureBrowser.allowedOrients')} <span className={s.fieldHint}>{t('furnitureBrowser.emptyMeansAll')}</span></span>
               <div className={s.chipGroup}>
                 {(['N','S','E','W','NW','NE','SW','SE'] as const).map(o => {
                   const st = arrState(d => d.allowedOrients ?? [], o);
@@ -577,11 +580,11 @@ export function FurnitureBrowser() {
               return (
                 <div className={s.fieldRow}>
                   <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>
-                    Fenster-Sperrkante{mixed ? ' ⚠' : ''}
+                    {t('common.windowBlockedEdge')}{mixed ? ' ⚠' : ''}
                     <span
                       className={s.infoIcon}
-                      title="Nur diese Kante darf kein Fenster beruehren"
-                      aria-label="Info: Nur diese Kante darf kein Fenster beruehren"
+                      title={t('common.windowBlockedEdgeInfo')}
+                      aria-label={t('common.windowBlockedEdgeInfo')}
                     >ⓘ</span>
                   </span>
                   <select
@@ -594,8 +597,8 @@ export function FurnitureBrowser() {
                       }
                     }}
                   >
-                    {mixed && <option value="__mixed__" disabled>— Verschiedene —</option>}
-                    <option value="">Keine (Standardregel)</option>
+                    {mixed && <option value="__mixed__" disabled>{t('furnitureBrowser.mixedValues')}</option>}
+                    <option value="">{t('common.noneDefaultRule')}</option>
                     {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
                   </select>
                 </div>
@@ -608,11 +611,11 @@ export function FurnitureBrowser() {
               const curVal = sv(d => d.layer);
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>Layer{mixed ? ' ⚠' : ''}</span>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : ''}</span>
                   <select className={s.fieldSelect} style={mixStyle(mixed)}
                     value={mixed ? '__mixed__' : (curVal ?? 'Furniture')}
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('layer', e.target.value as TileDefinition['layer']); }}>
-                    {mixed && <option value="__mixed__" disabled>— Verschiedene —</option>}
+                    {mixed && <option value="__mixed__" disabled>{t('furnitureBrowser.mixedValues')}</option>}
                     <option>Furniture</option><option>Furniture2</option><option>Furniture3</option>
                     <option>Furniture4</option><option>Wallfurniture</option><option>Wallfurniture2</option>
                     <option>Wallfurniture3</option><option>Wallfurniture4</option>
@@ -623,7 +626,7 @@ export function FurnitureBrowser() {
             })()}
 
             {/* ── Eigenschaften ── */}
-            <div className={s.sectionTitle}>Eigenschaften</div>
+            <div className={s.sectionTitle}>{t('tileBrowser.flags')}</div>
             {TILE_PROPERTIES.map(key => {
               const mixed  = isMixed(d => d[key]);
               const curVal = sv(d => d[key]) as boolean | undefined;
@@ -631,7 +634,7 @@ export function FurnitureBrowser() {
                 <label key={key} className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
                   <IndeterminateCheckbox checked={mixed ? false : (curVal ?? false)} indeterminate={mixed}
                     onChange={v => applyField(key, v as TileDefinition[typeof key])} />
-                  {TILE_PROPERTY_LABELS_DE[key]}{mixed ? ' ⚠' : ''}
+                  {t(`tileBrowser.properties.${key}`)}{mixed ? ' ⚠' : ''}
                 </label>
               );
             })}
@@ -639,7 +642,7 @@ export function FurnitureBrowser() {
             {selDefs.length === 1 && (
               <>
                 <div className={`${s.sectionTitle} ${s.collapsibleHeader}`} onClick={() => setNotesOpen(v => !v)}>
-                  <span>Notizen</span>
+                  <span>{t('tileBrowser.notes')}</span>
                   <span className={`${s.collapseToggle} ${notesOpen ? s.collapseToggleOpen : ''}`}>▶</span>
                 </div>
                 {notesOpen && (
@@ -651,10 +654,10 @@ export function FurnitureBrowser() {
             )}
 
             {/* ── Zufallsgenerator ── */}
-            <div className={s.sectionTitle}>Zufallsgenerator</div>
+            <div className={s.sectionTitle}>{t('common.randomizer')}</div>
 
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Farben</span>
+              <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
                 {COLORS.map(c => { const st = arrState(d => d.colors, c); return (
                   <span key={c} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
@@ -665,7 +668,7 @@ export function FurnitureBrowser() {
 
             {/* Materialien */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Materialien</span>
+              <span className={s.fieldLabel}>{t('common.materials')}</span>
               <div className={s.chipGroup}>
                 {materialList.map(m => { const st = arrState(d => d.materials ?? [], m); return (
                   <span key={m} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
@@ -673,12 +676,12 @@ export function FurnitureBrowser() {
                 ); })}
               </div>
               {materialList.length === 0 && (
-                <span style={{ fontSize: '0.75rem', color: '#888' }}>Keine Materialien in den Einstellungen definiert.</span>
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>{t('common.noMaterialsConfigured')}</span>
               )}
             </div>
 
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Raumtypen</span>
+              <span className={s.fieldLabel}>{t('common.roomTypes')}</span>
               <div className={s.chipGroup}>
                 {roomTypeList.map(r => { const st = arrState(d => d.roomTypes, r); return (
                   <span key={r} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
@@ -694,9 +697,9 @@ export function FurnitureBrowser() {
               const curVal = sv(d => d.variantGroup);
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>Varianten-ID{mixed ? ' ⚠' : ''}</span>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('common.variantId')}{mixed ? ' ⚠' : ''}</span>
                   <input className={s.fieldInput}
-                    placeholder={mixed ? '⚠ Verschiedene Werte' : 'z.B. sofa_brown'}
+                    placeholder={mixed ? t('furnitureBrowser.mixedValuesPlaceholder') : t('common.variantIdPlaceholder')}
                     value={mixed ? '' : (curVal ?? '')} style={mixStyle(mixed)}
                     onChange={e => applyField('variantGroup', e.target.value)} />
                 </div>
@@ -704,7 +707,7 @@ export function FurnitureBrowser() {
             })()}
 
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Style-Tags <span className={s.fieldHint}>(noch nicht aktiv)</span></span>
+              <span className={s.fieldLabel}>{t('common.styleTags')} <span className={s.fieldHint}>{t('furnitureBrowser.notYetActive')}</span></span>
               <div className={s.chipGroup}>
                 {STYLE_TAGS.map(st => { const state = arrState(d => d.styleTags, st); return (
                   <span key={st} className={`${s.chip} ${state==='all'?s.chipActive:state==='some'?s.chipPartial:''}`}
@@ -717,21 +720,21 @@ export function FurnitureBrowser() {
               <button className={s.saveBtn}
                 disabled={saveState === 'saving' || dirtyIds.size === 0}
                 onClick={handleSave}>
-                {saveState === 'saving' ? '⏳ Speichert…'
-                 : saveState === 'ok'  ? '✅ Gespeichert'
-                 : saveState === 'err' ? '❌ Fehler'
-                 : dirtyIds.size > 0  ? `💾 ${dirtyIds.size} Eintrag${dirtyIds.size !== 1 ? 'e' : ''} speichern`
-                 : '💾 Keine Änderungen'}
+                {saveState === 'saving' ? t('furnitureBrowser.saving')
+                 : saveState === 'ok'  ? t('furnitureBrowser.saved')
+                 : saveState === 'err' ? t('furnitureBrowser.saveError')
+                 : dirtyIds.size > 0  ? t('furnitureBrowser.saveEntries', { count: dirtyIds.size })
+                 : t('furnitureBrowser.noChanges')}
               </button>
               <p className={s.saveHint}>
-                Speichert in <em>tile-definitions.json</em> – BuildingFurniture.txt bleibt unverändert.
+                {t('furnitureBrowser.saveHintPre')}<em>tile-definitions.json</em>{t('furnitureBrowser.saveHintPost')}
               </p>
             </div>
           </>
         ) : (
           <p className={s.hint} style={{ padding: 32 }}>
-            Einen Eintrag aus der Liste wählen um ihn zu konfigurieren.<br />
-            <span style={{ color: '#446', fontSize: '0.75rem' }}>Strg+Klick für Mehrfachauswahl</span>
+            {t('furnitureBrowser.selectEntryHint')}<br />
+            <span style={{ color: '#446', fontSize: '0.75rem' }}>{t('furnitureBrowser.ctrlClickHint')}</span>
           </p>
         )}
       </div>

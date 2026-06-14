@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   getRoomTypeNames, saveRoomTypeNames,
   getCategories,    saveCategories,
@@ -17,6 +18,7 @@ function EditableList({
   placeholder: string;
   onSave:      (updated: string[]) => Promise<void>;
 }) {
+  const { t } = useTranslation();
   const [newValue, setNewValue] = useState('');
   const [saving,   setSaving]   = useState(false);
 
@@ -30,7 +32,7 @@ function EditableList({
   };
 
   const remove = async (item: string) => {
-    if (!window.confirm(`„${item}" entfernen?`)) return;
+    if (!window.confirm(t('settingsEditor.confirmRemove', { item }))) return;
     setSaving(true);
     await onSave(items.filter(x => x !== item));
     setSaving(false);
@@ -53,13 +55,13 @@ function EditableList({
           disabled={saving}
         />
         <button className={s.addBtn} onClick={add} disabled={saving || !newValue.trim()}>
-          + Hinzufügen
+          {t('settingsEditor.add')}
         </button>
       </div>
 
       <div className={s.itemList}>
         {items.length === 0 && (
-          <span className={s.emptyHint}>Keine Einträge</span>
+          <span className={s.emptyHint}>{t('settingsEditor.noItems')}</span>
         )}
         {items.map(item => (
           <div key={item} className={s.item}>
@@ -69,7 +71,7 @@ function EditableList({
         ))}
       </div>
 
-      <div className={s.sectionFooter}>{items.length} Einträge</div>
+      <div className={s.sectionFooter}>{t('settingsEditor.itemCount', { count: items.length })}</div>
     </div>
   );
 }
@@ -77,6 +79,7 @@ function EditableList({
 // ── Haupt-Komponente ─────────────────────────────────────────────────────────
 
 export function SettingsEditor() {
+  const { t } = useTranslation();
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [materials,  setMaterials]  = useState<string[]>([]);
@@ -89,24 +92,21 @@ export function SettingsEditor() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className={s.loading}>Lade Einstellungen…</div>;
+  if (loading) return <div className={s.loading}>{t('settingsEditor.loading')}</div>;
 
   return (
     <div className={s.layout}>
       <div className={s.pageHeader}>
-        <h2 className={s.pageTitle}>⚙ Einstellungen</h2>
-        <p className={s.pageSubtitle}>
-          Globale Listen, die in allen Tabs verwendet werden.
-          Änderungen werden sofort in der <code>settings.json</code> gespeichert.
-        </p>
+        <h2 className={s.pageTitle}>{t('settingsEditor.pageTitle')}</h2>
+        <p className={s.pageSubtitle}>{t('settingsEditor.pageSubtitle')}</p>
       </div>
 
       <div className={s.columns}>
         <EditableList
-          title="🏠 Raumtypen"
-          description="Werden im Raumtyp-Editor, Tile-Browser und Möbel-Browser als Raumtyp-Chips angeboten."
+          title={t('settingsEditor.roomTypes.title')}
+          description={t('settingsEditor.roomTypes.description')}
           items={roomTypes}
-          placeholder="z.B. GuestRoom"
+          placeholder={t('settingsEditor.roomTypes.placeholder')}
           onSave={async updated => {
             const saved = await saveRoomTypeNames(updated);
             setRoomTypes(saved);
@@ -114,10 +114,10 @@ export function SettingsEditor() {
         />
 
         <EditableList
-          title="📦 Möbel-Kategorien"
-          description="Werden in den Slot-Konfigurationen als wählbare Kategorien für Möbel angeboten."
+          title={t('settingsEditor.categories.title')}
+          description={t('settingsEditor.categories.description')}
           items={categories}
-          placeholder="z.B. Carpet"
+          placeholder={t('settingsEditor.categories.placeholder')}
           onSave={async updated => {
             const saved = await saveCategories(updated);
             setCategories(saved);
@@ -125,10 +125,10 @@ export function SettingsEditor() {
         />
 
         <EditableList
-          title="🪵 Materialien"
-          description="Werden im Tile-Browser als Material-Tags und im Slot-Editor als Materialfilter angeboten."
+          title={t('settingsEditor.materials.title')}
+          description={t('settingsEditor.materials.description')}
           items={materials}
-          placeholder="z.B. Holz"
+          placeholder={t('settingsEditor.materials.placeholder')}
           onSave={async updated => {
             const saved = await saveMaterials(updated);
             setMaterials(saved);
@@ -138,4 +138,3 @@ export function SettingsEditor() {
     </div>
   );
 }
-

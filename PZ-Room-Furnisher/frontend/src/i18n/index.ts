@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import de from './locales/de.json';
 import en from './locales/en.json';
 
-const savedLang = localStorage.getItem('pz-lang') ?? 'de';
+const savedLang = localStorage.getItem('pz-lang') ?? 'en';
 
 i18n
   .use(initReactI18next)
@@ -13,7 +13,7 @@ i18n
       en: { translation: en },
     },
     lng: savedLang,
-    fallbackLng: 'de',
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false, // React already escapes
     },

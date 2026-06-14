@@ -1,4 +1,5 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { browseDirectory } from '../../api/tilesApi';
 import type { BrowseResult } from '../../api/tilesApi';
 import s from './DirPicker.module.css';
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function DirPicker({ onSelect, onClose }: Props) {
+  const { t } = useTranslation();
   const [result, setResult]     = useState<BrowseResult | null>(null);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState('');
@@ -21,7 +23,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
       const r = await browseDirectory(path);
       setResult(r);
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Verbindung zum Server fehlgeschlagen – läuft das Backend?');
+      setError(e instanceof Error ? e.message : t('dirPicker.connectionError'));
     } finally {
       setLoading(false);
     }
@@ -43,16 +45,16 @@ export function DirPicker({ onSelect, onClose }: Props) {
     <div className={s.overlay} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className={s.dialog}>
         <div className={s.titleBar}>
-          <span> Ordner auswählen</span>
+          <span>{t('dirPicker.title')}</span>
           <button className={s.closeBtn} onClick={onClose}>✕</button>
         </div>
 
         <div className={s.breadcrumb}>
-          {result?.current ?? 'Laufwerke'}
+          {result?.current ?? t('dirPicker.drives')}
         </div>
 
         <div className={s.list}>
-          {loading && <p className={s.loading}>Lade…</p>}
+          {loading && <p className={s.loading}>{t('dirPicker.loading')}</p>}
           {error   && <p className={s.errMsg}>{error}</p>}
           {!loading && !error && result && (
             <>
@@ -63,12 +65,12 @@ export function DirPicker({ onSelect, onClose }: Props) {
                   onClick={() => navigate(result.parent ?? undefined)}
                 >
                   <span className={s.entryIcon}>↩</span>
-                  <span>{result.parent ? '.. (zurück)' : ' Laufwerke'}</span>
+                  <span>{result.parent ? t('dirPicker.back') : t('dirPicker.drives')}</span>
                 </div>
               )}
 
               {result.entries.length === 0 && (
-                <p className={s.empty}>Keine Unterordner vorhanden</p>
+                <p className={s.empty}>{t('dirPicker.noSubfolders')}</p>
               )}
 
               {result.entries.map(e => (
@@ -89,7 +91,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
         <div className={s.manualRow}>
           <input
             className={s.manualInput}
-            placeholder="Pfad direkt eingeben, z.B. C:\Games\..."
+            placeholder={t('dirPicker.manualPlaceholder')}
             value={manualPath}
             onChange={e => setManualPath(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleManualSelect()}
@@ -98,9 +100,9 @@ export function DirPicker({ onSelect, onClose }: Props) {
             className={s.selectBtn}
             disabled={!manualPath.trim()}
             onClick={handleManualSelect}
-            title="Diesen Pfad direkt verwenden"
+            title={t('dirPicker.useDirectlyHint')}
           >
-            Direkt setzen
+            {t('dirPicker.useDirectly')}
           </button>
         </div>
 
@@ -111,7 +113,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
             disabled={!result?.current}
             onClick={handleSelect}
           >
-            Diesen Ordner wählen
+            {t('dirPicker.selectFolder')}
           </button>
         </div>
       </div>

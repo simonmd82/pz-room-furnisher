@@ -215,12 +215,8 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
 
   const handleGenerate = async () => {
     const selections: RoomSelection[] = [];
-    const seen = new Set<string>();
     for (const key of selected) {
       const [f, r, c, rr] = key.split(':').map(Number);
-      const dedupeKey = `${f}:${r}`;
-      if (seen.has(dedupeKey)) continue;
-      seen.add(dedupeKey);
       selections.push({
         floorIndex: f,
         roomIndex1Based: r,
@@ -239,7 +235,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
       onLogChanged?.(result.log);
       setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: result.placements.length, rooms: selections.length }), ok: true });
     } catch (e) {
-      setStatus({ msg: `Fehler: ${String(e)}`, ok: false });
+      setStatus({ msg: t('furnishPanel.genericError', { error: String(e) }), ok: false });
     } finally {
       setRunning(false);
     }
@@ -303,7 +299,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
               const room        = building.rooms[roomIndex1Based - 1];
               const sizeKey     = classifySize(cellCount);
               const typeName    = overrides[key] || room?.internalName || '';
-              const baseName    = room?.name || `Raum ${roomIndex1Based}`;
+              const baseName    = room?.name || t('furnishPanel.defaultRoomName', { n: roomIndex1Based });
               const displayName = instanceTotal > 1 ? `${baseName} #${instanceNo}` : baseName;
               const hasMatch    = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
               const isSel       = selected.has(key);
@@ -324,7 +320,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
                     <span
                       className={s.roomColorSwatch}
                       style={{ background: colorCss }}
-                      title={`Farbe: ${room?.color}`}
+                      title={t('furnishPanel.colorTitle', { color: room?.color })}
                     />
                     <span className={s.roomRowName} title={`${displayName} (${room?.internalName}) @ [${entry.anchorCol},${entry.anchorRow}]`}>
                       {displayName}
@@ -332,16 +328,16 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
                         <span className={s.roomInternalName}> · {room.internalName}</span>
                       )}
                     </span>
-                    <span className={s.roomRowBadge} title={`${cellCount} Zellen`}>{SIZE_LABELS[sizeKey]}</span>
+                    <span className={s.roomRowBadge} title={t('furnishPanel.cellsTitle', { count: cellCount })}>{SIZE_LABELS[sizeKey]}</span>
                     {!hasMatch && typeName && (
-                      <span className={s.roomRowNoMatch} title={`Kein passender Raumtyp für „${typeName}"`}>⚠</span>
+                      <span className={s.roomRowNoMatch} title={t('furnishPanel.noMatchTitle', { type: typeName })}>⚠</span>
                     )}
                   </div>
 
                   {isSel && (
                     <input
                       className={s.overrideInput}
-                      placeholder={`Raumtyp: ${typeName || 'unbekannt'}`}
+                      placeholder={t('furnishPanel.roomTypePlaceholder', { type: typeName || t('furnishPanel.unknown') })}
                       value={overrides[key] ?? ''}
                       list="knownTypesList"
                       onChange={e => setOverrides(prev => ({ ...prev, [key]: e.target.value }))}

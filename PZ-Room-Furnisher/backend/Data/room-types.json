@@ -5568,8 +5568,8 @@
           "isHigh"
         ],
         "anchorRules": [],
-        "slotGroupId": "",
-        "slotGroupMode": "",
+        "slotGroupId": "Group_Shelv_or_Box",
+        "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
@@ -5580,6 +5580,70 @@
         "materialGroupId": ""
       },
       {
+        "id": "slot_storage_card_box_2",
+        "label": "Card Box Low 2",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 1,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "canStack",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "Group_Shelv_or_Box",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "requiresSlot": "",
+        "colorGroupId": "color_beige",
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
+      },
+      {
         "id": "slot_storage_card_box",
         "label": "Card Box Low",
         "footprint": {
@@ -5588,7 +5652,7 @@
           "canRotate": false
         },
         "required": false,
-        "priority": 0,
+        "priority": 1,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -5787,7 +5851,7 @@
           "canRotate": false
         },
         "required": false,
-        "priority": 0,
+        "priority": 1,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -5986,7 +6050,7 @@
           "canRotate": true
         },
         "required": false,
-        "priority": 0,
+        "priority": 2,
         "countBySize": {
           "XS": {
             "min": 0,
@@ -6025,6 +6089,66 @@
         "requiredProperties": [
           "isHigh",
           "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_shelv_2",
+        "label": "Shelv 2",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 3,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh"
         ],
         "anchorRules": [],
         "slotGroupId": "",

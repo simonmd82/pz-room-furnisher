@@ -8,7 +8,7 @@ import type { TileSheetInfo, TileDefinition, TileConfigMap } from '../../types/t
 import {
   makeTileId, defaultDefinition, parseTileId,
   layoutCols, layoutRows, COLORS, STYLE_TAGS,
-  TILE_PROPERTIES, TILE_PROPERTY_LABELS_DE,
+  TILE_PROPERTIES,
 } from '../../types/tiles';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { DirPicker } from './DirPicker';
@@ -109,7 +109,7 @@ export function TileBrowser() {
       getSheets().then(r2 => setSheets(r2.configured ? r2.sheets : []));
     } catch (e) {
       setPathOk(false);
-      setPathErr(e instanceof Error ? e.message : 'Fehler beim Setzen des Pfades');
+      setPathErr(e instanceof Error ? e.message : t('tileBrowser.setPathError'));
     }
   };
 
@@ -230,7 +230,7 @@ export function TileBrowser() {
       <div className={s.pathBar}>
         {!backendOk ? (
           <span className={s.statusErr} style={{ flex: 1 }}>
-            ⚠ Backend nicht erreichbar – bitte starte das Backend (dotnet run) und lade die Seite neu.
+            {t('tileBrowser.backendUnreachable')}
           </span>
         ) : (
           <>
@@ -240,12 +240,12 @@ export function TileBrowser() {
               value={pathInput}
               onChange={e => setPathInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSetPath()}
-              placeholder="z.B. C:\Games\ProjectZomboid\media\textures"
+              placeholder={t('tileBrowser.pathPlaceholder')}
             />
             <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('tileBrowser.browse')}></button>
             <button className={s.setBtn} onClick={handleSetPath}>{t('tileBrowser.setPath')}</button>
             {pathOk
-              ? <span className={s.statusOk}>✓ {t('tileBrowser.pathOk')} — {sheets.length} Sheets</span>
+              ? <span className={s.statusOk}>✓ {t('tileBrowser.pathOk')} — {t('tileBrowser.sheetsCount', { count: sheets.length })}</span>
               : pathTried && !pathErr
                 ? <span className={s.statusErr}>✗ {t('tileBrowser.pathNotFound')}</span>
                 : null}
@@ -300,7 +300,7 @@ export function TileBrowser() {
               <span>{active.spriteCount} Sprites · {active.columns}×{active.rows}</span>
               {selectedCell && (
                 <span className={s.cellAssignHint}>
-                  ✏ Zelle [{selectedCell.row},{selectedCell.col}] aktiv – Sprite anklicken zum Zuweisen
+                  {t('tileBrowser.cellAssignHint', { row: selectedCell.row, col: selectedCell.col })}
                 </span>
               )}
               <span style={{ marginLeft: 'auto', color: '#778' }}>{t('tileBrowser.zoom')}:</span>
@@ -402,20 +402,20 @@ export function TileBrowser() {
               <div style={{ display: 'flex', gap: 4, width: '100%' }}>
                 <input
                   className={s.fieldInput}
-                  placeholder="Neue Gruppe…"
+                  placeholder={t('common.newGroupPlaceholder')}
                   value={groupInput}
                   onChange={e => setGroupInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleAddGroup()}
                   style={{ flex: 1 }}
                 />
-                <button className={s.layoutBtn} onClick={handleAddGroup} title="Gruppe hinzufügen">＋</button>
+                <button className={s.layoutBtn} onClick={handleAddGroup} title={t('common.addGroup')}>＋</button>
               </div>
             </div>
             <div className={s.fieldRow}>
               <span className={s.fieldLabel}>{t('tileBrowser.orientation')}</span>
               <select className={s.fieldSelect} value={editDef.orientation}
                 onChange={e => setEditDef({ ...editDef, orientation: e.target.value as TileDefinition['orientation'] })}>
-                <option value="">Beliebig (keine)</option>
+                <option value="">{t('common.any')}</option>
                 {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
               </select>
             </div>
@@ -455,7 +455,7 @@ export function TileBrowser() {
                       ].join(' ')}
                       style={{ width: cw, height: ch }}
                       onClick={() => setSelectedCell(isSelected ? null : { row: ri, col: ci })}
-                      title={cellId || `[${ri},${ci}] anklicken, dann Sprite wählen`}
+                      title={cellId || t('tileBrowser.clickToAssign', { row: ri, col: ci })}
                     >
                       {cellId && isSameSheet && parsed ? (
                         <div
@@ -477,7 +477,7 @@ export function TileBrowser() {
                         <button
                           className={s.layoutCellClear}
                           onClick={e => { e.stopPropagation(); clearCell(ri, ci); }}
-                          title="Leeren"
+                          title={t('common.clear')}
                         >×</button>
                       )}
                     </div>
@@ -487,10 +487,10 @@ export function TileBrowser() {
             </div>
 
             <div className={s.layoutControls}>
-              <button className={s.layoutBtn} onClick={addCol}>＋ Spalte</button>
-              <button className={s.layoutBtn} onClick={removeCol} disabled={layoutCols(editDef) <= 1}>－ Spalte</button>
-              <button className={s.layoutBtn} onClick={addRow}>＋ Zeile</button>
-              <button className={s.layoutBtn} onClick={removeRow} disabled={layoutRows(editDef) <= 1}>－ Zeile</button>
+              <button className={s.layoutBtn} onClick={addCol}>{t('tileBrowser.addCol')}</button>
+              <button className={s.layoutBtn} onClick={removeCol} disabled={layoutCols(editDef) <= 1}>{t('tileBrowser.removeCol')}</button>
+              <button className={s.layoutBtn} onClick={addRow}>{t('tileBrowser.addRow')}</button>
+              <button className={s.layoutBtn} onClick={removeRow} disabled={layoutRows(editDef) <= 1}>{t('tileBrowser.removeRow')}</button>
             </div>
 
             {/* ── Eigenschaften ── */}
@@ -499,7 +499,7 @@ export function TileBrowser() {
               <label key={key} className={s.checkRow}>
                 <input type="checkbox" checked={editDef[key] as boolean}
                   onChange={e => setEditDef({ ...editDef, [key]: e.target.checked })} />
-                {TILE_PROPERTY_LABELS_DE[key]}
+                {t(`tileBrowser.properties.${key}`)}
               </label>
             ))}
 
@@ -510,11 +510,11 @@ export function TileBrowser() {
               onChange={e => setEditDef({ ...editDef, notes: e.target.value })} />
 
             {/* ── Randomiser meta ── */}
-            <div className={s.sectionTitle}>Zufallsgenerator</div>
+            <div className={s.sectionTitle}>{t('common.randomizer')}</div>
 
             {/* Colors */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Farben</span>
+              <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
                 {COLORS.map(c => (
                   <span
@@ -533,7 +533,7 @@ export function TileBrowser() {
 
             {/* Materials */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Materialien</span>
+              <span className={s.fieldLabel}>{t('common.materials')}</span>
               <div className={s.chipGroup}>
                 {materialList.map(m => (
                   <span
@@ -550,14 +550,14 @@ export function TileBrowser() {
               </div>
               {materialList.length === 0 && (
                 <span style={{ fontSize: '0.75rem', color: '#888' }}>
-                  Keine Materialien in den Einstellungen definiert.
+                  {t('common.noMaterialsConfigured')}
                 </span>
               )}
             </div>
 
             {/* Room types */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Raumtypen</span>
+              <span className={s.fieldLabel}>{t('common.roomTypes')}</span>
               <div className={s.chipGroup}>
                 {roomTypeList.map(r => (
                   <span
@@ -576,21 +576,21 @@ export function TileBrowser() {
 
             {/* Variant group */}
             <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>Varianten-ID</span>
+              <span className={s.fieldLabel}>{t('common.variantId')}</span>
               <input className={s.fieldInput}
-                placeholder="z.B. sofa_brown"
+                placeholder={t('common.variantIdPlaceholder')}
                 value={editDef.variantGroup}
                 onChange={e => setEditDef({ ...editDef, variantGroup: e.target.value })} />
             </div>
 
-            {/* Fenster-Sperrkante */}
+            {/* Window-blocked edge */}
             <div className={s.fieldRow}>
               <span className={s.fieldLabel}>
-                Fenster-Sperrkante
+                {t('common.windowBlockedEdge')}
                 <span
                   className={s.infoIcon}
-                  title="Nur diese Kante darf kein Fenster beruehren"
-                  aria-label="Info: Nur diese Kante darf kein Fenster beruehren"
+                  title={t('common.windowBlockedEdgeInfo')}
+                  aria-label={t('common.windowBlockedEdgeInfo')}
                 >ⓘ</span>
               </span>
               <select
@@ -598,14 +598,14 @@ export function TileBrowser() {
                 value={editDef.windowBlockedEdge ?? ''}
                 onChange={e => setEditDef({ ...editDef, windowBlockedEdge: e.target.value as TileDefinition['windowBlockedEdge'] })}
               >
-                <option value="">Keine (Standardregel)</option>
+                <option value="">{t('common.noneDefaultRule')}</option>
                 {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
               </select>
             </div>
 
             {/* Style tags */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>Style-Tags <span className={s.fieldHint}>(gespeichert, noch nicht aktiv)</span></span>
+              <span className={s.fieldLabel}>{t('common.styleTags')} <span className={s.fieldHint}>{t('common.styleTagsSavedNotActive')}</span></span>
               <div className={s.chipGroup}>
                 {STYLE_TAGS.map(st => (
                   <span

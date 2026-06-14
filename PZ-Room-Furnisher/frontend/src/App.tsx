@@ -202,13 +202,13 @@ function App() {
             className={`tab-btn ${activeTab === 'roomtypes' ? 'tab-active' : ''}`}
             onClick={() => handleTabChange('roomtypes')}
           >
-            🏠 Raumtypen
+            🏠 {t('tabs.roomTypes')}
           </button>
           <button
             className={`tab-btn ${activeTab === 'settings' ? 'tab-active' : ''}`}
             onClick={() => handleTabChange('settings')}
           >
-            ⚙ Einstellungen
+            ⚙ {t('tabs.settings')}
           </button>
         </div>
       </header>
@@ -283,7 +283,7 @@ function App() {
                 <div className="log-panel">
                   <div className="log-panel-header">
                     <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>
-                      {logOpen ? '▼' : '▶'} Log ({generatorLog.length})
+                      {logOpen ? '▼' : '▶'} {t('generatorLog.toggle', { count: generatorLog.length })}
                     </button>
                   </div>
                   {logOpen && (

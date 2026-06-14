@@ -118,6 +118,7 @@ const DIR_LABEL_KEY: Record<string, string> = { N: 'direction.N', S: 'direction.
 // SVG edge marker for a single WallEdge
 // ---------------------------------------------------------------------------
 function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
+  const { t } = useTranslation();
   const isDoor  = edge.type === 'Door';
   const color   = isDoor ? DOOR_COLOR : WINDOW_COLOR;
   const LONG    = cellSize * 0.62;
@@ -137,7 +138,10 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
     y = edge.edgeRow * cellSize + cellSize / 2 - LONG / 2;
   }
 
-  const label = `${isDoor ? 'Tür' : 'Fenster'} [${edge.cell1Col},${edge.cell1Row}] ↔ [${edge.cell2Col},${edge.cell2Row}]`;
+  const label = t('gridRenderer.edgeLabel', {
+    type: t(isDoor ? 'object.Door' : 'object.Window'),
+    c1: edge.cell1Col, r1: edge.cell1Row, c2: edge.cell2Col, r2: edge.cell2Row,
+  });
 
   return (
     <g style={{ pointerEvents: 'auto', cursor: 'default' }}>
@@ -280,7 +284,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                   <button
                     className={styles.regenBtn}
                     disabled={isRegen}
-                    title="Weg neu generieren"
+                    title={t('gridRenderer.regenPath')}
                     onClick={e => { e.stopPropagation(); void handleRegenPath(roomIdx1); }}
                   >
                     {isRegen ? '⏳' : '🔄'}
@@ -313,7 +317,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
           {showPaths && (
             <div className={styles.legendItem}>
               <span className={styles.legendPathDot} />
-              <span>Weg (Tür→Tür)</span>
+              <span>{t('gridRenderer.pathLegend')}</span>
             </div>
           )}
 
@@ -323,7 +327,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
             className={`${styles.pathToggleBtn} ${showPaths ? styles.pathToggleActive : ''}`}
             onClick={() => setShowPaths(v => !v)}
           >
-            {showPaths ? `🛤 Wege verbergen (${pathRoomCount})` : '🛤 Wege zeigen'}
+            {showPaths ? t('gridRenderer.hidePaths', { count: pathRoomCount }) : t('gridRenderer.showPaths')}
           </button>
 
           {furniturePlacements.length > 0 && (
@@ -332,7 +336,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
               style={{ marginTop: 4 }}
               onClick={() => setShowDebug(v => !v)}
             >
-              🐛 {showDebug ? `Debug aus` : `Debug (${furniturePlacements.length})`}
+              🐛 {showDebug ? t('gridRenderer.debugOff') : t('gridRenderer.debugOn', { count: furniturePlacements.length })}
             </button>
           )}
 
@@ -346,9 +350,9 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                     className={styles.layerBtn}
                     style={{ fontSize: '0.66rem', padding: '1px 6px' }}
                     onClick={() => setHiddenLayers(new Set())}
-                    title="Alle Layer einblenden"
+                    title={t('gridRenderer.showAllLayers')}
                   >
-                    alle an
+                    {t('gridRenderer.allOn')}
                   </button>
                 )}
               </div>
@@ -368,7 +372,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                       color: visible ? '#9f9' : '#556',
                       marginTop: 2,
                     }}
-                    title={visible ? `${l} ausblenden` : `${l} einblenden`}
+                    title={visible ? t('gridRenderer.hideLayer', { layer: l }) : t('gridRenderer.showLayer', { layer: l })}
                   >
                     <input
                       type="checkbox"
@@ -416,7 +420,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 const title = [
                   `[${colIdx},${rowIdx}] ${room ? room.name : t('cell.outside')}`,
                   isStair ? ` ${t('cell.stairs')}` : '',
-                  isPath  ? ' [Weg]' : '',
+                  isPath  ? t('gridRenderer.pathSuffix') : '',
                   ...edgeLines,
                 ].filter(Boolean).join('\n');
 
