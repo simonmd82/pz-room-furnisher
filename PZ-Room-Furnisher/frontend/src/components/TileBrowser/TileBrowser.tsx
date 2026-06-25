@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useMemo } from 'react';
+﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   getTilesPath, setTilesPath, getSheets, getTileConfig,
@@ -13,6 +13,15 @@ import {
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { DirPicker } from './DirPicker';
 import s from './TileBrowser.module.css';
+
+// Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
+function IndeterminateCheckbox({ checked, indeterminate, onChange }: {
+  checked: boolean; indeterminate: boolean; onChange: (v: boolean) => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (ref.current) ref.current.indeterminate = indeterminate; }, [indeterminate]);
+  return <input ref={ref} type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />;
+}
 
 const SPRITE_W = 128;
 const SPRITE_H = 256;
@@ -56,19 +65,79 @@ export function TileBrowser() {
     if (!trimmed) return;
     const existing = allGroups.find(g => g.toLowerCase() === trimmed.toLowerCase());
     if (existing) {
-      setEditDef(prev => prev ? { ...prev, group: existing } : prev);
+      applyField('group', existing);
     } else {
       setExtraGroups(prev => [...prev, trimmed]);
-      setEditDef(prev => prev ? { ...prev, group: trimmed } : prev);
+      applyField('group', trimmed);
     }
     setGroupInput('');
   };
 
   // ── selection ─────────────────────────────────────────────────────────
-  const [selIdx, setSelIdx]   = useState<number | null>(null);
-  const [editDef, setEditDef] = useState<TileDefinition | null>(null);
+  /** Sprite indices selected within the active sheet (Ctrl+Click = multi-select) */
+  const [selIndices, setSelIndices] = useState<number[]>([]);
+  /** All opened/edited defs – persists across sheet switches */
+  const [viewDefs, setViewDefs] = useState<Record<string, TileDefinition>>({});
+  /** tileIds with unsaved changes */
+  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err'>('idle');
+  const [notesOpen, setNotesOpen] = useState(false);
   /** Which layout cell is currently active for sprite assignment (null = none) */
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
+
+  // ── derived selection ─────────────────────────────────────────────────
+  const selTileIds = useMemo(() =>
+    active ? selIndices.map(i => makeTileId(active.name, i)) : [],
+    [active, selIndices]);
+
+  const selDefs = useMemo(() =>
+    selTileIds.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
+    [selTileIds, viewDefs]);
+
+  // ── field helpers ───────────────────────────────────────────────────────
+  const applyField = <K extends keyof TileDefinition>(field: K, value: TileDefinition[K]) => {
+    setViewDefs(prev => {
+      const next = { ...prev };
+      selTileIds.forEach(id => { if (next[id]) next[id] = { ...next[id], [field]: value }; });
+      return next;
+    });
+    setDirtyIds(prev => new Set([...prev, ...selTileIds]));
+    setSaveState('idle');
+  };
+
+  const toggleArrayField = (field: keyof TileDefinition, val: string) => {
+    const allHave = selDefs.every(d => (d[field] as string[]).includes(val));
+    setViewDefs(prev => {
+      const next = { ...prev };
+      selDefs.forEach(def => {
+        const cur     = def[field] as string[];
+        const updated = allHave ? cur.filter(x => x !== val) : cur.includes(val) ? cur : [...cur, val];
+        next[def.tileId] = { ...next[def.tileId], [field]: updated };
+      });
+      return next;
+    });
+    setDirtyIds(prev => new Set([...prev, ...selTileIds]));
+    setSaveState('idle');
+  };
+
+  // ── mixed-value helpers ────────────────────────────────────────────────
+  function sv<T>(getter: (d: TileDefinition) => T): T | undefined {
+    if (!selDefs.length) return undefined;
+    const vals = selDefs.map(d => JSON.stringify(getter(d)));
+    return vals.every(v => v === vals[0]) ? getter(selDefs[0]) : undefined;
+  }
+  const isMixed = (getter: (d: TileDefinition) => unknown): boolean => {
+    if (selDefs.length < 2) return false;
+    const vals = selDefs.map(d => JSON.stringify(getter(d)));
+    return !vals.every(v => v === vals[0]);
+  };
+  const arrState = (getter: (d: TileDefinition) => string[], val: string): 'all' | 'some' | 'none' => {
+    if (!selDefs.length) return 'none';
+    const has = selDefs.map(d => getter(d).includes(val));
+    return has.every(Boolean) ? 'all' : has.some(Boolean) ? 'some' : 'none';
+  };
+  const mixStyle = (mixed: boolean): React.CSSProperties =>
+    mixed ? { borderColor: '#aa6600', color: '#bb8833' } : {};
 
   // ── zoom ──────────────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(1);
@@ -116,106 +185,157 @@ export function TileBrowser() {
   const handleSetPath = () => applyPath(pathInput);
   const handlePickerSelect = (picked: string) => { setShowPicker(false); applyPath(picked); };
 
-  // ── sprite click ──────────────────────────────────────────────────────
-  const handleSprite = useCallback((idx: number) => {
+  // ── sheet select ──────────────────────────────────────────────────────
+  const handleSheetSelect = (sh: TileSheetInfo) => {
+    setActive(sh);
+    setSelIndices([]);
+    setSelectedCell(null);
+  };
+
+  // ── sprite click (Ctrl = multi-select) ─────────────────────────────────
+  const handleSprite = useCallback((idx: number, evt?: React.MouseEvent) => {
     if (!active) return;
     const tileId = makeTileId(active.name, idx);
 
-    // If a layout cell is selected → assign this sprite to that cell
-    if (selectedCell && editDef) {
-      const next = editDef.tileLayout.map((row, ri) =>
-        row.map((cell, ci) =>
-          ri === selectedCell.row && ci === selectedCell.col ? tileId : cell
-        )
-      );
-      const updated = { ...editDef, tileLayout: next };
-      setEditDef(updated);
-      setSelIdx(idx);
+    // If exactly one sprite is being edited and a layout cell is selected → assign this sprite to that cell
+    if (selectedCell && selIndices.length === 1) {
+      const def = viewDefs[selTileIds[0]];
+      if (def) {
+        const next = def.tileLayout.map((row, ri) =>
+          row.map((cell, ci) =>
+            ri === selectedCell.row && ci === selectedCell.col ? tileId : cell
+          )
+        );
+        const updated = { ...def, tileLayout: next };
+        setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+        setDirtyIds(prev => new Set([...prev, def.tileId]));
+        setSaveState('idle');
 
-      // Auto-advance selection to the next cell (right → next row → done)
-      const cols = layoutCols(updated);
-      const rows = layoutRows(updated);
-      const nextCol = selectedCell.col + 1;
-      if (nextCol < cols) {
-        setSelectedCell({ row: selectedCell.row, col: nextCol });
-      } else if (selectedCell.row + 1 < rows) {
-        setSelectedCell({ row: selectedCell.row + 1, col: 0 });
-      } else {
-        setSelectedCell(null);
+        // Auto-advance selection to the next cell (right → next row → done)
+        const cols = layoutCols(updated);
+        const rows = layoutRows(updated);
+        const nextCol = selectedCell.col + 1;
+        if (nextCol < cols) {
+          setSelectedCell({ row: selectedCell.row, col: nextCol });
+        } else if (selectedCell.row + 1 < rows) {
+          setSelectedCell({ row: selectedCell.row + 1, col: 0 });
+        } else {
+          setSelectedCell(null);
+        }
       }
       return;
     }
 
-    // Otherwise → open / create definition for this sprite
-    setSelIdx(idx);
-    setSelectedCell(null);
-    setEditDef(config[tileId] ? { ...config[tileId] } : defaultDefinition(tileId));
-  }, [active, config, selectedCell, editDef]);
+    // Lazily seed viewDefs for this sprite, preserving any in-progress edit
+    setViewDefs(prev => {
+      if (prev[tileId]) return prev;
+      return { ...prev, [tileId]: config[tileId] ? { ...config[tileId] } : defaultDefinition(tileId) };
+    });
 
-  // ── layout manipulation ───────────────────────────────────────────────
+    if (evt?.ctrlKey || evt?.metaKey) {
+      setSelIndices(prev => {
+        const next = prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx];
+        if (next.length !== 1) setSelectedCell(null);
+        return next;
+      });
+    } else {
+      setSelIndices([idx]);
+      setSelectedCell(null);
+    }
+    setSaveState('idle');
+  }, [active, config, selectedCell, selIndices, selTileIds, viewDefs]);
+
+  // ── layout manipulation (single-select only) ───────────────────────────
   const clearCell = (row: number, col: number) => {
-    if (!editDef) return;
-    setEditDef({
-      ...editDef,
-      tileLayout: editDef.tileLayout.map((r, ri) =>
+    if (selDefs.length !== 1) return;
+    const def = selDefs[0];
+    const updated = {
+      ...def,
+      tileLayout: def.tileLayout.map((r, ri) =>
         r.map((c, ci) => ri === row && ci === col ? '' : c)
       ),
-    });
+    };
+    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setSaveState('idle');
   };
   const addRow = () => {
-    if (!editDef) return;
-    setEditDef({ ...editDef, tileLayout: [...editDef.tileLayout, Array(layoutCols(editDef)).fill('')] });
+    if (selDefs.length !== 1) return;
+    const def = selDefs[0];
+    const updated = { ...def, tileLayout: [...def.tileLayout, Array(layoutCols(def)).fill('')] };
+    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setSaveState('idle');
   };
   const removeRow = () => {
-    if (!editDef || layoutRows(editDef) <= 1) return;
-    setEditDef({ ...editDef, tileLayout: editDef.tileLayout.slice(0, -1) });
+    if (selDefs.length !== 1 || layoutRows(selDefs[0]) <= 1) return;
+    const def = selDefs[0];
+    const updated = { ...def, tileLayout: def.tileLayout.slice(0, -1) };
+    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setSaveState('idle');
   };
   const addCol = () => {
-    if (!editDef) return;
-    setEditDef({ ...editDef, tileLayout: editDef.tileLayout.map(r => [...r, '']) });
+    if (selDefs.length !== 1) return;
+    const def = selDefs[0];
+    const updated = { ...def, tileLayout: def.tileLayout.map(r => [...r, '']) };
+    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setSaveState('idle');
   };
   const removeCol = () => {
-    if (!editDef || layoutCols(editDef) <= 1) return;
-    setEditDef({ ...editDef, tileLayout: editDef.tileLayout.map(r => r.slice(0, -1)) });
+    if (selDefs.length !== 1 || layoutCols(selDefs[0]) <= 1) return;
+    const def = selDefs[0];
+    const updated = { ...def, tileLayout: def.tileLayout.map(r => r.slice(0, -1)) };
+    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setSaveState('idle');
   };
 
-  // ── save / delete ─────────────────────────────────────────────────────
+  const recomputeDefinedCounts = (next: TileConfigMap) => {
+    setSheets(prev => prev.map(sh => ({
+      ...sh,
+      definedCount: Object.keys(next).filter(k => k.startsWith(sh.name + '_')).length,
+    })));
+  };
+
+  // ── save ALL dirty (sequenziell – verhindert gleichzeitige Datei-Schreibzugriffe) ──
   const handleSave = async () => {
-    if (!editDef) return;
-    const saved = await saveTileDefinition(editDef);
-    const next = { ...config, [saved.tileId]: saved };
-    setConfig(next);
-    if (active) {
-      setSheets(prev => prev.map(sh =>
-        sh.name === active.name
-          ? { ...sh, definedCount: Object.keys(next).filter(k => k.startsWith(sh.name + '_')).length }
-          : sh
-      ));
-    }
+    if (dirtyIds.size === 0) return;
+    setSaveState('saving');
+    try {
+      const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
+      const saved: TileDefinition[] = [];
+      for (const def of toSave) {
+        saved.push(await saveTileDefinition(def));
+      }
+      const next = { ...config };
+      saved.forEach(def => { next[def.tileId] = def; });
+      setConfig(next);
+      recomputeDefinedCounts(next);
+      setDirtyIds(new Set());
+      setSaveState('ok');
+    } catch { setSaveState('err'); }
   };
 
   const handleDelete = async () => {
-    if (!editDef) return;
-    await deleteTileDefinition(editDef.tileId);
+    if (selDefs.length !== 1) return;
+    const def = selDefs[0];
+    await deleteTileDefinition(def.tileId);
     const next = { ...config };
-    delete next[editDef.tileId];
+    delete next[def.tileId];
     setConfig(next);
-    if (active) {
-      setSheets(prev => prev.map(sh =>
-        sh.name === active.name
-          ? { ...sh, definedCount: Object.keys(next).filter(k => k.startsWith(sh.name + '_')).length }
-          : sh
-      ));
-    }
-    setEditDef(defaultDefinition(editDef.tileId));
+    recomputeDefinedCounts(next);
+    setViewDefs(prev => ({ ...prev, [def.tileId]: defaultDefinition(def.tileId) }));
+    setDirtyIds(prev => { const nextDirty = new Set(prev); nextDirty.delete(def.tileId); return nextDirty; });
   };
 
   // ── helpers ───────────────────────────────────────────────────────────
   const filtered = sheets.filter(sh =>
     sh.name.toLowerCase().includes(sheetFilter.toLowerCase()));
 
-  const previewBgPos = (active && selIdx !== null)
-    ? `${-(selIdx % active.columns) * SPRITE_W * zoom}px ${-Math.floor(selIdx / active.columns) * SPRITE_H * zoom}px`
+  const previewBgPos = (active && selIndices.length === 1)
+    ? `${-(selIndices[0] % active.columns) * SPRITE_W * zoom}px ${-Math.floor(selIndices[0] / active.columns) * SPRITE_H * zoom}px`
     : '0 0';
 
   return (
@@ -274,7 +394,7 @@ export function TileBrowser() {
             <div
               key={sh.name}
               className={`${s.sheetItem} ${active?.name === sh.name ? s.sheetItemActive : ''}`}
-              onClick={() => { setActive(sh); setSelIdx(null); setEditDef(null); setSelectedCell(null); }}
+              onClick={() => handleSheetSelect(sh)}
             >
               <span className={s.sheetName}>{sh.name}</span>
               {sh.definedCount > 0 && (
@@ -303,6 +423,9 @@ export function TileBrowser() {
                   {t('tileBrowser.cellAssignHint', { row: selectedCell.row, col: selectedCell.col })}
                 </span>
               )}
+              {selIndices.length > 0 && <span className={s.selCount}>{t('tileBrowser.selectedCount', { count: selIndices.length })}</span>}
+              {dirtyIds.size > 0 && <span className={s.dirtyBadge}>{t('tileBrowser.unsavedCount', { count: dirtyIds.size })}</span>}
+              <span className={s.ctrlHint}>{t('tileBrowser.ctrlClickHint')}</span>
               <span style={{ marginLeft: 'auto', color: '#778' }}>{t('tileBrowser.zoom')}:</span>
               {[0.5, 1, 1.5, 2].map(z => (
                 <button
@@ -335,7 +458,8 @@ export function TileBrowser() {
                   {Array.from({ length: active.spriteCount }, (_, i) => {
                     const tileId   = makeTileId(active.name, i);
                     const defined  = !!config[tileId];
-                    const selected = selIdx === i;
+                    const selected = selIndices.includes(i);
+                    const dirty    = dirtyIds.has(tileId);
                     return (
                       <div
                         key={i}
@@ -343,9 +467,10 @@ export function TileBrowser() {
                           s.spriteCell,
                           defined  ? s.spriteDefined  : '',
                           selected ? s.spriteSelected : '',
+                          dirty    ? s.spriteCellDirty : '',
                           selectedCell ? s.spriteCellAssignMode : '',
                         ].join(' ')}
-                        onClick={() => handleSprite(i)}
+                        onClick={evt => handleSprite(i, evt)}
                         title={tileId}
                       />
                     );
@@ -363,151 +488,211 @@ export function TileBrowser() {
 
       {/* ── Config panel ── */}
       <div className={s.configPanel}>
-        {editDef && active && selIdx !== null ? (
+        {selDefs.length > 0 && active ? (
           <>
-            {/* Sprite preview (root tile) */}
-            <div className={s.spritePreviewBox}>
-              <div
-                className={s.spritePreviewDiv}
-                style={{
-                  width:  SPRITE_W * zoom,
-                  height: SPRITE_H * zoom,
-                  backgroundImage: `url(${sheetImageUrl(active.name)})`,
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: `${active.sheetWidth * zoom}px ${active.sheetHeight * zoom}px`,
-                  backgroundPosition: previewBgPos,
-                }}
-              />
-              <p className={s.previewTileId}>{editDef.tileId}</p>
+            {/* Header */}
+            <div className={s.cfgHeader}>
+              {selDefs.length === 1
+                ? <span className={s.cfgTileId} title={selDefs[0].tileId}>{selDefs[0].tileId}</span>
+                : <span className={s.cfgTileId}>{t('tileBrowser.spritesSelected', { count: selDefs.length })}</span>}
+              {selDefs.length === 1 && config[selDefs[0].tileId] && <span className={s.alreadyImported}>{t('tileBrowser.alreadyConfigured')}</span>}
+              {dirtyIds.size > 0 && <span className={s.pendingBadge}>{dirtyIds.size} ✎</span>}
             </div>
+
+            {/* Sprite preview (root tile) – single-select only */}
+            {selIndices.length === 1 && (
+              <div className={s.spritePreviewBox}>
+                <div
+                  className={s.spritePreviewDiv}
+                  style={{
+                    width:  SPRITE_W * zoom,
+                    height: SPRITE_H * zoom,
+                    backgroundImage: `url(${sheetImageUrl(active.name)})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: `${active.sheetWidth * zoom}px ${active.sheetHeight * zoom}px`,
+                    backgroundPosition: previewBgPos,
+                  }}
+                />
+                <p className={s.previewTileId}>{selDefs[0].tileId}</p>
+              </div>
+            )}
 
             {/* ── Basic ── */}
             <div className={s.sectionTitle}>{t('tileBrowser.basic')}</div>
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>{t('tileBrowser.label')}</span>
-              <input className={s.fieldInput} value={editDef.label}
-                onChange={e => setEditDef({ ...editDef, label: e.target.value })} />
-            </div>
-            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
-              <span className={s.fieldLabel}>{t('tileBrowser.group')}</span>
-              <div className={s.chipGroup}>
-                {allGroups.map(g => (
-                  <span
-                    key={g}
-                    className={`${s.chip} ${editDef.group === g ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({ ...editDef, group: g })}
-                  >{g}</span>
-                ))}
+            {selDefs.length === 1 && (
+              <div className={s.fieldRow}>
+                <span className={s.fieldLabel}>{t('tileBrowser.label')}</span>
+                <input className={s.fieldInput} value={selDefs[0].label}
+                  onChange={e => applyField('label', e.target.value)} />
               </div>
-              <div style={{ display: 'flex', gap: 4, width: '100%' }}>
-                <input
-                  className={s.fieldInput}
-                  placeholder={t('common.newGroupPlaceholder')}
-                  value={groupInput}
-                  onChange={e => setGroupInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleAddGroup()}
-                  style={{ flex: 1 }}
-                />
-                <button className={s.layoutBtn} onClick={handleAddGroup} title={t('common.addGroup')}>＋</button>
-              </div>
-            </div>
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>{t('tileBrowser.orientation')}</span>
-              <select className={s.fieldSelect} value={editDef.orientation}
-                onChange={e => setEditDef({ ...editDef, orientation: e.target.value as TileDefinition['orientation'] })}>
-                <option value="">{t('common.any')}</option>
-                {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
-              </select>
-            </div>
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>{t('tileBrowser.layer')}</span>
-              <select className={s.fieldSelect} value={editDef.layer}
-                onChange={e => setEditDef({ ...editDef, layer: e.target.value as TileDefinition['layer'] })}>
-                {['Furniture','Furniture2','Furniture3','Furniture4','Wallfurniture','Wallfurniture2','Wallfurniture3','Wallfurniture4','FloorOverlay','FloorFurniture'].map(l => <option key={l}>{l}</option>)}
-              </select>
-            </div>
+            )}
+            {(() => {
+              const mixed  = isMixed(d => d.group);
+              const curVal = sv(d => d.group);
+              return (
+                <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.group')}{mixed ? ' ⚠' : ''}</span>
+                  <div className={s.chipGroup}>
+                    {allGroups.map(g => {
+                      const isActive  = !mixed && curVal === g;
+                      const isPartial =  mixed && selDefs.some(d => d.group === g);
+                      return (
+                        <span
+                          key={g}
+                          className={`${s.chip} ${isActive ? s.chipActive : ''} ${isPartial ? s.chipPartial : ''}`}
+                          onClick={() => applyField('group', g)}
+                        >{g}</span>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4, width: '100%' }}>
+                    <input
+                      className={s.fieldInput}
+                      placeholder={t('common.newGroupPlaceholder')}
+                      value={groupInput}
+                      onChange={e => setGroupInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleAddGroup()}
+                      style={{ flex: 1 }}
+                    />
+                    <button className={s.layoutBtn} onClick={handleAddGroup} title={t('common.addGroup')}>＋</button>
+                  </div>
+                </div>
+              );
+            })()}
 
-            {/* ── Tile layout editor ── */}
-            <div className={s.sectionTitle}>
-              {t('tileBrowser.tileLayout')}
-              <span className={s.layoutDims}>&nbsp;{layoutCols(editDef)}×{layoutRows(editDef)}</span>
-            </div>
-            <p className={s.layoutHint}>{t('tileBrowser.tileLayoutHint')}</p>
+            {(() => {
+              const mixed  = isMixed(d => d.orientation);
+              const curVal = sv(d => d.orientation);
+              return (
+                <div className={s.fieldRow}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.orientation')}{mixed ? ' ⚠' : ''}</span>
+                  <select className={s.fieldSelect} style={mixStyle(mixed)}
+                    value={mixed ? '__mixed__' : (curVal ?? '')}
+                    onChange={e => { if (e.target.value !== '__mixed__') applyField('orientation', e.target.value as TileDefinition['orientation']); }}>
+                    {mixed && <option value="__mixed__" disabled>{t('tileBrowser.mixedValues')}</option>}
+                    <option value="">{t('common.any')}</option>
+                    {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
+                  </select>
+                </div>
+              );
+            })()}
+            {(() => {
+              const mixed  = isMixed(d => d.layer);
+              const curVal = sv(d => d.layer);
+              return (
+                <div className={s.fieldRow}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : ''}</span>
+                  <select className={s.fieldSelect} style={mixStyle(mixed)}
+                    value={mixed ? '__mixed__' : (curVal ?? 'Furniture')}
+                    onChange={e => { if (e.target.value !== '__mixed__') applyField('layer', e.target.value as TileDefinition['layer']); }}>
+                    {mixed && <option value="__mixed__" disabled>{t('tileBrowser.mixedValues')}</option>}
+                    {['Furniture','Furniture2','Furniture3','Furniture4','Wallfurniture','Wallfurniture2','Wallfurniture3','Wallfurniture4','FloorOverlay','FloorFurniture'].map(l => <option key={l}>{l}</option>)}
+                  </select>
+                </div>
+              );
+            })()}
 
-            <div
-              className={s.layoutGrid}
-              style={{ gridTemplateColumns: `repeat(${layoutCols(editDef)}, ${Math.round(SPRITE_W * LAYOUT_ZOOM)}px)` }}
-            >
-              {editDef.tileLayout.flatMap((row, ri) =>
-                row.map((cellId, ci) => {
-                  const isSelected = selectedCell?.row === ri && selectedCell?.col === ci;
-                  const parsed = cellId ? parseTileId(cellId) : null;
-                  const isSameSheet = parsed?.sheet === active.name;
-                  const cw = Math.round(SPRITE_W * LAYOUT_ZOOM);
-                  const ch = Math.round(SPRITE_H * LAYOUT_ZOOM);
-                  return (
-                    <div
-                      key={`${ri}-${ci}`}
-                      className={[
-                        s.layoutCell,
-                        isSelected   ? s.layoutCellSelected : '',
-                        !cellId      ? s.layoutCellEmpty    : '',
-                      ].join(' ')}
-                      style={{ width: cw, height: ch }}
-                      onClick={() => setSelectedCell(isSelected ? null : { row: ri, col: ci })}
-                      title={cellId || t('tileBrowser.clickToAssign', { row: ri, col: ci })}
-                    >
-                      {cellId && isSameSheet && parsed ? (
-                        <div
-                          className={s.layoutCellSprite}
-                          style={{
-                            backgroundImage:    `url(${sheetImageUrl(active.name)})`,
-                            backgroundRepeat:   'no-repeat',
-                            backgroundSize:     `${Math.round(active.sheetWidth  * LAYOUT_ZOOM)}px ${Math.round(active.sheetHeight * LAYOUT_ZOOM)}px`,
-                            backgroundPosition: `${-Math.round((parsed.index % active.columns) * SPRITE_W * LAYOUT_ZOOM)}px `
-                                              + `${-Math.round(Math.floor(parsed.index / active.columns) * SPRITE_H * LAYOUT_ZOOM)}px`,
-                          }}
-                        />
-                      ) : cellId ? (
-                        <span className={s.layoutCellIdText}>{cellId.split('_').pop()}</span>
-                      ) : (
-                        <span className={s.layoutCellPlus}>＋</span>
-                      )}
-                      {cellId && (
-                        <button
-                          className={s.layoutCellClear}
-                          onClick={e => { e.stopPropagation(); clearCell(ri, ci); }}
-                          title={t('common.clear')}
-                        >×</button>
-                      )}
-                    </div>
-                  );
-                })
-              )}
-            </div>
+            {/* ── Tile layout editor (single-select only) ── */}
+            {selDefs.length === 1 && (() => {
+              const def = selDefs[0];
+              return (
+                <>
+                  <div className={s.sectionTitle}>
+                    {t('tileBrowser.tileLayout')}
+                    <span className={s.layoutDims}>&nbsp;{layoutCols(def)}×{layoutRows(def)}</span>
+                  </div>
+                  <p className={s.layoutHint}>{t('tileBrowser.tileLayoutHint')}</p>
 
-            <div className={s.layoutControls}>
-              <button className={s.layoutBtn} onClick={addCol}>{t('tileBrowser.addCol')}</button>
-              <button className={s.layoutBtn} onClick={removeCol} disabled={layoutCols(editDef) <= 1}>{t('tileBrowser.removeCol')}</button>
-              <button className={s.layoutBtn} onClick={addRow}>{t('tileBrowser.addRow')}</button>
-              <button className={s.layoutBtn} onClick={removeRow} disabled={layoutRows(editDef) <= 1}>{t('tileBrowser.removeRow')}</button>
-            </div>
+                  <div
+                    className={s.layoutGrid}
+                    style={{ gridTemplateColumns: `repeat(${layoutCols(def)}, ${Math.round(SPRITE_W * LAYOUT_ZOOM)}px)` }}
+                  >
+                    {def.tileLayout.flatMap((row, ri) =>
+                      row.map((cellId, ci) => {
+                        const isSelected = selectedCell?.row === ri && selectedCell?.col === ci;
+                        const parsed = cellId ? parseTileId(cellId) : null;
+                        const isSameSheet = parsed?.sheet === active.name;
+                        const cw = Math.round(SPRITE_W * LAYOUT_ZOOM);
+                        const ch = Math.round(SPRITE_H * LAYOUT_ZOOM);
+                        return (
+                          <div
+                            key={`${ri}-${ci}`}
+                            className={[
+                              s.layoutCell,
+                              isSelected   ? s.layoutCellSelected : '',
+                              !cellId      ? s.layoutCellEmpty    : '',
+                            ].join(' ')}
+                            style={{ width: cw, height: ch }}
+                            onClick={() => setSelectedCell(isSelected ? null : { row: ri, col: ci })}
+                            title={cellId || t('tileBrowser.clickToAssign', { row: ri, col: ci })}
+                          >
+                            {cellId && isSameSheet && parsed ? (
+                              <div
+                                className={s.layoutCellSprite}
+                                style={{
+                                  backgroundImage:    `url(${sheetImageUrl(active.name)})`,
+                                  backgroundRepeat:   'no-repeat',
+                                  backgroundSize:     `${Math.round(active.sheetWidth  * LAYOUT_ZOOM)}px ${Math.round(active.sheetHeight * LAYOUT_ZOOM)}px`,
+                                  backgroundPosition: `${-Math.round((parsed.index % active.columns) * SPRITE_W * LAYOUT_ZOOM)}px `
+                                                    + `${-Math.round(Math.floor(parsed.index / active.columns) * SPRITE_H * LAYOUT_ZOOM)}px`,
+                                }}
+                              />
+                            ) : cellId ? (
+                              <span className={s.layoutCellIdText}>{cellId.split('_').pop()}</span>
+                            ) : (
+                              <span className={s.layoutCellPlus}>＋</span>
+                            )}
+                            {cellId && (
+                              <button
+                                className={s.layoutCellClear}
+                                onClick={e => { e.stopPropagation(); clearCell(ri, ci); }}
+                                title={t('common.clear')}
+                              >×</button>
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  <div className={s.layoutControls}>
+                    <button className={s.layoutBtn} onClick={addCol}>{t('tileBrowser.addCol')}</button>
+                    <button className={s.layoutBtn} onClick={removeCol} disabled={layoutCols(def) <= 1}>{t('tileBrowser.removeCol')}</button>
+                    <button className={s.layoutBtn} onClick={addRow}>{t('tileBrowser.addRow')}</button>
+                    <button className={s.layoutBtn} onClick={removeRow} disabled={layoutRows(def) <= 1}>{t('tileBrowser.removeRow')}</button>
+                  </div>
+                </>
+              );
+            })()}
 
             {/* ── Eigenschaften ── */}
             <div className={s.sectionTitle}>{t('tileBrowser.flags')}</div>
-            {TILE_PROPERTIES.map(key => (
-              <label key={key} className={s.checkRow}>
-                <input type="checkbox" checked={editDef[key] as boolean}
-                  onChange={e => setEditDef({ ...editDef, [key]: e.target.checked })} />
-                {t(`tileBrowser.properties.${key}`)}
-              </label>
-            ))}
+            {TILE_PROPERTIES.map(key => {
+              const mixed  = isMixed(d => d[key]);
+              const curVal = sv(d => d[key]) as boolean | undefined;
+              return (
+                <label key={key} className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
+                  <IndeterminateCheckbox checked={mixed ? false : (curVal ?? false)} indeterminate={mixed}
+                    onChange={v => applyField(key, v as TileDefinition[typeof key])} />
+                  {t(`tileBrowser.properties.${key}`)}{mixed ? ' ⚠' : ''}
+                </label>
+              );
+            })}
 
-            {/* ── Notes ── */}
-            <div className={s.sectionTitle}>{t('tileBrowser.notes')}</div>
-            <textarea className={s.fieldInput} rows={2}
-              value={editDef.notes}
-              onChange={e => setEditDef({ ...editDef, notes: e.target.value })} />
+            {/* ── Notes (collapsible, single-select only) ── */}
+            {selDefs.length === 1 && (
+              <>
+                <div className={`${s.sectionTitle} ${s.collapsibleHeader}`} onClick={() => setNotesOpen(v => !v)}>
+                  <span>{t('tileBrowser.notes')}</span>
+                  <span className={`${s.collapseToggle} ${notesOpen ? s.collapseToggleOpen : ''}`}>▶</span>
+                </div>
+                {notesOpen && (
+                  <textarea className={s.fieldInput} rows={2}
+                    value={selDefs[0].notes}
+                    onChange={e => applyField('notes', e.target.value)} />
+                )}
+              </>
+            )}
 
             {/* ── Randomiser meta ── */}
             <div className={s.sectionTitle}>{t('common.randomizer')}</div>
@@ -516,18 +701,10 @@ export function TileBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
-                {COLORS.map(c => (
-                  <span
-                    key={c}
-                    className={`${s.chip} ${editDef.colors.includes(c) ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({
-                      ...editDef,
-                      colors: editDef.colors.includes(c)
-                        ? editDef.colors.filter(x => x !== c)
-                        : [...editDef.colors, c],
-                    })}
-                  >{c}</span>
-                ))}
+                {COLORS.map(c => { const st = arrState(d => d.colors, c); return (
+                  <span key={c} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                    onClick={() => toggleArrayField('colors', c)}>{c}</span>
+                ); })}
               </div>
             </div>
 
@@ -535,18 +712,10 @@ export function TileBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.materials')}</span>
               <div className={s.chipGroup}>
-                {materialList.map(m => (
-                  <span
-                    key={m}
-                    className={`${s.chip} ${(editDef.materials ?? []).includes(m) ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({
-                      ...editDef,
-                      materials: (editDef.materials ?? []).includes(m)
-                        ? (editDef.materials ?? []).filter(x => x !== m)
-                        : [...(editDef.materials ?? []), m],
-                    })}
-                  >{m}</span>
-                ))}
+                {materialList.map(m => { const st = arrState(d => d.materials ?? [], m); return (
+                  <span key={m} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                    onClick={() => toggleArrayField('materials', m)}>{m}</span>
+                ); })}
               </div>
               {materialList.length === 0 && (
                 <span style={{ fontSize: '0.75rem', color: '#888' }}>
@@ -559,76 +728,93 @@ export function TileBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.roomTypes')}</span>
               <div className={s.chipGroup}>
-                {roomTypeList.map(r => (
-                  <span
-                    key={r}
-                    className={`${s.chip} ${editDef.roomTypes.includes(r) ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({
-                      ...editDef,
-                      roomTypes: editDef.roomTypes.includes(r)
-                        ? editDef.roomTypes.filter(x => x !== r)
-                        : [...editDef.roomTypes, r],
-                    })}
-                  >{r}</span>
-                ))}
+                {roomTypeList.map(r => { const st = arrState(d => d.roomTypes, r); return (
+                  <span key={r} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                    onClick={() => toggleArrayField('roomTypes', r)}>{r}</span>
+                ); })}
               </div>
             </div>
 
             {/* Variant group */}
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>{t('common.variantId')}</span>
-              <input className={s.fieldInput}
-                placeholder={t('common.variantIdPlaceholder')}
-                value={editDef.variantGroup}
-                onChange={e => setEditDef({ ...editDef, variantGroup: e.target.value })} />
-            </div>
+            {(() => {
+              const mixed  = isMixed(d => d.variantGroup);
+              const curVal = sv(d => d.variantGroup);
+              return (
+                <div className={s.fieldRow}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('common.variantId')}{mixed ? ' ⚠' : ''}</span>
+                  <input className={s.fieldInput}
+                    placeholder={mixed ? t('tileBrowser.mixedValuesPlaceholder') : t('common.variantIdPlaceholder')}
+                    value={mixed ? '' : (curVal ?? '')} style={mixStyle(mixed)}
+                    onChange={e => applyField('variantGroup', e.target.value)} />
+                </div>
+              );
+            })()}
 
             {/* Window-blocked edge */}
-            <div className={s.fieldRow}>
-              <span className={s.fieldLabel}>
-                {t('common.windowBlockedEdge')}
-                <span
-                  className={s.infoIcon}
-                  title={t('common.windowBlockedEdgeInfo')}
-                  aria-label={t('common.windowBlockedEdgeInfo')}
-                >ⓘ</span>
-              </span>
-              <select
-                className={s.fieldSelect}
-                value={editDef.windowBlockedEdge ?? ''}
-                onChange={e => setEditDef({ ...editDef, windowBlockedEdge: e.target.value as TileDefinition['windowBlockedEdge'] })}
-              >
-                <option value="">{t('common.noneDefaultRule')}</option>
-                {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
-              </select>
-            </div>
+            {(() => {
+              const mixed  = isMixed(d => d.windowBlockedEdge ?? '');
+              const curVal = sv(d => d.windowBlockedEdge ?? '');
+              return (
+                <div className={s.fieldRow}>
+                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>
+                    {t('common.windowBlockedEdge')}{mixed ? ' ⚠' : ''}
+                    <span
+                      className={s.infoIcon}
+                      title={t('common.windowBlockedEdgeInfo')}
+                      aria-label={t('common.windowBlockedEdgeInfo')}
+                    >ⓘ</span>
+                  </span>
+                  <select
+                    className={s.fieldSelect}
+                    style={mixStyle(mixed)}
+                    value={mixed ? '__mixed__' : (curVal ?? '')}
+                    onChange={e => {
+                      if (e.target.value !== '__mixed__') {
+                        applyField('windowBlockedEdge', e.target.value as TileDefinition['windowBlockedEdge']);
+                      }
+                    }}
+                  >
+                    {mixed && <option value="__mixed__" disabled>{t('tileBrowser.mixedValues')}</option>}
+                    <option value="">{t('common.noneDefaultRule')}</option>
+                    {(['N', 'E', 'S', 'W'] as const).map(edge => <option key={edge} value={edge}>{edge}</option>)}
+                  </select>
+                </div>
+              );
+            })()}
 
             {/* Style tags */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.styleTags')} <span className={s.fieldHint}>{t('common.styleTagsSavedNotActive')}</span></span>
               <div className={s.chipGroup}>
-                {STYLE_TAGS.map(st => (
-                  <span
-                    key={st}
-                    className={`${s.chip} ${editDef.styleTags.includes(st) ? s.chipActive : ''}`}
-                    onClick={() => setEditDef({
-                      ...editDef,
-                      styleTags: editDef.styleTags.includes(st)
-                        ? editDef.styleTags.filter(x => x !== st)
-                        : [...editDef.styleTags, st],
-                    })}
-                  >{st}</span>
-                ))}
+                {STYLE_TAGS.map(st => { const state = arrState(d => d.styleTags, st); return (
+                  <span key={st} className={`${s.chip} ${state==='all'?s.chipActive:state==='some'?s.chipPartial:''}`}
+                    onClick={() => toggleArrayField('styleTags', st)}>{st}</span>
+                ); })}
               </div>
             </div>
-
-            <button className={s.saveBtn} onClick={handleSave}> {t('tileBrowser.save')}</button>
-            {config[editDef.tileId] && (
-              <button className={s.deleteBtn} onClick={handleDelete}> {t('tileBrowser.delete')}</button>
-            )}
+            <div className={s.saveStickyBar}>
+              <button className={s.saveBtn}
+                disabled={saveState === 'saving' || dirtyIds.size === 0}
+                onClick={handleSave}>
+                {saveState === 'saving' ? t('tileBrowser.saving')
+                 : saveState === 'ok'  ? t('tileBrowser.saved')
+                 : saveState === 'err' ? t('tileBrowser.saveError')
+                 : dirtyIds.size > 0  ? t('tileBrowser.saveEntries', { count: dirtyIds.size })
+                 : t('tileBrowser.noChanges')}
+              </button>
+              <p className={s.saveHint}>
+                {t('tileBrowser.saveHintPre')}<em>tile-definitions.json</em>{t('tileBrowser.saveHintPost')}
+              </p>
+              {selDefs.length === 1 && config[selDefs[0].tileId] && (
+                <button className={s.deleteBtn} onClick={handleDelete}> {t('tileBrowser.delete')}</button>
+              )}
+            </div>
           </>
         ) : (
-          <p className={s.configEmpty}>{t('tileBrowser.selectSprite')}</p>
+          <p className={s.configEmpty}>
+            {t('tileBrowser.selectSprite')}<br />
+            <span style={{ color: '#446', fontSize: '0.75rem' }}>{t('tileBrowser.ctrlClickHint')}</span>
+          </p>
         )}
       </div>
 

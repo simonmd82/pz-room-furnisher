@@ -9,6 +9,7 @@ import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, Roo
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
+import { AnchorRulePreview } from './AnchorRulePreview';
 import s from './RoomTypeEditor.module.css';
 
 const FALLBACK_GROUPS = [
@@ -21,6 +22,21 @@ const FALLBACK_GROUPS = [
 const GROUP_COLORS = [
   '#c87941', '#41a8c8', '#7ec841', '#9c41c8',
   '#c84141', '#41c8a0', '#c8b841', '#4160c8',
+];
+
+/** Beispiel-Grundrisse für die Layout-Referenz im rechten Panel (true = belegte Zelle). */
+const LAYOUT_SHAPE_EXAMPLES: { id: 'line' | 'lShape' | 'uShape'; grid: boolean[][] }[] = [
+  { id: 'line',   grid: [[true, true, true, true]] },
+  { id: 'lShape', grid: [
+    [true, true, true, true],
+    [true, false, false, false],
+    [true, false, false, false],
+  ] },
+  { id: 'uShape', grid: [
+    [true, false, false, false, true],
+    [true, false, false, false, true],
+    [true, true, true, true, true],
+  ] },
 ];
 
 function getGroupColor(groupId: string, allGroupIds: string[]): string {
@@ -963,6 +979,20 @@ export function RoomTypeEditor() {
                     </div>
                   )}
 
+                  {/* ── Zelle davor freihalten ── */}
+                  <div className={s.slotRow} style={{ marginTop: 4, alignItems: 'center', gap: 8 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.blocksFrontCell ?? false) ? '#7fd3ff' : '#889' }}
+                      title={t('roomTypeEditor.slotCard.blocksFrontCellTitle')}>
+                      <input
+                        type="checkbox"
+                        checked={slot.blocksFrontCell ?? false}
+                        onChange={() => updateSlot(idx, { blocksFrontCell: !(slot.blocksFrontCell ?? false) })}
+                        style={{ accentColor: '#4d9fcc' }}
+                      />
+                      {t('roomTypeEditor.slotCard.blocksFrontCell')}
+                    </label>
+                  </div>
+
                   {/* ── Wandausrichtung (nur bei nearWall) ── */}
                   {slot.placementRules.nearWall && (
                     <div style={{ marginTop: 6 }}>
@@ -1385,6 +1415,13 @@ export function RoomTypeEditor() {
                         </div>
                       )}
                       {rule.anchorTarget && rule.positions.length > 0 && (
+                        <AnchorRulePreview
+                          rule={rule}
+                          dependentFootprint={slot.footprint}
+                          anchorFootprint={draft.slots.find(sl => sl.id === rule.anchorTarget)?.footprint}
+                        />
+                      )}
+                      {rule.anchorTarget && rule.positions.length > 0 && (
                         <div className={s.slotHint} style={{ marginTop: 2, color: '#8c8' }}>
                           {t('roomTypeEditor.slotCard.anchorSummary', { target: rule.anchorTarget, positions: rule.positions.join(' | ') })}
                         </div>
@@ -1756,6 +1793,35 @@ export function RoomTypeEditor() {
                     ))}
                   </div>
                   <span style={{ fontSize: '0.65rem', color: '#778' }}>{fp.width}×{fp.height}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Layout-Formen */}
+          <div style={{ flexShrink: 0 }}>
+            <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 6 }}>{t('roomTypeEditor.refPanel.layoutShapes.title')}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
+              {LAYOUT_SHAPE_EXAMPLES.map(shape => (
+                <div key={shape.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, maxWidth: 92 }}>
+                  <div style={{
+                    display: 'inline-grid', gap: 2,
+                    gridTemplateColumns: `repeat(${shape.grid[0].length}, 12px)`,
+                  }}>
+                    {shape.grid.flatMap((row, r) => row.map((filled, c) => (
+                      <div key={`${r}_${c}`} style={{
+                        width: 12, height: 12, borderRadius: 2,
+                        background: filled ? '#3a5aaa' : 'transparent',
+                        border: filled ? 'none' : '1px dashed #2a3a3a',
+                      }} />
+                    )))}
+                  </div>
+                  <span style={{ fontSize: '0.65rem', color: '#9ab', fontWeight: 600 }}>
+                    {t(`roomTypeEditor.refPanel.layoutShapes.${shape.id}.label`)}
+                  </span>
+                  <span style={{ fontSize: '0.6rem', color: '#778', textAlign: 'center', lineHeight: 1.25 }}>
+                    {t(`roomTypeEditor.refPanel.layoutShapes.${shape.id}.desc`)}
+                  </span>
                 </div>
               ))}
             </div>

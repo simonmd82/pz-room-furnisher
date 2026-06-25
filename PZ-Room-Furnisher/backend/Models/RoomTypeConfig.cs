@@ -188,6 +188,16 @@ public class RoomTypeSlot
     public bool SoftBlocks { get; set; } = false;
 
     /// <summary>
+    /// Wenn true, wird die Zelle vor der Vorderseite des platzierten Tiles
+    /// (gemäß Orientierung) zusätzlich in occupied eingetragen.
+    /// Andere Slots können diese Zelle dann nicht belegen, der Spieler kann
+    /// aber weiterhin hineinlaufen (keine physicalOccupied-Eintragung).
+    /// Typischer Einsatz: Herd, Kühlschrank – Zelle davor soll frei bleiben.
+    /// Standard: false.
+    /// </summary>
+    public bool BlocksFrontCell { get; set; } = false;
+
+    /// <summary>
     /// Bedingte Abhängigkeit: Dieser Slot wird nur versucht wenn der Slot mit dieser ID
     /// (oder SlotGroupId) zuvor erfolgreich platziert wurde.
     /// Nützlich für Objekte die eine Oberfläche benötigen (Lampe → Tisch, Waschbecken → Unterschrank).

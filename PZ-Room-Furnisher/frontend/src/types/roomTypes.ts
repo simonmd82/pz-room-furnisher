@@ -237,6 +237,13 @@ export interface RoomTypeSlot {
    * Typischer Einsatz: Nachttisch (blocksPlacement:false, softBlocks:true). Standard: false.
    */
   softBlocks: boolean;
+  /**
+   * Wenn true: Die Zelle vor der Vorderseite des platzierten Tiles (gemäß Orientierung)
+   * wird zusätzlich in occupied eingetragen. Andere Slots können diese Zelle nicht belegen,
+   * der Spieler kann aber weiterhin hineinlaufen.
+   * Typischer Einsatz: Herd, Kühlschrank – Zelle davor soll frei bleiben. Standard: false.
+   */
+  blocksFrontCell: boolean;
     /** Nur versuchen, wenn dieser Slot / diese Gruppe bereits platziert wurde. */
     requiresSlot: string;
   /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
@@ -314,6 +321,7 @@ export function defaultSlot(): RoomTypeSlot {
     groupWeight: 5,
     blocksPlacement: true,
     softBlocks:      false,
+    blocksFrontCell: false,
     requiresSlot: '',
     colorGroupId: '',
     tileGroupId:  '',

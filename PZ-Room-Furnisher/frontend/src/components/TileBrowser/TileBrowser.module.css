@@ -250,19 +250,32 @@
 }
 .checkRow input { accent-color: #8866cc; }
 
+.saveStickyBar {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .saveBtn {
-  margin-top: 6px;
   width: 100%;
-  padding: 7px;
-  background: #3d2d6a;
-  border: 1px solid #8866cc;
+  padding: 8px;
+  background: #2a4a2a;
+  border: 1px solid #4a9a4a;
   border-radius: 6px;
-  color: #ddf;
+  color: #9f9;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
 }
-.saveBtn:hover { background: #54409a; }
+.saveBtn:hover:not(:disabled) { background: #3a6a3a; }
+.saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.saveHint {
+  font-size: 0.7rem;
+  color: #446;
+  text-align: center;
+  margin: 0;
+}
+.saveHint em { font-style: normal; color: #669; }
 .deleteBtn {
   width: 100%;
   padding: 5px;
@@ -443,5 +456,84 @@ textarea.fieldInput { resize: vertical; }
   background: #1e1e3a;
 }
 
+/* ── Multi-select & dirty state ── */
+.chipPartial {
+  border-color: #aa6600 !important;
+  background: #1c1200 !important;
+  color: #bb8833 !important;
+}
+.chipPartial:hover { border-color: #cc8800 !important; color: #ddaa44 !important; }
 
+.spriteCellDirty { box-shadow: 0 0 0 2px #664400 inset; }
+
+/* Aufklappbarer Abschnitts-Toggle */
+.collapsibleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.collapsibleHeader:hover .collapseToggle { color: #aac; }
+.collapseToggle {
+  font-size: 0.75rem;
+  color: #556;
+  transition: transform 0.15s;
+}
+.collapseToggleOpen { transform: rotate(90deg); }
+
+.selCount {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #8866cc;
+  background: #1e1a2e;
+  border-radius: 8px;
+  padding: 1px 7px;
+}
+.dirtyBadge {
+  font-size: 0.66rem;
+  color: #cc8833;
+  background: #1c1200;
+  border: 1px solid #664400;
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+.dirtyDot {
+  font-size: 0.68rem;
+  color: #cc8833;
+}
+.ctrlHint {
+  font-size: 0.62rem;
+  color: #445;
+  font-style: italic;
+}
+.pendingBadge {
+  font-size: 0.68rem;
+  color: #cc8833;
+  background: #1c1200;
+  border: 1px solid #664400;
+  border-radius: 8px;
+  padding: 1px 7px;
+  margin-left: auto;
+}
+
+.cfgHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cfgTileId {
+  font-size: 0.72rem;
+  color: #88aacc;
+  word-break: break-all;
+}
+.alreadyImported {
+  font-size: 0.68rem;
+  color: #6c6;
+  background: #0a2010;
+  border: 1px solid #2a5a2a;
+  border-radius: 4px;
+  padding: 1px 6px;
+}
 
