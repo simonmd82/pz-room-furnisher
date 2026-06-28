@@ -3681,213 +3681,6 @@
         "materialGroupId": ""
       },
       {
-        "id": "slot_counter_sink",
-        "label": "Counter for Sink",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 2
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "isTableTop"
-        ],
-        "anchorRules": [],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": false,
-        "softBlocks": true,
-        "blocksFrontCell": false,
-        "requiresSlot": "",
-        "colorGroupId": "counter_color",
-        "tileGroupId": "",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_sink",
-        "label": "Sink Kitchen",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 1
-          },
-          "M": {
-            "min": 0,
-            "max": 1
-          },
-          "L": {
-            "min": 0,
-            "max": 1
-          },
-          "XL": {
-            "min": 0,
-            "max": 2
-          }
-        },
-        "allowedCategories": {
-          "Sink": 5
-        },
-        "placementRules": {
-          "nearWall": false,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_sink",
-            "positions": [
-              "Center"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": false,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_sink",
-        "colorGroupId": "",
-        "tileGroupId": "",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_counter_no_top",
-        "label": "Counter no  top",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 2,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 2,
-            "max": 2
-          },
-          "L": {
-            "min": 2,
-            "max": 3
-          },
-          "XL": {
-            "min": 3,
-            "max": 3
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_sink",
-            "positions": [
-              "leftPerpendicular"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "",
-        "colorGroupId": "counter_color",
-        "tileGroupId": "",
-        "materialGroupId": ""
-      },
-      {
         "id": "slot_counter_for_appliance",
         "label": "Counter for Appliance",
         "footprint": {
@@ -3969,12 +3762,12 @@
           "height": 1,
           "canRotate": false
         },
-        "required": true,
+        "required": false,
         "priority": 0,
         "countBySize": {
           "XS": {
             "min": 0,
-            "max": 0
+            "max": 1
           },
           "S": {
             "min": 0,
@@ -3982,15 +3775,15 @@
           },
           "M": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "L": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "XL": {
             "min": 0,
-            "max": 3
+            "max": 1
           }
         },
         "allowedCategories": {
@@ -4007,11 +3800,11 @@
           "allowOnPath": false,
           "wallAlignment": "any"
         },
-        "requiredLayer": "Furniture2",
+        "requiredLayer": "Furniture3",
         "requiredProperties": [],
         "anchorRules": [
           {
-            "anchorTarget": "",
+            "anchorTarget": "slot_counter_main_2",
             "positions": [
               "Center"
             ],
@@ -4028,7 +3821,7 @@
         "blocksPlacement": true,
         "softBlocks": false,
         "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_for_appliance",
+        "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
@@ -4102,152 +3895,6 @@
         "softBlocks": false,
         "blocksFrontCell": false,
         "requiresSlot": "slot_stove_line",
-        "colorGroupId": "",
-        "tileGroupId": "",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_cooking_hood_l_shape_left",
-        "label": "Cooking Hood L-Shape Left",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 1
-          },
-          "M": {
-            "min": 0,
-            "max": 2
-          },
-          "L": {
-            "min": 0,
-            "max": 3
-          },
-          "XL": {
-            "min": 0,
-            "max": 4
-          }
-        },
-        "allowedCategories": {
-          "Appliances - Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Wallfurniture",
-        "requiredProperties": [
-          "isWallMounted",
-          "isHigh"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_stove_l_left",
-            "positions": [
-              "Center"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_stove_l_left",
-        "colorGroupId": "",
-        "tileGroupId": "",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_cooking_hood_l_shape_right",
-        "label": "Cooking Hood L-Shape Right",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 1
-          },
-          "M": {
-            "min": 0,
-            "max": 2
-          },
-          "L": {
-            "min": 0,
-            "max": 3
-          },
-          "XL": {
-            "min": 0,
-            "max": 4
-          }
-        },
-        "allowedCategories": {
-          "Appliances - Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Wallfurniture",
-        "requiredProperties": [
-          "isWallMounted",
-          "isHigh"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_stove_l_right",
-            "positions": [
-              "Center"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_stove_l_right",
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
@@ -4381,235 +4028,10 @@
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_counter_line_1",
-        "label": "Counter Line 1",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_main_2",
-            "positions": [
-              "rightOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_main_2",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_counter_line_2",
-        "label": "Counter Line 2",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_line_1",
-            "positions": [
-              "rightOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_line_1",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_stove_line",
-        "label": "Stove Line",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_line_2",
-            "positions": [
-              "rightOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
         "blocksFrontCell": true,
-        "requiresSlot": "slot_counter_line_2",
+        "requiresSlot": "",
         "colorGroupId": "",
         "tileGroupId": "counter_tile_group",
         "materialGroupId": ""
@@ -4690,156 +4112,6 @@
         "materialGroupId": ""
       },
       {
-        "id": "slot_counter_l_left_arm_1",
-        "label": "Counter L Left Arm 1",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_l_left_corner",
-            "positions": [
-              "leftOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "perpendicularCCW"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_l_left_corner",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_stove_l_left",
-        "label": "Counter Stove L left",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_l_left_arm_1",
-            "positions": [
-              "rightOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": false,
-        "softBlocks": true,
-        "blocksFrontCell": true,
-        "requiresSlot": "slot_counter_l_left_arm_1",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
         "id": "slot_counter_l_right_corner",
         "label": "Counter L Right Corner",
         "footprint": {
@@ -4910,156 +4182,6 @@
         "softBlocks": false,
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_counter_l_right_arm_1",
-        "label": "Counter L Right Arm 1",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Counter": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_l_right_corner",
-            "positions": [
-              "Below"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "perpendicularCCW"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_counter_l_right_corner",
-        "colorGroupId": "",
-        "tileGroupId": "counter_tile_group",
-        "materialGroupId": ""
-      },
-      {
-        "id": "slot_stove_l_right",
-        "label": "Counter Stove L Right",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": true,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 1,
-            "max": 1
-          },
-          "M": {
-            "min": 1,
-            "max": 1
-          },
-          "L": {
-            "min": 1,
-            "max": 1
-          },
-          "XL": {
-            "min": 1,
-            "max": 1
-          }
-        },
-        "allowedCategories": {
-          "Cooking": 5
-        },
-        "placementRules": {
-          "nearWall": true,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "allowOnPath": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture",
-        "requiredProperties": [
-          "isLow",
-          "hasSurface",
-          "hasCollision",
-          "isTableTop"
-        ],
-        "anchorRules": [
-          {
-            "anchorTarget": "slot_counter_l_right_arm_1",
-            "positions": [
-              "rightOfAnchor"
-            ],
-            "offsetAlongAnchor": 0,
-            "minOppositeWallDistance": null,
-            "maxOppositeWallDistance": null,
-            "orient": "match"
-          }
-        ],
-        "slotGroupId": "",
-        "slotGroupMode": "",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": false,
-        "softBlocks": true,
-        "blocksFrontCell": true,
-        "requiresSlot": "slot_counter_l_right_arm_1",
         "colorGroupId": "",
         "tileGroupId": "counter_tile_group",
         "materialGroupId": ""
@@ -5371,12 +4493,173 @@
         "label": "Kitchen Line Shape",
         "weight": 1,
         "slotIds": [
-          "slot_counter_main_2",
-          "slot_counter_line_1",
-          "slot_counter_line_2",
-          "slot_stove_line",
-          "slot_cooking_hood_line"
-        ]
+          "slot_counter_main_2"
+        ],
+        "pools": [
+          {
+            "id": "pool_line_counters",
+            "label": "Line Counter",
+            "totalCountBySize": {
+              "XS": {
+                "min": 1,
+                "max": 2
+              },
+              "S": {
+                "min": 2,
+                "max": 3
+              },
+              "M": {
+                "min": 3,
+                "max": 4
+              },
+              "L": {
+                "min": 4,
+                "max": 5
+              },
+              "XL": {
+                "min": 5,
+                "max": 6
+              }
+            },
+            "anchorTarget": "slot_counter_main_2",
+            "firstAnchorPosition": "rightOfAnchor",
+            "firstOrient": "match",
+            "chainAnchorPosition": "rightOfAnchor",
+            "chainOrient": "match",
+            "placementRules": {
+              "nearWall": true,
+              "nearDoor": false,
+              "nearWindow": false,
+              "centerRoom": false,
+              "cornerOnly": false,
+              "allowOnPath": false,
+              "wallAlignment": "any"
+            },
+            "requiredLayer": "Furniture2",
+            "defaultCategories": {
+              "Counter": 5
+            },
+            "requiredProperties": [
+              "isLow",
+              "hasSurface",
+              "hasCollision",
+              "isTableTop"
+            ],
+            "blocksFrontCell": false,
+            "blocksPlacement": false,
+            "softBlocks": true,
+            "colorGroupId": "",
+            "materialGroupId": "",
+            "tileGroupId": "counter_tile_group",
+            "requiredSlots": [
+              {
+                "category": "Cooking",
+                "weight": 5,
+                "count": 1,
+                "label": "Stove",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Appliances - Cooking": 5
+                    },
+                    "requiredProperties": [
+                      "isWallMounted",
+                      "isHigh"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Cooking Hood",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "Sink Counter",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Sink": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Sink",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "Appliance Counter",
+                "requiredProperties": [],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Coffee": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Coffee",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Microwave": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Microwave",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "disabled": false
       },
       {
         "id": "layout_kitchen_l_shape_left",
@@ -5384,11 +4667,173 @@
         "weight": 4,
         "slotIds": [
           "slot_counter_main_2",
-          "slot_counter_l_left_corner",
-          "slot_counter_l_left_arm_1",
-          "slot_stove_l_left",
-          "slot_cooking_hood_l_shape_left"
-        ]
+          "slot_counter_l_left_corner"
+        ],
+        "pools": [
+          {
+            "id": "pool_l_left_arm",
+            "label": "L-Left Counter",
+            "totalCountBySize": {
+              "XS": {
+                "min": 1,
+                "max": 2
+              },
+              "S": {
+                "min": 2,
+                "max": 3
+              },
+              "M": {
+                "min": 3,
+                "max": 4
+              },
+              "L": {
+                "min": 4,
+                "max": 5
+              },
+              "XL": {
+                "min": 5,
+                "max": 6
+              }
+            },
+            "anchorTarget": "slot_counter_l_left_corner",
+            "firstAnchorPosition": "leftOfAnchor",
+            "firstOrient": "perpendicularCCW",
+            "chainAnchorPosition": "rightOfAnchor",
+            "chainOrient": "match",
+            "placementRules": {
+              "nearWall": true,
+              "nearDoor": false,
+              "nearWindow": false,
+              "centerRoom": false,
+              "cornerOnly": false,
+              "allowOnPath": false,
+              "wallAlignment": "any"
+            },
+            "requiredLayer": "Furniture2",
+            "defaultCategories": {
+              "Counter": 5
+            },
+            "requiredProperties": [
+              "isLow",
+              "hasSurface",
+              "hasCollision",
+              "isTableTop"
+            ],
+            "blocksFrontCell": false,
+            "blocksPlacement": false,
+            "softBlocks": true,
+            "colorGroupId": "",
+            "materialGroupId": "",
+            "tileGroupId": "counter_tile_group",
+            "requiredSlots": [
+              {
+                "category": "Cooking",
+                "weight": 5,
+                "count": 1,
+                "label": "Stove",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Appliances - Cooking": 5
+                    },
+                    "requiredProperties": [
+                      "isWallMounted",
+                      "isHigh"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Cooking Hood",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "Sink Counter",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Sink": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Sink",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "Appliance Counter",
+                "requiredProperties": [],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Coffee": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Coffee",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Microwave": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Microwave",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "disabled": false
       },
       {
         "id": "layout_kitchen_l_shape_right",
@@ -5396,11 +4841,173 @@
         "weight": 4,
         "slotIds": [
           "slot_counter_main_2",
-          "slot_counter_l_right_corner",
-          "slot_counter_l_right_arm_1",
-          "slot_stove_l_right",
-          "slot_cooking_hood_l_shape_right"
-        ]
+          "slot_counter_l_right_corner"
+        ],
+        "pools": [
+          {
+            "id": "pool_l_right_arm",
+            "label": "L-Right Counter",
+            "totalCountBySize": {
+              "XS": {
+                "min": 1,
+                "max": 2
+              },
+              "S": {
+                "min": 2,
+                "max": 3
+              },
+              "M": {
+                "min": 3,
+                "max": 4
+              },
+              "L": {
+                "min": 4,
+                "max": 5
+              },
+              "XL": {
+                "min": 5,
+                "max": 6
+              }
+            },
+            "anchorTarget": "slot_counter_l_right_corner",
+            "firstAnchorPosition": "Below",
+            "firstOrient": "perpendicularCCW",
+            "chainAnchorPosition": "rightOfAnchor",
+            "chainOrient": "match",
+            "placementRules": {
+              "nearWall": true,
+              "nearDoor": false,
+              "nearWindow": false,
+              "centerRoom": false,
+              "cornerOnly": false,
+              "allowOnPath": false,
+              "wallAlignment": "any"
+            },
+            "requiredLayer": "Furniture2",
+            "defaultCategories": {
+              "Counter": 5
+            },
+            "requiredProperties": [
+              "isLow",
+              "hasSurface",
+              "hasCollision",
+              "isTableTop"
+            ],
+            "blocksFrontCell": true,
+            "blocksPlacement": false,
+            "softBlocks": true,
+            "colorGroupId": "",
+            "materialGroupId": "",
+            "tileGroupId": "counter_tile_group",
+            "requiredSlots": [
+              {
+                "category": "Cooking",
+                "weight": 5,
+                "count": 1,
+                "label": "Stove",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Appliances - Cooking": 5
+                    },
+                    "requiredProperties": [
+                      "isWallMounted",
+                      "isHigh"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Cooking Hood",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "Sink Counter",
+                "requiredProperties": [
+                  "isLow",
+                  "hasSurface",
+                  "hasCollision",
+                  "isTableTop"
+                ],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Sink": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Sink",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false
+                  }
+                ]
+              },
+              {
+                "category": "Counter",
+                "weight": 5,
+                "count": 1,
+                "label": "",
+                "requiredProperties": [],
+                "requiredLayer": "Furniture2",
+                "blocksFrontCell": true,
+                "blocksPlacement": false,
+                "softBlocks": true,
+                "companions": [
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Coffee": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Coffee",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Microwave": 5
+                    },
+                    "requiredProperties": [],
+                    "requiredLayer": "Furniture3",
+                    "label": "Microwave",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": true,
+                    "softBlocks": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "disabled": false
       },
       {
         "id": "layout_kitchen_u_shape",
@@ -5413,11 +5020,14 @@
           "slot_counter_u_bridge",
           "slot_stove_u",
           "slot_cooking_hood_u_shape"
-        ]
+        ],
+        "pools": [],
+        "disabled": true
       }
     ],
     "commonSlotIds": [
-      "slot_fridge"
+      "slot_fridge",
+      "slot_appliance_for_counter"
     ],
     "pathStyle": "doorOnly",
     "colorGroupId": "",

@@ -289,6 +289,7 @@
       "commonSlotsHint": "💡 Common-Slots laufen bei aktiver Layout-Variante immer zusätzlich zu den Variant-Core-Slots.",
       "noVariants": "Keine Layout-Varianten definiert – der Generator behandelt die Slots dann normal.",
       "variant": "Variante {{n}}",
+      "disabledTooltip": "Wenn deaktiviert, wird diese Variante bei der Layout-Auswahl und beim Fallback nicht berücksichtigt. Damit lässt sich eine Variante vorübergehend deaktivieren, ohne sie zu löschen.",
       "removeVariant": "Variante entfernen",
       "idLabel": "ID",
       "idPlaceholder": "z.B. kitchen_l_shape",
@@ -300,7 +301,44 @@
       "slotsCount": "({{count}} von {{total}})",
       "dropZoneHint": "📌 Ziehe Slot-IDs hier rein oder verwende die Liste unten",
       "noSlotsAdded": "Noch keine Slots hinzugefügt",
-      "variantHint": "💡 Variante = Core-Slots für das Shape. Common-Slots werden zusätzlich aus der globalen Common-Liste ergänzt."
+      "variantHint": "💡 Variante = Core-Slots für das Shape. Common-Slots werden zusätzlich aus der globalen Common-Liste ergänzt.",
+      "pools": {
+        "header": "Pool-Segmente ({{count}})",
+        "addPool": "+ Pool",
+        "noPoolsHint": "Keine Pool-Segmente. Hinzufügen, um Möbel innerhalb einer Wandkette zu randomisieren.",
+        "pool": "Pool {{n}}",
+        "noId": "(keine ID)",
+        "idLabel": "ID",
+        "labelLabel": "Label",
+        "countBySizeLabel": "Anzahl nach Größe",
+        "countBySizeTooltip": "Min/Max-Bereich der Wandpositionen, die dieser Pool je nach Raumgröße erzeugt. Der Generator versucht zuerst den Maximalwert; schlägt der Solver fehl, wird mit einem Slot weniger wiederholt, bis zum Minimalwert. Beispiel: min=2, max=3 → zuerst 3, Rückfall auf 2 bei zu engem Raum. Beide auf 0 = Pool für diese Größe deaktiviert.",
+        "anchorTargetLabel": "Anker-Slot",
+        "firstAnchorPos": "Erste Anker-Position",
+        "firstOrient": "Erste Ausrichtung",
+        "chainAnchorPos": "Ketten-Anker-Position",
+        "chainOrient": "Ketten-Ausrichtung",
+        "layerLabel": "Layer",
+        "tileGroupLabel": "Kachel-Gruppe",
+        "colorGroupLabel": "Farbgruppe",
+        "defaultCategoriesLabel": "Standard-Kategorien",
+        "requiredSlots": {
+          "header": "Pflicht-Slots ({{count}})",
+          "add": "+ Pflicht-Slot",
+          "slot": "Pflicht {{n}}",
+          "category": "Kategorie",
+          "count": "Anzahl",
+          "weight": "Gewicht",
+          "label": "Label",
+          "companions": {
+            "header": "Begleiter ({{count}})",
+            "add": "+ Begleiter",
+            "companion": "Begleiter {{n}}",
+            "label": "Label",
+            "anchorPosition": "Anker-Position",
+            "orient": "Ausrichtung"
+          }
+        }
+      }
     },
     "removeVariantConfirm": "Layout-Variante #{{n}} wirklich löschen?",
     "removeSlotConfirm": "Slot „{{name}}\" wirklich löschen?",

@@ -153,9 +153,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 var cellWalls   = ComputeWallDirections(roomCells);
                 var doorCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
                 var windowCells = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
-                var occupied         = new HashSet<(int, int)>();
-                var softOccupied     = new HashSet<(int, int)>();
-                var physicalOccupied = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
+                var occupied            = new HashSet<(int, int)>();
+                var softOccupied        = new HashSet<(int, int)>();
+                var physicalOccupied    = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
+                var blockedFrontCells   = new HashSet<(int, int)>();
 
                 // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
                 var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
@@ -208,6 +209,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // 3. Slot selection
                 var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
                 var slotsToPlace = SelectSlots(config, roomSize, rng, log, density, activeLayoutSlotIds);
+                var fallbackPoolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, 0, rng, log) : [];
+                if (fallbackPoolSlots.Count > 0)
+                    slotsToPlace = [..slotsToPlace, ..fallbackPoolSlots.Select(s => (s, 1))];
 
                 // 4. Place each slot
                 var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
@@ -226,7 +230,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             continue;
                         }
                         PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                            pathCells, occupied, softOccupied, physicalOccupied, allTiles, anchorMap, colorMap, variantMap, config,
+                            pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, allTiles, anchorMap, colorMap, variantMap, config,
                             sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
                             placements, log, rng, configKey);
                     }
@@ -318,7 +322,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             return null;
 
         var variants = config.LayoutVariants
-            .Where(v => !string.IsNullOrWhiteSpace(v.Id))
+            .Where(v => !string.IsNullOrWhiteSpace(v.Id) && !v.Disabled)
             .ToList();
 
         if (variants.Count == 0)
@@ -390,6 +394,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         public HashSet<(int, int)> Occupied { get; }
         public HashSet<(int, int)> SoftOccupied { get; }
         public HashSet<(int, int)> PhysicalOccupied { get; }
+        public HashSet<(int, int)> BlockedFrontCells { get; }
         public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
         public Dictionary<string, string> ColorMap { get; }
         public Dictionary<string, string> VariantMap { get; }
@@ -400,6 +405,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             HashSet<(int, int)> occupied,
             HashSet<(int, int)> softOccupied,
             HashSet<(int, int)> physicalOccupied,
+            HashSet<(int, int)> blockedFrontCells,
             Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
             Dictionary<string, string> colorMap,
             Dictionary<string, string> variantMap,
@@ -409,6 +415,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             Occupied = occupied;
             SoftOccupied = softOccupied;
             PhysicalOccupied = physicalOccupied;
+            BlockedFrontCells = blockedFrontCells;
             AnchorMap = anchorMap;
             ColorMap = colorMap;
             VariantMap = variantMap;
@@ -420,6 +427,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             new HashSet<(int, int)>(Occupied),
             new HashSet<(int, int)>(SoftOccupied),
             new HashSet<(int, int)>(PhysicalOccupied),
+            new HashSet<(int, int)>(BlockedFrontCells),
             new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(AnchorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(ColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(VariantMap, StringComparer.OrdinalIgnoreCase),
@@ -465,51 +473,86 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             if (activeSlotIds is null || activeSlotIds.Count == 0)
                 continue;
 
-            var slotsToPlace = SelectSlots(config, roomSize, rng, attemptLog, density, activeSlotIds);
-            if (slotsToPlace.Count == 0)
-            {
-                log.Add($"  [LAYOUT] '{variant.Id}': no slots selected for full-fit attempt");
-                continue;
-            }
+            var slotsBase = SelectSlots(config, roomSize, rng, attemptLog, density, activeSlotIds);
 
-            if (!TryPlaceCompositeLayoutVariant(
-                    variant,
-                    slotsToPlace,
-                    floorIndex,
-                    roomCells,
-                    cellWalls,
-                    doorCells,
-                    windowCells,
-                    pathCells,
-                    allTiles,
-                    config,
-                    seededColorMap,
-                    rng,
-                    roomTypeName,
-                    roomIndex1Based,
-                    selectionAnchorCol,
-                    selectionAnchorRow,
-                    out var layoutPlacements,
-                    out var placementLog,
-                    out var visitedNodes))
-            {
-                log.Add($"  [LAYOUT] '{variant.Id}': full-fit attempt failed after {visitedNodes} search nodes");
-                continue;
-            }
+            // Compute max count-step range across all pools for this variant
+            int maxStep = (variant.Pools ?? [])
+                .Select(p => p.TotalCountBySize.TryGetValue(roomSize, out var r) ? Math.Max(0, r.Max - r.Min) : 0)
+                .DefaultIfEmpty(0).Max();
 
-            if (!variant.Id.Equals(chosenVariant.Id, StringComparison.OrdinalIgnoreCase))
+            bool variantSucceeded = false;
+            for (int countStep = 0; countStep <= maxStep; countStep++)
             {
-                log.Add($"  [LAYOUT] full-fit switched from '{chosenVariant.Id}' to '{variant.Id}'" +
-                        (string.IsNullOrWhiteSpace(variant.Label) ? string.Empty : $" – {variant.Label}"));
-            }
+                // Log per-pool counts being attempted at this step
+                if (variant.Pools?.Count > 0)
+                {
+                    var countInfo = string.Join(", ", variant.Pools
+                        .Select(p =>
+                        {
+                            if (!p.TotalCountBySize.TryGetValue(roomSize, out var r)) return null;
+                            var n = Math.Max(r.Min, r.Max - countStep);
+                            return r.Max > r.Min ? $"{p.Id}={n} (range {r.Min}–{r.Max})" : $"{p.Id}={n}";
+                        })
+                        .Where(s => s is not null));
+                    if (!string.IsNullOrEmpty(countInfo))
+                        attemptLog.Add($"  [LAYOUT] '{variant.Id}' step {countStep}: pool counts — {countInfo}");
+                }
 
-            usedVariant = variant;
-            foreach (var line in attemptLog)
-                log.Add(line);
-            foreach (var line in placementLog)
-                log.Add(line);
-            placements.AddRange(layoutPlacements);
-            return true;
+                // Expand pool slots at current count step and merge
+                var poolSlots = ExpandPoolSlots(variant, roomSize, countStep, rng, attemptLog);
+                var slotsToPlace = poolSlots.Count > 0
+                    ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
+                    : slotsBase;
+
+                if (slotsToPlace.Count == 0)
+                {
+                    log.Add($"  [LAYOUT] '{variant.Id}': no slots selected for full-fit attempt");
+                    break;
+                }
+
+                if (!TryPlaceCompositeLayoutVariant(
+                        variant,
+                        slotsToPlace,
+                        floorIndex,
+                        roomCells,
+                        cellWalls,
+                        doorCells,
+                        windowCells,
+                        pathCells,
+                        allTiles,
+                        config,
+                        seededColorMap,
+                        rng,
+                        roomTypeName,
+                        roomIndex1Based,
+                        selectionAnchorCol,
+                        selectionAnchorRow,
+                        out var layoutPlacements,
+                        out var placementLog,
+                        out var visitedNodes))
+                {
+                    var stepNote = countStep < maxStep ? $", retrying with {countStep + 1} fewer pool slot(s)" : string.Empty;
+                    log.Add($"  [LAYOUT] '{variant.Id}': full-fit attempt failed after {visitedNodes} search nodes{stepNote}");
+                    continue;
+                }
+
+                // Full-fit succeeded at this count step
+                if (!variant.Id.Equals(chosenVariant.Id, StringComparison.OrdinalIgnoreCase))
+                {
+                    log.Add($"  [LAYOUT] full-fit switched from '{chosenVariant.Id}' to '{variant.Id}'" +
+                            (string.IsNullOrWhiteSpace(variant.Label) ? string.Empty : $" – {variant.Label}"));
+                }
+                usedVariant = variant;
+                foreach (var line in attemptLog)
+                    log.Add(line);
+                foreach (var line in placementLog)
+                    log.Add(line);
+                placements.AddRange(layoutPlacements);
+                variantSucceeded = true;
+                break;
+            } // end count-step loop
+
+            if (variantSucceeded) return true;
         }
 
         log.Add("  [LAYOUT] full-fit solver found no complete placement for the configured variants – falling back to slot-by-slot placement");
@@ -539,6 +582,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     {
         var orderedSlots = ExpandLayoutSlotSequence(slotsToPlace);
         var initialState = new LayoutPlacementState(
+            new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
@@ -632,10 +676,132 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             .ToList();
     }
 
+    /// <summary>
+    /// Expands a variant's Pools into ephemeral RoomTypeSlot instances chained by anchor rules.
+    /// Called inside TryPlaceCompositeLayout before the solver runs so pool slots flow through
+    /// ExpandLayoutSlotSequence and SearchCompositeLayout unchanged.
+    /// </summary>
+    private static List<RoomTypeSlot> ExpandPoolSlots(
+        LayoutVariant variant, string roomSizeKey, int countStep, Random rng, List<string> log)
+    {
+        var result = new List<RoomTypeSlot>();
+        if (variant.Pools is null || variant.Pools.Count == 0) return result;
+
+        foreach (var pool in variant.Pools)
+        {
+            if (!pool.TotalCountBySize.TryGetValue(roomSizeKey, out var countRange))
+            {
+                log.Add($"    [POOL] '{pool.Id}': no count entry for size={roomSizeKey}, skipped");
+                continue;
+            }
+            var totalCount = Math.Max(countRange.Min, countRange.Max - countStep);
+            if (totalCount <= 0)
+            {
+                log.Add($"    [POOL] '{pool.Id}': totalCount=0 for size={roomSizeKey}, skipped");
+                continue;
+            }
+
+            // Build position-type list: required slots fill first, remainder = null (default category)
+            var positionTypes = new List<LayoutPoolRequiredSlot?>();
+            int sumRequired = 0;
+            foreach (var rs in pool.RequiredSlots)
+            {
+                for (int k = 0; k < rs.Count && sumRequired < totalCount; k++, sumRequired++)
+                    positionTypes.Add(rs);
+            }
+            if (sumRequired > totalCount)
+                log.Add($"    [POOL-WARN] '{pool.Id}': sum of required counts ({sumRequired}) exceeds totalCount ({totalCount}), excess truncated");
+            while (positionTypes.Count < totalCount)
+                positionTypes.Add(null);
+
+            positionTypes = ShuffleCopy(positionTypes, rng);
+
+            log.Add($"    [POOL] '{pool.Id}': expanding {totalCount} slots ({sumRequired} required, {totalCount - sumRequired} default)");
+
+            for (int i = 0; i < totalCount; i++)
+            {
+                var slotId       = $"{pool.Id}_{i}";
+                var rs           = positionTypes[i];
+                var anchorTarget = i == 0 ? pool.AnchorTarget : $"{pool.Id}_{i - 1}";
+                var anchorPos    = i == 0 ? pool.FirstAnchorPosition : pool.ChainAnchorPosition;
+                var anchorOrient = i == 0
+                    ? (string.IsNullOrEmpty(pool.FirstOrient) ? "match" : pool.FirstOrient)
+                    : (string.IsNullOrEmpty(pool.ChainOrient) ? "match" : pool.ChainOrient);
+                var layer        = rs is not null && !string.IsNullOrEmpty(rs.RequiredLayer)
+                    ? rs.RequiredLayer : pool.RequiredLayer;
+
+                var slot = new RoomTypeSlot
+                {
+                    Id                 = slotId,
+                    Label              = rs is not null ? rs.Label : $"{pool.Label} {i + 1}",
+                    Footprint          = new SlotFootprint { Width = 1, Height = 1, CanRotate = false },
+                    Required           = true,
+                    Priority           = 0,
+                    CountBySize        = [],
+                    AllowedCategories  = rs is not null
+                        ? new Dictionary<string, int> { [rs.Category] = rs.Weight }
+                        : new Dictionary<string, int>(pool.DefaultCategories),
+                    PlacementRules     = pool.PlacementRules,
+                    RequiredLayer      = layer,
+                    RequiredProperties = rs is not null ? [..rs.RequiredProperties] : [..pool.RequiredProperties],
+                    AnchorRules        = [new AnchorRule { AnchorTarget = anchorTarget, Positions = [anchorPos], Orient = anchorOrient }],
+                    RequiresSlot       = anchorTarget,
+                    BlocksFrontCell    = rs?.BlocksFrontCell ?? pool.BlocksFrontCell,
+                    BlocksPlacement    = rs?.BlocksPlacement ?? pool.BlocksPlacement,
+                    SoftBlocks         = rs?.SoftBlocks ?? pool.SoftBlocks,
+                    ColorGroupId       = pool.ColorGroupId,
+                    MaterialGroupId    = pool.MaterialGroupId,
+                    TileGroupId        = pool.TileGroupId,
+                    SlotGroupId        = string.Empty,
+                    SlotGroupMode      = string.Empty,
+                    GroupWeight        = 5,
+                    FallbackRules      = [],
+                };
+                result.Add(slot);
+
+                // Spawn companion slots for required types that have them
+                if (rs?.Companions is { Count: > 0 } companions)
+                {
+                    for (int ci = 0; ci < companions.Count; ci++)
+                    {
+                        var c           = companions[ci];
+                        var companionId = $"{slotId}_companion_{ci}";
+                        result.Add(new RoomTypeSlot
+                        {
+                            Id                 = companionId,
+                            Label              = c.Label,
+                            Footprint          = new SlotFootprint { Width = 1, Height = 1, CanRotate = false },
+                            Required           = true,
+                            Priority           = 0,
+                            CountBySize        = [],
+                            AllowedCategories  = new Dictionary<string, int>(c.AllowedCategories),
+                            PlacementRules     = pool.PlacementRules,
+                            RequiredLayer      = c.RequiredLayer,
+                            RequiredProperties = [..c.RequiredProperties],
+                            AnchorRules        = [new AnchorRule { AnchorTarget = slotId, Positions = [c.AnchorPosition], Orient = c.Orient }],
+                            RequiresSlot       = slotId,
+                            BlocksFrontCell    = c.BlocksFrontCell,
+                            BlocksPlacement    = c.BlocksPlacement,
+                            SoftBlocks         = c.SoftBlocks,
+                            ColorGroupId       = string.Empty,
+                            MaterialGroupId    = string.Empty,
+                            TileGroupId        = string.Empty,
+                            SlotGroupId        = string.Empty,
+                            SlotGroupMode      = string.Empty,
+                            GroupWeight        = 5,
+                            FallbackRules      = [],
+                        });
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     private static List<LayoutVariant> BuildLayoutAttemptOrder(RoomTypeConfig config, LayoutVariant chosenVariant, Random rng)
     {
         var pool = config.LayoutVariants
-            .Where(v => !string.IsNullOrWhiteSpace(v.Id))
+            .Where(v => !string.IsNullOrWhiteSpace(v.Id) && !v.Disabled)
             .ToList();
 
         var order = new List<LayoutVariant>();
@@ -794,7 +960,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                         int fpH = finalTile.TileLayout.Count;
                         var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -823,7 +989,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                                  maxDist,
                                  roomCells))
                     {
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -839,7 +1005,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
 
                 var (col, row) = anchoredPos.Value;
-                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied))
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
                     result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
             }
 
@@ -863,7 +1029,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 state.PhysicalOccupied,
                 allTiles,
                 rng,
-                effectiveColorGroup);
+                effectiveColorGroup,
+                state.BlockedFrontCells);
             result.AddRange(candidates);
         }
 
@@ -1020,7 +1187,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> physicalOccupied,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Random rng,
-        string effectiveColorGroup)
+        string effectiveColorGroup,
+        HashSet<(int, int)>? blockedFrontCells = null)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
@@ -1064,7 +1232,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
                     continue;
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells))
                     continue;
                 if (slot.BlocksFrontCell)
                 {
@@ -1106,9 +1274,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> windowCells,
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
-        HashSet<(int, int)> physicalOccupied)
+        HashSet<(int, int)> physicalOccupied,
+        HashSet<(int, int)>? blockedFrontCells = null)
     {
-        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied))
+        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, null, blockedFrontCells))
             return false;
         if (slot.BlocksFrontCell)
         {
@@ -1325,7 +1494,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         if (slot.BlocksFrontCell)
             foreach (var fc in FrontCells(candidate.Col, candidate.Row, fpW, fpH, candidate.Orient))
-                state.Occupied.Add(fc);
+                state.BlockedFrontCells.Add(fc);
 
         if (candidate.Tile.IsLootContainer)
             foreach (var fc in FrontCells(candidate.Col, candidate.Row, fpW, fpH, candidate.Orient))
@@ -1379,6 +1548,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> occupied,
         HashSet<(int, int)> softOccupied,
         HashSet<(int, int)> physicalOccupied,
+        HashSet<(int, int)> blockedFrontCells,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
         Dictionary<string, string> colorMap,
@@ -1650,7 +1820,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         {
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                pathCells, occupied, softOccupied, physicalOccupied, tile, allTiles, slot.PlacementRules, rng, log,
+                pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, slot.PlacementRules, rng, log,
                 out var primaryRej);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
@@ -1665,7 +1835,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 {
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, physicalOccupied, tile, allTiles, fbRules, rng, log,
+                        pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, fbRules, rng, log,
                         out var fbRej);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
@@ -1732,7 +1902,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         if (slot.BlocksFrontCell)
             foreach (var fc in FrontCells(col, row, finalFpW, finalFpH, orient))
-                occupied.Add(fc);
+                blockedFrontCells.Add(fc);
 
         if (placedTile.IsLootContainer)
             foreach (var fc in FrontCells(col, row, finalFpW, finalFpH, orient))
@@ -1867,6 +2037,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> occupied,
         HashSet<(int, int)> softOccupied,
         HashSet<(int, int)> physicalOccupied,
+        HashSet<(int, int)>? blockedFrontCells,
         TileDefinition baseTile,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         PlacementRules rules,
@@ -1948,7 +2119,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
                 { rejNoWallDir++; continue; }
 
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells))
                 {
                     rejFits++;
                     if (traceBathtub && debugLog is not null)
@@ -2268,7 +2439,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     /// </param>
     private static bool FitsFootprint(int col, int row, int fpW, int fpH,
         HashSet<(int, int)> roomCells, HashSet<(int, int)> occupied,
-        HashSet<(int, int)>? softOccupied = null)
+        HashSet<(int, int)>? softOccupied = null,
+        HashSet<(int, int)>? blockedFrontCells = null)
     {
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
@@ -2277,6 +2449,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (!roomCells.Contains(cell)) return false;
                 if (occupied.Contains(cell))   return false;
                 if (softOccupied?.Contains(cell) == true) return false;
+                if (blockedFrontCells?.Contains(cell) == true) return false;
             }
         return true;
     }

@@ -88,6 +88,12 @@ function App() {
   const [sheetInfos, setSheetInfos]     = useState<TileSheetInfo[] | undefined>(undefined);
   const [generatorLog, setGeneratorLog] = useState<string[]>([]);
   const [logOpen, setLogOpen]           = useState(false);
+  const [selected, setSelected]         = useState<Set<string>>(new Set());
+  const [overrides, setOverrides]       = useState<Record<string, string>>({});
+  const [seed, setSeed]                 = useState<number>(() => Math.floor(Math.random() * 999999));
+  const [densityMin, setDensityMin]     = useState(50);
+  const [densityMax, setDensityMax]     = useState(100);
+  const [densityPerRoom, setDensityPerRoom] = useState(false);
 
   // Load tile config + sheet metadata once on mount (needed for furniture preview)
   useEffect(() => {
@@ -102,6 +108,8 @@ function App() {
     setPlacements([]);
     setGeneratorLog([]);
     setLogOpen(false);
+    setSelected(new Set());
+    setOverrides({});
   };
 
   /** Called by GridRenderer after a single room's path was regenerated. */
@@ -254,6 +262,20 @@ function App() {
                   if (!sheetInfos || sheetInfos.length === 0) reloadSheets();
                 }}
                 onLogChanged={log => { setGeneratorLog(log); setLogOpen(true); }}
+                selected={selected}
+                onSelectedChange={setSelected}
+                overrides={overrides}
+                onOverridesChange={setOverrides}
+                seed={seed}
+                onSeedChange={setSeed}
+                densityMin={densityMin}
+                densityMax={densityMax}
+                densityPerRoom={densityPerRoom}
+                onDensityChange={(min, max, perRoom) => {
+                  setDensityMin(min);
+                  setDensityMax(max);
+                  setDensityPerRoom(perRoom);
+                }}
               />
 
               <div ref={gridWrapperRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>

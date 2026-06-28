@@ -4,8 +4,9 @@ import {
   SIZE_KEYS, ANCHOR_POSITIONS, ANCHOR_POSITION_TOOLTIPS, ANCHOR_ORIENT_TOOLTIPS,
   REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
+  defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion,
 } from '../../types/roomTypes';
-import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot } from '../../types/roomTypes';
+import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
@@ -222,6 +223,176 @@ export function RoomTypeEditor() {
      setDraft({ ...draft, layoutVariants: variants });
      setDirty(true);
    };
+
+  // ── Pool segment management ────────────────────────────────────────────────
+
+  const addPool = (variantIdx: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    variants[variantIdx] = { ...v, pools: [...(v.pools ?? []), defaultLayoutPool()] };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const removePool = (variantIdx: number, poolIdx: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    pools.splice(poolIdx, 1);
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const updatePool = (variantIdx: number, poolIdx: number, patch: Partial<LayoutPool>) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    pools[poolIdx] = { ...pools[poolIdx], ...patch };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const addRequiredSlot = (variantIdx: number, poolIdx: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    pools[poolIdx] = { ...pool, requiredSlots: [...pool.requiredSlots, defaultLayoutPoolRequiredSlot()] };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const removeRequiredSlot = (variantIdx: number, poolIdx: number, rsIdx: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const rs = [...pool.requiredSlots];
+    rs.splice(rsIdx, 1);
+    pools[poolIdx] = { ...pool, requiredSlots: rs };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const updateRequiredSlot = (variantIdx: number, poolIdx: number, rsIdx: number, patch: Partial<LayoutPoolRequiredSlot>) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const rs = [...pool.requiredSlots];
+    rs[rsIdx] = { ...rs[rsIdx], ...patch };
+    pools[poolIdx] = { ...pool, requiredSlots: rs };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const addCompanion = (variantIdx: number, poolIdx: number, rsIdx: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const rs = [...pool.requiredSlots];
+    rs[rsIdx] = { ...rs[rsIdx], companions: [...(rs[rsIdx].companions ?? []), defaultLayoutPoolCompanion()] };
+    pools[poolIdx] = { ...pool, requiredSlots: rs };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const removeCompanion = (variantIdx: number, poolIdx: number, rsIdx: number, ci: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const rs = [...pool.requiredSlots];
+    const companions = [...(rs[rsIdx].companions ?? [])];
+    companions.splice(ci, 1);
+    rs[rsIdx] = { ...rs[rsIdx], companions };
+    pools[poolIdx] = { ...pool, requiredSlots: rs };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const updateCompanion = (variantIdx: number, poolIdx: number, rsIdx: number, ci: number, patch: Partial<LayoutPoolCompanion>) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const rs = [...pool.requiredSlots];
+    const companions = [...(rs[rsIdx].companions ?? [])];
+    companions[ci] = { ...companions[ci], ...patch };
+    rs[rsIdx] = { ...rs[rsIdx], companions };
+    pools[poolIdx] = { ...pool, requiredSlots: rs };
+    variants[variantIdx] = { ...v, pools };
+    setDraft({ ...draft, layoutVariants: variants });
+    setDirty(true);
+  };
+
+  const togglePoolCategory = (variantIdx: number, poolIdx: number, cat: string) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const cats = { ...pool.defaultCategories };
+    if (cats[cat] !== undefined) delete cats[cat]; else cats[cat] = 5;
+    updatePool(variantIdx, poolIdx, { defaultCategories: cats });
+  };
+
+  const setPoolCategoryWeight = (variantIdx: number, poolIdx: number, cat: string, w: number) => {
+    if (!draft) return;
+    const variants = [...(draft.layoutVariants ?? [])];
+    const v = variants[variantIdx];
+    if (!v) return;
+    const pools = [...(v.pools ?? [])];
+    const pool = pools[poolIdx];
+    if (!pool) return;
+    const clamped = Math.max(1, Math.min(10, w || 1));
+    updatePool(variantIdx, poolIdx, { defaultCategories: { ...pool.defaultCategories, [cat]: clamped } });
+  };
+
+  const toggleCompanionCategory = (variantIdx: number, poolIdx: number, rsIdx: number, ci: number, cat: string) => {
+    if (!draft) return;
+    const v = (draft.layoutVariants ?? [])[variantIdx];
+    if (!v) return;
+    const companion = (v.pools ?? [])[poolIdx]?.requiredSlots[rsIdx]?.companions?.[ci];
+    if (!companion) return;
+    const cats = { ...companion.allowedCategories };
+    if (cats[cat] !== undefined) delete cats[cat]; else cats[cat] = 5;
+    updateCompanion(variantIdx, poolIdx, rsIdx, ci, { allowedCategories: cats });
+  };
 
    const addCommonSlot = (slotId: string) => {
      if (!draft || !slotId) return;
@@ -1594,7 +1765,20 @@ export function RoomTypeEditor() {
             {(draft.layoutVariants ?? []).map((variant, idx) => (
               <div key={idx} className={s.anchorRuleCard}>
                 <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.variant', { n: idx + 1 })}</span>
+                  <label className={s.slotCheck} style={{ gap: 6 }}>
+                    <input
+                      type="checkbox"
+                      checked={!variant.disabled}
+                      onChange={e => updateLayoutVariant(idx, { disabled: !e.target.checked })}
+                    />
+                    <span className={s.slotGroupLabel} style={{ opacity: variant.disabled ? 0.45 : 1 }}>
+                      {t('roomTypeEditor.layoutVariants.variant', { n: idx + 1 })}
+                    </span>
+                    <span
+                      style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 2 }}
+                      title={t('roomTypeEditor.layoutVariants.disabledTooltip')}
+                    >ℹ</span>
+                  </label>
                   <button className={s.removeSlotBtn} title={t('roomTypeEditor.layoutVariants.removeVariant')} onClick={() => removeLayoutVariant(idx)}>✕</button>
                 </div>
 
@@ -1756,6 +1940,259 @@ export function RoomTypeEditor() {
                      </div>
                    </div>
                  </div>
+
+                   {/* ── Pool segments ── */}
+                   <div className={s.slotRow} style={{ justifyContent: 'space-between', marginTop: 8 }}>
+                     <span className={s.slotGroupLabel}>
+                       {t('roomTypeEditor.layoutVariants.pools.header', { count: (variant.pools ?? []).length })}
+                     </span>
+                     <button className={s.addSlotBtn} onClick={() => addPool(idx)}>
+                       {t('roomTypeEditor.layoutVariants.pools.addPool')}
+                     </button>
+                   </div>
+
+                   {(variant.pools ?? []).length === 0 && (
+                     <div style={{ fontSize: '0.68rem', color: '#556', fontStyle: 'italic', padding: '4px 0' }}>
+                       {t('roomTypeEditor.layoutVariants.pools.noPoolsHint')}
+                     </div>
+                   )}
+
+                   {(variant.pools ?? []).map((pool, poolIdx) => (
+                     <div key={poolIdx} className={s.anchorRuleCard} style={{ marginTop: 4 }}>
+                       {/* Pool header */}
+                       <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.pool', { n: poolIdx + 1 })}: {pool.id || t('roomTypeEditor.layoutVariants.pools.noId')}</span>
+                         <button className={s.removeSlotBtn} onClick={() => removePool(idx, poolIdx)}>✕</button>
+                       </div>
+
+                       {/* id / label */}
+                       <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', marginTop: 2 }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.idLabel')}</span>
+                         <input className={s.slotSizeInput} style={{ flex: 2, minWidth: 120 }} value={pool.id}
+                           onChange={e => updatePool(idx, poolIdx, { id: e.target.value })} />
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.labelLabel')}</span>
+                         <input className={s.slotSizeInput} style={{ flex: 3, minWidth: 140 }} value={pool.label}
+                           onChange={e => updatePool(idx, poolIdx, { label: e.target.value })} />
+                       </div>
+
+                       {/* totalCountBySize */}
+                       <div className={s.slotRow} style={{ gap: 5, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                         <span className={s.slotGroupLabel} title={t('roomTypeEditor.layoutVariants.pools.countBySizeTooltip')}>
+                           {t('roomTypeEditor.layoutVariants.pools.countBySizeLabel')}:
+                           <span style={{ cursor: 'help', color: '#6af', fontSize: '0.85rem', marginLeft: 4 }}>ℹ</span>
+                         </span>
+                         {SIZE_KEYS.map(sz => (
+                           <label key={sz} style={{ fontSize: '0.72rem', display: 'flex', gap: 3, alignItems: 'center' }}>
+                             {sz}
+                             <input type="number" min={0} max={20} className={s.slotNumInput}
+                               value={pool.totalCountBySize[sz]?.min ?? 0}
+                               onChange={e => updatePool(idx, poolIdx, {
+                                 totalCountBySize: { ...pool.totalCountBySize, [sz]: { ...pool.totalCountBySize[sz], min: Math.max(0, parseInt(e.target.value) || 0) } }
+                               })} />
+                             <span style={{ color: '#888' }}>–</span>
+                             <input type="number" min={0} max={20} className={s.slotNumInput}
+                               value={pool.totalCountBySize[sz]?.max ?? 0}
+                               onChange={e => updatePool(idx, poolIdx, {
+                                 totalCountBySize: { ...pool.totalCountBySize, [sz]: { ...pool.totalCountBySize[sz], max: Math.max(0, parseInt(e.target.value) || 0) } }
+                               })} />
+                           </label>
+                         ))}
+                       </div>
+
+                       {/* anchorTarget / firstAnchorPosition / firstOrient */}
+                       <div className={s.slotRow} style={{ gap: 6, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.anchorTargetLabel')}</span>
+                         <input className={s.slotSizeInput} style={{ flex: 2, minWidth: 140 }} value={pool.anchorTarget}
+                           onChange={e => updatePool(idx, poolIdx, { anchorTarget: e.target.value })} />
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.firstAnchorPos')}</span>
+                         <select className={s.slotSizeInput} style={{ minWidth: 150, width: 'auto' }} value={pool.firstAnchorPosition}
+                           onChange={e => updatePool(idx, poolIdx, { firstAnchorPosition: e.target.value as typeof ANCHOR_POSITIONS[number] })}>
+                           {ANCHOR_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                         </select>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.firstOrient')}</span>
+                         <select className={s.slotSizeInput} style={{ minWidth: 140, width: 'auto' }} value={pool.firstOrient ?? 'match'}
+                           onChange={e => updatePool(idx, poolIdx, { firstOrient: e.target.value as LayoutPool['firstOrient'] })}>
+                           {Object.keys(ANCHOR_ORIENT_TOOLTIPS).map(o => <option key={o} value={o}>{o}</option>)}
+                         </select>
+                       </div>
+
+                       {/* chainAnchorPosition / chainOrient */}
+                       <div className={s.slotRow} style={{ gap: 6, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.chainAnchorPos')}</span>
+                         <select className={s.slotSizeInput} style={{ minWidth: 150, width: 'auto' }} value={pool.chainAnchorPosition}
+                           onChange={e => updatePool(idx, poolIdx, { chainAnchorPosition: e.target.value as typeof ANCHOR_POSITIONS[number] })}>
+                           {ANCHOR_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                         </select>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.chainOrient')}</span>
+                         <select className={s.slotSizeInput} style={{ minWidth: 140, width: 'auto' }} value={pool.chainOrient ?? 'match'}
+                           onChange={e => updatePool(idx, poolIdx, { chainOrient: e.target.value as LayoutPool['chainOrient'] })}>
+                           {Object.keys(ANCHOR_ORIENT_TOOLTIPS).map(o => <option key={o} value={o}>{o}</option>)}
+                         </select>
+                       </div>
+
+                       {/* requiredLayer / tileGroupId / colorGroupId */}
+                       <div className={s.slotRow} style={{ gap: 6, marginTop: 4, flexWrap: 'wrap', alignItems: 'center' }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.layerLabel')}</span>
+                         <select className={s.slotSizeInput} style={{ minWidth: 120, width: 'auto' }} value={pool.requiredLayer}
+                           onChange={e => updatePool(idx, poolIdx, { requiredLayer: e.target.value })}>
+                           <option value="">(any)</option>
+                           {FURNITURE_LAYERS.map(l => <option key={l} value={l}>{l}</option>)}
+                         </select>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.tileGroupLabel')}</span>
+                         <input className={s.slotSizeInput} style={{ flex: 1, minWidth: 100 }} value={pool.tileGroupId}
+                           onChange={e => updatePool(idx, poolIdx, { tileGroupId: e.target.value })} />
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.colorGroupLabel')}</span>
+                         <input className={s.slotSizeInput} style={{ flex: 1, minWidth: 80 }} value={pool.colorGroupId}
+                           onChange={e => updatePool(idx, poolIdx, { colorGroupId: e.target.value })} />
+                       </div>
+
+                       {/* blocksFrontCell / blocksPlacement / softBlocks */}
+                       <div className={s.slotRow} style={{ gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                         {(['blocksFrontCell', 'blocksPlacement', 'softBlocks'] as const).map(key => (
+                           <label key={key} className={s.slotCheck}>
+                             <input type="checkbox" checked={pool[key]}
+                               onChange={e => updatePool(idx, poolIdx, { [key]: e.target.checked })} />
+                             {key}
+                           </label>
+                         ))}
+                       </div>
+
+                       {/* defaultCategories */}
+                       <div className={s.slotRow} style={{ marginTop: 6 }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.defaultCategoriesLabel')}</span>
+                       </div>
+                       {Object.entries(pool.defaultCategories).map(([cat, w]) => (
+                         <div key={cat} className={s.slotRow} style={{ gap: 6, marginTop: 2 }}>
+                           <span className={`${s.chip} ${s.chipActive}`} onClick={() => togglePoolCategory(idx, poolIdx, cat)}>{cat} ✕</span>
+                           <input type="number" min={1} max={10} className={s.slotNumInput} value={w}
+                             onChange={e => setPoolCategoryWeight(idx, poolIdx, cat, +e.target.value)} />
+                         </div>
+                       ))}
+                       <div className={s.chipGroup} style={{ marginTop: 4 }}>
+                         {availGroups.filter(g => pool.defaultCategories[g] === undefined).map(g => (
+                           <span key={g} className={s.chip} onClick={() => togglePoolCategory(idx, poolIdx, g)}>{g}</span>
+                         ))}
+                       </div>
+
+                       {/* Required slots */}
+                       <div className={s.slotRow} style={{ justifyContent: 'space-between', marginTop: 8 }}>
+                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.header', { count: pool.requiredSlots.length })}</span>
+                         <button className={s.addSlotBtn} onClick={() => addRequiredSlot(idx, poolIdx)}>
+                           {t('roomTypeEditor.layoutVariants.pools.requiredSlots.add')}
+                         </button>
+                       </div>
+
+                       {pool.requiredSlots.map((rs, rsIdx) => (
+                         <div key={rsIdx} className={s.anchorRuleCard} style={{ marginTop: 4, background: '#1a2233' }}>
+                           <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.slot', { n: rsIdx + 1 })}</span>
+                             <button className={s.removeSlotBtn} onClick={() => removeRequiredSlot(idx, poolIdx, rsIdx)}>✕</button>
+                           </div>
+
+                           {/* category / count / weight / label */}
+                           <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}>
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.category')}</span>
+                             <select className={s.slotSizeInput} style={{ minWidth: 160, width: 'auto' }} value={rs.category}
+                               onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { category: e.target.value })}>
+                               <option value="">—</option>
+                               {availGroups.map(g => <option key={g} value={g}>{g}</option>)}
+                             </select>
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.count')}</span>
+                             <input type="number" min={1} max={10} className={s.slotNumInput} value={rs.count}
+                               onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { count: Math.max(1, parseInt(e.target.value) || 1) })} />
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.weight')}</span>
+                             <input type="number" min={1} max={10} className={s.slotNumInput} value={rs.weight}
+                               onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { weight: Math.max(1, parseInt(e.target.value) || 1) })} />
+                           </div>
+                           <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}>
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.label')}</span>
+                             <input className={s.slotSizeInput} style={{ flex: 2, minWidth: 120 }} value={rs.label}
+                               onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { label: e.target.value })} />
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.layerLabel')}</span>
+                             <select className={s.slotSizeInput} style={{ minWidth: 120, width: 'auto' }} value={rs.requiredLayer}
+                               onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { requiredLayer: e.target.value })}>
+                               <option value="">(inherit pool)</option>
+                               {FURNITURE_LAYERS.map(l => <option key={l} value={l}>{l}</option>)}
+                             </select>
+                           </div>
+                           <div className={s.slotRow} style={{ gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                             {(['blocksFrontCell', 'blocksPlacement', 'softBlocks'] as const).map(key => (
+                               <label key={key} className={s.slotCheck}>
+                                 <input type="checkbox" checked={rs[key]}
+                                   onChange={e => updateRequiredSlot(idx, poolIdx, rsIdx, { [key]: e.target.checked })} />
+                                 {key}
+                               </label>
+                             ))}
+                           </div>
+
+                           {/* Companions */}
+                           <div className={s.slotRow} style={{ justifyContent: 'space-between', marginTop: 6 }}>
+                             <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.header', { count: (rs.companions ?? []).length })}</span>
+                             <button className={s.addSlotBtn} onClick={() => addCompanion(idx, poolIdx, rsIdx)}>
+                               {t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.add')}
+                             </button>
+                           </div>
+
+                           {(rs.companions ?? []).map((c, ci) => (
+                             <div key={ci} className={s.anchorRuleCard} style={{ marginTop: 3, background: '#141c2c' }}>
+                               <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 3 }}>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.companion', { n: ci + 1 })}: {c.label || '—'}</span>
+                                 <button className={s.removeSlotBtn} onClick={() => removeCompanion(idx, poolIdx, rsIdx, ci)}>✕</button>
+                               </div>
+                               <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.label')}</span>
+                                 <input className={s.slotSizeInput} style={{ flex: 2, minWidth: 120 }} value={c.label}
+                                   onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { label: e.target.value })} />
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.layerLabel')}</span>
+                                 <select className={s.slotSizeInput} style={{ minWidth: 120, width: 'auto' }} value={c.requiredLayer}
+                                   onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { requiredLayer: e.target.value })}>
+                                   <option value="">—</option>
+                                   {FURNITURE_LAYERS.map(l => <option key={l} value={l}>{l}</option>)}
+                                 </select>
+                               </div>
+                               <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.anchorPosition')}</span>
+                                 <select className={s.slotSizeInput} style={{ minWidth: 150, width: 'auto' }} value={c.anchorPosition}
+                                   onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { anchorPosition: e.target.value as typeof ANCHOR_POSITIONS[number] })}>
+                                   {ANCHOR_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
+                                 </select>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.orient')}</span>
+                                 <select className={s.slotSizeInput} style={{ minWidth: 140, width: 'auto' }} value={c.orient ?? 'match'}
+                                   onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { orient: e.target.value as LayoutPoolCompanion['orient'] })}>
+                                   {Object.keys(ANCHOR_ORIENT_TOOLTIPS).map(o => <option key={o} value={o}>{o}</option>)}
+                                 </select>
+                               </div>
+                               <div className={s.slotRow} style={{ gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
+                                 {(['blocksFrontCell', 'blocksPlacement', 'softBlocks'] as const).map(key => (
+                                   <label key={key} className={s.slotCheck}>
+                                     <input type="checkbox" checked={c[key]}
+                                       onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { [key]: e.target.checked })} />
+                                     {key}
+                                   </label>
+                                 ))}
+                               </div>
+                               {/* Companion categories */}
+                               <div className={s.slotRow} style={{ marginTop: 4 }}>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.defaultCategoriesLabel')}</span>
+                               </div>
+                               {Object.entries(c.allowedCategories).map(([cat, w]) => (
+                                 <div key={cat} className={s.slotRow} style={{ gap: 6, marginTop: 2 }}>
+                                   <span className={`${s.chip} ${s.chipActive}`} onClick={() => toggleCompanionCategory(idx, poolIdx, rsIdx, ci, cat)}>{cat} ✕</span>
+                                   <input type="number" min={1} max={10} className={s.slotNumInput} value={w}
+                                     onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { allowedCategories: { ...c.allowedCategories, [cat]: Math.max(1, +e.target.value || 1) } })} />
+                                 </div>
+                               ))}
+                               <div className={s.chipGroup} style={{ marginTop: 3 }}>
+                                 {availGroups.filter(g => c.allowedCategories[g] === undefined).map(g => (
+                                   <span key={g} className={s.chip} onClick={() => toggleCompanionCategory(idx, poolIdx, rsIdx, ci, g)}>{g}</span>
+                                 ))}
+                               </div>
+                             </div>
+                           ))}
+                         </div>
+                       ))}
+                     </div>
+                   ))}
 
                    <div className={s.slotHint} style={{ marginTop: 4 }}>
                     {t('roomTypeEditor.layoutVariants.variantHint')}

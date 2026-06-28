@@ -289,6 +289,7 @@
       "commonSlotsHint": "💡 Common slots always run in addition to the variant's core slots when a layout variant is active.",
       "noVariants": "No layout variants defined – the generator treats the slots normally.",
       "variant": "Variant {{n}}",
+      "disabledTooltip": "When unchecked, this variant is excluded from layout selection and fallback attempts. Use this to temporarily disable a variant without deleting it.",
       "removeVariant": "Remove variant",
       "idLabel": "ID",
       "idPlaceholder": "e.g. kitchen_l_shape",
@@ -300,7 +301,44 @@
       "slotsCount": "({{count}} of {{total}})",
       "dropZoneHint": "📌 Drag slot IDs here or use the list below",
       "noSlotsAdded": "No slots added yet",
-      "variantHint": "💡 Variant = core slots for the shape. Common slots are added on top from the global common list."
+      "variantHint": "💡 Variant = core slots for the shape. Common slots are added on top from the global common list.",
+      "pools": {
+        "header": "Pool segments ({{count}})",
+        "addPool": "+ Pool",
+        "noPoolsHint": "No pool segments. Add one to randomise furniture within a wall chain.",
+        "pool": "Pool {{n}}",
+        "noId": "(no id)",
+        "idLabel": "ID",
+        "labelLabel": "Label",
+        "countBySizeLabel": "Count by size",
+        "countBySizeTooltip": "Min/max range of wall positions this pool generates per room size. The generator tries the maximum count first; if the full-fit solver fails, it retries with one fewer slot, down to the minimum. Example: min=2, max=3 → tries 3 first, falls back to 2 if the room is too tight. Set both to 0 to disable the pool for that size.",
+        "anchorTargetLabel": "Anchor target",
+        "firstAnchorPos": "First anchor pos",
+        "firstOrient": "First orient",
+        "chainAnchorPos": "Chain anchor pos",
+        "chainOrient": "Chain orient",
+        "layerLabel": "Layer",
+        "tileGroupLabel": "Tile group",
+        "colorGroupLabel": "Color group",
+        "defaultCategoriesLabel": "Default categories",
+        "requiredSlots": {
+          "header": "Required slots ({{count}})",
+          "add": "+ Required slot",
+          "slot": "Required {{n}}",
+          "category": "Category",
+          "count": "Count",
+          "weight": "Weight",
+          "label": "Label",
+          "companions": {
+            "header": "Companions ({{count}})",
+            "add": "+ Companion",
+            "companion": "Companion {{n}}",
+            "label": "Label",
+            "anchorPosition": "Anchor pos",
+            "orient": "Orient"
+          }
+        }
+      }
     },
     "removeVariantConfirm": "Really delete layout variant #{{n}}?",
     "removeSlotConfirm": "Really delete slot \"{{name}}\"?",

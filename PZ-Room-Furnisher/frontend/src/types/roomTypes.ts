@@ -257,6 +257,77 @@ export interface RoomTypeSlot {
   materialGroupId: string;
 }
 
+/** Companion slot spawned when its parent required-pool-slot is placed (e.g. cooking hood above stove). */
+export interface LayoutPoolCompanion {
+  anchorPosition: AnchorPosition;
+  orient?: AnchorRule['orient'];
+  allowedCategories: Record<string, number>;
+  requiredProperties: string[];
+  requiredLayer: string;
+  label: string;
+  blocksFrontCell: boolean;
+  blocksPlacement: boolean;
+  softBlocks: boolean;
+}
+
+/** A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove"). */
+export interface LayoutPoolRequiredSlot {
+  /** Tile category for this position, e.g. "Cooking". Becomes allowedCategories: { [category]: weight }. */
+  category: string;
+  weight: number;
+  /** How many times this type must appear in the pool. */
+  count: number;
+  label: string;
+  requiredProperties: string[];
+  /** Override pool's requiredLayer for this position only. Empty = use pool's layer. */
+  requiredLayer: string;
+  blocksFrontCell: boolean;
+  blocksPlacement: boolean;
+  softBlocks: boolean;
+  companions?: LayoutPoolCompanion[];
+}
+
+/** Min/max slot count range for a pool segment per room size. */
+export interface LayoutPoolCountRange {
+  min: number;
+  max: number;
+}
+
+/**
+ * A dynamic chain of N wall-adjacent slots within a LayoutVariant.
+ * The generator expands this at runtime into RoomTypeSlot instances, chained by anchor rules.
+ * Corner/structural slots remain in slotIds; pools fill the randomisable counter runs.
+ */
+export interface LayoutPool {
+  id: string;
+  label: string;
+  /** Total positions in this pool segment per room size (min/max range; generator tries max first, falls back to min). */
+  totalCountBySize: Record<SizeKey, LayoutPoolCountRange>;
+  /** Fixed slot ID the first pool slot anchors to (e.g. a corner slot). */
+  anchorTarget: string;
+  /** AnchorPosition for pool slot 0 relative to anchorTarget. */
+  firstAnchorPosition: AnchorPosition;
+  /** Orient for pool slot 0's anchor rule. Defaults to "match". */
+  firstOrient: AnchorRule['orient'];
+  /** AnchorPosition for pool slot N relative to pool slot N-1. */
+  chainAnchorPosition: AnchorPosition;
+  /** Orient for chain slot anchor rules. Defaults to "match". */
+  chainOrient: AnchorRule['orient'];
+  placementRules: PlacementRules;
+  requiredLayer: string;
+  /** Category weights for positions not reserved by requiredSlots. */
+  defaultCategories: Record<string, number>;
+  requiredProperties: string[];
+  blocksFrontCell: boolean;
+  blocksPlacement: boolean;
+  softBlocks: boolean;
+  colorGroupId: string;
+  materialGroupId: string;
+  tileGroupId: string;
+  /** Guaranteed-typed positions (e.g. 1 stove, 1 sink counter). */
+  requiredSlots: LayoutPoolRequiredSlot[];
+}
+
   /** Alternative Layout-Variante für zusammengesetzte Möbel/Shapes. */
   export interface LayoutVariant {
     /** Eindeutige ID innerhalb des Raumtyps, z.B. "kitchen_l_shape". */
@@ -267,6 +338,10 @@ export interface RoomTypeSlot {
     weight: number;
     /** Core-Slots, die in dieser Variante aktiv sind. Leer = alle Slots des Raumtyps. */
     slotIds: string[];
+    /** Dynamic pool segments: chains of N wall-adjacent slots with randomised furniture types. */
+    pools?: LayoutPool[];
+    /** When true, variant is excluded from selection and fallback attempts. */
+    disabled?: boolean;
   }
 
 export interface RoomTypeConfig {
@@ -300,6 +375,59 @@ export function defaultCountBySize(): Record<SizeKey, SlotCount> {
     M:  { min: 0, max: 2 },
     L:  { min: 0, max: 3 },
     XL: { min: 0, max: 4 },
+  };
+}
+
+export function defaultLayoutPoolCompanion(): LayoutPoolCompanion {
+  return {
+    anchorPosition: 'Center',
+    orient: 'match',
+    allowedCategories: {},
+    requiredProperties: [],
+    requiredLayer: '',
+    label: '',
+    blocksFrontCell: false,
+    blocksPlacement: true,
+    softBlocks: false,
+  };
+}
+
+export function defaultLayoutPoolRequiredSlot(): LayoutPoolRequiredSlot {
+  return {
+    category: '',
+    weight: 5,
+    count: 1,
+    label: '',
+    requiredProperties: [],
+    requiredLayer: '',
+    blocksFrontCell: false,
+    blocksPlacement: false,
+    softBlocks: true,
+    companions: [],
+  };
+}
+
+export function defaultLayoutPool(): LayoutPool {
+  return {
+    id: '',
+    label: '',
+    totalCountBySize: { XS: { min: 0, max: 0 }, S: { min: 2, max: 2 }, M: { min: 3, max: 3 }, L: { min: 4, max: 4 }, XL: { min: 5, max: 5 } },
+    anchorTarget: '',
+    firstAnchorPosition: 'rightOfAnchor',
+    firstOrient: 'match',
+    chainAnchorPosition: 'rightOfAnchor',
+    chainOrient: 'match',
+    placementRules: { ...defaultPlacementRules(), nearWall: true },
+    requiredLayer: 'Furniture2',
+    defaultCategories: {},
+    requiredProperties: [],
+    blocksFrontCell: false,
+    blocksPlacement: false,
+    softBlocks: true,
+    colorGroupId: '',
+    materialGroupId: '',
+    tileGroupId: '',
+    requiredSlots: [],
   };
 }
 

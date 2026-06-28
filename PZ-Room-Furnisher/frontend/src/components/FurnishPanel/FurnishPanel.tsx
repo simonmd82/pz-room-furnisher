@@ -11,6 +11,16 @@ interface Props {
   fileName: string;
   onPlacementsChanged: (placements: PlacedFurnitureItem[]) => void;
   onLogChanged?: (log: string[]) => void;
+  selected: Set<string>;
+  onSelectedChange: (next: Set<string>) => void;
+  overrides: Record<string, string>;
+  onOverridesChange: (next: Record<string, string>) => void;
+  seed: number;
+  onSeedChange: (seed: number) => void;
+  densityMin: number;
+  densityMax: number;
+  densityPerRoom: boolean;
+  onDensityChange: (min: number, max: number, perRoom: boolean) => void;
 }
 
 interface RoomEntry {
@@ -118,28 +128,21 @@ function tbxColorToCss(color: string | undefined): string {
   return '#888';
 }
 
-export default function FurnishPanel({ building, fileName, onPlacementsChanged, onLogChanged }: Props) {
+export default function FurnishPanel({
+  building, fileName, onPlacementsChanged, onLogChanged,
+  selected, onSelectedChange, overrides, onOverridesChange,
+  seed, onSeedChange, densityMin, densityMax, densityPerRoom, onDensityChange,
+}: Props) {
   const { t } = useTranslation();
   const [knownTypes, setKnownTypes]     = useState<string[]>([]);
-  const [selected, setSelected]         = useState<Set<string>>(new Set());
-  const [overrides, setOverrides]       = useState<Record<string, string>>({});
-  const [seed, setSeed]                 = useState<number>(() => Math.floor(Math.random() * 999999));
   const [running, setRunning]           = useState(false);
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
-  const [densityMin, setDensityMin]       = useState<number>(50);
-  const [densityMax, setDensityMax]       = useState<number>(100);
-  const [densityPerRoom, setDensityPerRoom] = useState<boolean>(false);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
   }, []);
-
-  useEffect(() => {
-    setSelected(new Set());
-    setOverrides({});
-  }, [building]);
 
   const roomsByFloor  = useMemo(() => collectRoomsByFloor(building), [building]);
   const allRoomsFlat  = useMemo(() => [...roomsByFloor.values()].flat(), [roomsByFloor]);
@@ -156,21 +159,19 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
     return [...types].sort();
   }, [allRoomsFlat, building.rooms]);
 
-  const toggleRoom = (key: string) => setSelected(prev => {
-    const next = new Set(prev);
+  const toggleRoom = (key: string) => {
+    const next = new Set(selected);
     next.has(key) ? next.delete(key) : next.add(key);
-    return next;
-  });
+    onSelectedChange(next);
+  };
 
   const toggleFloor = (floorIndex: number) => {
     const keys = (roomsByFloor.get(floorIndex) ?? []).map(selKey);
     const allSel = keys.every(k => selected.has(k));
-    setSelected(prev => {
-      const next = new Set(prev);
-      if (allSel) keys.forEach(k => next.delete(k));
-      else keys.forEach(k => next.add(k));
-      return next;
-    });
+    const next = new Set(selected);
+    if (allSel) keys.forEach(k => next.delete(k));
+    else keys.forEach(k => next.add(k));
+    onSelectedChange(next);
   };
 
   const toggleByType = (typeName: string) => {
@@ -178,18 +179,16 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
       .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
       .map(selKey);
     const allSel = keys.every(k => selected.has(k));
-    setSelected(prev => {
-      const next = new Set(prev);
-      if (allSel) keys.forEach(k => next.delete(k));
-      else keys.forEach(k => next.add(k));
-      return next;
-    });
+    const next = new Set(selected);
+    if (allSel) keys.forEach(k => next.delete(k));
+    else keys.forEach(k => next.add(k));
+    onSelectedChange(next);
   };
 
   const toggleAll = () => {
     const allKeys = allRoomsFlat.map(selKey);
     const allSel  = allKeys.every(k => selected.has(k));
-    setSelected(allSel ? new Set() : new Set(allKeys));
+    onSelectedChange(allSel ? new Set() : new Set(allKeys));
   };
 
   const floorCheckState = (floorIndex: number): 'all' | 'some' | 'none' => {
@@ -340,7 +339,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
                       placeholder={t('furnishPanel.roomTypePlaceholder', { type: typeName || t('furnishPanel.unknown') })}
                       value={overrides[key] ?? ''}
                       list="knownTypesList"
-                      onChange={e => setOverrides(prev => ({ ...prev, [key]: e.target.value }))}
+                      onChange={e => onOverridesChange({ ...overrides, [key]: e.target.value })}
                     />
                   )}
                 </div>
@@ -362,11 +361,11 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
           type="number"
           className={s.seedInput}
           value={seed}
-          onChange={e => setSeed(+e.target.value)}
+          onChange={e => onSeedChange(+e.target.value)}
         />
         <button
           className={s.seedRandom}
-          onClick={() => setSeed(Math.floor(Math.random() * 999999))}
+          onClick={() => onSeedChange(Math.floor(Math.random() * 999999))}
           title={t('furnishPanel.randomSeed')}>
           🎲
         </button>
@@ -382,8 +381,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
           className={s.densitySlider}
           onChange={e => {
             const v = +e.target.value;
-            setDensityMin(v);
-            if (v > densityMax) setDensityMax(v);
+            onDensityChange(v, Math.max(v, densityMax), densityPerRoom);
           }}
         />
       </div>
@@ -395,8 +393,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
           className={s.densitySlider}
           onChange={e => {
             const v = +e.target.value;
-            setDensityMax(v);
-            if (v < densityMin) setDensityMin(v);
+            onDensityChange(Math.min(v, densityMin), v, densityPerRoom);
           }}
         />
       </div>
@@ -405,7 +402,7 @@ export default function FurnishPanel({ building, fileName, onPlacementsChanged, 
         <input
           type="checkbox"
           checked={densityPerRoom}
-          onChange={e => setDensityPerRoom(e.target.checked)}
+          onChange={e => onDensityChange(densityMin, densityMax, e.target.checked)}
         />
         {t('furnishPanel.densityPerRoom')}
       </label>

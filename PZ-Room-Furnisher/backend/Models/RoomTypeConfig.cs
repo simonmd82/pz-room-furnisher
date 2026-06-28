@@ -235,6 +235,72 @@ public class RoomTypeSlot
     public string MaterialGroupId { get; set; } = string.Empty;
 }
 
+/// <summary>Companion slot spawned when its parent required-pool-slot is placed (e.g. cooking hood above stove).</summary>
+public class LayoutPoolCompanion
+{
+    public string AnchorPosition     { get; set; } = string.Empty;
+    public string? Orient            { get; set; }
+    public Dictionary<string, int>  AllowedCategories  { get; set; } = [];
+    public List<string>             RequiredProperties { get; set; } = [];
+    public string RequiredLayer      { get; set; } = string.Empty;
+    public string Label              { get; set; } = string.Empty;
+    public bool BlocksFrontCell      { get; set; } = false;
+    public bool BlocksPlacement      { get; set; } = true;
+    public bool SoftBlocks           { get; set; } = false;
+}
+
+/// <summary>A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove").</summary>
+public class LayoutPoolRequiredSlot
+{
+    public string Category           { get; set; } = string.Empty;
+    public int    Weight             { get; set; } = 5;
+    public int    Count              { get; set; } = 1;
+    public string Label              { get; set; } = string.Empty;
+    public List<string> RequiredProperties { get; set; } = [];
+    /// <summary>Override pool's RequiredLayer for this position. Empty = inherit pool layer.</summary>
+    public string RequiredLayer      { get; set; } = string.Empty;
+    public bool BlocksFrontCell      { get; set; } = false;
+    public bool BlocksPlacement      { get; set; } = false;
+    public bool SoftBlocks           { get; set; } = true;
+    public List<LayoutPoolCompanion> Companions { get; set; } = [];
+}
+
+/// <summary>Min/max slot count for a pool segment per room size.</summary>
+public class LayoutPoolCountRange
+{
+    public int Min { get; set; } = 0;
+    public int Max { get; set; } = 0;
+}
+
+/// <summary>
+/// A dynamic chain of N wall-adjacent slots within a LayoutVariant.
+/// The generator expands this at runtime into RoomTypeSlot instances chained by anchor rules.
+/// </summary>
+public class LayoutPool
+{
+    public string Id                 { get; set; } = string.Empty;
+    public string Label              { get; set; } = string.Empty;
+    public Dictionary<string, LayoutPoolCountRange> TotalCountBySize { get; set; } = new();
+    public string AnchorTarget       { get; set; } = string.Empty;
+    public string FirstAnchorPosition { get; set; } = string.Empty;
+    /// <summary>Orient for the first pool slot's anchor rule. Null/"" defaults to "match".</summary>
+    public string? FirstOrient       { get; set; }
+    public string ChainAnchorPosition { get; set; } = string.Empty;
+    /// <summary>Orient for chained pool slots. Null/"" defaults to "match".</summary>
+    public string? ChainOrient       { get; set; }
+    public PlacementRules PlacementRules { get; set; } = new();
+    public string RequiredLayer      { get; set; } = string.Empty;
+    public Dictionary<string, int> DefaultCategories { get; set; } = [];
+    public List<string> RequiredProperties { get; set; } = [];
+    public bool BlocksFrontCell      { get; set; } = false;
+    public bool BlocksPlacement      { get; set; } = false;
+    public bool SoftBlocks           { get; set; } = true;
+    public string ColorGroupId       { get; set; } = string.Empty;
+    public string MaterialGroupId    { get; set; } = string.Empty;
+    public string TileGroupId        { get; set; } = string.Empty;
+    public List<LayoutPoolRequiredSlot> RequiredSlots { get; set; } = [];
+}
+
 /// <summary>
 /// Alternative Layout-Variante für zusammengesetzte Möbel/Shapes.
 /// Eine Variante aktiviert einen Satz von Slots gemeinsam (z.B. lineare Küche, L-Sofa, U-Theke).
@@ -252,6 +318,10 @@ public class LayoutVariant
     /// So lassen sich z.B. lineare, L- oder U-Formen als alternative Shapes definieren.
     /// </summary>
     public List<string> SlotIds { get; set; } = [];
+    /// <summary>Dynamic pool segments: chains of N wall-adjacent slots with randomised furniture types.</summary>
+    public List<LayoutPool> Pools { get; set; } = [];
+    /// <summary>When true, variant is excluded from weighted selection and fallback attempts.</summary>
+    public bool Disabled { get; set; } = false;
 }
 
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>
