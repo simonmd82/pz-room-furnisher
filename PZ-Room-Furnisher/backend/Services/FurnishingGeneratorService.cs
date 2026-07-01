@@ -94,6 +94,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         double density = DrawDensity();
         log.Add($"[DENSITY] range=[{dMin:P0}–{dMax:P0}] perRoom={perRoom} (flag={req.DensityPerRoom}) → initial={density:P0}");
 
+        // Tracks which opening-adjacent cells in one room are blocked by placed furniture,
+        // so the opposing room's opening group is reduced accordingly (aligned-pair awareness).
+        var crossRoomBlockedPerFloor = new Dictionary<int, HashSet<(int, int)>>();
+
         foreach (var sel in req.RoomSelections)
         {
             var floor = req.Building.Floors.FirstOrDefault(f => f.Index == sel.FloorIndex);
@@ -149,10 +153,34 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 var layoutVariant = SelectLayoutVariant(config, rng, log);
 
-                var roomSize    = RoomSize.Classify(roomCells.Count);
-                var cellWalls   = ComputeWallDirections(roomCells);
-                var doorCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
-                var windowCells = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
+                var roomSize      = RoomSize.Classify(roomCells.Count);
+                var cellWalls     = ComputeWallDirections(roomCells, floor);
+                var doorCells     = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
+                var windowCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
+                var innerWallKeys = floor.Edges
+                    .Where(e => e.Type == FloorObjectType.InnerWall)
+                    .Select(e => e.EdgeKey)
+                    .ToHashSet();
+                // Gap cells are the only passages through inner walls — protect like doorways
+                if (innerWallKeys.Count > 0)
+                    doorCells.UnionWith(ComputeInnerWallGapCells(roomCells, innerWallKeys));
+                // Opening edges: group by external room → each room needs ≥1 free access cell.
+                // Size-1 groups → strict (like door); size ≥ 2 → soft (at least 1 must stay open).
+                // Cross-room awareness: cells whose opposing side was already blocked in another room
+                // are removed from the effective group (shrinks the soft-protect count accordingly).
+                var allOpeningGroups = ComputeOpeningGroups(floor, roomCells);
+                var openingGroups    = new List<HashSet<(int, int)>>();
+                crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crossRoomBlocked);
+                foreach (var g in allOpeningGroups)
+                {
+                    var effectiveGroup = crossRoomBlocked is { Count: > 0 }
+                        ? new HashSet<(int, int)>(g.Where(c => !crossRoomBlocked.Contains(c)))
+                        : g;
+                    if (effectiveGroup.Count == 0) continue;
+                    if (effectiveGroup.Count == 1) doorCells.UnionWith(effectiveGroup);
+                    else                           openingGroups.Add(effectiveGroup);
+                }
+                var mainSubRoomCells = ComputeMainSubRoom(roomCells, innerWallKeys, doorCells);
                 var occupied            = new HashSet<(int, int)>();
                 var softOccupied        = new HashSet<(int, int)>();
                 var physicalOccupied    = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
@@ -199,6 +227,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             sel.AnchorRow,
                             placements,
                             log,
+                            innerWallKeys,
+                            mainSubRoomCells,
+                            openingGroups,
                             out var usedVariant))
                     {
                         log.Add($"[ROOM] layout variant -> '{usedVariant!.Id}'");
@@ -232,8 +263,20 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
                             pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, allTiles, anchorMap, colorMap, variantMap, config,
                             sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
-                            placements, log, rng, configKey);
+                            placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups);
                     }
+
+                // After furnishing: record which opening-adjacent cells are now blocked so
+                // later rooms shrink their effective opening group on the opposing side.
+                if (!crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crb))
+                    crossRoomBlockedPerFloor[sel.FloorIndex] = crb = new HashSet<(int, int)>();
+                foreach (var edge in floor.Edges.Where(e => e.Type == FloorObjectType.Opening))
+                {
+                    var c1 = (edge.Cell1Col, edge.Cell1Row);
+                    var c2 = (edge.Cell2Col, edge.Cell2Row);
+                    if (roomCells.Contains(c1) && occupied.Contains(c1)) crb.Add(c2);
+                    if (roomCells.Contains(c2) && occupied.Contains(c2)) crb.Add(c1);
+                }
             }
         }
 
@@ -463,6 +506,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int? selectionAnchorRow,
         List<PlacedFurnitureItem> placements,
         List<string> log,
+        HashSet<string>? innerWallKeys,
+        HashSet<(int, int)>? mainSubRoomCells,
+        List<HashSet<(int, int)>>? openingGroups,
         out LayoutVariant? usedVariant)
     {
         usedVariant = null;
@@ -527,6 +573,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         roomIndex1Based,
                         selectionAnchorCol,
                         selectionAnchorRow,
+                        innerWallKeys,
+                        mainSubRoomCells,
+                        openingGroups,
                         out var layoutPlacements,
                         out var placementLog,
                         out var visitedNodes))
@@ -576,6 +625,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int roomIndex1Based,
         int? selectionAnchorCol,
         int? selectionAnchorRow,
+        HashSet<string>? innerWallKeys,
+        HashSet<(int, int)>? mainSubRoomCells,
+        List<HashSet<(int, int)>>? openingGroups,
         out List<PlacedFurnitureItem> layoutPlacements,
         out List<string> placementLog,
         out int visitedNodes)
@@ -610,6 +662,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 roomIndex1Based,
                 selectionAnchorCol,
                 selectionAnchorRow,
+                innerWallKeys,
+                mainSubRoomCells,
+                openingGroups,
                 ref visitedNodes,
                 out var finalState))
         {
@@ -852,6 +907,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int roomIndex1Based,
         int? selectionAnchorCol,
         int? selectionAnchorRow,
+        HashSet<string>? innerWallKeys,
+        HashSet<(int, int)>? mainSubRoomCells,
+        List<HashSet<(int, int)>>? openingGroups,
         ref int visitedNodes,
         out LayoutPlacementState finalState)
     {
@@ -880,7 +938,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             state,
             config,
             rng,
-            roomTypeName);
+            roomTypeName,
+            innerWallKeys,
+            mainSubRoomCells,
+            openingGroups);
 
         foreach (var candidate in candidates)
         {
@@ -903,6 +964,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     roomIndex1Based,
                     selectionAnchorCol,
                     selectionAnchorRow,
+                    innerWallKeys,
+                    mainSubRoomCells,
+                    openingGroups,
                     ref visitedNodes,
                     out finalState))
             {
@@ -925,7 +989,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         LayoutPlacementState state,
         RoomTypeConfig config,
         Random rng,
-        string roomTypeName)
+        string roomTypeName,
+        HashSet<string>? innerWallKeys = null,
+        HashSet<(int, int)>? mainSubRoomCells = null,
+        List<HashSet<(int, int)>>? openingGroups = null)
     {
         if (!string.IsNullOrEmpty(slot.RequiresSlot)
             && !state.AnchorMap.ContainsKey(slot.RequiresSlot))
@@ -960,7 +1027,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                         int fpH = finalTile.TileLayout.Count;
                         var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -987,9 +1054,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                                  fpH,
                                  minDist,
                                  maxDist,
-                                 roomCells))
+                                 roomCells,
+                                 innerWallKeys))
                     {
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1005,7 +1073,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
 
                 var (col, row) = anchoredPos.Value;
-                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells))
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
                     result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
             }
 
@@ -1030,7 +1098,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 allTiles,
                 rng,
                 effectiveColorGroup,
-                state.BlockedFrontCells);
+                state.BlockedFrontCells,
+                innerWallKeys,
+                mainSubRoomCells,
+                openingGroups);
             result.AddRange(candidates);
         }
 
@@ -1188,7 +1259,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         Random rng,
         string effectiveColorGroup,
-        HashSet<(int, int)>? blockedFrontCells = null)
+        HashSet<(int, int)>? blockedFrontCells = null,
+        HashSet<string>? innerWallKeys = null,
+        HashSet<(int, int)>? mainSubRoomCells = null,
+        List<HashSet<(int, int)>>? openingGroups = null)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
@@ -1202,6 +1276,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             pool = pool.Where(c => cellWalls.TryGetValue(c, out var w) && w.Count >= 2);
         if (!rules.AllowOnPath && baseTile.HasCollision && pathCells.Count > 0)
             pool = pool.Where(c => !pathCells.Contains(c));
+        if (rules.MainSubRoom && mainSubRoomCells != null)
+            pool = pool.Where(c => mainSubRoomCells.Contains(c));
 
         var poolList = pool.Distinct().ToList();
         if (rules.CenterRoom)
@@ -1232,7 +1308,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
                     continue;
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys))
                     continue;
                 if (slot.BlocksFrontCell)
                 {
@@ -1246,12 +1322,26 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
                 if (!rules.NearDoor && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, doorCells))
                     continue;
+                if (openingGroups is { Count: > 0 } &&
+                    !OpeningGroupsAllowPlacement(anchorCol, anchorRow, fpW, fpH, occupied, openingGroups))
+                    continue;
+                if (resolvedTile.IsHigh && openingGroups is { Count: > 0 }
+                    && openingGroups.Any(g => g.Any(c =>
+                        c.Item1 >= anchorCol && c.Item1 < anchorCol + fpW &&
+                        c.Item2 >= anchorRow && c.Item2 < anchorRow + fpH)))
+                    continue;
                 if (!rules.NearWindow && ViolatesWindowPlacement(anchorCol, anchorRow, fpW, fpH, resolvedTile, orient, windowCells))
                     continue;
                 if (resolvedTile.IsLootContainer && !LootContainerReachable(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied))
                     continue;
-                if (resolvedTile.HasCollision && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, doorCells))
-                    continue;
+                if (resolvedTile.HasCollision)
+                {
+                    var entryCells = openingGroups is { Count: > 0 }
+                        ? new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)))
+                        : doorCells;
+                    if (!RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, entryCells, innerWallKeys))
+                        continue;
+                }
 
                 result.Add(new LayoutPlacementCandidate(anchorCol, anchorRow, orient, resolvedTile, effectiveColorGroup));
             }
@@ -1275,9 +1365,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> pathCells,
         HashSet<(int, int)> occupied,
         HashSet<(int, int)> physicalOccupied,
-        HashSet<(int, int)>? blockedFrontCells = null)
+        HashSet<(int, int)>? blockedFrontCells = null,
+        HashSet<string>? innerWallKeys = null,
+        List<HashSet<(int, int)>>? openingGroups = null)
     {
-        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, null, blockedFrontCells))
+        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, null, blockedFrontCells, innerWallKeys))
             return false;
         if (slot.BlocksFrontCell)
         {
@@ -1294,6 +1386,14 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (slot.PlacementRules.CornerOnly && !FootprintTouchesCorner(col, row, fpW, fpH, cellWalls))
             return false;
         if (!slot.PlacementRules.NearDoor && FootprintTouchesCells(col, row, fpW, fpH, doorCells))
+            return false;
+        if (openingGroups is { Count: > 0 } &&
+            !OpeningGroupsAllowPlacement(col, row, fpW, fpH, occupied, openingGroups))
+            return false;
+        if (tile.IsHigh && openingGroups is { Count: > 0 }
+            && openingGroups.Any(g => g.Any(c =>
+                c.Item1 >= col && c.Item1 < col + fpW &&
+                c.Item2 >= row && c.Item2 < row + fpH)))
             return false;
         if (!slot.PlacementRules.AllowOnPath && tile.HasCollision && pathCells.Count > 0
             && FootprintTouchesCells(col, row, fpW, fpH, pathCells))
@@ -1558,7 +1658,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int? selectionAnchorCol,
         int? selectionAnchorRow,
         List<PlacedFurnitureItem> placements, List<string> log, Random rng,
-        string roomTypeName = "")
+        string roomTypeName = "",
+        HashSet<string>? innerWallKeys = null,
+        HashSet<(int, int)>? mainSubRoomCells = null,
+        List<HashSet<(int, int)>>? openingGroups = null)
     {
         var candidates = FilterTiles(allTiles, slot, roomTypeName);
         if (candidates.Count == 0)
@@ -1726,9 +1829,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 // requiresSlot-Slots ignorieren softOccupied bewusst:
                 // Sie dürfen auf dem Ankermöbel (z.B. Nachttisch mit softBlocks=true) platziert werden.
-                bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied);  // kein softOccupied!
-                bool doorOk = slot.PlacementRules.NearDoor
-                              || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells);
+                bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, innerWallKeys: innerWallKeys);  // kein softOccupied!
+                bool doorOk = (slot.PlacementRules.NearDoor
+                              || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
+                              && (openingGroups is not { Count: > 0 }
+                              || OpeningGroupsAllowPlacement(ac, ar, fpW, fpH, occupied, openingGroups))
+                              && (!finalTile.IsHigh
+                              || openingGroups is not { Count: > 0 }
+                              || !openingGroups.Any(g => g.Any(c =>
+                                  c.Item1 >= ac && c.Item1 < ac + fpW &&
+                                  c.Item2 >= ar && c.Item2 < ar + fpH)));
                 bool pathOk = slot.PlacementRules.AllowOnPath
                               || !finalTile.HasCollision
                               || pathCells.Count == 0
@@ -1786,7 +1896,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                              anchorInfo.Value.orient,
                              fpW, fpH,
                              minDist, maxDist,
-                             roomCells))
+                             roomCells,
+                             innerWallKeys))
                 {
                     if (TryAnchorPosition(candidate.col, candidate.row, anchoredOrient, finalTile, fpW, fpH))
                         break;
@@ -1821,7 +1932,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                 pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, slot.PlacementRules, rng, log,
-                out var primaryRej);
+                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
             totalPath = primaryRej.noPath; totalLoot = primaryRej.noLoot;
@@ -1836,7 +1947,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                         pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, fbRules, rng, log,
-                        out var fbRej);
+                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
                     totalPath += fbRej.noPath; totalLoot += fbRej.noLoot;
@@ -2043,6 +2154,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         PlacementRules rules,
         Random rng,
         List<string>? debugLog,
+        HashSet<string>? innerWallKeys,
+        HashSet<(int, int)>? mainSubRoomCells,
+        List<HashSet<(int, int)>>? openingGroups,
         out (int noVariant, int noWallDir, int noFits, int noPath, int noLoot, int door, int window, int connectivity) rejCounters)
     {
         bool traceBathtub = slot.Id.Equals("slot_bathtub", StringComparison.OrdinalIgnoreCase);
@@ -2068,6 +2182,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         // außer der Slot erlaubt es explizit (AllowOnPath = true).
         if (!rules.AllowOnPath && baseTile.HasCollision && pathCells.Count > 0)
             pool = pool.Where(c => !pathCells.Contains(c));
+        if (rules.MainSubRoom && mainSubRoomCells != null)
+            pool = pool.Where(c => mainSubRoomCells.Contains(c));
 
         var poolList = pool.Distinct().ToList();
 
@@ -2119,7 +2235,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
                 { rejNoWallDir++; continue; }
 
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys))
                 {
                     rejFits++;
                     if (traceBathtub && debugLog is not null)
@@ -2148,6 +2264,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // Türbereich freilassen: kein Möbel-Footprint darf eine Türzelle überdecken,
                 // außer der Slot ist explizit NearDoor (z.B. Garderobenhalter an der Tür).
                 if (!rules.NearDoor && FootprintTouchesCells(anchorCol, anchorRow, fpW, fpH, doorCells)) { rejDoor++; continue; }
+                if (openingGroups is { Count: > 0 } &&
+                    !OpeningGroupsAllowPlacement(anchorCol, anchorRow, fpW, fpH, occupied, openingGroups)) { rejDoor++; continue; }
+                if (resolvedTile.IsHigh && openingGroups is { Count: > 0 }
+                    && openingGroups.Any(g => g.Any(c =>
+                        c.Item1 >= anchorCol && c.Item1 < anchorCol + fpW &&
+                        c.Item2 >= anchorRow && c.Item2 < anchorRow + fpH)))
+                    { rejDoor++; continue; }
 
                 // Fensterschutz:
                 // - Standard: IsHigh darf keine Fensterzellen berühren.
@@ -2167,8 +2290,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // zusammenhängend erreichbar sein (8-Nachbarschaft, da PZ diagonales Gehen erlaubt).
                 // Verhindert dass Möbel mit Kollision Raumbereiche von der Tür abschneiden –
                 // z.B. ein Bett das eine Ecke in einem nicht-rechteckigen Raum isoliert.
+                var entryCells = openingGroups is { Count: > 0 }
+                    ? new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)))
+                    : doorCells;
                 if (resolvedTile.HasCollision
-                    && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, doorCells))
+                    && !RoomRemainsConnected(anchorCol, anchorRow, fpW, fpH, roomCells, physicalOccupied, entryCells, innerWallKeys))
                 {
                     rejConnectivity++;
                     if (traceBathtub && debugLog is not null)
@@ -2440,7 +2566,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     private static bool FitsFootprint(int col, int row, int fpW, int fpH,
         HashSet<(int, int)> roomCells, HashSet<(int, int)> occupied,
         HashSet<(int, int)>? softOccupied = null,
-        HashSet<(int, int)>? blockedFrontCells = null)
+        HashSet<(int, int)>? blockedFrontCells = null,
+        HashSet<string>? innerWallKeys = null)
     {
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
@@ -2451,6 +2578,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (softOccupied?.Contains(cell) == true) return false;
                 if (blockedFrontCells?.Contains(cell) == true) return false;
             }
+        // Reject if any inner wall edge runs through the interior of the footprint
+        if (innerWallKeys is { Count: > 0 })
+        {
+            for (int r = 0; r < fpH; r++)
+                for (int c = 1; c < fpW; c++)  // vertical edges between columns
+                    if (innerWallKeys.Contains($"V:{col + c},{row + r}")) return false;
+            for (int r = 1; r < fpH; r++)
+                for (int c = 0; c < fpW; c++)  // horizontal edges between rows
+                    if (innerWallKeys.Contains($"H:{col + c},{row + r}")) return false;
+        }
         return true;
     }
 
@@ -2862,13 +2999,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     /// <summary>
     /// Findet Kandidaten an der gegenueberliegenden Wand in Blickrichtung des Ankers.
     /// Kandidaten werden center-out ueber die Frontkante des Ankers geprueft.
+    /// Inner walls act as boundaries — the walk stops at an inner wall edge.
     /// </summary>
     private static IEnumerable<(int col, int row)> ComputeOppositeWallCandidates(
         int ac, int ar, int aw, int ah,
         string anchorOrient,
         int depW, int depH,
         int minDist, int maxDist,
-        HashSet<(int col, int row)> roomCells)
+        HashSet<(int col, int row)> roomCells,
+        HashSet<string>? innerWallKeys = null)
     {
         Direction? facingDir = anchorOrient switch
         {
@@ -2898,7 +3037,18 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     _           => (c, r),
                 };
 
-                if (!roomCells.Contains(next))
+                // Treat inner walls the same as room boundaries — stop the walk
+                string? innerEdgeKey = innerWallKeys is null ? null : facingDir.Value switch
+                {
+                    Direction.N => $"H:{c},{r}",
+                    Direction.S => $"H:{c},{r + 1}",
+                    Direction.E => $"V:{c + 1},{r}",
+                    Direction.W => $"V:{c},{r}",
+                    _           => null,
+                };
+                bool hitInnerWall = innerEdgeKey != null && innerWallKeys!.Contains(innerEdgeKey);
+
+                if (!roomCells.Contains(next) || hitInnerWall)
                 {
                     if (dist >= minDist && dist <= maxDist)
                     {
@@ -3070,7 +3220,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     }
 
     private static Dictionary<(int, int), HashSet<Direction>> ComputeWallDirections(
-        HashSet<(int, int)> roomCells)
+        HashSet<(int, int)> roomCells, Floor floor)
     {
         var result = new Dictionary<(int, int), HashSet<Direction>>();
         foreach (var (col, row) in roomCells)
@@ -3082,19 +3232,202 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             if (!roomCells.Contains((col + 1, row    ))) dirs.Add(Direction.E);
             if (dirs.Count > 0) result[(col, row)] = dirs;
         }
+
+        // Inner walls add wall faces inside the room (create corners for CornerOnly placement rules).
+        // Cell1 = north/west neighbour → sees wall to its south (H) or east (V).
+        // Cell2 = south/east neighbour → sees wall to its north (H) or west (V).
+        foreach (var edge in floor.Edges.Where(e => e.Type == FloorObjectType.InnerWall))
+        {
+            var c1 = (edge.Cell1Col, edge.Cell1Row);
+            var c2 = (edge.Cell2Col, edge.Cell2Row);
+            if (roomCells.Contains(c1))
+            {
+                if (!result.TryGetValue(c1, out var d1)) { d1 = []; result[c1] = d1; }
+                d1.Add(edge.IsHorizontal ? Direction.S : Direction.E);
+            }
+            if (roomCells.Contains(c2))
+            {
+                if (!result.TryGetValue(c2, out var d2)) { d2 = []; result[c2] = d2; }
+                d2.Add(edge.IsHorizontal ? Direction.N : Direction.W);
+            }
+        }
+
         return result;
     }
 
     private static HashSet<(int, int)> GetEdgeCells(
-        Floor floor, HashSet<(int, int)> roomCells, FloorObjectType type)
+        Floor floor, HashSet<(int, int)> roomCells, params FloorObjectType[] types)
     {
         var result = new HashSet<(int, int)>();
-        foreach (var edge in floor.Edges.Where(e => e.Type == type))
+        foreach (var edge in floor.Edges.Where(e => types.Contains(e.Type)))
         {
             if (roomCells.Contains((edge.Cell1Col, edge.Cell1Row))) result.Add((edge.Cell1Col, edge.Cell1Row));
             if (roomCells.Contains((edge.Cell2Col, edge.Cell2Row))) result.Add((edge.Cell2Col, edge.Cell2Row));
         }
         return result;
+    }
+
+    /// <summary>
+    /// Returns cells that form the only passages through inner walls (gap cells).
+    /// A gap cell sits on an edge that is NOT an inner wall but is adjacent (same orientation,
+    /// neighbouring position) to one that IS. Both cells on either side of that gap edge
+    /// are returned so furniture cannot seal the passage from either direction.
+    /// </summary>
+    private static HashSet<(int, int)> ComputeInnerWallGapCells(
+        HashSet<(int, int)> roomCells,
+        HashSet<string> innerWallKeys)
+    {
+        var gapCells = new HashSet<(int, int)>();
+
+        foreach (var (col, row) in roomCells)
+        {
+            // Horizontal edge H:col,row (north face of (col,row), south face of (col,row-1))
+            if (!innerWallKeys.Contains($"H:{col},{row}"))
+            {
+                if (innerWallKeys.Contains($"H:{col - 1},{row}") ||
+                    innerWallKeys.Contains($"H:{col + 1},{row}"))
+                {
+                    gapCells.Add((col, row));
+                    if (roomCells.Contains((col, row - 1))) gapCells.Add((col, row - 1));
+                }
+            }
+
+            // Vertical edge V:col,row (west face of (col,row), east face of (col-1,row))
+            if (!innerWallKeys.Contains($"V:{col},{row}"))
+            {
+                if (innerWallKeys.Contains($"V:{col},{row - 1}") ||
+                    innerWallKeys.Contains($"V:{col},{row + 1}"))
+                {
+                    gapCells.Add((col, row));
+                    if (roomCells.Contains((col - 1, row))) gapCells.Add((col - 1, row));
+                }
+            }
+        }
+
+        return gapCells;
+    }
+
+    /// <summary>
+    /// Gruppiert Öffnungskanten (Opening) nach dem externen Raum, zu dem sie führen.
+    /// Jede Gruppe entspricht einem anderen Zielraum → jede Gruppe benötigt ≥1 freie Raumzelle.
+    /// Eine L-förmige Öffnung zu zwei verschiedenen Räumen erzeugt zwei unabhängige Gruppen.
+    /// </summary>
+    private static List<HashSet<(int, int)>> ComputeOpeningGroups(
+        Floor floor,
+        HashSet<(int, int)> roomCells)
+    {
+        var byExternalRoom = new Dictionary<int, HashSet<(int, int)>>();
+
+        foreach (var edge in floor.Edges.Where(e => e.Type == FloorObjectType.Opening))
+        {
+            var c1 = (edge.Cell1Col, edge.Cell1Row);
+            var c2 = (edge.Cell2Col, edge.Cell2Row);
+            bool c1In = roomCells.Contains(c1);
+            bool c2In = roomCells.Contains(c2);
+
+            // Edge doesn't touch this room — skip to avoid creating empty groups
+            if (!c1In && !c2In) continue;
+
+            // Determine the group key from whichever cell is OUTSIDE this room
+            int extKey;
+            if (!c1In)
+            {
+                var (oc, or) = c1;
+                extKey = (or >= 0 && or < floor.RoomGrid.Length &&
+                          oc >= 0 && oc < floor.RoomGrid[or].Length)
+                    ? floor.RoomGrid[or][oc] : -1;
+            }
+            else if (!c2In)
+            {
+                var (oc, or) = c2;
+                extKey = (or >= 0 && or < floor.RoomGrid.Length &&
+                          oc >= 0 && oc < floor.RoomGrid[or].Length)
+                    ? floor.RoomGrid[or][oc] : -1;
+            }
+            else continue; // both cells inside the room — not a boundary opening, skip
+
+            if (!byExternalRoom.TryGetValue(extKey, out var group))
+            {
+                group = new HashSet<(int, int)>();
+                byExternalRoom[extKey] = group;
+            }
+            if (c1In) group.Add(c1);
+            if (c2In) group.Add(c2);
+        }
+
+        return byExternalRoom.Values.ToList();
+    }
+
+    /// <summary>
+    /// Prüft ob nach einer simulierten Platzierung in jeder Opening-Gruppe noch mindestens
+    /// eine Zelle frei bleibt. Gibt false zurück wenn irgendeine Gruppe vollständig blockiert wäre.
+    /// </summary>
+    private static bool OpeningGroupsAllowPlacement(
+        int anchorCol, int anchorRow, int fpW, int fpH,
+        HashSet<(int, int)> occupied,
+        List<HashSet<(int, int)>> openingGroups)
+    {
+        foreach (var group in openingGroups)
+        {
+            bool anyFree = false;
+            foreach (var (c, r) in group)
+            {
+                if (occupied.Contains((c, r))) continue;
+                // Covered by the candidate footprint?
+                if (c >= anchorCol && c < anchorCol + fpW &&
+                    r >= anchorRow && r < anchorRow + fpH) continue;
+                anyFree = true;
+                break;
+            }
+            if (!anyFree) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Berechnet den Hauptbereich (main sub-room) eines Raums, wenn Innenwände ihn unterteilen.
+    /// Gibt null zurück wenn keine Innenwände vorhanden (ganzer Raum = Hauptbereich).
+    /// Priorisierung: meiste Türzellen DESC, dann meiste Raumzellen DESC.
+    /// </summary>
+    private static HashSet<(int, int)>? ComputeMainSubRoom(
+        HashSet<(int, int)> roomCells,
+        HashSet<string> innerWallKeys,
+        HashSet<(int, int)> doorCells)
+    {
+        if (innerWallKeys.Count == 0) return null;
+
+        var remaining  = new HashSet<(int, int)>(roomCells);
+        var components = new List<HashSet<(int, int)>>();
+
+        while (remaining.Count > 0)
+        {
+            var seed      = remaining.First();
+            var component = new HashSet<(int, int)> { seed };
+            var queue     = new Queue<(int, int)>();
+            queue.Enqueue(seed);
+
+            while (queue.Count > 0)
+            {
+                var (cc, cr) = queue.Dequeue();
+                foreach (var (nc, nr) in new[] { (cc, cr - 1), (cc, cr + 1), (cc - 1, cr), (cc + 1, cr) })
+                {
+                    if (!remaining.Contains((nc, nr)) || !component.Add((nc, nr))) continue;
+                    string edgeKey = nc == cc
+                        ? $"H:{cc},{Math.Max(cr, nr)}"
+                        : $"V:{Math.Max(cc, nc)},{cr}";
+                    if (!innerWallKeys.Contains(edgeKey))
+                        queue.Enqueue((nc, nr));
+                }
+            }
+
+            foreach (var c in component) remaining.Remove(c);
+            components.Add(component);
+        }
+
+        return components
+            .OrderByDescending(c => c.Count)
+            .ThenByDescending(c => c.Count(cell => doorCells.Contains(cell)))
+            .First();
     }
 
     /// <summary>
@@ -3142,7 +3475,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         int col, int row, int fpW, int fpH,
         HashSet<(int, int)> roomCells,
         HashSet<(int, int)> occupied,
-        HashSet<(int, int)> doorCells)
+        HashSet<(int, int)> doorCells,
+        HashSet<string>? innerWallKeys = null)
     {
         // Simuliere: occupied nach Platzierung dieses Footprints
         var tempOccupied = new HashSet<(int, int)>(occupied);
@@ -3168,9 +3502,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         }
         if (!found) start = walkable.First();
 
-        // BFS über 4-Nachbarschaft (N/S/E/W) – Bewegung in PZ ist rein orthogonal,
-        // diagonale Bewegung ist nicht möglich. Nur LootContainerReachable nutzt die
-        // Moore-Nachbarschaft (8 Richtungen) für diagonalen Container-Zugriff.
+        // BFS über 4-Nachbarschaft (N/S/E/W) – Bewegung in PZ ist rein orthogonal.
+        // Inner walls block traversal across their shared edge.
         var visited = new HashSet<(int, int)>(walkable.Count);
         var queue   = new Queue<(int, int)>();
         queue.Enqueue(start);
@@ -3179,11 +3512,23 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         while (queue.Count > 0)
         {
             var (cc, cr) = queue.Dequeue();
-            foreach (var nb in new (int, int)[]
+            foreach (var (nc, nr) in new (int, int)[]
                 { (cc, cr - 1), (cc, cr + 1), (cc - 1, cr), (cc + 1, cr) })
             {
-                if (walkable.Contains(nb) && visited.Add(nb))
-                    queue.Enqueue(nb);
+                if (!walkable.Contains((nc, nr)) || !visited.Add((nc, nr))) continue;
+
+                // Skip step if an inner wall seals the shared edge between (cc,cr) and (nc,nr)
+                if (innerWallKeys != null)
+                {
+                    string edgeKey;
+                    if (nc == cc)      // moving north/south — horizontal edge
+                        edgeKey = $"H:{cc},{Math.Max(cr, nr)}";
+                    else               // moving east/west — vertical edge
+                        edgeKey = $"V:{Math.Max(cc, nc)},{cr}";
+                    if (innerWallKeys.Contains(edgeKey)) continue;
+                }
+
+                queue.Enqueue((nc, nr));
             }
         }
 

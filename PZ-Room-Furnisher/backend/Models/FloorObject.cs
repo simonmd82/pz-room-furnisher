@@ -5,6 +5,8 @@ public enum FloorObjectType
     Door,
     Window,
     Stairs,
+    Opening,    // type="wall" InteriorTile=0: gap in auto-generated room-boundary wall
+    InnerWall,  // type="wall" InteriorTile>0: free-standing wall within a room
     Other
 }
 

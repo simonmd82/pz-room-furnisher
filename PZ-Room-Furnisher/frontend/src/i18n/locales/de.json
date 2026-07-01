@@ -24,6 +24,10 @@
   "legend": {
     "door": "Tür",
     "window": "Fenster",
+    "opening": "Wandöffnung",
+    "innerWall": "Innenwand",
+    "mainSubRoom": "Hauptbereich",
+    "secondarySubRoom": "Nebenbereich",
     "stairs": "Treppe",
     "stairEntry": "Treppenaufgang",
     "selectHint": "{{name}} – klicken zum Hervorheben, STRG+Klick für Mehrfachauswahl",
@@ -41,7 +45,9 @@
   },
   "object": {
     "Door": "Tür",
-    "Window": "Fenster"
+    "Window": "Fenster",
+    "Opening": "Wandöffnung",
+    "InnerWall": "Innenwand"
   },
   "common": {
     "colors": "Farben",
@@ -382,7 +388,8 @@
       "nearDoor":   { "label": "An einer Tür",    "description": "Slot muss in der Nähe einer Tür platziert werden." },
       "nearWindow": { "label": "An einem Fenster", "description": "Slot muss in der Nähe eines Fensters platziert werden." },
       "centerRoom": { "label": "Raummitte",       "description": "Slot muss in der Raummitte platziert werden." },
-      "cornerOnly": { "label": "Nur in Ecken",    "description": "Slot darf nur in einer Ecke platziert werden." }
+      "cornerOnly":  { "label": "Nur in Ecken",    "description": "Slot darf nur in einer Ecke platziert werden." },
+      "mainSubRoom": { "label": "Hauptbereich",    "description": "Nur im größten zusammenhängenden Bereich des Raums platzieren (der Sub-Room mit den meisten Türen). Hat keine Wirkung, wenn keine Innenwände vorhanden sind." }
     },
     "wallAlignment": {
       "any":           { "label": "Automatisch",   "title": "Generator wählt die beste passende Tile-Variante – keine Richtungseinschränkung." },

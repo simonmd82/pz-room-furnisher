@@ -156,6 +156,12 @@ export interface PlacementRules {
    * 'any': Generator wählt passende Variante automatisch (Standard).
    */
   wallAlignment: 'perpendicular' | 'parallel' | 'any';
+  /**
+   * Nur in der größten zusammenhängenden Sub-Room-Fläche platzieren
+   * (die durch Innenwände vom Rest abgetrennt wird und die meisten Türen hat).
+   * false (Standard): gesamter Raum erlaubt.
+   */
+  mainSubRoom: boolean;
 }
 
 export interface SlotCount {
@@ -365,7 +371,7 @@ export interface RoomTypeConfig {
 export type RoomTypeConfigMap = Record<string, RoomTypeConfig>;
 
 export function defaultPlacementRules(): PlacementRules {
-  return { nearWall: false, nearDoor: false, nearWindow: false, centerRoom: false, cornerOnly: false, allowOnPath: false, wallAlignment: 'any' };
+  return { nearWall: false, nearDoor: false, nearWindow: false, centerRoom: false, cornerOnly: false, allowOnPath: false, wallAlignment: 'any', mainSubRoom: false };
 }
 
 export function defaultCountBySize(): Record<SizeKey, SlotCount> {

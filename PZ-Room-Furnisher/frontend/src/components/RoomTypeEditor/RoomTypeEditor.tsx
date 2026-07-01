@@ -45,7 +45,7 @@ function getGroupColor(groupId: string, allGroupIds: string[]): string {
   return GROUP_COLORS[idx % GROUP_COLORS.length];
 }
 
-const PLACEMENT_RULE_KEYS = ['nearWall', 'nearDoor', 'nearWindow', 'centerRoom', 'cornerOnly'] as const;
+const PLACEMENT_RULE_KEYS = ['nearWall', 'nearDoor', 'nearWindow', 'centerRoom', 'cornerOnly', 'mainSubRoom'] as const;
 
 const WALL_ALIGNMENT_KEYS: { value: PlacementRules['wallAlignment'] }[] = [
   { value: 'any' },

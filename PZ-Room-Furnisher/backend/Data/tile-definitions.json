@@ -1343,7 +1343,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_brown_01",
     "styleTags": [],
@@ -1377,7 +1378,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_brown_01",
     "styleTags": [],
@@ -1411,7 +1413,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_brown_01",
     "styleTags": [],
@@ -1445,7 +1448,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_brown_01",
     "styleTags": [],
@@ -1623,7 +1627,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_black_01",
     "styleTags": [],
@@ -1657,7 +1662,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_black_01",
     "styleTags": [],
@@ -1691,7 +1697,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_black_01",
     "styleTags": [],
@@ -1725,7 +1732,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_black_01",
     "styleTags": [],
@@ -2047,7 +2055,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_beige_01",
     "styleTags": [],
@@ -2081,7 +2090,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_beige_01",
     "styleTags": [],
@@ -2115,7 +2125,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_beige_01",
     "styleTags": [],
@@ -2149,7 +2160,8 @@
       "Wood"
     ],
     "roomTypes": [
-      "Bedroom"
+      "Bedroom",
+      "Diningroom"
     ],
     "variantGroup": "bed_table_beige_01",
     "styleTags": [],

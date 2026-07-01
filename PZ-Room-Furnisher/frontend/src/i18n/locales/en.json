@@ -24,6 +24,10 @@
   "legend": {
     "door": "Door",
     "window": "Window",
+    "opening": "Opening",
+    "innerWall": "Inner wall",
+    "mainSubRoom": "Main sub-room",
+    "secondarySubRoom": "Secondary sub-room",
     "stairs": "Stairs",
     "stairEntry": "Stair entry",
     "selectHint": "{{name}} – click to highlight, CTRL+click for multi-select",
@@ -41,7 +45,9 @@
   },
   "object": {
     "Door": "Door",
-    "Window": "Window"
+    "Window": "Window",
+    "Opening": "Opening",
+    "InnerWall": "Inner wall"
   },
   "common": {
     "colors": "Colors",
@@ -382,7 +388,8 @@
       "nearDoor":   { "label": "At a door",       "description": "The slot must be placed near a door." },
       "nearWindow": { "label": "At a window",     "description": "The slot must be placed near a window." },
       "centerRoom": { "label": "Room centre",     "description": "The slot must be placed in the centre of the room." },
-      "cornerOnly": { "label": "Corners only",    "description": "The slot may only be placed in a corner." }
+      "cornerOnly":  { "label": "Corners only",    "description": "The slot may only be placed in a corner." },
+      "mainSubRoom": { "label": "Main sub-room",   "description": "Only place in the largest connected area of the room (the sub-room with the most doors). Has no effect when no inner walls are present." }
     },
     "wallAlignment": {
       "any":           { "label": "Automatic",   "title": "The generator picks the best matching tile variant – no direction restriction." },

@@ -25,14 +25,83 @@ interface Props {
   sheetInfos?: TileSheetInfo[];
 }
 
-const DOOR_COLOR   = '#d4852a';
-const WINDOW_COLOR = '#48c8e8';
+const DOOR_COLOR       = '#d4852a';
+const WINDOW_COLOR     = '#48c8e8';
+const OPENING_COLOR    = '#f0c040';
+const INNER_WALL_COLOR = '#8899cc';
 
 /** "R G B" → CSS rgba() */
 function toRgb(color: string, alpha = 1): string {
   const parts = color.trim().split(/\s+/);
   if (parts.length === 3) return `rgba(${parts[0]},${parts[1]},${parts[2]},${alpha})`;
   return `rgba(60,60,80,${alpha})`;
+}
+
+/**
+ * Returns the set of "col,row" keys that belong to secondary sub-rooms (not main).
+ * A sub-room split occurs when inner walls divide a room into disconnected components.
+ * Main = component with most door/opening cells (tie-break: largest).
+ * Returns empty set when no inner walls exist.
+ */
+function computeSecondarySubRoomCells(floor: Floor): Set<string> {
+  const innerWallKeys = new Set(
+    floor.edges.filter(e => e.type === 'InnerWall').map(e => e.edgeKey)
+  );
+  if (innerWallKeys.size === 0) return new Set();
+
+  const doorCells = new Set<string>();
+  floor.edges
+    .filter(e => e.type === 'Door' || e.type === 'Opening')
+    .forEach(e => {
+      doorCells.add(`${e.cell1Col},${e.cell1Row}`);
+      doorCells.add(`${e.cell2Col},${e.cell2Row}`);
+    });
+
+  const secondary = new Set<string>();
+  const roomIndices = new Set<number>();
+  floor.roomGrid.forEach(row => row.forEach(v => { if (v > 0) roomIndices.add(v); }));
+
+  for (const roomIdx of roomIndices) {
+    const roomCells = new Set<string>();
+    floor.roomGrid.forEach((row, r) =>
+      row.forEach((v, c) => { if (v === roomIdx) roomCells.add(`${c},${r}`); })
+    );
+
+    const remaining = new Set(roomCells);
+    const components: Set<string>[] = [];
+
+    while (remaining.size > 0) {
+      const seed = remaining.values().next().value!;
+      const component = new Set<string>([seed]);
+      const queue = [seed];
+      while (queue.length > 0) {
+        const key = queue.shift()!;
+        const [c, r] = key.split(',').map(Number);
+        for (const [nc, nr] of [[c, r - 1], [c, r + 1], [c - 1, r], [c + 1, r]] as [number, number][]) {
+          const nk = `${nc},${nr}`;
+          if (!remaining.has(nk) || component.has(nk)) continue;
+          const edgeKey = nc === c
+            ? `H:${c},${Math.max(r, nr)}`
+            : `V:${Math.max(c, nc)},${r}`;
+          if (!innerWallKeys.has(edgeKey)) { component.add(nk); queue.push(nk); }
+        }
+      }
+      component.forEach(k => remaining.delete(k));
+      components.push(component);
+    }
+
+    if (components.length <= 1) continue;
+
+    components.sort((a, b) =>
+      ([...b].filter(k => doorCells.has(k)).length - [...a].filter(k => doorCells.has(k)).length) ||
+      (b.size - a.size)
+    );
+
+    for (let i = 1; i < components.length; i++)
+      components[i].forEach(k => secondary.add(k));
+  }
+
+  return secondary;
 }
 
 // ---------------------------------------------------------------------------
@@ -119,20 +188,70 @@ const DIR_LABEL_KEY: Record<string, string> = { N: 'direction.N', S: 'direction.
 // ---------------------------------------------------------------------------
 function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
   const { t } = useTranslation();
-  const isDoor  = edge.type === 'Door';
-  const color   = isDoor ? DOOR_COLOR : WINDOW_COLOR;
-  const LONG    = cellSize * 0.62;
-  const THICK   = isDoor ? 6 : 4;
+
+  // Opening: amber gap spanning most of the cell edge
+  if (edge.type === 'Opening') {
+    const LONG = cellSize * 0.82;
+    const THICK = 5;
+    let x: number, y: number, w: number, h: number;
+    if (edge.isHorizontal) {
+      w = LONG; h = THICK;
+      x = edge.edgeCol * cellSize + cellSize / 2 - LONG / 2;
+      y = edge.edgeRow * cellSize - THICK / 2;
+    } else {
+      w = THICK; h = LONG;
+      x = edge.edgeCol * cellSize - THICK / 2;
+      y = edge.edgeRow * cellSize + cellSize / 2 - LONG / 2;
+    }
+    return (
+      <g style={{ pointerEvents: 'auto', cursor: 'default' }}>
+        <rect x={x - 1} y={y - 1} width={w + 2} height={h + 2}
+          fill="none" stroke="#a08000" strokeWidth={1} rx={1} />
+        <rect x={x} y={y} width={w} height={h} fill={OPENING_COLOR} rx={1} />
+        <title>{t('gridRenderer.edgeLabel', {
+          type: t('object.Opening'),
+          c1: edge.cell1Col, r1: edge.cell1Row, c2: edge.cell2Col, r2: edge.cell2Row,
+        })}</title>
+      </g>
+    );
+  }
+
+  // InnerWall: full-edge solid bar inside the room
+  if (edge.type === 'InnerWall') {
+    const THICK = 4;
+    let x: number, y: number, w: number, h: number;
+    if (edge.isHorizontal) {
+      w = cellSize; h = THICK;
+      x = edge.edgeCol * cellSize;
+      y = edge.edgeRow * cellSize - THICK / 2;
+    } else {
+      w = THICK; h = cellSize;
+      x = edge.edgeCol * cellSize - THICK / 2;
+      y = edge.edgeRow * cellSize;
+    }
+    return (
+      <g style={{ pointerEvents: 'auto', cursor: 'default' }}>
+        <rect x={x} y={y} width={w} height={h} fill={INNER_WALL_COLOR} />
+        <title>{t('gridRenderer.edgeLabel', {
+          type: t('object.InnerWall'),
+          c1: edge.cell1Col, r1: edge.cell1Row, c2: edge.cell2Col, r2: edge.cell2Row,
+        })}</title>
+      </g>
+    );
+  }
+
+  // Door / Window: centered bar
+  const isDoor = edge.type === 'Door';
+  const color  = isDoor ? DOOR_COLOR : WINDOW_COLOR;
+  const LONG   = cellSize * 0.62;
+  const THICK  = isDoor ? 6 : 4;
 
   let x: number, y: number, w: number, h: number;
-
   if (edge.isHorizontal) {
-    // Horizontal edge → horizontal bar centred on the grid line y = edgeRow * cellSize
     w = LONG;  h = THICK;
     x = edge.edgeCol * cellSize + cellSize / 2 - LONG / 2;
     y = edge.edgeRow * cellSize - THICK / 2;
   } else {
-    // Vertical edge → vertical bar centred on the grid line x = edgeCol * cellSize
     w = THICK; h = LONG;
     x = edge.edgeCol * cellSize - THICK / 2;
     y = edge.edgeRow * cellSize + cellSize / 2 - LONG / 2;
@@ -145,10 +264,8 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 
   return (
     <g style={{ pointerEvents: 'auto', cursor: 'default' }}>
-      {/* black outline rect slightly larger */}
       <rect x={x - 1.5} y={y - 1.5} width={w + 3} height={h + 3}
         fill="none" stroke="#000" strokeWidth={1.5} rx={isDoor ? 3 : 2} />
-      {/* coloured fill rect */}
       <rect x={x} y={y} width={w} height={h}
         fill={color} rx={isDoor ? 2 : 1} />
       <title>{label}</title>
@@ -234,6 +351,9 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
     return <p className={styles.empty}>{t('floor.noGrid')}</p>;
   }
 
+  const secondarySubRoomCells = useMemo(() => computeSecondarySubRoomCells(floor), [floor]);
+  const hasSubRooms = secondarySubRoomCells.size > 0;
+
   const stairInfo   = buildStairCells(floor, building?.floors);
   const stairCells  = stairInfo.cells;
   const stairEntry  = stairInfo.entry;
@@ -305,6 +425,26 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
             <span className={styles.legendWindowBar} />
             <span>{t('legend.window')}</span>
           </div>
+          <div className={styles.legendItem}>
+            <span className={styles.legendOpeningBar} />
+            <span>{t('legend.opening')}</span>
+          </div>
+          <div className={styles.legendItem}>
+            <span className={styles.legendInnerWallBar} />
+            <span>{t('legend.innerWall')}</span>
+          </div>
+          {hasSubRooms && (
+            <>
+              <div className={styles.legendItem}>
+                <span className={styles.legendMainSubRoomSwatch} />
+                <span>{t('legend.mainSubRoom')}</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.legendSecondarySubRoomSwatch} />
+                <span>{t('legend.secondarySubRoom')}</span>
+              </div>
+            </>
+          )}
           <div className={styles.legendItem}>
             <span className={`${styles.legendSwatch} ${styles.stairSwatch}`} />
             <span>{t('legend.stairs')}</span>
@@ -409,9 +549,10 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
               row.map((roomIdx, colIdx) => {
                 const room      = roomIdx > 0 ? rooms[roomIdx - 1] : null;
                 const key       = `${colIdx},${rowIdx}`;
-                const isStair   = stairCells.has(key);
-                const isEntry   = stairEntry.has(key);
-                const cellEdges = cellEdgeMap.get(key) ?? [];
+                const isStair            = stairCells.has(key);
+                const isEntry            = stairEntry.has(key);
+                const isSecondarySubRoom = secondarySubRoomCells.has(key);
+                const cellEdges          = cellEdgeMap.get(key) ?? [];
                 const isPath    = showPaths && anyPathSet.has(key);
 
                 const edgeLines = cellEdges.map(
@@ -453,6 +594,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                   >
                     {isStair && <span className={styles.stairStripe} />}
                     {isEntry  && <span className={styles.stairEntry}>✕</span>}
+                    {isSecondarySubRoom && <span className={styles.secondarySubRoomOverlay} />}
                   </div>
                 );
               })

@@ -202,6 +202,55 @@ public class TbxParserService : ITbxParserService
                 });
             }
 
+            // Compute WallEdges from explicit wall objects (type="wall").
+            // dir=N: vertical wall (west face of cells), length extends south (y increases).
+            // dir=W: horizontal wall (north face of cells), length extends east (x increases).
+            // InteriorTile=0 → Opening (gap in room-boundary wall).
+            // InteriorTile>0 → InnerWall (free-standing wall within a room).
+            foreach (var wallObj in floor.Objects.Where(o => o.OriginalType.Equals("wall", StringComparison.OrdinalIgnoreCase)))
+            {
+                int interiorTile = int.TryParse(
+                    wallObj.RawAttributes.GetValueOrDefault("InteriorTile", "0"), out var it) ? it : 0;
+                int length = int.TryParse(
+                    wallObj.RawAttributes.GetValueOrDefault("length", "1"), out var wl) ? wl : 1;
+
+                var edgeType = interiorTile == 0 ? FloorObjectType.Opening : FloorObjectType.InnerWall;
+
+                for (int i = 0; i < length; i++)
+                {
+                    bool wIsHorizontal;
+                    int wEdgeCol, wEdgeRow, wc1Col, wc1Row, wc2Col, wc2Row;
+
+                    if (wallObj.Dir == Direction.N)
+                    {
+                        // Vertical wall, west face of cells, extends south (y increases)
+                        wEdgeCol = wallObj.X; wEdgeRow = wallObj.Y + i;
+                        wIsHorizontal = false;
+                        wc1Col = wEdgeCol - 1; wc1Row = wEdgeRow;
+                        wc2Col = wEdgeCol;     wc2Row = wEdgeRow;
+                    }
+                    else // Direction.W
+                    {
+                        // Horizontal wall, north face of cells, extends east (x increases)
+                        wEdgeCol = wallObj.X + i; wEdgeRow = wallObj.Y;
+                        wIsHorizontal = true;
+                        wc1Col = wEdgeCol; wc1Row = wEdgeRow - 1;
+                        wc2Col = wEdgeCol; wc2Row = wEdgeRow;
+                    }
+
+                    floor.Edges.Add(new WallEdge
+                    {
+                        EdgeKey           = $"{(wIsHorizontal ? "H" : "V")}:{wEdgeCol},{wEdgeRow}",
+                        Type              = edgeType,
+                        IsHorizontal      = wIsHorizontal,
+                        EdgeCol           = wEdgeCol,  EdgeRow          = wEdgeRow,
+                        Cell1Col          = wc1Col,    Cell1Row         = wc1Row,
+                        Cell2Col          = wc2Col,    Cell2Row         = wc2Row,
+                        InteriorTileIndex = interiorTile,
+                    });
+                }
+            }
+
             building.Floors.Add(floor);
         }
 

@@ -49,6 +49,13 @@ public class PlacementRules
     public bool AllowOnPath { get; set; } = false;
 
     /// <summary>
+    /// Wenn true und der Raum durch Innenwände in Teilbereiche unterteilt ist,
+    /// wird der Slot auf den Hauptbereich (größter/türnächster Teilbereich) beschränkt.
+    /// Kein Effekt wenn keine Innenwände vorhanden.
+    /// </summary>
+    public bool MainSubRoom { get; set; } = false;
+
+    /// <summary>
     /// Ausrichtung zur Wand (nur relevant wenn NearWall=true).
     /// "perpendicular": Rücken an Wand, Vorderseite in den Raum (Bett, Schreibtisch).
     ///   Bevorzugt Tile-Variante mit langer Achse senkrecht zur Wand.

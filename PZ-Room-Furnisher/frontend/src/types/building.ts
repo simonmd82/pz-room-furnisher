@@ -48,7 +48,8 @@ export interface Room {
 }
 
 export type DirectionType = 'N' | 'S' | 'E' | 'W';
-export type ObjectType = 'Door' | 'Window' | 'Stairs' | 'Other';
+export type ObjectType = 'Door' | 'Window' | 'Stairs' | 'Opening' | 'InnerWall' | 'Other';
+export type WallEdgeType = 'Door' | 'Window' | 'Opening' | 'InnerWall';
 
 export interface FloorObject {
   type: ObjectType;
@@ -72,7 +73,7 @@ export interface FloorObject {
  */
 export interface WallEdge {
   edgeKey: string;
-  type: 'Door' | 'Window';
+  type: WallEdgeType;
   /** true = horizontal (top/bottom), false = vertical (left/right) */
   isHorizontal: boolean;
   edgeCol: number;
@@ -83,6 +84,8 @@ export interface WallEdge {
   /** South or east cell */
   cell2Col: number;
   cell2Row: number;
+  /** 0 = opening/no wall tile, >0 = interior wall tile index. Always 0 for Door/Window. */
+  interiorTileIndex: number;
 }
 
 export type StairWaypointType = 'Ascending' | 'Descending';
@@ -106,7 +109,7 @@ export interface Floor {
    */
   tileLayers: Record<string, number[][]>;
   objects: FloorObject[];
-  /** All doors and windows as shared cell-edges */
+  /** All doors, windows, openings, and inner walls as shared cell-edges */
   edges: WallEdge[];
   /** Stair entry/exit points pre-computed during parse */
   stairWaypoints: StairWaypoint[];

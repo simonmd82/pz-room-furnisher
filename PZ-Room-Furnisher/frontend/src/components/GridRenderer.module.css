@@ -91,6 +91,55 @@
   flex-shrink: 0;
 }
 
+/* Opening bar in legend */
+.legendOpeningBar {
+  display: inline-block;
+  width: 24px;
+  height: 5px;
+  background: #f0c040;
+  border-radius: 1px;
+  border: 1px solid #a08000;
+  flex-shrink: 0;
+}
+
+/* Inner wall bar in legend */
+.legendInnerWallBar {
+  display: inline-block;
+  width: 24px;
+  height: 5px;
+  background: #8899cc;
+  border-radius: 0;
+  flex-shrink: 0;
+}
+
+/* Secondary sub-room overlay (white tint, absolute fill) */
+.secondarySubRoomOverlay {
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Sub-room legend swatches */
+.legendMainSubRoomSwatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: rgba(140, 110, 70, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.legendSecondarySubRoomSwatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: rgba(200, 170, 130, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
 /* Stair swatch */
 .stairSwatch {
   background:

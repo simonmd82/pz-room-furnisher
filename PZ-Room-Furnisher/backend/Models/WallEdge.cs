@@ -38,4 +38,11 @@ public class WallEdge
     public int Cell2Col { get; set; }
     /// <summary>Row of the second cell (south or east neighbour).</summary>
     public int Cell2Row { get; set; }
+
+    /// <summary>
+    /// For Opening/InnerWall edges: the InteriorTile index from the TBX wall object.
+    /// 0 = opening (no wall tile), &gt;0 = inner wall tile index.
+    /// Always 0 for Door/Window edges.
+    /// </summary>
+    public int InteriorTileIndex { get; set; }
 }
