@@ -156,6 +156,95 @@
 .removeBtn:hover:not(:disabled) { border-color: #5a2a2a; color: #f88; background: #2a1010; }
 .removeBtn:disabled { cursor: not-allowed; opacity: 0.3; }
 
+/* ── UI Preferences ── */
+.prefsList {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prefRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.prefRow input[type='checkbox'] {
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #8866cc;
+  width: 14px;
+  height: 14px;
+}
+.prefLabel {
+  font-size: 0.82rem;
+  color: #ccd;
+  flex-shrink: 0;
+}
+.prefDesc {
+  font-size: 0.72rem;
+  color: #556;
+  line-height: 1.4;
+}
+
+/* ── Full-width section (spans both grid columns) ── */
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+/* ── Config management ── */
+.configTable {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #1e1e30;
+}
+.configRow:last-child { border-bottom: none; }
+
+.configRowLabel {
+  font-size: 0.82rem;
+  color: #ccd;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.configRowActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.configBtn {
+  padding: 4px 12px;
+  background: #141430;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #aac;
+  cursor: pointer;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  transition: background 0.1s, border-color 0.1s;
+}
+.configBtn:hover:not(:disabled) {
+  background: #1e1e40;
+  border-color: #7766aa;
+  color: #ccf;
+}
+.configBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.configFeedbackOk  { font-size: 0.75rem; color: #6f6; }
+.configFeedbackErr { font-size: 0.75rem; color: #f66; }
+
 /* ── Section footer ── */
 .sectionFooter {
   padding: 5px 12px;

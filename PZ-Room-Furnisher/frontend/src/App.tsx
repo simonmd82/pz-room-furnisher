@@ -88,12 +88,29 @@ function App() {
   const [sheetInfos, setSheetInfos]     = useState<TileSheetInfo[] | undefined>(undefined);
   const [generatorLog, setGeneratorLog] = useState<string[]>([]);
   const [logOpen, setLogOpen]           = useState(false);
+  const [showGeneratorLog, setShowGeneratorLog] = useState<boolean>(
+    () => localStorage.getItem('pzrf.showGeneratorLog') !== 'false'
+  );
+  const [furnishingConfigEnabled, setFurnishingConfigEnabled] = useState<boolean>(
+    () => localStorage.getItem('pzrf.furnishingConfigEnabled') === 'true'
+  );
   const [selected, setSelected]         = useState<Set<string>>(new Set());
   const [overrides, setOverrides]       = useState<Record<string, string>>({});
   const [seed, setSeed]                 = useState<number>(() => Math.floor(Math.random() * 999999));
   const [densityMin, setDensityMin]     = useState(50);
   const [densityMax, setDensityMax]     = useState(100);
   const [densityPerRoom, setDensityPerRoom] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('pzrf.showGeneratorLog', String(showGeneratorLog));
+  }, [showGeneratorLog]);
+
+  useEffect(() => {
+    localStorage.setItem('pzrf.furnishingConfigEnabled', String(furnishingConfigEnabled));
+    if (!furnishingConfigEnabled && (activeTab === 'tiles' || activeTab === 'furniture' || activeTab === 'roomtypes')) {
+      setActiveTab('building');
+    }
+  }, [furnishingConfigEnabled]);
 
   // Load tile config + sheet metadata once on mount (needed for furniture preview)
   useEffect(() => {
@@ -194,24 +211,28 @@ function App() {
           >
             🏠 {t('tabs.building')}
           </button>
-          <button
-            className={`tab-btn ${activeTab === 'tiles' ? 'tab-active' : ''}`}
-            onClick={() => handleTabChange('tiles')}
-          >
-            🖼 {t('tabs.tiles')}
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'furniture' ? 'tab-active' : ''}`}
-            onClick={() => handleTabChange('furniture')}
-          >
-            📋 {t('tabs.furniture')}
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'roomtypes' ? 'tab-active' : ''}`}
-            onClick={() => handleTabChange('roomtypes')}
-          >
-            🏠 {t('tabs.roomTypes')}
-          </button>
+          {furnishingConfigEnabled && (
+            <>
+              <button
+                className={`tab-btn ${activeTab === 'tiles' ? 'tab-active' : ''}`}
+                onClick={() => handleTabChange('tiles')}
+              >
+                🖼 {t('tabs.tiles')}
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'furniture' ? 'tab-active' : ''}`}
+                onClick={() => handleTabChange('furniture')}
+              >
+                📋 {t('tabs.furniture')}
+              </button>
+              <button
+                className={`tab-btn ${activeTab === 'roomtypes' ? 'tab-active' : ''}`}
+                onClick={() => handleTabChange('roomtypes')}
+              >
+                🏠 {t('tabs.roomTypes')}
+              </button>
+            </>
+          )}
           <button
             className={`tab-btn ${activeTab === 'settings' ? 'tab-active' : ''}`}
             onClick={() => handleTabChange('settings')}
@@ -228,7 +249,7 @@ function App() {
       ) : activeTab === 'roomtypes' ? (
         <div className="tab-full"><RoomTypeEditor /></div>
       ) : activeTab === 'settings' ? (
-        <div className="tab-full"><SettingsEditor /></div>
+        <div className="tab-full"><SettingsEditor showGeneratorLog={showGeneratorLog} onShowGeneratorLogChange={setShowGeneratorLog} furnishingConfigEnabled={furnishingConfigEnabled} onFurnishingConfigEnabledChange={setFurnishingConfigEnabled} /></div>
       ) : (
       <main className="app-main">
         <section className="upload-section">
@@ -301,7 +322,7 @@ function App() {
               </div>
 
               {/* Log-Panel rechts neben Grid */}
-              {generatorLog.length > 0 && (
+              {showGeneratorLog && generatorLog.length > 0 && (
                 <div className="log-panel">
                   <div className="log-panel-header">
                     <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>

@@ -1,4 +1,4 @@
-﻿using backend.Models;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,5 +27,33 @@ public class RoomTypeController : ControllerBase
     {
         _svc.Delete(roomType);
         return NoContent();
+    }
+
+    [HttpGet("default-status")]
+    public IActionResult GetDefaultStatus() => Ok(new
+    {
+        hasDefault  = _svc.HasDefault(),
+        hasSnapshot = _svc.HasSnapshot(),
+    });
+
+    [HttpPost("restore-default")]
+    public IActionResult RestoreDefault()
+    {
+        try { _svc.RestoreDefault(); return Ok(); }
+        catch (FileNotFoundException ex) { return NotFound(ex.Message); }
+    }
+
+    [HttpPost("save-snapshot")]
+    public IActionResult SaveSnapshot()
+    {
+        _svc.SaveSnapshot();
+        return Ok();
+    }
+
+    [HttpPost("restore-snapshot")]
+    public IActionResult RestoreSnapshot()
+    {
+        try { _svc.RestoreSnapshot(); return Ok(); }
+        catch (FileNotFoundException ex) { return NotFound(ex.Message); }
     }
 }

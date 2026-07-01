@@ -523,6 +523,33 @@
       "title":       "🪵 Materials",
       "description": "Offered as material tags in the tile browser and as a material filter in the slot editor.",
       "placeholder": "e.g. Wood"
+    },
+    "uiPreferences": {
+      "title":       "🖥 UI Preferences",
+      "description": "Local display options. Saved in the browser.",
+      "showGeneratorLog": {
+        "label":       "Show generator log",
+        "description": "Display the furnishing log panel after generating."
+      },
+      "furnishingConfig": {
+        "label":         "Furnishing Configuration",
+        "description":   "Enable the Tile Browser, Furniture Templates and Room Types tabs.",
+        "confirmEnable": "Enabling the furnishing configuration requires you know what you are doing. Change the configuration at your own risk!"
+      }
+    },
+    "configManagement": {
+      "title":                   "🗂 Configuration Management",
+      "description":             "Restore bundled defaults or save/restore your own snapshots.",
+      "roomTypes":               "Room Types (room-types.json)",
+      "restoreDefault":          "↩ Restore Default",
+      "saveSnapshot":            "💾 Save Snapshot",
+      "restoreSnapshot":         "↩ Restore Snapshot",
+      "confirmRestoreDefault":   "This will overwrite your current {{file}} with the bundled defaults. Continue?",
+      "confirmRestoreSnapshot":  "This will overwrite your current {{file}} with your saved snapshot. Continue?",
+      "ok":                      "✅ Done",
+      "error":                   "❌ {{msg}}",
+      "noDefault":               "No bundled default available",
+      "noSnapshot":              "No snapshot saved yet"
     }
   },
   "furnitureBrowser": {

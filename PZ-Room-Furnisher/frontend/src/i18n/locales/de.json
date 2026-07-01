@@ -523,6 +523,33 @@
       "title":       "🪵 Materialien",
       "description": "Werden im Tile-Browser als Material-Tags und im Slot-Editor als Materialfilter angeboten.",
       "placeholder": "z.B. Holz"
+    },
+    "uiPreferences": {
+      "title":       "🖥 UI-Einstellungen",
+      "description": "Lokale Anzeigeoptionen. Werden im Browser gespeichert.",
+      "showGeneratorLog": {
+        "label":       "Generator-Log anzeigen",
+        "description": "Log-Panel nach dem Generieren einblenden."
+      },
+      "furnishingConfig": {
+        "label":         "Einrichtungs-Konfiguration",
+        "description":   "Tile-Browser, Möbel-Vorlagen und Raumtypen-Tabs aktivieren.",
+        "confirmEnable": "Das Aktivieren der Einrichtungs-Konfiguration erfordert, dass du weißt, was du tust. Änderungen auf eigene Gefahr!"
+      }
+    },
+    "configManagement": {
+      "title":                   "🗂 Konfigurationsverwaltung",
+      "description":             "Standard-Voreinstellungen wiederherstellen oder eigene Snapshots speichern/wiederherstellen.",
+      "roomTypes":               "Raumtypen (room-types.json)",
+      "restoreDefault":          "↩ Standard wiederherstellen",
+      "saveSnapshot":            "💾 Snapshot speichern",
+      "restoreSnapshot":         "↩ Snapshot wiederherstellen",
+      "confirmRestoreDefault":   "Die aktuelle {{file}} wird mit den Standard-Voreinstellungen überschrieben. Fortfahren?",
+      "confirmRestoreSnapshot":  "Die aktuelle {{file}} wird mit deinem gespeicherten Snapshot überschrieben. Fortfahren?",
+      "ok":                      "✅ Erledigt",
+      "error":                   "❌ {{msg}}",
+      "noDefault":               "Keine Standard-Voreinstellungen vorhanden",
+      "noSnapshot":              "Noch kein Snapshot gespeichert"
     }
   },
   "furnitureBrowser": {

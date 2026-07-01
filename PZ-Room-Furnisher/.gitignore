@@ -18,3 +18,6 @@ dist/
 # Resources
 resources/
 
+# User-generated snapshots (runtime only)
+backend/Data/Snapshots/
+

@@ -5,6 +5,11 @@ import {
   getCategories,    saveCategories,
   getMaterials,     saveMaterials,
 } from '../../api/settingsApi';
+import {
+  getRoomTypesStatus, restoreRoomTypesDefault,
+  saveRoomTypesSnapshot, restoreRoomTypesSnapshot,
+  type RoomTypesStatus,
+} from '../../api/roomTypesApi';
 import s from './SettingsEditor.module.css';
 
 // ── Wiederverwendbare editierbare Liste ──────────────────────────────────────
@@ -76,9 +81,98 @@ function EditableList({
   );
 }
 
+// ── Config Management Section ────────────────────────────────────────────────
+
+function ConfigManagementSection() {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState<RoomTypesStatus | null>(null);
+  const [busy,   setBusy]   = useState<string | null>(null);
+  const [msg,    setMsg]    = useState<{ text: string; ok: boolean } | null>(null);
+
+  useEffect(() => {
+    getRoomTypesStatus().then(setStatus).catch(console.error);
+  }, []);
+
+  const flash = (text: string, ok: boolean) => {
+    setMsg({ text, ok });
+    setTimeout(() => setMsg(null), 3000);
+  };
+
+  const run = async (key: string, action: () => Promise<void>) => {
+    setBusy(key);
+    try {
+      await action();
+      const updated = await getRoomTypesStatus();
+      setStatus(updated);
+      flash(t('settingsEditor.configManagement.ok'), true);
+    } catch (e) {
+      flash(t('settingsEditor.configManagement.error', { msg: String(e) }), false);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className={`${s.section} ${s.fullWidth}`}>
+      <div className={s.sectionHeader}>
+        <span className={s.sectionTitle}>{t('settingsEditor.configManagement.title')}</span>
+        <span className={s.sectionDesc}>{t('settingsEditor.configManagement.description')}</span>
+      </div>
+      <div className={s.configTable}>
+        <div className={s.configRow}>
+          <span className={s.configRowLabel}>{t('settingsEditor.configManagement.roomTypes')}</span>
+          <div className={s.configRowActions}>
+            <button
+              className={s.configBtn}
+              disabled={!!busy || !status?.hasDefault}
+              title={status?.hasDefault ? undefined : t('settingsEditor.configManagement.noDefault')}
+              onClick={() => {
+                if (!window.confirm(t('settingsEditor.configManagement.confirmRestoreDefault', { file: 'room-types.json' }))) return;
+                run('restore-default', restoreRoomTypesDefault);
+              }}
+            >
+              {busy === 'restore-default' ? '…' : t('settingsEditor.configManagement.restoreDefault')}
+            </button>
+            <button
+              className={s.configBtn}
+              disabled={!!busy}
+              onClick={() => run('save-snapshot', saveRoomTypesSnapshot)}
+            >
+              {busy === 'save-snapshot' ? '…' : t('settingsEditor.configManagement.saveSnapshot')}
+            </button>
+            <button
+              className={s.configBtn}
+              disabled={!!busy || !status?.hasSnapshot}
+              title={status?.hasSnapshot ? undefined : t('settingsEditor.configManagement.noSnapshot')}
+              onClick={() => {
+                if (!window.confirm(t('settingsEditor.configManagement.confirmRestoreSnapshot', { file: 'room-types.json' }))) return;
+                run('restore-snapshot', restoreRoomTypesSnapshot);
+              }}
+            >
+              {busy === 'restore-snapshot' ? '…' : t('settingsEditor.configManagement.restoreSnapshot')}
+            </button>
+            {msg && (
+              <span className={msg.ok ? s.configFeedbackOk : s.configFeedbackErr}>
+                {msg.text}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Haupt-Komponente ─────────────────────────────────────────────────────────
 
-export function SettingsEditor() {
+interface SettingsEditorProps {
+  showGeneratorLog: boolean;
+  onShowGeneratorLogChange: (v: boolean) => void;
+  furnishingConfigEnabled: boolean;
+  onFurnishingConfigEnabledChange: (v: boolean) => void;
+}
+
+export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, furnishingConfigEnabled, onFurnishingConfigEnabledChange }: SettingsEditorProps) {
   const { t } = useTranslation();
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -102,38 +196,79 @@ export function SettingsEditor() {
       </div>
 
       <div className={s.columns}>
-        <EditableList
-          title={t('settingsEditor.roomTypes.title')}
-          description={t('settingsEditor.roomTypes.description')}
-          items={roomTypes}
-          placeholder={t('settingsEditor.roomTypes.placeholder')}
-          onSave={async updated => {
-            const saved = await saveRoomTypeNames(updated);
-            setRoomTypes(saved);
-          }}
-        />
+        {furnishingConfigEnabled && (
+          <>
+            <EditableList
+              title={t('settingsEditor.roomTypes.title')}
+              description={t('settingsEditor.roomTypes.description')}
+              items={roomTypes}
+              placeholder={t('settingsEditor.roomTypes.placeholder')}
+              onSave={async updated => {
+                const saved = await saveRoomTypeNames(updated);
+                setRoomTypes(saved);
+              }}
+            />
 
-        <EditableList
-          title={t('settingsEditor.categories.title')}
-          description={t('settingsEditor.categories.description')}
-          items={categories}
-          placeholder={t('settingsEditor.categories.placeholder')}
-          onSave={async updated => {
-            const saved = await saveCategories(updated);
-            setCategories(saved);
-          }}
-        />
+            <EditableList
+              title={t('settingsEditor.categories.title')}
+              description={t('settingsEditor.categories.description')}
+              items={categories}
+              placeholder={t('settingsEditor.categories.placeholder')}
+              onSave={async updated => {
+                const saved = await saveCategories(updated);
+                setCategories(saved);
+              }}
+            />
 
-        <EditableList
-          title={t('settingsEditor.materials.title')}
-          description={t('settingsEditor.materials.description')}
-          items={materials}
-          placeholder={t('settingsEditor.materials.placeholder')}
-          onSave={async updated => {
-            const saved = await saveMaterials(updated);
-            setMaterials(saved);
-          }}
-        />
+            <EditableList
+              title={t('settingsEditor.materials.title')}
+              description={t('settingsEditor.materials.description')}
+              items={materials}
+              placeholder={t('settingsEditor.materials.placeholder')}
+              onSave={async updated => {
+                const saved = await saveMaterials(updated);
+                setMaterials(saved);
+              }}
+            />
+          </>
+        )}
+
+        <div className={s.section}>
+          <div className={s.sectionHeader}>
+            <span className={s.sectionTitle}>{t('settingsEditor.uiPreferences.title')}</span>
+            <span className={s.sectionDesc}>{t('settingsEditor.uiPreferences.description')}</span>
+          </div>
+          <div className={s.prefsList}>
+            <label className={s.prefRow}>
+              <input
+                type="checkbox"
+                checked={showGeneratorLog}
+                onChange={e => onShowGeneratorLogChange(e.target.checked)}
+              />
+              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.showGeneratorLog.label')}</span>
+              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.showGeneratorLog.description')}</span>
+            </label>
+            <label className={s.prefRow}>
+              <input
+                type="checkbox"
+                checked={furnishingConfigEnabled}
+                onChange={e => {
+                  if (e.target.checked) {
+                    if (window.confirm(t('settingsEditor.uiPreferences.furnishingConfig.confirmEnable'))) {
+                      onFurnishingConfigEnabledChange(true);
+                    }
+                  } else {
+                    onFurnishingConfigEnabledChange(false);
+                  }
+                }}
+              />
+              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.furnishingConfig.label')}</span>
+              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.furnishingConfig.description')}</span>
+            </label>
+          </div>
+        </div>
+
+        <ConfigManagementSection />
       </div>
     </div>
   );
