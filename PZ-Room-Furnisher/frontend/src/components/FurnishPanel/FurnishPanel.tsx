@@ -139,10 +139,18 @@ export default function FurnishPanel({
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
+  const [openMenu, setOpenMenu]         = useState<string | null>(null);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
   }, []);
+
+  useEffect(() => {
+    if (!openMenu) return;
+    const close = () => setOpenMenu(null);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [openMenu]);
 
   const roomsByFloor  = useMemo(() => collectRoomsByFloor(building), [building]);
   const allRoomsFlat  = useMemo(() => [...roomsByFloor.values()].flat(), [roomsByFloor]);
@@ -229,8 +237,12 @@ export default function FurnishPanel({
     setRunning(true); setStatus(null);
     try {
       const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityPerRoom);
-      setPlacements(result.placements);
-      onPlacementsChanged(result.placements);
+      const preserved = placements.filter(p =>
+        !selected.has(`${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}`)
+      );
+      const merged = [...preserved, ...result.placements];
+      setPlacements(merged);
+      onPlacementsChanged(merged);
       onLogChanged?.(result.log);
       setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: result.placements.length, rooms: selections.length }), ok: true });
     } catch (e) {
@@ -238,6 +250,16 @@ export default function FurnishPanel({
     } finally {
       setRunning(false);
     }
+  };
+
+  const handleClearFurniture = (key: string) => {
+    const [f, r, c, rr] = key.split(':').map(Number);
+    const filtered = placements.filter(p =>
+      !(p.floorIndex === f && p.roomIndex1Based === r && p.anchorCol === c && p.anchorRow === rr)
+    );
+    setPlacements(filtered);
+    onPlacementsChanged(filtered);
+    setOpenMenu(null);
   };
 
   const handleExport = async () => {
@@ -303,6 +325,12 @@ export default function FurnishPanel({
               const hasMatch    = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
               const isSel       = selected.has(key);
               const colorCss    = tbxColorToCss(room?.color);
+              const hasFurniture = placements.some(p =>
+                p.floorIndex === entry.floorIndex &&
+                p.roomIndex1Based === entry.roomIndex1Based &&
+                p.anchorCol === entry.anchorCol &&
+                p.anchorRow === entry.anchorRow
+              );
 
               return (
                 <div key={key}>
@@ -331,6 +359,28 @@ export default function FurnishPanel({
                     {!hasMatch && typeName && (
                       <span className={s.roomRowNoMatch} title={t('furnishPanel.noMatchTitle', { type: typeName })}>⚠</span>
                     )}
+                    <div
+                      className={s.menuAnchor}
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <button
+                        className={`${s.menuBtn} ${openMenu === key || hasFurniture ? s.menuBtnVisible : ''}`}
+                        aria-label={t('furnishPanel.menuLabel')}
+                        title={t('furnishPanel.menuLabel')}
+                        onClick={() => setOpenMenu(openMenu === key ? null : key)}
+                      >⋯</button>
+                      {openMenu === key && (
+                        <div className={s.menuDropdown}>
+                          <button
+                            className={s.menuItem}
+                            disabled={!hasFurniture}
+                            onClick={() => handleClearFurniture(key)}
+                          >
+                            {t('furnishPanel.clearFurniture')}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {isSel && (

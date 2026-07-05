@@ -81,6 +81,57 @@
   flex-shrink: 0;
 }
 
+/* ── 3-dot room menu ── */
+.menuAnchor {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  color: #556;
+  font-size: 0.85rem;
+  padding: 0 3px;
+  cursor: pointer;
+  border-radius: 3px;
+  line-height: 1;
+  visibility: hidden;
+}
+.menuBtnVisible,
+.roomRow:hover .menuBtn {
+  visibility: visible;
+}
+.menuBtn:hover { color: #aab; background: #2a2a3a; }
+
+.menuDropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 2px;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  min-width: 140px;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.menuItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #ccd;
+  font-size: 0.76rem;
+  padding: 7px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.menuItem:hover:not(:disabled) { background: #2a2a4a; color: #eef; }
+.menuItem:disabled { color: #445; cursor: default; }
+
 /* Color swatch next to room name */
 .roomColorSwatch {
   width: 12px;

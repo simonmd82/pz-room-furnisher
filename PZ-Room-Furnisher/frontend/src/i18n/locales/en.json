@@ -505,7 +505,9 @@
     "cellsTitle_other":   "{{count}} cells",
     "noMatchTitle":       "No matching room type for „{{type}}\"",
     "roomTypePlaceholder": "Room type: {{type}}",
-    "unknown":            "unknown"
+    "unknown":            "unknown",
+    "menuLabel":          "Room options",
+    "clearFurniture":     "Clear furniture"
   },
   "settingsEditor": {
     "pageTitle":    "⚙ Settings",

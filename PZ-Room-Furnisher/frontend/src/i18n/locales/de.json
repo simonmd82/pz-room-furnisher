@@ -505,7 +505,9 @@
     "cellsTitle_other":   "{{count}} Zellen",
     "noMatchTitle":       "Kein passender Raumtyp für „{{type}}\"",
     "roomTypePlaceholder": "Raumtyp: {{type}}",
-    "unknown":            "unbekannt"
+    "unknown":            "unbekannt",
+    "menuLabel":          "Raumoptionen",
+    "clearFurniture":     "Möbel entfernen"
   },
   "settingsEditor": {
     "pageTitle":    "⚙ Einstellungen",

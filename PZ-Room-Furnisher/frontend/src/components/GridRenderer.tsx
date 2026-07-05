@@ -37,17 +37,93 @@ function toRgb(color: string, alpha = 1): string {
   return `rgba(60,60,80,${alpha})`;
 }
 
+interface SubRoomCellInfo  { isMain: boolean; }
+interface SubRoomLabelInfo { size: number; isMain: boolean; }
+
 /**
- * Returns the set of "col,row" keys that belong to secondary sub-rooms (not main).
- * A sub-room split occurs when inner walls divide a room into disconnected components.
- * Main = component with most door/opening cells (tie-break: largest).
- * Returns empty set when no inner walls exist.
+ * Extends each collinear inner wall segment (within roomCells) outward in its
+ * primary direction until it hits the room boundary or a passable edge
+ * (Door/Window/Opening). This treats partial dividers as full separators.
  */
-function computeSecondarySubRoomCells(floor: Floor): Set<string> {
-  const innerWallKeys = new Set(
+function buildExtendedInnerWalls(
+  allInnerWallKeys: Set<string>,
+  roomCells:        Set<string>,
+  passableEdgeKeys: Set<string>,
+): Set<string> {
+  const hByCols = new Map<number, number[]>(); // row → cols of H edges in this room
+  const vByRows = new Map<number, number[]>(); // col → rows of V edges in this room
+
+  for (const key of allInnerWallKeys) {
+    if (key.startsWith('H:')) {
+      const [col, row] = key.slice(2).split(',').map(Number);
+      if (!roomCells.has(`${col},${row - 1}`) || !roomCells.has(`${col},${row}`)) continue;
+      if (!hByCols.has(row)) hByCols.set(row, []);
+      hByCols.get(row)!.push(col);
+    } else {
+      const [col, row] = key.slice(2).split(',').map(Number);
+      if (!roomCells.has(`${col - 1},${row}`) || !roomCells.has(`${col},${row}`)) continue;
+      if (!vByRows.has(col)) vByRows.set(col, []);
+      vByRows.get(col)!.push(row);
+    }
+  }
+
+  const extended = new Set<string>(allInnerWallKeys);
+
+  const tryH = (col: number, row: number): boolean => {
+    const k = `H:${col},${row}`;
+    if (passableEdgeKeys.has(k)) return false;
+    if (!roomCells.has(`${col},${row - 1}`) || !roomCells.has(`${col},${row}`)) return false;
+    extended.add(k);
+    return true;
+  };
+
+  const tryV = (col: number, row: number): boolean => {
+    const k = `V:${col},${row}`;
+    if (passableEdgeKeys.has(k)) return false;
+    if (!roomCells.has(`${col - 1},${row}`) || !roomCells.has(`${col},${row}`)) return false;
+    extended.add(k);
+    return true;
+  };
+
+  for (const [row, cols] of hByCols) {
+    const sorted = [...cols].sort((a, b) => a - b);
+    let c = sorted[0] - 1;       while (tryH(c, row)) c--;
+    c = sorted[sorted.length - 1] + 1; while (tryH(c, row)) c++;
+  }
+  for (const [col, rows] of vByRows) {
+    const sorted = [...rows].sort((a, b) => a - b);
+    let r = sorted[0] - 1;       while (tryV(col, r)) r--;
+    r = sorted[sorted.length - 1] + 1; while (tryV(col, r)) r++;
+  }
+
+  return extended;
+}
+
+/**
+ * Computes sub-room data for all rooms on the floor.
+ * Always emits a size label at the centroid of every room (or every sub-room
+ * component when inner walls divide a room into disconnected parts).
+ * Partial inner walls are extended to the nearest room boundary so they act
+ * as full dividers. Secondary sub-room cells get a white-tint overlay.
+ */
+function computeSubRoomData(floor: Floor): {
+  subRoomCellMap:   Map<string, SubRoomCellInfo>;
+  subRoomLabels:    Map<string, SubRoomLabelInfo>;
+  hasSubRoomSplits: boolean;
+} {
+  const subRoomCellMap   = new Map<string, SubRoomCellInfo>();
+  const subRoomLabels    = new Map<string, SubRoomLabelInfo>();
+  let   hasSubRoomSplits = false;
+
+  const allInnerWallKeys = new Set(
     floor.edges.filter(e => e.type === 'InnerWall').map(e => e.edgeKey)
   );
-  if (innerWallKeys.size === 0) return new Set();
+
+  const passableEdgeKeys = new Set(
+    floor.edges
+      .filter(e => e.type === 'Door' || e.type === 'Window' || e.type === 'Opening')
+      .map(e => e.edgeKey)
+  );
 
   const doorCells = new Set<string>();
   floor.edges
@@ -57,7 +133,6 @@ function computeSecondarySubRoomCells(floor: Floor): Set<string> {
       doorCells.add(`${e.cell2Col},${e.cell2Row}`);
     });
 
-  const secondary = new Set<string>();
   const roomIndices = new Set<number>();
   floor.roomGrid.forEach(row => row.forEach(v => { if (v > 0) roomIndices.add(v); }));
 
@@ -66,6 +141,10 @@ function computeSecondarySubRoomCells(floor: Floor): Set<string> {
     floor.roomGrid.forEach((row, r) =>
       row.forEach((v, c) => { if (v === roomIdx) roomCells.add(`${c},${r}`); })
     );
+
+    const innerWallKeys = allInnerWallKeys.size > 0
+      ? buildExtendedInnerWalls(allInnerWallKeys, roomCells, passableEdgeKeys)
+      : allInnerWallKeys;
 
     const remaining = new Set(roomCells);
     const components: Set<string>[] = [];
@@ -90,18 +169,36 @@ function computeSecondarySubRoomCells(floor: Floor): Set<string> {
       components.push(component);
     }
 
-    if (components.length <= 1) continue;
+    const hasSplit = components.length > 1;
+    if (hasSplit) {
+      hasSubRoomSplits = true;
+      // Largest first; tie-break: most door/opening cells — matches backend ComputeMainSubRoom
+      components.sort((a, b) =>
+        (b.size - a.size) ||
+        ([...b].filter(k => doorCells.has(k)).length - [...a].filter(k => doorCells.has(k)).length)
+      );
+    }
 
-    components.sort((a, b) =>
-      ([...b].filter(k => doorCells.has(k)).length - [...a].filter(k => doorCells.has(k)).length) ||
-      (b.size - a.size)
-    );
+    components.forEach((comp, idx) => {
+      const isMain = !hasSplit || idx === 0;
+      if (!isMain) comp.forEach(k => subRoomCellMap.set(k, { isMain: false }));
 
-    for (let i = 1; i < components.length; i++)
-      components[i].forEach(k => secondary.add(k));
+      // Size label at centroid
+      let sumC = 0, sumR = 0;
+      comp.forEach(k => { const [c, r] = k.split(',').map(Number); sumC += c; sumR += r; });
+      const avgC = sumC / comp.size;
+      const avgR = sumR / comp.size;
+      let bestKey = '', bestDist = Infinity;
+      comp.forEach(k => {
+        const [c, r] = k.split(',').map(Number);
+        const d = (c - avgC) ** 2 + (r - avgR) ** 2;
+        if (d < bestDist) { bestDist = d; bestKey = k; }
+      });
+      subRoomLabels.set(bestKey, { size: comp.size, isMain });
+    });
   }
 
-  return secondary;
+  return { subRoomCellMap, subRoomLabels, hasSubRoomSplits };
 }
 
 // ---------------------------------------------------------------------------
@@ -351,8 +448,8 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
     return <p className={styles.empty}>{t('floor.noGrid')}</p>;
   }
 
-  const secondarySubRoomCells = useMemo(() => computeSecondarySubRoomCells(floor), [floor]);
-  const hasSubRooms = secondarySubRoomCells.size > 0;
+  const { subRoomCellMap, subRoomLabels, hasSubRoomSplits } = useMemo(() => computeSubRoomData(floor), [floor]);
+  const hasSubRooms = hasSubRoomSplits;
 
   const stairInfo   = buildStairCells(floor, building?.floors);
   const stairCells  = stairInfo.cells;
@@ -551,7 +648,8 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 const key       = `${colIdx},${rowIdx}`;
                 const isStair            = stairCells.has(key);
                 const isEntry            = stairEntry.has(key);
-                const isSecondarySubRoom = secondarySubRoomCells.has(key);
+                const subRoomCell  = subRoomCellMap.get(key);
+                const subRoomLabel = subRoomLabels.get(key);
                 const cellEdges          = cellEdgeMap.get(key) ?? [];
                 const isPath    = showPaths && anyPathSet.has(key);
 
@@ -594,7 +692,12 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                   >
                     {isStair && <span className={styles.stairStripe} />}
                     {isEntry  && <span className={styles.stairEntry}>✕</span>}
-                    {isSecondarySubRoom && <span className={styles.secondarySubRoomOverlay} />}
+                    {subRoomCell && !subRoomCell.isMain && <span className={styles.secondarySubRoomOverlay} />}
+                    {subRoomLabel && (
+                      <span className={styles.subRoomSizeLabel}>
+                        {subRoomLabel.size}
+                      </span>
+                    )}
                   </div>
                 );
               })

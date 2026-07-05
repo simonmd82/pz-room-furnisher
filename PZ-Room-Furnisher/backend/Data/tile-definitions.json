@@ -11772,7 +11772,7 @@
   "lighting_indoor_01_008": {
     "tileId": "lighting_indoor_01_008",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_008"
@@ -11798,7 +11798,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_white_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11806,7 +11806,7 @@
   "lighting_indoor_01_040": {
     "tileId": "lighting_indoor_01_040",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_040"
@@ -11832,7 +11832,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_white_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11840,7 +11840,7 @@
   "lighting_indoor_01_048": {
     "tileId": "lighting_indoor_01_048",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_048"
@@ -11866,7 +11866,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_white_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11874,7 +11874,7 @@
   "lighting_indoor_01_032": {
     "tileId": "lighting_indoor_01_032",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_032"
@@ -11900,7 +11900,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_white_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11908,7 +11908,7 @@
   "lighting_indoor_01_009": {
     "tileId": "lighting_indoor_01_009",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_009"
@@ -11933,7 +11933,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_black_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11941,7 +11941,7 @@
   "lighting_indoor_01_041": {
     "tileId": "lighting_indoor_01_041",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_041"
@@ -11966,7 +11966,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_black_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -11974,7 +11974,7 @@
   "lighting_indoor_01_049": {
     "tileId": "lighting_indoor_01_049",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_049"
@@ -11999,7 +11999,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_black_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12007,7 +12007,7 @@
   "lighting_indoor_01_033": {
     "tileId": "lighting_indoor_01_033",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_033"
@@ -12032,7 +12032,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_black_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12040,7 +12040,7 @@
   "lighting_indoor_01_010": {
     "tileId": "lighting_indoor_01_010",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_010"
@@ -12065,7 +12065,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12073,7 +12073,7 @@
   "lighting_indoor_01_042": {
     "tileId": "lighting_indoor_01_042",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_042"
@@ -12098,7 +12098,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12106,7 +12106,7 @@
   "lighting_indoor_01_050": {
     "tileId": "lighting_indoor_01_050",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_050"
@@ -12131,7 +12131,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12139,7 +12139,7 @@
   "lighting_indoor_01_034": {
     "tileId": "lighting_indoor_01_034",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_034"
@@ -12164,7 +12164,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12172,7 +12172,7 @@
   "lighting_indoor_01_011": {
     "tileId": "lighting_indoor_01_011",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_011"
@@ -12197,7 +12197,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12205,7 +12205,7 @@
   "lighting_indoor_01_043": {
     "tileId": "lighting_indoor_01_043",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_043"
@@ -12230,7 +12230,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12238,7 +12238,7 @@
   "lighting_indoor_01_051": {
     "tileId": "lighting_indoor_01_051",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_051"
@@ -12263,7 +12263,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12271,7 +12271,7 @@
   "lighting_indoor_01_035": {
     "tileId": "lighting_indoor_01_035",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_035"
@@ -12296,7 +12296,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12304,7 +12304,7 @@
   "lighting_indoor_01_012": {
     "tileId": "lighting_indoor_01_012",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_012"
@@ -12329,7 +12329,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12337,7 +12337,7 @@
   "lighting_indoor_01_044": {
     "tileId": "lighting_indoor_01_044",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_044"
@@ -12362,7 +12362,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12370,7 +12370,7 @@
   "lighting_indoor_01_052": {
     "tileId": "lighting_indoor_01_052",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_052"
@@ -12395,7 +12395,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12403,7 +12403,7 @@
   "lighting_indoor_01_036": {
     "tileId": "lighting_indoor_01_036",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_036"
@@ -12428,7 +12428,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12436,7 +12436,7 @@
   "lighting_indoor_01_013": {
     "tileId": "lighting_indoor_01_013",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_01_013"
@@ -12461,7 +12461,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_beige_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12469,7 +12469,7 @@
   "lighting_indoor_01_045": {
     "tileId": "lighting_indoor_01_045",
     "label": "",
-    "orientation": "E",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_01_045"
@@ -12494,7 +12494,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_beige_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12502,7 +12502,7 @@
   "lighting_indoor_01_053": {
     "tileId": "lighting_indoor_01_053",
     "label": "",
-    "orientation": "S",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_01_053"
@@ -12527,7 +12527,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_beige_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12535,7 +12535,7 @@
   "lighting_indoor_01_037": {
     "tileId": "lighting_indoor_01_037",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "lighting_indoor_01_037"
@@ -12560,7 +12560,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_bedtable_beige_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": ""
@@ -12595,7 +12595,7 @@
       "LivingRoom",
       "Hallway"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_standing_black_01",
     "styleTags": [],
     "allowedOrients": [
       "N",
@@ -12635,7 +12635,7 @@
       "LivingRoom",
       "Hallway"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_standing_white_01",
     "styleTags": [],
     "allowedOrients": [
       "N",
@@ -12676,7 +12676,7 @@
       "LivingRoom",
       "Hallway"
     ],
-    "variantGroup": "",
+    "variantGroup": "light_standing_white_yellow_01",
     "styleTags": [],
     "allowedOrients": [
       "N",
@@ -24647,6 +24647,962 @@
       "S",
       "W"
     ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_001": {
+    "tileId": "location_business_office_generic_01_001",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_001"
+      ],
+      [
+        "location_business_office_generic_01_000"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_014": {
+    "tileId": "location_business_office_generic_01_014",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_014"
+      ],
+      [
+        "location_business_office_generic_01_013"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_005": {
+    "tileId": "location_business_office_generic_01_005",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_005",
+        "location_business_office_generic_01_006"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_008": {
+    "tileId": "location_business_office_generic_01_008",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_008",
+        "location_business_office_generic_01_010"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_003": {
+    "tileId": "location_business_office_generic_01_003",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_003",
+        "location_business_office_generic_01_004",
+        "location_business_office_generic_01_006"
+      ],
+      [
+        "location_business_office_generic_01_002",
+        "",
+        ""
+      ],
+      [
+        "location_business_office_generic_01_000",
+        "",
+        ""
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_l_shape_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_041": {
+    "tileId": "location_business_office_generic_01_041",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_041"
+      ],
+      [
+        "location_business_office_generic_01_040"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_044": {
+    "tileId": "location_business_office_generic_01_044",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_044",
+        "location_business_office_generic_01_045"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_047": {
+    "tileId": "location_business_office_generic_01_047",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_047"
+      ],
+      [
+        "location_business_office_generic_01_046"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_042": {
+    "tileId": "location_business_office_generic_01_042",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_042",
+        "location_business_office_generic_01_043"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_table_line_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_017": {
+    "tileId": "location_business_office_generic_01_017",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_017"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_025": {
+    "tileId": "location_business_office_generic_01_025",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_025"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_024": {
+    "tileId": "location_business_office_generic_01_024",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_024"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_016": {
+    "tileId": "location_business_office_generic_01_016",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_016"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_033": {
+    "tileId": "location_business_office_generic_01_033",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_033"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_white_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_035": {
+    "tileId": "location_business_office_generic_01_035",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_035"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_white_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_034": {
+    "tileId": "location_business_office_generic_01_034",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_034"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_white_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_032": {
+    "tileId": "location_business_office_generic_01_032",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_032"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Metal",
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_cabinet_white_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_037": {
+    "tileId": "location_business_office_generic_01_037",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_037"
+      ],
+      [
+        "location_business_office_generic_01_036"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_black_board_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_038": {
+    "tileId": "location_business_office_generic_01_038",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_038",
+        "location_business_office_generic_01_039"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_black_board_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_015": {
+    "tileId": "location_business_office_generic_01_015",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_015"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [],
+    "variantGroup": "office_black_board_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "E"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_007": {
+    "tileId": "location_business_office_generic_01_007",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_007"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [],
+    "variantGroup": "office_black_board_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_052": {
+    "tileId": "location_business_office_generic_01_052",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_052"
+      ],
+      [
+        "location_business_office_generic_01_051"
+      ],
+      [
+        "location_business_office_generic_01_050"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_white_board_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "E"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_053": {
+    "tileId": "location_business_office_generic_01_053",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_053",
+        "location_business_office_generic_01_054",
+        "location_business_office_generic_01_055"
+      ]
+    ],
+    "group": "Office Wall Deco",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_white_board_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "S"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_048": {
+    "tileId": "location_business_office_generic_01_048",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_048"
+      ]
+    ],
+    "group": "Appliance",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_water_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_049": {
+    "tileId": "location_business_office_generic_01_049",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_049"
+      ]
+    ],
+    "group": "Appliance",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_water_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_057": {
+    "tileId": "location_business_office_generic_01_057",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_057"
+      ]
+    ],
+    "group": "Appliance",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_water_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "location_business_office_generic_01_056": {
+    "tileId": "location_business_office_generic_01_056",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "location_business_office_generic_01_056"
+      ]
+    ],
+    "group": "Appliance",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [
+      "Office"
+    ],
+    "variantGroup": "office_water_01",
+    "styleTags": [],
+    "allowedOrients": [],
     "windowBlockedEdge": ""
   }
 }

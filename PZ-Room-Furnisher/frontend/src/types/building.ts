@@ -140,6 +140,9 @@ export interface PlacedFurnitureItem {
   orient: string;
   /** Slot-ID aus dem Raumtyp-Konfigurator, z.B. "slot_bed_main_small" */
   slotId: string;
+  roomIndex1Based?: number;
+  anchorCol?: number;
+  anchorRow?: number;
 }
 
 export interface FurnishResult {
