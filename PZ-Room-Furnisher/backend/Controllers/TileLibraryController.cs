@@ -160,18 +160,18 @@ public class TileLibraryController : ControllerBase
     [HttpGet("config")]
     public IActionResult GetConfig() => Ok(_cfg.GetAll());
 
-    [HttpPut("config/{tileId}")]
-    public IActionResult Upsert(string tileId, [FromBody] TileDefinition def)
+    [HttpPut("config/{id}")]
+    public IActionResult Upsert(string id, [FromBody] TileDefinition def)
     {
-        def.TileId = tileId;
+        def.Id = id;
         _cfg.Upsert(def);
         return Ok(def);
     }
 
-    [HttpDelete("config/{tileId}")]
-    public IActionResult Delete(string tileId)
+    [HttpDelete("config/{id}")]
+    public IActionResult Delete(string id)
     {
-        _cfg.Delete(tileId);
+        _cfg.Delete(id);
         return NoContent();
     }
 

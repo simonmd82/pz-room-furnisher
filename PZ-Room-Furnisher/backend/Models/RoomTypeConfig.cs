@@ -195,6 +195,16 @@ public class RoomTypeSlot
     public bool SoftBlocks { get; set; } = false;
 
     /// <summary>
+    /// Nur relevant wenn BlocksPlacement=false. Andere Slots dürfen die Footprint-Zellen
+    /// dieses Slots nur dann belegen, wenn ihr gewähltes Tile ALLE hier gelisteten
+    /// Eigenschaften erfüllt (gleiche Eigenschaften wie RequiredProperties, z.B.
+    /// "isLow", "hasCollision"). Leer = keine zusätzliche Einschränkung.
+    /// Kombinierbar mit SoftBlocks (beide Regeln gelten dann gleichzeitig).
+    /// Typischer Einsatz: Wandregal, das nur wandmontierte Deko über sich duldet.
+    /// </summary>
+    public List<string> CellRequiredProperties { get; set; } = [];
+
+    /// <summary>
     /// Wenn true, wird die Zelle vor der Vorderseite des platzierten Tiles
     /// (gemäß Orientierung) zusätzlich in occupied eingetragen.
     /// Andere Slots können diese Zelle dann nicht belegen, der Spieler kann
@@ -254,6 +264,8 @@ public class LayoutPoolCompanion
     public bool BlocksFrontCell      { get; set; } = false;
     public bool BlocksPlacement      { get; set; } = true;
     public bool SoftBlocks           { get; set; } = false;
+    /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
+    public List<string> CellRequiredProperties { get; set; } = [];
 }
 
 /// <summary>A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove").</summary>
@@ -269,6 +281,8 @@ public class LayoutPoolRequiredSlot
     public bool BlocksFrontCell      { get; set; } = false;
     public bool BlocksPlacement      { get; set; } = false;
     public bool SoftBlocks           { get; set; } = true;
+    /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
+    public List<string> CellRequiredProperties { get; set; } = [];
     public List<LayoutPoolCompanion> Companions { get; set; } = [];
 }
 
@@ -302,6 +316,8 @@ public class LayoutPool
     public bool BlocksFrontCell      { get; set; } = false;
     public bool BlocksPlacement      { get; set; } = false;
     public bool SoftBlocks           { get; set; } = true;
+    /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
+    public List<string> CellRequiredProperties { get; set; } = [];
     public string ColorGroupId       { get; set; } = string.Empty;
     public string MaterialGroupId    { get; set; } = string.Empty;
     public string TileGroupId        { get; set; } = string.Empty;

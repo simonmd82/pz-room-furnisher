@@ -51,6 +51,8 @@
   },
   "common": {
     "colors": "Colors",
+    "shadeLight": "Light",
+    "shadeDark": "Dark",
     "materials": "Materials",
     "noMaterialsConfigured": "No materials defined in settings.",
     "roomTypes": "Room types",
@@ -185,6 +187,8 @@
       "softBlockOn": "(only requiresSlot slots may be placed on it)",
       "softBlockOff": "(off – anything may land on this cell)",
       "softBlockTitle": "If enabled: cells go into softOccupied.\nNormal slots will not land on them.\nSlots with requiresSlot (e.g. a lamp via AnchorRules) ignore softOccupied and may be placed there.\n\nTypical use: nightstand\n  blocksPlacement: OFF + soft block: ON\n\nRug: blocksPlacement: OFF + soft block: OFF (anything may go on it)",
+      "cellRequiredPropertiesLabel": "Allowed properties on this cell",
+      "cellRequiredPropertiesTitle": "Only relevant when \"Blocks cell\" is off. If any properties are selected, another slot may only share this cell if its tile has ALL of them (e.g. isLow + isWallMounted). Combinable with soft block – both restrictions apply together.\n\nEmpty = no extra restriction (default).",
       "blocksFrontCell": "🚶 Keep cell in front free",
       "blocksFrontCellTitle": "If enabled: the cell directly in front of the placed tile (in its facing direction) is reserved – other slots cannot place furniture there, but the player can still walk into it.\n\nTypical use: stove, fridge – the cell in front should stay clear.",
       "wallAlignmentLabel": "Wall alignment",

@@ -5,7 +5,7 @@ import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap } from '../../types/tiles';
-import { defaultDefinition, parseTileId, layoutCols, layoutRows, COLORS, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
+import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
 import { DirPicker } from '../TileBrowser/DirPicker';
 import s from './FurnitureBrowser.module.css';
 
@@ -46,9 +46,9 @@ export function FurnitureBrowser() {
   // ── multi-select & pending state ──────────────────────────────────────
   /** Ausgewählte Karten als "pieceIdx-entryIdx" */
   const [selKeys, setSelKeys]   = useState<string[]>([]);
-  /** Alle geöffneten/geänderten Defs – bleibt beim Gruppenwechsel erhalten */
+  /** Alle geöffneten/geänderten Defs (keyed by computeTileDefId) – bleibt beim Gruppenwechsel erhalten */
   const [viewDefs, setViewDefs] = useState<Record<string, TileDefinition>>({});
-  /** rootTileIds mit ungespeicherten Änderungen */
+  /** computeTileDefId-Werte mit ungespeicherten Änderungen */
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
 
   // ── tile config (for "already imported" indicator) ────────────────────
@@ -105,13 +105,16 @@ export function FurnitureBrowser() {
     return map;
   }, [detail]);
 
-  const selRootIds = useMemo(() =>
-    selKeys.map(k => keyToEntry[k]?.entry.rootTileId).filter((id): id is string => !!id),
+  const selIds = useMemo(() =>
+    selKeys.map(k => {
+      const e = keyToEntry[k]?.entry;
+      return e ? computeTileDefId(e.rootTileId, e.tileLayout) : undefined;
+    }).filter((id): id is string => !!id),
     [selKeys, keyToEntry]);
 
   const selDefs = useMemo(() =>
-    selRootIds.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
-    [selRootIds, viewDefs]);
+    selIds.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
+    [selIds, viewDefs]);
 
   // ── init ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -171,8 +174,9 @@ export function FurnitureBrowser() {
     pi: number, ei: number, entry: BfEntryDto, groupLabel: string,
     layer?: string, evt?: React.MouseEvent
   ) => {
-    const key = `${pi}-${ei}`;
-    const id  = entry.rootTileId;
+    const key    = `${pi}-${ei}`;
+    const rootId = entry.rootTileId;
+    const id     = computeTileDefId(rootId, entry.tileLayout);
 
     setViewDefs(prev => {
       if (prev[id]) return prev;
@@ -181,7 +185,8 @@ export function FurnitureBrowser() {
       if (existing) {
         def = { ...existing };
       } else {
-        def = defaultDefinition(id);
+        def = defaultDefinition(rootId);
+        def.id          = id;
         def.orientation = entry.orient as TileDefinition['orientation'];
         def.tileLayout  = entry.tileLayout;
         def.group       = groupLabel;
@@ -202,10 +207,10 @@ export function FurnitureBrowser() {
   const applyField = <K extends keyof TileDefinition>(field: K, value: TileDefinition[K]) => {
     setViewDefs(prev => {
       const next = { ...prev };
-      selRootIds.forEach(id => { if (next[id]) next[id] = { ...next[id], [field]: value }; });
+      selIds.forEach(id => { if (next[id]) next[id] = { ...next[id], [field]: value }; });
       return next;
     });
-    setDirtyIds(prev => new Set([...prev, ...selRootIds]));
+    setDirtyIds(prev => new Set([...prev, ...selIds]));
     setSaveState('idle');
   };
 
@@ -216,11 +221,11 @@ export function FurnitureBrowser() {
       selDefs.forEach(def => {
         const cur     = def[field] as string[];
         const updated = allHave ? cur.filter(x => x !== val) : cur.includes(val) ? cur : [...cur, val];
-        next[def.tileId] = { ...next[def.tileId], [field]: updated };
+        next[def.id] = { ...next[def.id], [field]: updated };
       });
       return next;
     });
-    setDirtyIds(prev => new Set([...prev, ...selRootIds]));
+    setDirtyIds(prev => new Set([...prev, ...selIds]));
     setSaveState('idle');
   };
 
@@ -255,7 +260,7 @@ export function FurnitureBrowser() {
       }
       setConfig(prev => {
         const next = { ...prev };
-        saved.forEach(def => { next[def.tileId] = def; });
+        saved.forEach(def => { next[def.id] = def; });
         return next;
       });
       setDirtyIds(new Set());
@@ -372,9 +377,10 @@ export function FurnitureBrowser() {
               <div className={s.entryList}>
                 {piece.entries.map((entry, ei) => {
                   const key      = `${pi}-${ei}`;
+                  const entryId  = computeTileDefId(entry.rootTileId, entry.tileLayout);
                   const isActive = selKeys.includes(key);
-                  const isDirty  = dirtyIds.has(entry.rootTileId);
-                  const imported = !isDirty && !!config[entry.rootTileId];
+                  const isDirty  = dirtyIds.has(entryId);
+                  const imported = !isDirty && !!config[entryId];
                   const cols = entry.tileLayout[0]?.length ?? 1;
                   const rows = entry.tileLayout.length;
                   return (
@@ -412,7 +418,7 @@ export function FurnitureBrowser() {
 
                       <div className={s.entryMeta}>
                         <span className={s.entryOrient} title={t('furnitureBrowser.txtOrient', { orient: entry.orient })}>
-                          {viewDefs[entry.rootTileId]?.orientation || entry.orient}
+                          {viewDefs[entryId]?.orientation || entry.orient}
                         </span>
                         <span className={s.entryDims}>{cols}×{rows}</span>
                         <span className={s.entryRoot} title={entry.rootTileId}>
@@ -439,7 +445,7 @@ export function FurnitureBrowser() {
               {selDefs.length === 1
                 ? <span className={s.cfgTileId} title={selDefs[0].tileId}>{selDefs[0].tileId}</span>
                 : <span className={s.cfgTileId}>{t('furnitureBrowser.entriesSelected', { count: selDefs.length })}</span>}
-              {selDefs.length === 1 && config[selDefs[0].tileId] && <span className={s.alreadyImported}>{t('furnitureBrowser.alreadyConfigured')}</span>}
+              {selDefs.length === 1 && config[selDefs[0].id] && <span className={s.alreadyImported}>{t('furnitureBrowser.alreadyConfigured')}</span>}
               {dirtyIds.size > 0 && <span className={s.pendingBadge}>{dirtyIds.size} ✎</span>}
             </div>
 
@@ -659,10 +665,21 @@ export function FurnitureBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
-                {COLORS.map(c => { const st = arrState(d => d.colors, c); return (
-                  <span key={c} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
-                    onClick={() => toggleArrayField('colors', c)}>{c}</span>
-                ); })}
+                {COLORS.map(c => {
+                  const st = arrState(d => d.colors, c);
+                  const shadeStates = SHADES.map(sh => arrState(d => d.colors, shadeColor(c, sh)));
+                  const showShades = st !== 'none' || shadeStates.some(st2 => st2 !== 'none');
+                  return (
+                    <span key={c} className={s.colorSwatch}>
+                      <span className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                        onClick={() => toggleArrayField('colors', c)}>{c}</span>
+                      {showShades && SHADES.map((sh, i) => (
+                        <span key={sh} className={`${s.chip} ${s.chipShade} ${shadeStates[i]==='all'?s.chipActive:shadeStates[i]==='some'?s.chipPartial:''}`}
+                          onClick={() => toggleArrayField('colors', shadeColor(c, sh))}>{t(`common.shade${sh}`)}</span>
+                      ))}
+                    </span>
+                  );
+                })}
               </div>
             </div>
 

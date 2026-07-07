@@ -10,6 +10,10 @@ import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, Roo
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
+import { SHADES, shadeColor } from '../../types/tiles';
+
+/** A color is a "base" (shade-combinable) color unless it's already a "X Light"/"X Dark" compound. */
+const isBaseColor = (color: string): boolean => !SHADES.some(sh => color.endsWith(` ${sh}`));
 import { AnchorRulePreview } from './AnchorRulePreview';
 import s from './RoomTypeEditor.module.css';
 
@@ -358,6 +362,10 @@ export function RoomTypeEditor() {
     setDirty(true);
   };
 
+  /** Toggles a value in a string[] field (used for cellRequiredProperties pills). */
+  const toggleInArray = (arr: string[], val: string) =>
+    arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
+
   const togglePoolCategory = (variantIdx: number, poolIdx: number, cat: string) => {
     if (!draft) return;
     const variants = [...(draft.layoutVariants ?? [])];
@@ -484,6 +492,15 @@ export function RoomTypeEditor() {
       ? slot.requiredProperties.filter(p => p !== prop)
       : [...slot.requiredProperties, prop];
     updateSlot(slotIdx, { requiredProperties: props });
+  };
+
+  const toggleCellRequiredProperty = (slotIdx: number, prop: string) => {
+    if (!draft) return;
+    const slot = draft.slots[slotIdx];
+    const props = slot.cellRequiredProperties.includes(prop)
+      ? slot.cellRequiredProperties.filter(p => p !== prop)
+      : [...slot.cellRequiredProperties, prop];
+    updateSlot(slotIdx, { cellRequiredProperties: props });
   };
 
   const addAnchorRule = (slotIdx: number) => {
@@ -748,22 +765,38 @@ export function RoomTypeEditor() {
                   {availColors.map(color => {
                     const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
                     const active  = palette.includes(color);
+                    const toggle = (val: string) => {
+                      const current = draft.colorPalettes?.[draft.colorGroupId] ?? [];
+                      const next    = current.includes(val)
+                        ? current.filter(c => c !== val)
+                        : [...current, val];
+                      setDraft({
+                        ...draft,
+                        colorPalettes: { ...(draft.colorPalettes ?? {}), [draft.colorGroupId]: next },
+                      });
+                      setDirty(true);
+                    };
+                    const showShades = isBaseColor(color) && (active || SHADES.some(sh => palette.includes(shadeColor(color, sh))));
                     return (
-                      <span key={color}
-                        className={`${s.chip} ${active ? s.chipActive : ''}`}
-                        title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
-                        onClick={() => {
-                          const current = draft.colorPalettes?.[draft.colorGroupId] ?? [];
-                          const next    = active
-                            ? current.filter(c => c !== color)
-                            : [...current, color];
-                          setDraft({
-                            ...draft,
-                            colorPalettes: { ...(draft.colorPalettes ?? {}), [draft.colorGroupId]: next },
-                          });
-                          setDirty(true);
-                        }}>
-                        {color}
+                      <span key={color} className={s.colorSwatch}>
+                        <span
+                          className={`${s.chip} ${active ? s.chipActive : ''}`}
+                          title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
+                          onClick={() => toggle(color)}>
+                          {color}
+                        </span>
+                        {showShades && SHADES.map(sh => {
+                          const val = shadeColor(color, sh);
+                          const shActive = palette.includes(val);
+                          return (
+                            <span key={sh}
+                              className={`${s.chip} ${s.chipShade} ${shActive ? s.chipActive : ''}`}
+                              title={shActive ? t('roomTypeEditor.colorPalette.removeColor', { color: val }) : t('roomTypeEditor.colorPalette.addColor', { color: val })}
+                              onClick={() => toggle(val)}>
+                              {t(`common.shade${sh}`)}
+                            </span>
+                          );
+                        })}
                       </span>
                     );
                   })}
@@ -1131,23 +1164,40 @@ export function RoomTypeEditor() {
                     </label>
                   </div>
 
-                  {/* ── Soft-Block (nur wenn blocksPlacement: false) ── */}
+                  {/* ── Soft-Block + erlaubte Eigenschaften (nur wenn blocksPlacement: false) ── */}
                   {!(slot.blocksPlacement ?? true) && (
-                    <div className={s.slotRow} style={{ marginTop: 4, marginLeft: 16, alignItems: 'center', gap: 8 }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.softBlocks ?? false) ? '#f0c060' : '#667' }}
-                        title={t('roomTypeEditor.slotCard.softBlockTitle')}>
-                        <input
-                          type="checkbox"
-                          checked={slot.softBlocks ?? false}
-                          onChange={() => updateSlot(idx, { softBlocks: !(slot.softBlocks ?? false) })}
-                          style={{ accentColor: '#f0c060' }}
-                        />
-                        {t('roomTypeEditor.slotCard.softBlock')}
-                        <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
-                          {(slot.softBlocks ?? false) ? t('roomTypeEditor.slotCard.softBlockOn') : t('roomTypeEditor.slotCard.softBlockOff')}
+                    <>
+                      <div className={s.slotRow} style={{ marginTop: 4, marginLeft: 16, alignItems: 'center', gap: 8 }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.softBlocks ?? false) ? '#f0c060' : '#667' }}
+                          title={t('roomTypeEditor.slotCard.softBlockTitle')}>
+                          <input
+                            type="checkbox"
+                            checked={slot.softBlocks ?? false}
+                            onChange={() => updateSlot(idx, { softBlocks: !(slot.softBlocks ?? false) })}
+                            style={{ accentColor: '#f0c060' }}
+                          />
+                          {t('roomTypeEditor.slotCard.softBlock')}
+                          <span style={{ fontSize: '0.72rem', color: '#667', marginLeft: 2 }}>
+                            {(slot.softBlocks ?? false) ? t('roomTypeEditor.slotCard.softBlockOn') : t('roomTypeEditor.slotCard.softBlockOff')}
+                          </span>
+                        </label>
+                      </div>
+
+                      <div className={s.slotRow} style={{ marginTop: 6, marginLeft: 16 }}>
+                        <span className={s.slotGroupLabel} title={t('roomTypeEditor.slotCard.cellRequiredPropertiesTitle')}>
+                          {t('roomTypeEditor.slotCard.cellRequiredPropertiesLabel')}
                         </span>
-                      </label>
-                    </div>
+                      </div>
+                      <div className={s.chipGroup} style={{ marginLeft: 16 }}>
+                        {REQUIRED_PROPERTIES.map(prop => (
+                          <span key={prop}
+                            className={`${s.chip} ${slot.cellRequiredProperties.includes(prop) ? s.chipActive : ''}`}
+                            onClick={() => toggleCellRequiredProperty(idx, prop)}>
+                            {t(`tileBrowser.properties.${prop}`)}
+                          </span>
+                        ))}
+                      </div>
+                    </>
                   )}
 
                   {/* ── Zelle davor freihalten ── */}
@@ -1330,21 +1380,37 @@ export function RoomTypeEditor() {
                           )}
                           {availColors.map(color => {
                             const active = palette.includes(color);
+                            const toggle = (val: string) => {
+                              const next = palette.includes(val)
+                                ? palette.filter(c => c !== val)
+                                : [...palette, val];
+                              setDraft({
+                                ...draft,
+                                colorPalettes: { ...(draft.colorPalettes ?? {}), [slotGroup]: next },
+                              });
+                              setDirty(true);
+                            };
+                            const showShades = isBaseColor(color) && (active || SHADES.some(sh => palette.includes(shadeColor(color, sh))));
                             return (
-                              <span key={color}
-                                className={`${s.chip} ${active ? s.chipActive : ''}`}
-                                title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
-                                onClick={() => {
-                                  const next = active
-                                    ? palette.filter(c => c !== color)
-                                    : [...palette, color];
-                                  setDraft({
-                                    ...draft,
-                                    colorPalettes: { ...(draft.colorPalettes ?? {}), [slotGroup]: next },
-                                  });
-                                  setDirty(true);
-                                }}>
-                                {color}
+                              <span key={color} className={s.colorSwatch}>
+                                <span
+                                  className={`${s.chip} ${active ? s.chipActive : ''}`}
+                                  title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
+                                  onClick={() => toggle(color)}>
+                                  {color}
+                                </span>
+                                {showShades && SHADES.map(sh => {
+                                  const val = shadeColor(color, sh);
+                                  const shActive = palette.includes(val);
+                                  return (
+                                    <span key={sh}
+                                      className={`${s.chip} ${s.chipShade} ${shActive ? s.chipActive : ''}`}
+                                      title={shActive ? t('roomTypeEditor.colorPalette.removeColor', { color: val }) : t('roomTypeEditor.colorPalette.addColor', { color: val })}
+                                      onClick={() => toggle(val)}>
+                                      {t(`common.shade${sh}`)}
+                                    </span>
+                                  );
+                                })}
                               </span>
                             );
                           })}
@@ -2056,6 +2122,17 @@ export function RoomTypeEditor() {
                            </label>
                          ))}
                        </div>
+                       {!pool.blocksPlacement && (
+                         <div className={s.chipGroup} style={{ marginTop: 4 }} title={t('roomTypeEditor.slotCard.cellRequiredPropertiesTitle')}>
+                           {REQUIRED_PROPERTIES.map(prop => (
+                             <span key={prop}
+                               className={`${s.chip} ${pool.cellRequiredProperties.includes(prop) ? s.chipActive : ''}`}
+                               onClick={() => updatePool(idx, poolIdx, { cellRequiredProperties: toggleInArray(pool.cellRequiredProperties, prop) })}>
+                               {t(`tileBrowser.properties.${prop}`)}
+                             </span>
+                           ))}
+                         </div>
+                       )}
 
                        {/* defaultCategories */}
                        <div className={s.slotRow} style={{ marginTop: 6 }}>
@@ -2124,6 +2201,17 @@ export function RoomTypeEditor() {
                                </label>
                              ))}
                            </div>
+                           {!rs.blocksPlacement && (
+                             <div className={s.chipGroup} style={{ marginTop: 4 }} title={t('roomTypeEditor.slotCard.cellRequiredPropertiesTitle')}>
+                               {REQUIRED_PROPERTIES.map(prop => (
+                                 <span key={prop}
+                                   className={`${s.chip} ${rs.cellRequiredProperties.includes(prop) ? s.chipActive : ''}`}
+                                   onClick={() => updateRequiredSlot(idx, poolIdx, rsIdx, { cellRequiredProperties: toggleInArray(rs.cellRequiredProperties, prop) })}>
+                                   {t(`tileBrowser.properties.${prop}`)}
+                                 </span>
+                               ))}
+                             </div>
+                           )}
 
                            {/* Companions */}
                            <div className={s.slotRow} style={{ justifyContent: 'space-between', marginTop: 6 }}>
@@ -2171,6 +2259,17 @@ export function RoomTypeEditor() {
                                    </label>
                                  ))}
                                </div>
+                               {!c.blocksPlacement && (
+                                 <div className={s.chipGroup} style={{ marginTop: 4 }} title={t('roomTypeEditor.slotCard.cellRequiredPropertiesTitle')}>
+                                   {REQUIRED_PROPERTIES.map(prop => (
+                                     <span key={prop}
+                                       className={`${s.chip} ${c.cellRequiredProperties.includes(prop) ? s.chipActive : ''}`}
+                                       onClick={() => updateCompanion(idx, poolIdx, rsIdx, ci, { cellRequiredProperties: toggleInArray(c.cellRequiredProperties, prop) })}>
+                                       {t(`tileBrowser.properties.${prop}`)}
+                                     </span>
+                                   ))}
+                                 </div>
+                               )}
                                {/* Companion categories */}
                                <div className={s.slotRow} style={{ marginTop: 4 }}>
                                  <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.defaultCategoriesLabel')}</span>

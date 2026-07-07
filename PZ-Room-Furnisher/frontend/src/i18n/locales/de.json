@@ -51,6 +51,8 @@
   },
   "common": {
     "colors": "Farben",
+    "shadeLight": "Hell",
+    "shadeDark": "Dunkel",
     "materials": "Materialien",
     "noMaterialsConfigured": "Keine Materialien in den Einstellungen definiert.",
     "roomTypes": "Raumtypen",
@@ -185,6 +187,8 @@
       "softBlockOn": "(nur requiresSlot-Slots dürfen darauf)",
       "softBlockOff": "(aus – alles darf auf dieser Zelle landen)",
       "softBlockTitle": "Wenn aktiv: Zellen gehen in softOccupied.\nNormale Slots landen nicht darauf.\nSlots mit requiresSlot (z.B. Lampe via AnchorRules) ignorieren softOccupied und dürfen darauf platziert werden.\n\nTypischer Einsatz: Nachttisch\n  blocksPlacement: AUS + Soft-Block: EIN\n\nTeppich: blocksPlacement: AUS + Soft-Block: AUS (alles darf drauf)",
+      "cellRequiredPropertiesLabel": "Erlaubte Eigenschaften auf dieser Zelle",
+      "cellRequiredPropertiesTitle": "Nur relevant wenn „Blockiert Zelle\" deaktiviert ist. Sind Eigenschaften ausgewählt, darf ein anderer Slot diese Zelle nur teilen, wenn sein Tile ALLE davon erfüllt (z.B. isLow + isWallMounted). Kombinierbar mit Soft-Block – beide Regeln gelten dann gleichzeitig.\n\nLeer = keine zusätzliche Einschränkung (Standard).",
       "blocksFrontCell": "🚶 Zelle davor freihalten",
       "blocksFrontCellTitle": "Wenn aktiv: Die Zelle direkt vor dem platzierten Tile (in dessen Blickrichtung) wird reserviert – andere Slots können dort kein Möbel platzieren, der Spieler kann aber weiterhin hineinlaufen.\n\nTypischer Einsatz: Herd, Kühlschrank – Zelle davor soll frei bleiben.",
       "wallAlignmentLabel": "Wandausrichtung",

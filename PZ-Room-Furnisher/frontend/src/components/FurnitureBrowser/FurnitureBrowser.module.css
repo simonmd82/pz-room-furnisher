@@ -457,6 +457,16 @@ textarea.fieldInput {
 }
 .chip:hover       { border-color: #7755bb; color: #bbb; }
 .chipActive       { border-color: #8866cc; background: #2a1a4a; color: #ddf; }
+.colorSwatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.chipShade {
+  padding: 2px 6px;
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
 
 /* number inputs */
 .fieldInputSmall {

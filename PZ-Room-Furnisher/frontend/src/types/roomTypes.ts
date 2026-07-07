@@ -244,6 +244,13 @@ export interface RoomTypeSlot {
    */
   softBlocks: boolean;
   /**
+   * Nur relevant wenn blocksPlacement:false. Andere Slots dürfen die Footprint-Zellen
+   * dieses Slots nur belegen, wenn ihr gewähltes Tile ALLE hier gelisteten Eigenschaften
+   * erfüllt (gleiche Liste wie requiredProperties, z.B. "isLow", "hasCollision").
+   * Leer = keine zusätzliche Einschränkung. Kombinierbar mit softBlocks.
+   */
+  cellRequiredProperties: string[];
+  /**
    * Wenn true: Die Zelle vor der Vorderseite des platzierten Tiles (gemäß Orientierung)
    * wird zusätzlich in occupied eingetragen. Andere Slots können diese Zelle nicht belegen,
    * der Spieler kann aber weiterhin hineinlaufen.
@@ -274,6 +281,8 @@ export interface LayoutPoolCompanion {
   blocksFrontCell: boolean;
   blocksPlacement: boolean;
   softBlocks: boolean;
+  /** See RoomTypeSlot.cellRequiredProperties. */
+  cellRequiredProperties: string[];
 }
 
 /** A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove"). */
@@ -290,6 +299,8 @@ export interface LayoutPoolRequiredSlot {
   blocksFrontCell: boolean;
   blocksPlacement: boolean;
   softBlocks: boolean;
+  /** See RoomTypeSlot.cellRequiredProperties. */
+  cellRequiredProperties: string[];
   companions?: LayoutPoolCompanion[];
 }
 
@@ -327,6 +338,8 @@ export interface LayoutPool {
   blocksFrontCell: boolean;
   blocksPlacement: boolean;
   softBlocks: boolean;
+  /** See RoomTypeSlot.cellRequiredProperties. */
+  cellRequiredProperties: string[];
   colorGroupId: string;
   materialGroupId: string;
   tileGroupId: string;
@@ -395,6 +408,7 @@ export function defaultLayoutPoolCompanion(): LayoutPoolCompanion {
     blocksFrontCell: false,
     blocksPlacement: true,
     softBlocks: false,
+    cellRequiredProperties: [],
   };
 }
 
@@ -409,6 +423,7 @@ export function defaultLayoutPoolRequiredSlot(): LayoutPoolRequiredSlot {
     blocksFrontCell: false,
     blocksPlacement: false,
     softBlocks: true,
+    cellRequiredProperties: [],
     companions: [],
   };
 }
@@ -430,6 +445,7 @@ export function defaultLayoutPool(): LayoutPool {
     blocksFrontCell: false,
     blocksPlacement: false,
     softBlocks: true,
+    cellRequiredProperties: [],
     colorGroupId: '',
     materialGroupId: '',
     tileGroupId: '',
@@ -455,6 +471,7 @@ export function defaultSlot(): RoomTypeSlot {
     groupWeight: 5,
     blocksPlacement: true,
     softBlocks:      false,
+    cellRequiredProperties: [],
     blocksFrontCell: false,
     requiresSlot: '',
     colorGroupId: '',

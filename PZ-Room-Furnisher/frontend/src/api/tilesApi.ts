@@ -47,7 +47,7 @@ export async function getTileConfig(): Promise<TileConfigMap> {
 }
 
 export async function saveTileDefinition(def: TileDefinition): Promise<TileDefinition> {
-  const r = await fetch(`${BASE}/config/${encodeURIComponent(def.tileId)}`, {
+  const r = await fetch(`${BASE}/config/${encodeURIComponent(def.id)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(def),
@@ -56,8 +56,8 @@ export async function saveTileDefinition(def: TileDefinition): Promise<TileDefin
   return r.json();
 }
 
-export async function deleteTileDefinition(tileId: string): Promise<void> {
-  await fetch(`${BASE}/config/${encodeURIComponent(tileId)}`, { method: 'DELETE' });
+export async function deleteTileDefinition(id: string): Promise<void> {
+  await fetch(`${BASE}/config/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 export function exportConfigUrl(): string {

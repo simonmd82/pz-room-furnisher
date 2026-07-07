@@ -4,6 +4,13 @@ using System.Text.Json.Serialization;
 
 public class TileDefinition
 {
+    /// <summary>
+    /// Storage/identity key. Equal to TileId for 1×1 pieces; for multi-cell pieces
+    /// suffixed with the footprint shape ("{TileId}#{cols}x{rows}") so two different
+    /// footprints that happen to share the same starting sprite (TileId) don't collide.
+    /// See <see cref="ComputeId"/>.
+    /// </summary>
+    public string Id            { get; set; } = string.Empty;
     /// <summary>e.g. "furniture_seating_indoor_01_018" — the anchor/root tile (top-left cell)</summary>
     public string TileId        { get; set; } = string.Empty;
     public string Label         { get; set; } = string.Empty;
@@ -57,4 +64,22 @@ public class TileDefinition
     /// Kante keine Fensterzellen berühren.
     /// </summary>
     public string WindowBlockedEdge { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Computes the identity key for a piece from its root tile id and footprint shape.
+    /// 1×1 pieces key by the bare tileId (unchanged from historical behavior); multi-cell
+    /// pieces get a shape suffix so two different footprints sharing the same starting
+    /// sprite (e.g. a 1×2 and a 1×3 desk both starting on the same tile) don't collide.
+    /// Mirrored in frontend/src/types/tiles.ts (computeTileDefId) — keep both in sync.
+    /// </summary>
+    public static string ComputeId(string tileId, int cols, int rows) =>
+        (cols <= 1 && rows <= 1) ? tileId : $"{tileId}#{cols}x{rows}";
+
+    /// <summary>Computes this instance's identity key from its own TileId + TileLayout shape.</summary>
+    public string ComputeOwnId()
+    {
+        int cols = TileLayout.Count > 0 ? (TileLayout[0]?.Count ?? 1) : 1;
+        int rows = TileLayout.Count;
+        return ComputeId(TileId, cols, rows);
+    }
 }

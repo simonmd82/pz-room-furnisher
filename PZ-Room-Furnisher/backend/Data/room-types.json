@@ -79,6 +79,7 @@
         ],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -162,6 +163,7 @@
         ],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -225,6 +227,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -299,6 +302,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -373,6 +377,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -433,6 +438,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -505,6 +511,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_bed_table_left",
         "colorGroupId": "lamp_radio_colors",
@@ -577,6 +584,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_bed_table_right",
         "colorGroupId": "lamp_radio_colors",
@@ -641,6 +649,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -705,6 +714,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -769,6 +779,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -829,6 +840,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -889,6 +901,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -949,6 +962,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -1009,6 +1023,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -1096,6 +1111,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -1158,6 +1174,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -1230,6 +1247,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
@@ -1302,6 +1320,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
@@ -1374,6 +1393,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
@@ -1446,6 +1466,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_small",
         "colorGroupId": "",
@@ -1518,6 +1539,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
@@ -1590,6 +1612,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
@@ -1662,6 +1685,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
@@ -1734,6 +1758,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_medium",
         "colorGroupId": "",
@@ -1797,6 +1822,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -1860,6 +1886,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -1920,6 +1947,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -1980,6 +2008,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2044,6 +2073,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2129,6 +2159,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": true,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2193,6 +2224,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": true,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2264,6 +2296,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter",
         "colorGroupId": "",
@@ -2327,6 +2360,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2401,6 +2435,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter",
         "colorGroupId": "",
@@ -2475,6 +2510,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_standing_sink",
         "colorGroupId": "",
@@ -2538,6 +2574,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2598,6 +2635,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2661,6 +2699,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2723,6 +2762,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -2783,6 +2823,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -2856,6 +2897,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_shower",
         "colorGroupId": "",
@@ -2929,6 +2971,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -3004,6 +3047,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
@@ -3078,6 +3122,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
@@ -3153,6 +3198,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_sofa_medium",
         "colorGroupId": "",
@@ -3226,6 +3272,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_table_television",
         "colorGroupId": "",
@@ -3286,6 +3333,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -3346,6 +3394,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -3406,6 +3455,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -3469,6 +3519,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -3532,6 +3583,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -3592,6 +3644,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -3655,6 +3708,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "shelfs_color",
@@ -3718,6 +3772,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "shelfs_color",
@@ -3797,6 +3852,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": true,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -3872,6 +3928,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "counter_color",
@@ -3945,6 +4002,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
@@ -4019,6 +4077,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_stove_line",
         "colorGroupId": "",
@@ -4093,6 +4152,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_stove_u",
         "colorGroupId": "",
@@ -4158,6 +4218,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": true,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -4234,6 +4295,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
@@ -4310,6 +4372,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
@@ -4386,6 +4449,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
@@ -4462,6 +4526,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_main_2",
         "colorGroupId": "",
@@ -4538,6 +4603,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_u_left",
         "colorGroupId": "",
@@ -4614,6 +4680,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": true,
         "requiresSlot": "slot_counter_u_bridge",
         "colorGroupId": "",
@@ -4677,6 +4744,71 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_clock",
+        "label": "Clock",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Clock": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -4746,6 +4878,7 @@
             "blocksFrontCell": false,
             "blocksPlacement": false,
             "softBlocks": true,
+            "cellRequiredProperties": [],
             "colorGroupId": "",
             "materialGroupId": "",
             "tileGroupId": "counter_tile_group",
@@ -4765,6 +4898,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -4780,7 +4914,8 @@
                     "label": "Cooking Hood",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -4799,6 +4934,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -4811,7 +4947,8 @@
                     "label": "Sink",
                     "blocksFrontCell": false,
                     "blocksPlacement": false,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -4825,6 +4962,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -4837,7 +4975,8 @@
                     "label": "Coffee",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   },
                   {
                     "anchorPosition": "Center",
@@ -4850,7 +4989,8 @@
                     "label": "Microwave",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               }
@@ -4921,6 +5061,7 @@
             "blocksFrontCell": false,
             "blocksPlacement": false,
             "softBlocks": true,
+            "cellRequiredProperties": [],
             "colorGroupId": "",
             "materialGroupId": "",
             "tileGroupId": "counter_tile_group",
@@ -4940,6 +5081,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -4955,7 +5097,8 @@
                     "label": "Cooking Hood",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -4974,6 +5117,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -4986,7 +5130,8 @@
                     "label": "Sink",
                     "blocksFrontCell": false,
                     "blocksPlacement": false,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -5000,6 +5145,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -5012,7 +5158,8 @@
                     "label": "Coffee",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   },
                   {
                     "anchorPosition": "Center",
@@ -5025,7 +5172,8 @@
                     "label": "Microwave",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               }
@@ -5096,6 +5244,7 @@
             "blocksFrontCell": true,
             "blocksPlacement": false,
             "softBlocks": true,
+            "cellRequiredProperties": [],
             "colorGroupId": "",
             "materialGroupId": "",
             "tileGroupId": "counter_tile_group",
@@ -5115,6 +5264,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -5130,7 +5280,8 @@
                     "label": "Cooking Hood",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -5149,6 +5300,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -5161,7 +5313,8 @@
                     "label": "Sink",
                     "blocksFrontCell": false,
                     "blocksPlacement": false,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               },
@@ -5175,6 +5328,7 @@
                 "blocksFrontCell": true,
                 "blocksPlacement": false,
                 "softBlocks": true,
+                "cellRequiredProperties": [],
                 "companions": [
                   {
                     "anchorPosition": "Center",
@@ -5187,7 +5341,8 @@
                     "label": "Coffee",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   },
                   {
                     "anchorPosition": "Center",
@@ -5200,7 +5355,8 @@
                     "label": "Microwave",
                     "blocksFrontCell": false,
                     "blocksPlacement": true,
-                    "softBlocks": false
+                    "softBlocks": false,
+                    "cellRequiredProperties": []
                   }
                 ]
               }
@@ -5228,7 +5384,8 @@
     "commonSlotIds": [
       "slot_fridge",
       "slot_appliance_for_counter",
-      "slot_trash"
+      "slot_trash",
+      "slot_clock"
     ],
     "pathStyle": "doorOnly",
     "colorGroupId": "",
@@ -5302,6 +5459,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -5365,6 +5523,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -5430,6 +5589,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -5495,6 +5655,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_metal",
@@ -5560,6 +5721,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_metal",
@@ -5631,6 +5793,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_counter_for_sink",
         "colorGroupId": "color_metal",
@@ -5707,6 +5870,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -5773,6 +5937,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_beige",
@@ -5839,6 +6004,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_beige",
@@ -5903,6 +6069,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_storage_card_box",
         "colorGroupId": "color_beige",
@@ -5978,6 +6145,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_storage_card_box",
         "colorGroupId": "color_beige",
@@ -6044,6 +6212,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_brown",
@@ -6108,6 +6277,7 @@
         "fallbackRules": [],
         "blocksPlacement": false,
         "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_storage_wooden_crate",
         "colorGroupId": "color_brown",
@@ -6183,6 +6353,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_storage_wooden_crate",
         "colorGroupId": "color_brown",
@@ -6246,6 +6417,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -6308,6 +6480,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -6388,8 +6561,9 @@
         "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -6453,8 +6627,9 @@
         "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -6528,6 +6703,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_office_table",
         "colorGroupId": "",
@@ -6602,6 +6778,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "slot_office_table",
         "colorGroupId": "",
@@ -6659,7 +6836,7 @@
         ],
         "anchorRules": [
           {
-            "anchorTarget": "slot_office_table",
+            "anchorTarget": "slot_office_table_long",
             "positions": [
               "frontOfAnchor"
             ],
@@ -6675,8 +6852,9 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
-        "requiresSlot": "slot_office_table",
+        "requiresSlot": "slot_office_table_long",
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
@@ -6733,7 +6911,7 @@
         ],
         "anchorRules": [
           {
-            "anchorTarget": "slot_office_table",
+            "anchorTarget": "slot_office_table_long",
             "positions": [
               "frontOfAnchor"
             ],
@@ -6749,8 +6927,9 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
-        "requiresSlot": "slot_office_table",
+        "requiresSlot": "slot_office_table_long",
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
@@ -6771,8 +6950,8 @@
             "max": 0
           },
           "S": {
-            "min": 1,
-            "max": 2
+            "min": 0,
+            "max": 1
           },
           "M": {
             "min": 1,
@@ -6812,6 +6991,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "color_group_office_cabinets",
@@ -6839,15 +7019,15 @@
           },
           "M": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "L": {
             "min": 0,
-            "max": 3
+            "max": 1
           },
           "XL": {
             "min": 0,
-            "max": 4
+            "max": 1
           }
         },
         "allowedCategories": {
@@ -6873,8 +7053,11 @@
         "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [
+          "isLow"
+        ],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -6902,15 +7085,15 @@
           },
           "M": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "L": {
             "min": 0,
-            "max": 3
+            "max": 1
           },
           "XL": {
             "min": 0,
-            "max": 4
+            "max": 1
           }
         },
         "allowedCategories": {
@@ -6936,8 +7119,11 @@
         "slotGroupMode": "one-of",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
         "softBlocks": false,
+        "cellRequiredProperties": [
+          "isLow"
+        ],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -7001,9 +7187,10 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
-        "colorGroupId": "",
+        "colorGroupId": "color_group_office_shelf",
         "tileGroupId": "",
         "materialGroupId": ""
       },
@@ -7061,6 +7248,7 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "none",
@@ -7124,6 +7312,1053 @@
         "fallbackRules": [],
         "blocksPlacement": true,
         "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_computer_1",
+        "label": "Computer 1",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 6,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Computer": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_office_table",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_office_table",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_computer_2",
+        "label": "Computer 2",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 6,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Computer": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_office_table_long",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_office_table_long",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_rugs_small",
+        "label": "Rugs Small",
+        "footprint": {
+          "width": 2,
+          "height": 2,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Rug": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": true,
+          "cornerOnly": false,
+          "allowOnPath": true,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "FloorFurniture",
+        "requiredProperties": [],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "none",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_clock",
+        "label": "Clock",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 7,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Clock": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      }
+    ],
+    "layoutVariants": [],
+    "commonSlotIds": [],
+    "pathStyle": "doorOnly",
+    "colorGroupId": "",
+    "colorPalettes": {
+      "color_group_office_cabinets": [
+        "White",
+        "Grey"
+      ],
+      "color_group_office_shelf": [
+        "Brown",
+        "White",
+        "Beige"
+      ]
+    }
+  },
+  "Garagestorage": {
+    "roomType": "Garagestorage",
+    "slots": [
+      {
+        "id": "slot_shelv_metal",
+        "label": "Shelv",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "parallel"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": "Metal"
+      },
+      {
+        "id": "slot_shelv_small_metal",
+        "label": "Shelv",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Shelf": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": "Metal"
+      },
+      {
+        "id": "slot_counter",
+        "label": "Counter",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 1,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 3
+          },
+          "XL": {
+            "min": 0,
+            "max": 4
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasCollision",
+          "isTableTop",
+          "hasSurface"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": "Metal"
+      },
+      {
+        "id": "slot_counter_2",
+        "label": "Counter 2",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 2
+          },
+          "L": {
+            "min": 0,
+            "max": 3
+          },
+          "XL": {
+            "min": 0,
+            "max": 4
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isLow",
+          "hasCollision",
+          "isTableTop",
+          "hasSurface"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter",
+            "positions": [
+              "rightPerpendicular"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_counter",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": "Metal"
+      },
+      {
+        "id": "slot_sink",
+        "label": "Sink",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Sink": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture3",
+        "requiredProperties": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_counter",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": "Metal"
+      },
+      {
+        "id": "slot_storage_card_box",
+        "label": "Card Box Low",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 1,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "canStack",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "color_beige",
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
+      },
+      {
+        "id": "slot_storage_card_box_top",
+        "label": "Card Box Top",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "isHigh",
+          "hasCollision",
+          "canStack"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_storage_card_box",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": null
+          }
+        ],
+        "slotGroupId": "group_cardbox",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_storage_card_box",
+        "colorGroupId": "color_beige",
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
+      },
+      {
+        "id": "slot_storage_card_box_top_dummy",
+        "label": "Card Box Top Dummy",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 0
+          },
+          "M": {
+            "min": 0,
+            "max": 0
+          },
+          "L": {
+            "min": 0,
+            "max": 0
+          },
+          "XL": {
+            "min": 0,
+            "max": 0
+          }
+        },
+        "allowedCategories": {
+          "Storage": 5
+        },
+        "placementRules": {
+          "nearWall": false,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture2",
+        "requiredProperties": [
+          "hasCollision",
+          "canStack",
+          "isHigh"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "group_cardbox",
+        "slotGroupMode": "one-of",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_storage_card_box",
+        "colorGroupId": "color_beige",
+        "tileGroupId": "",
+        "materialGroupId": "Cardboard"
+      },
+      {
+        "id": "slot_table",
+        "label": "Table",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Table": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": true,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_tool_rack",
+        "label": "Tool Rack",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 0
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Appliance": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table",
+            "positions": [
+              "Above",
+              "behindAnchor"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_table",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_tool_cabinet",
+        "label": "Tool Cabinet",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Appliance": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
         "colorGroupId": "",
@@ -7136,9 +8371,8 @@
     "pathStyle": "wall",
     "colorGroupId": "",
     "colorPalettes": {
-      "color_group_office_cabinets": [
-        "Metal",
-        "White"
+      "color_group_metal": [
+        "Metal"
       ]
     }
   }

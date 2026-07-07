@@ -185,6 +185,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 var softOccupied        = new HashSet<(int, int)>();
                 var physicalOccupied    = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
                 var blockedFrontCells   = new HashSet<(int, int)>();
+                var cellPropertyGates   = new Dictionary<(int, int), HashSet<string>>();
 
                 // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
                 var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
@@ -263,7 +264,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
                             pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, allTiles, anchorMap, colorMap, variantMap, config,
                             sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
-                            placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups);
+                            placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups, cellPropertyGates);
                     }
 
                 // After furnishing: record which opening-adjacent cells are now blocked so
@@ -438,6 +439,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         public HashSet<(int, int)> SoftOccupied { get; }
         public HashSet<(int, int)> PhysicalOccupied { get; }
         public HashSet<(int, int)> BlockedFrontCells { get; }
+        /// <summary>Cell → properties another slot's tile must ALL have to share that cell (from CellRequiredProperties).</summary>
+        public Dictionary<(int, int), HashSet<string>> CellPropertyGates { get; }
         public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
         public Dictionary<string, string> ColorMap { get; }
         public Dictionary<string, string> VariantMap { get; }
@@ -449,6 +452,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             HashSet<(int, int)> softOccupied,
             HashSet<(int, int)> physicalOccupied,
             HashSet<(int, int)> blockedFrontCells,
+            Dictionary<(int, int), HashSet<string>> cellPropertyGates,
             Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap,
             Dictionary<string, string> colorMap,
             Dictionary<string, string> variantMap,
@@ -459,6 +463,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             SoftOccupied = softOccupied;
             PhysicalOccupied = physicalOccupied;
             BlockedFrontCells = blockedFrontCells;
+            CellPropertyGates = cellPropertyGates;
             AnchorMap = anchorMap;
             ColorMap = colorMap;
             VariantMap = variantMap;
@@ -471,6 +476,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             new HashSet<(int, int)>(SoftOccupied),
             new HashSet<(int, int)>(PhysicalOccupied),
             new HashSet<(int, int)>(BlockedFrontCells),
+            CellPropertyGates.ToDictionary(kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase)),
             new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(AnchorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(ColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(VariantMap, StringComparer.OrdinalIgnoreCase),
@@ -638,6 +644,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
+            new Dictionary<(int, int), HashSet<string>>(),
             new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
@@ -804,6 +811,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     BlocksFrontCell    = rs?.BlocksFrontCell ?? pool.BlocksFrontCell,
                     BlocksPlacement    = rs?.BlocksPlacement ?? pool.BlocksPlacement,
                     SoftBlocks         = rs?.SoftBlocks ?? pool.SoftBlocks,
+                    CellRequiredProperties = rs is not null ? [..rs.CellRequiredProperties] : [..pool.CellRequiredProperties],
                     ColorGroupId       = pool.ColorGroupId,
                     MaterialGroupId    = pool.MaterialGroupId,
                     TileGroupId        = pool.TileGroupId,
@@ -838,6 +846,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             BlocksFrontCell    = c.BlocksFrontCell,
                             BlocksPlacement    = c.BlocksPlacement,
                             SoftBlocks         = c.SoftBlocks,
+                            CellRequiredProperties = [..c.CellRequiredProperties],
                             ColorGroupId       = string.Empty,
                             MaterialGroupId    = string.Empty,
                             TileGroupId        = string.Empty,
@@ -1027,7 +1036,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                         int fpH = finalTile.TileLayout.Count;
                         var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1057,7 +1066,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                                  roomCells,
                                  innerWallKeys))
                     {
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1073,7 +1082,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
 
                 var (col, row) = anchoredPos.Value;
-                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys))
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates))
                     result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
             }
 
@@ -1101,7 +1110,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 state.BlockedFrontCells,
                 innerWallKeys,
                 mainSubRoomCells,
-                openingGroups);
+                openingGroups,
+                state.CellPropertyGates);
             result.AddRange(candidates);
         }
 
@@ -1262,7 +1272,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? blockedFrontCells = null,
         HashSet<string>? innerWallKeys = null,
         HashSet<(int, int)>? mainSubRoomCells = null,
-        List<HashSet<(int, int)>>? openingGroups = null)
+        List<HashSet<(int, int)>>? openingGroups = null,
+        Dictionary<(int, int), HashSet<string>>? cellPropertyGates = null)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
@@ -1309,6 +1320,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
                     continue;
                 if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys))
+                    continue;
+                if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates))
                     continue;
                 if (slot.BlocksFrontCell)
                 {
@@ -1367,9 +1380,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> physicalOccupied,
         HashSet<(int, int)>? blockedFrontCells = null,
         HashSet<string>? innerWallKeys = null,
-        List<HashSet<(int, int)>>? openingGroups = null)
+        List<HashSet<(int, int)>>? openingGroups = null,
+        Dictionary<(int, int), HashSet<string>>? cellPropertyGates = null)
     {
         if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, null, blockedFrontCells, innerWallKeys))
+            return false;
+        if (!SatisfiesCellPropertyGates(col, row, fpW, fpH, tile, cellPropertyGates))
             return false;
         if (slot.BlocksFrontCell)
         {
@@ -1589,6 +1605,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     state.SoftOccupied.Add((candidate.Col + c, candidate.Row + r));
                 if (candidate.Tile.HasCollision)
                     state.PhysicalOccupied.Add((candidate.Col + c, candidate.Row + r));
+                if (!slot.BlocksPlacement && slot.CellRequiredProperties.Count > 0)
+                {
+                    var cell = (candidate.Col + c, candidate.Row + r);
+                    if (!state.CellPropertyGates.TryGetValue(cell, out var gate))
+                        state.CellPropertyGates[cell] = gate = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    gate.UnionWith(slot.CellRequiredProperties);
+                }
             }
         }
 
@@ -1661,7 +1684,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         string roomTypeName = "",
         HashSet<string>? innerWallKeys = null,
         HashSet<(int, int)>? mainSubRoomCells = null,
-        List<HashSet<(int, int)>>? openingGroups = null)
+        List<HashSet<(int, int)>>? openingGroups = null,
+        Dictionary<(int, int), HashSet<string>>? cellPropertyGates = null)
     {
         var candidates = FilterTiles(allTiles, slot, roomTypeName);
         if (candidates.Count == 0)
@@ -1829,7 +1853,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 // requiresSlot-Slots ignorieren softOccupied bewusst:
                 // Sie dürfen auf dem Ankermöbel (z.B. Nachttisch mit softBlocks=true) platziert werden.
-                bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, innerWallKeys: innerWallKeys);  // kein softOccupied!
+                bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, innerWallKeys: innerWallKeys)  // kein softOccupied!
+                              && SatisfiesCellPropertyGates(ac, ar, fpW, fpH, finalTile, cellPropertyGates);
                 bool doorOk = (slot.PlacementRules.NearDoor
                               || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
                               && (openingGroups is not { Count: > 0 }
@@ -1932,7 +1957,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                 pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, slot.PlacementRules, rng, log,
-                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej);
+                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej, cellPropertyGates);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
             totalPath = primaryRej.noPath; totalLoot = primaryRej.noLoot;
@@ -1947,7 +1972,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                         pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, fbRules, rng, log,
-                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej);
+                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej, cellPropertyGates);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
                     totalPath += fbRej.noPath; totalLoot += fbRej.noLoot;
@@ -2008,6 +2033,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // Physikalische Belegung: unabhängig von BlocksPlacement, nur nach HasCollision
                 if (placedTile.HasCollision)
                     physicalOccupied.Add((col + c, row + r));
+                if (!slot.BlocksPlacement && slot.CellRequiredProperties.Count > 0 && cellPropertyGates is not null)
+                {
+                    var gateCell = (col + c, row + r);
+                    if (!cellPropertyGates.TryGetValue(gateCell, out var gate))
+                        cellPropertyGates[gateCell] = gate = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    gate.UnionWith(slot.CellRequiredProperties);
+                }
             }
         }
 
@@ -2157,7 +2189,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<string>? innerWallKeys,
         HashSet<(int, int)>? mainSubRoomCells,
         List<HashSet<(int, int)>>? openingGroups,
-        out (int noVariant, int noWallDir, int noFits, int noPath, int noLoot, int door, int window, int connectivity) rejCounters)
+        out (int noVariant, int noWallDir, int noFits, int noPath, int noLoot, int door, int window, int connectivity) rejCounters,
+        Dictionary<(int, int), HashSet<string>>? cellPropertyGates = null)
     {
         bool traceBathtub = slot.Id.Equals("slot_bathtub", StringComparison.OrdinalIgnoreCase);
         IEnumerable<(int col, int row)> pool = roomCells;
@@ -2240,6 +2273,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     rejFits++;
                     if (traceBathtub && debugLog is not null)
                         debugLog.Add($"    [TRACE] '{slot.Id}': reject FITS cell=({cell.col},{cell.row}) anchor=({anchorCol},{anchorRow}) orient='{orient}' fp={fpW}x{fpH}");
+                    continue;
+                }
+
+                if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates))
+                {
+                    rejFits++;
                     continue;
                 }
 
@@ -2588,6 +2627,25 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 for (int c = 0; c < fpW; c++)  // horizontal edges between rows
                     if (innerWallKeys.Contains($"H:{col + c},{row + r}")) return false;
         }
+        return true;
+    }
+
+    /// <summary>
+    /// Prüft, ob ein Kandidat-Tile die Eigenschafts-Anforderungen erfüllt, die andere Slots
+    /// per CellRequiredProperties auf den Footprint-Zellen hinterlegt haben (siehe
+    /// LayoutPlacementState.CellPropertyGates / PlaceSlot's cellPropertyGates).
+    /// Jede berührte Zelle mit Anforderungen verlangt, dass ALLE ihre Properties erfüllt sind.
+    /// </summary>
+    private static bool SatisfiesCellPropertyGates(
+        int col, int row, int fpW, int fpH, TileDefinition tile,
+        Dictionary<(int, int), HashSet<string>>? gates)
+    {
+        if (gates is null || gates.Count == 0) return true;
+        for (int r = 0; r < fpH; r++)
+            for (int c = 0; c < fpW; c++)
+                if (gates.TryGetValue((col + c, row + r), out var required)
+                    && !required.All(p => GetBoolProperty(tile, p)))
+                    return false;
         return true;
     }
 

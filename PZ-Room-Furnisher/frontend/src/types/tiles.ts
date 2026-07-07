@@ -9,6 +9,11 @@ export const COLORS = [
 ] as const;
 export type TileColor = typeof COLORS[number];
 
+// Shade modifiers combinable with a base color, e.g. "Brown" + "Light" => "Brown Light"
+export const SHADES = ['Light', 'Dark'] as const;
+export type ShadeTag = typeof SHADES[number];
+export const shadeColor = (color: string, shade: string): string => `${color} ${shade}`;
+
 export const ROOM_TYPES = [
   'Bedroom', 'Kitchen', 'Bathroom', 'LivingRoom', 'Office',
   'Storage', 'Hallway', 'Garage', 'Bar', 'Restaurant',
@@ -41,6 +46,13 @@ export interface PlacementRules {
 }
 
 export interface TileDefinition {
+  /**
+   * Storage/identity key. Equal to tileId for 1x1 pieces; for multi-cell pieces
+   * suffixed with the footprint shape ("{tileId}#{cols}x{rows}") so two different
+   * footprints that happen to share the same starting sprite (tileId) don't collide.
+   * See computeTileDefId. Mirrored in backend/Models/TileDefinition.cs (ComputeId).
+   */
+  id: string;
   tileId: string;
   label: string;
   /** N | S | E | W | NW | NE | SW | SE | '' ('' = beliebig / keine feste Orientierung) */
@@ -124,8 +136,19 @@ export function makeTileId(sheetName: string, index: number): string {
   return `${sheetName}_${String(index).padStart(3, '0')}`;
 }
 
+/**
+ * Computes the identity key for a piece from its root tile id and footprint shape.
+ * Mirrors backend/Models/TileDefinition.cs (ComputeId) — keep both in sync.
+ */
+export function computeTileDefId(tileId: string, tileLayout: string[][]): string {
+  const cols = tileLayout[0]?.length ?? 1;
+  const rows = tileLayout.length;
+  return (cols <= 1 && rows <= 1) ? tileId : `${tileId}#${cols}x${rows}`;
+}
+
 export function defaultDefinition(tileId: string): TileDefinition {
   return {
+    id: tileId,
     tileId,
     label: '',
     orientation: '',
