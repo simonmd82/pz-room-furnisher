@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Building, PlacedFurnitureItem } from '../../types/building';
+import type { Building, PlacedFurnitureItem, ReservedZonePlacement } from '../../types/building';
 import { generateFurnishing, exportTbx } from '../../api/furnishApi';
 import type { RoomSelection } from '../../api/furnishApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
@@ -10,6 +10,7 @@ interface Props {
   building: Building;
   fileName: string;
   onPlacementsChanged: (placements: PlacedFurnitureItem[]) => void;
+  onReservedZonesChanged?: (zones: ReservedZonePlacement[]) => void;
   onLogChanged?: (log: string[]) => void;
   selected: Set<string>;
   onSelectedChange: (next: Set<string>) => void;
@@ -129,7 +130,7 @@ function tbxColorToCss(color: string | undefined): string {
 }
 
 export default function FurnishPanel({
-  building, fileName, onPlacementsChanged, onLogChanged,
+  building, fileName, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
   selected, onSelectedChange, overrides, onOverridesChange,
   seed, onSeedChange, densityMin, densityMax, densityPerRoom, onDensityChange,
 }: Props) {
@@ -139,6 +140,7 @@ export default function FurnishPanel({
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
+  const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
 
   useEffect(() => {
@@ -243,6 +245,13 @@ export default function FurnishPanel({
       const merged = [...preserved, ...result.placements];
       setPlacements(merged);
       onPlacementsChanged(merged);
+
+      const selectedRoomKeys = new Set([...selected].map(k => k.split(':').slice(0, 2).join(':')));
+      const preservedZones = reservedZones.filter(z => !selectedRoomKeys.has(`${z.floorIndex}:${z.roomIndex1Based}`));
+      const mergedZones = [...preservedZones, ...result.reservedZones];
+      setReservedZones(mergedZones);
+      onReservedZonesChanged?.(mergedZones);
+
       onLogChanged?.(result.log);
       setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: result.placements.length, rooms: selections.length }), ok: true });
     } catch (e) {
@@ -259,6 +268,11 @@ export default function FurnishPanel({
     );
     setPlacements(filtered);
     onPlacementsChanged(filtered);
+
+    const filteredZones = reservedZones.filter(z => !(z.floorIndex === f && z.roomIndex1Based === r));
+    setReservedZones(filteredZones);
+    onReservedZonesChanged?.(filteredZones);
+
     setOpenMenu(null);
   };
 

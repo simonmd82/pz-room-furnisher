@@ -30,6 +30,7 @@
     "secondarySubRoom": "Nebenbereich",
     "stairs": "Treppe",
     "stairEntry": "Treppenaufgang",
+    "reservedZone": "Sperrzone",
     "selectHint": "{{name}} – klicken zum Hervorheben, STRG+Klick für Mehrfachauswahl",
     "clearSelection": "✕ Auswahl aufheben ({{count}})"
   },
@@ -119,6 +120,17 @@
       "selectedCount_other": "✓ {{count}} Farben → zufällige Auswahl bei jedem Raum",
       "selectedCountShort_one": "✓ {{count}} Farbe → zufällige Auswahl",
       "selectedCountShort_other": "✓ {{count}} Farben → zufällige Auswahl"
+    },
+    "reservedZones": {
+      "header": "Sperrzonen ({{count}})",
+      "addZone": "+ Zone hinzufügen",
+      "labelPlaceholder": "Label (z.B. \"Car\")",
+      "depth": "Tiefe",
+      "depthTitle": "Wie viele Zellen die Zone von der Öffnung nach innen ausgedehnt wird",
+      "minOpeningWidth": "Min. Breite",
+      "minOpeningWidthTitle": "Mindestbreite der Öffnung (in Zellen), damit diese Regel greift",
+      "maxWidth": "Max. Breite",
+      "maxWidthTitle": "Optionale Kappung: ist die Öffnung breiter, wird die Zone zentriert auf diese Breite zugeschnitten"
     },
     "slots": {
       "header": "Slots ({{count}})",

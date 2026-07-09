@@ -363,6 +363,23 @@ export interface LayoutPool {
     disabled?: boolean;
   }
 
+/**
+ * Regel für eine automatisch erkannte rechteckige Sperrzone, ausgehend von einer breiten
+ * Wandöffnung (z.B. Garagentor). Breite der Zone ergibt sich aus der Breite der Öffnung
+ * selbst (optional gekappt via maxWidth) — nicht separat konfigurierbar.
+ */
+export interface ReservedZoneRule {
+  id: string;
+  /** Anzeigename für die Zone im UI-Overlay (z.B. "Car"). */
+  label: string;
+  /** Wie viele Zellen die Zone von der Öffnung nach innen ausgedehnt wird. */
+  depth: number;
+  /** Mindestbreite der Öffnung (Anzahl Zellen), damit diese Regel greift. */
+  minOpeningWidth: number;
+  /** Optionale Kappung: ist die Öffnung breiter, wird die Zone auf diese Breite zentriert zugeschnitten. */
+  maxWidth?: number;
+}
+
 export interface RoomTypeConfig {
   roomType:      string;
   slots:         RoomTypeSlot[];
@@ -370,6 +387,8 @@ export interface RoomTypeConfig {
   layoutVariants?: LayoutVariant[];
   /** Slots, die bei aktiver Layout-Variante zusätzlich zu den Core-Slots immer aktiv sind. */
   commonSlotIds?: string[];
+  /** Regeln für automatisch erkannte Sperrzonen (z.B. "Car"-Stellplatz). */
+  reservedZones?: ReservedZoneRule[];
   pathStyle:     'wall' | 'center' | 'random' | 'doorOnly';
   colorGroupId:  string;
   /**
@@ -481,8 +500,12 @@ export function defaultSlot(): RoomTypeSlot {
   };
 }
 
+export function defaultReservedZone(): ReservedZoneRule {
+  return { id: '', label: '', depth: 1, minOpeningWidth: 1 };
+}
+
 export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
-  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [], layoutVariants: [], commonSlotIds: [] };
+  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [], layoutVariants: [], commonSlotIds: [], reservedZones: [] };
 }
 
 

@@ -145,9 +145,21 @@ export interface PlacedFurnitureItem {
   anchorRow?: number;
 }
 
+/** A reserved rectangular zone (e.g. "Car" spot) that placement must avoid entirely. */
+export interface ReservedZonePlacement {
+  floorIndex: number;
+  roomIndex1Based: number;
+  col: number;
+  row: number;
+  width: number;
+  height: number;
+  label: string;
+}
+
 export interface FurnishResult {
   placements: PlacedFurnitureItem[];
   log: string[];
+  reservedZones: ReservedZonePlacement[];
 }
 
 

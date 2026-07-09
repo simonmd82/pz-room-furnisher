@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Floor, Room, WallEdge, Building, FloorObject, PlacedFurnitureItem } from '../types/building';
+import type { Floor, Room, WallEdge, Building, FloorObject, PlacedFurnitureItem, ReservedZonePlacement } from '../types/building';
 import type { TileConfigMap, TileSheetInfo } from '../types/tiles';
 import { parseTileId } from '../types/tiles';
 import { sheetImageUrl } from '../api/tilesApi';
@@ -19,6 +19,8 @@ interface Props {
   onFloorUpdated?: (floor: Floor) => void;
   /** Placed furniture for this floor */
   furniturePlacements?: PlacedFurnitureItem[];
+  /** Reserved zones (e.g. "Car" spot) for this floor */
+  reservedZones?: ReservedZonePlacement[];
   /** Tile definitions – needed for sprite rendering */
   tileConfig?: TileConfigMap;
   /** Sheet metadata – needed for sprite cropping */
@@ -373,7 +375,7 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], tileConfig, sheetInfos }: Props) {
+export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], reservedZones = [], tileConfig, sheetInfos }: Props) {
   const { t } = useTranslation();
   void tileConfig;
   const grid = floor.roomGrid;
@@ -542,6 +544,15 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
               </div>
             </>
           )}
+          {reservedZones.length > 0 && (
+            <div className={styles.legendItem}>
+              <span className={styles.legendSwatch} style={{
+                background: 'repeating-linear-gradient(45deg, rgba(255,180,60,0.5), rgba(255,180,60,0.5) 4px, transparent 4px, transparent 8px)',
+                border: '1.5px dashed rgba(255,180,60,0.85)',
+              }} />
+              <span>{t('legend.reservedZone')}</span>
+            </div>
+          )}
           <div className={styles.legendItem}>
             <span className={`${styles.legendSwatch} ${styles.stairSwatch}`} />
             <span>{t('legend.stairs')}</span>
@@ -703,6 +714,40 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
               })
             )}
           </div>
+
+          {/* ── Reserved zone overlay (e.g. "Car" spot) ── */}
+          {reservedZones.length > 0 && (
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2 }}>
+              {reservedZones.map((z, i) => (
+                <div
+                  key={i}
+                  title={z.label}
+                  style={{
+                    position:     'absolute',
+                    left:         z.col * cellSize,
+                    top:          z.row * cellSize,
+                    width:        z.width * cellSize,
+                    height:       z.height * cellSize,
+                    border:       '2px dashed rgba(255,180,60,0.85)',
+                    background:   'repeating-linear-gradient(45deg, rgba(255,180,60,0.12), rgba(255,180,60,0.12) 8px, transparent 8px, transparent 16px)',
+                    display:        'flex',
+                    alignItems:     'center',
+                    justifyContent: 'center',
+                    boxSizing:      'border-box',
+                  }}
+                >
+                  <span style={{
+                    fontSize: Math.max(9, Math.min(13, cellSize * 0.26)),
+                    color: '#ffd9a0',
+                    textShadow: '0 0 3px #000',
+                    fontWeight: 700,
+                  }}>
+                    {z.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* ── Debug overlay ── */}
           {showDebug && visiblePlacements.length > 0 && (

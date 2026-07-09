@@ -8,7 +8,7 @@ import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
 import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import FurnishPanel from './components/FurnishPanel/FurnishPanel';
-import type { Building, Floor, PlacedFurnitureItem } from './types/building';
+import type { Building, Floor, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
 import './App.css';
@@ -84,6 +84,7 @@ function App() {
   const [selectedFloor, setSelectedFloor] = useState(0);
   const [activeTab, setActiveTab]       = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'settings'>('building');
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
+  const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [tileConfig, setTileConfig]     = useState<TileConfigMap | undefined>(undefined);
   const [sheetInfos, setSheetInfos]     = useState<TileSheetInfo[] | undefined>(undefined);
   const [generatorLog, setGeneratorLog] = useState<string[]>([]);
@@ -123,6 +124,7 @@ function App() {
     setFileName(name);
     setSelectedFloor(0);
     setPlacements([]);
+    setReservedZones([]);
     setGeneratorLog([]);
     setLogOpen(false);
     setSelected(new Set());
@@ -282,6 +284,7 @@ function App() {
                   // Falls sheetInfos noch leer (Tiles-Pfad nach App-Start gesetzt), nachladen
                   if (!sheetInfos || sheetInfos.length === 0) reloadSheets();
                 }}
+                onReservedZonesChanged={setReservedZones}
                 onLogChanged={log => { setGeneratorLog(log); setLogOpen(true); }}
                 selected={selected}
                 onSelectedChange={setSelected}
@@ -314,6 +317,7 @@ function App() {
                       floorIndex={selectedFloor}
                       onFloorUpdated={handleFloorUpdated}
                       furniturePlacements={placements.filter(p => p.floorIndex === selectedFloor)}
+                      reservedZones={reservedZones.filter(z => z.floorIndex === selectedFloor)}
                       tileConfig={tileConfig}
                       sheetInfos={sheetInfos}
                     />

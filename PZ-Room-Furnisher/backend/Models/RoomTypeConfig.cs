@@ -42,6 +42,12 @@ public class PlacementRules
     public bool CenterRoom  { get; set; }
     public bool CornerOnly  { get; set; }
     /// <summary>
+    /// Wenn true, werden Zellen ausgeschlossen, die zwei Wände berühren (echte Raumecken) —
+    /// das Gegenteil von CornerOnly. Nützlich für einen Anker-Slot (z.B. eine L-förmige
+    /// Theken-Reihe), der eine echte Ecke für ein daran verankertes Eckstück freihalten muss.
+    /// </summary>
+    public bool AvoidCorners { get; set; } = false;
+    /// <summary>
     /// Darf dieser Slot auf Pfad-Zellen (Laufwegen) platziert werden?
     /// false (Standard): Möbel mit HasCollision=true werden von Pfad-Zellen ferngehalten.
     /// true: Pfad-Zellen sind erlaubt (z.B. Teppiche ohne Kollision).
@@ -347,6 +353,26 @@ public class LayoutVariant
     public bool Disabled { get; set; } = false;
 }
 
+/// <summary>
+/// Regel für eine automatisch erkannte rechteckige Sperrzone, ausgehend von einer breiten
+/// Wandöffnung (z.B. Garagentor). Breite der Zone ergibt sich aus der Breite der Öffnung
+/// selbst (optional gekappt via <see cref="MaxWidth"/>) — nicht separat konfigurierbar.
+/// </summary>
+public class ReservedZoneRule
+{
+    /// <summary>Eindeutige ID innerhalb des Raumtyps.</summary>
+    public string Id { get; set; } = string.Empty;
+    /// <summary>Anzeigename für die Zone im UI-Overlay (z.B. "Car").</summary>
+    public string Label { get; set; } = string.Empty;
+    /// <summary>Wie viele Zellen die Zone von der Öffnung nach innen ausgedehnt wird.</summary>
+    public int Depth { get; set; } = 1;
+    /// <summary>Mindestbreite der Öffnung (Anzahl Zellen), damit diese Regel greift.</summary>
+    public int MinOpeningWidth { get; set; } = 1;
+    /// <summary>Optionale Kappung: ist die Öffnung breiter, wird die Zone auf diese Breite
+    /// zentriert zugeschnitten. Null = keine Kappung, volle Öffnungsbreite.</summary>
+    public int? MaxWidth { get; set; } = null;
+}
+
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>
 public class RoomTypeConfig
 {
@@ -363,6 +389,14 @@ public class RoomTypeConfig
     /// berücksichtigt werden sollen.
     /// </summary>
     public List<string> CommonSlotIds { get; set; } = [];
+
+    /// <summary>
+    /// Regeln für automatisch erkannte Sperrzonen (z.B. "Auto"-Stellplatz vor einem
+    /// breiten Garagentor). Wird gegen die berechneten Opening-Groups des Raums geprüft;
+    /// bei Treffer wird eine rechteckige Zone reserviert, die von der Möbelplatzierung
+    /// komplett ausgespart bleibt.
+    /// </summary>
+    public List<ReservedZoneRule> ReservedZones { get; set; } = [];
 
     /// <summary>
     /// Pfadstil für die Laufwegberechnung in diesem Raumtyp.

@@ -4,9 +4,9 @@ import {
   SIZE_KEYS, ANCHOR_POSITIONS, ANCHOR_POSITION_TOOLTIPS, ANCHOR_ORIENT_TOOLTIPS,
   REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
-  defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion,
+  defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion, defaultReservedZone,
 } from '../../types/roomTypes';
-import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion } from '../../types/roomTypes';
+import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
@@ -117,6 +117,7 @@ export function RoomTypeEditor() {
           colorPalettes: configs[rt].colorPalettes ?? {},
           layoutVariants: configs[rt].layoutVariants ?? [],
           commonSlotIds: configs[rt].commonSlotIds ?? [],
+          reservedZones: configs[rt].reservedZones ?? [],
           slots: configs[rt].slots.map(sl => {
             // Migration: alte anchorSlotId/anchorPosition → anchorRules
             const legacyAnchor = (sl as any).anchorSlotId as string | undefined;
@@ -425,6 +426,27 @@ export function RoomTypeEditor() {
      setDirty(true);
    };
 
+  const addReservedZone = () => {
+    if (!draft) return;
+    setDraft({ ...draft, reservedZones: [...(draft.reservedZones ?? []), defaultReservedZone()] });
+    setDirty(true);
+  };
+
+  const updateReservedZone = (idx: number, patch: Partial<ReservedZoneRule>) => {
+    if (!draft) return;
+    setDraft({
+      ...draft,
+      reservedZones: (draft.reservedZones ?? []).map((z, i) => i === idx ? { ...z, ...patch } : z),
+    });
+    setDirty(true);
+  };
+
+  const removeReservedZone = (idx: number) => {
+    if (!draft) return;
+    setDraft({ ...draft, reservedZones: (draft.reservedZones ?? []).filter((_, i) => i !== idx) });
+    setDirty(true);
+  };
+
   const removeSlot = (idx: number, slotLabel: string) => {
     if (!draft) return;
     const name = slotLabel.trim() || `#${idx + 1}`;
@@ -608,6 +630,7 @@ export function RoomTypeEditor() {
         colorPalettes: raw.colorPalettes ?? {},
         layoutVariants: raw.layoutVariants ?? [],
         commonSlotIds: raw.commonSlotIds ?? [],
+        reservedZones: raw.reservedZones ?? [],
         slots: raw.slots.map(sl => {
           const fp = sl.footprint ?? {};
           return {
@@ -809,6 +832,51 @@ export function RoomTypeEditor() {
                 })()}
               </div>
             )}
+
+            {/* Sperrzonen (z.B. "Car"-Stellplatz vor Garagentor) */}
+            <div className={s.slotsHeader}>
+              <span className={s.slotsLabel}>{t('roomTypeEditor.reservedZones.header', { count: (draft.reservedZones ?? []).length })}</span>
+              <button className={s.addSlotBtn} onClick={addReservedZone}>{t('roomTypeEditor.reservedZones.addZone')}</button>
+            </div>
+            {(draft.reservedZones ?? []).map((zone, idx) => (
+              <div key={idx} className={s.slotCard}>
+                <div className={s.slotCardHeader}>
+                  <input
+                    className={s.slotSizeInput}
+                    style={{ flex: 1, minWidth: 0 }}
+                    placeholder={t('roomTypeEditor.reservedZones.labelPlaceholder')}
+                    value={zone.label}
+                    onChange={e => updateReservedZone(idx, { label: e.target.value, id: zone.id || e.target.value.toLowerCase().replace(/\s+/g, '_') })}
+                  />
+                  <label className={s.pathStyleLabel} title={t('roomTypeEditor.reservedZones.depthTitle')}>
+                    {t('roomTypeEditor.reservedZones.depth')}
+                  </label>
+                  <input
+                    type="number" min={1} className={s.slotSizeInput} style={{ width: 56 }}
+                    value={zone.depth}
+                    onChange={e => updateReservedZone(idx, { depth: Math.max(1, Number(e.target.value) || 1) })}
+                  />
+                  <label className={s.pathStyleLabel} title={t('roomTypeEditor.reservedZones.minOpeningWidthTitle')}>
+                    {t('roomTypeEditor.reservedZones.minOpeningWidth')}
+                  </label>
+                  <input
+                    type="number" min={1} className={s.slotSizeInput} style={{ width: 56 }}
+                    value={zone.minOpeningWidth}
+                    onChange={e => updateReservedZone(idx, { minOpeningWidth: Math.max(1, Number(e.target.value) || 1) })}
+                  />
+                  <label className={s.pathStyleLabel} title={t('roomTypeEditor.reservedZones.maxWidthTitle')}>
+                    {t('roomTypeEditor.reservedZones.maxWidth')}
+                  </label>
+                  <input
+                    type="number" min={1} className={s.slotSizeInput} style={{ width: 56 }}
+                    placeholder="—"
+                    value={zone.maxWidth ?? ''}
+                    onChange={e => updateReservedZone(idx, { maxWidth: e.target.value === '' ? undefined : Math.max(1, Number(e.target.value) || 1) })}
+                  />
+                  <button className={s.removeSlotBtn} onClick={() => removeReservedZone(idx)}>✕</button>
+                </div>
+              </div>
+            ))}
 
             <div className={s.slotsHeader}>
               <span className={s.slotsLabel}>{t('roomTypeEditor.slots.header', { count: draft.slots.length })}</span>

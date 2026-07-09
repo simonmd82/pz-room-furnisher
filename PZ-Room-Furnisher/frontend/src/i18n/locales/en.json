@@ -30,6 +30,7 @@
     "secondarySubRoom": "Secondary sub-room",
     "stairs": "Stairs",
     "stairEntry": "Stair entry",
+    "reservedZone": "Reserved zone",
     "selectHint": "{{name}} – click to highlight, CTRL+click for multi-select",
     "clearSelection": "✕ Clear selection ({{count}})"
   },
@@ -119,6 +120,17 @@
       "selectedCount_other": "✓ {{count}} colors → random selection per room",
       "selectedCountShort_one": "✓ {{count}} color → random selection",
       "selectedCountShort_other": "✓ {{count}} colors → random selection"
+    },
+    "reservedZones": {
+      "header": "Reserved zones ({{count}})",
+      "addZone": "+ Add zone",
+      "labelPlaceholder": "Label (e.g. \"Car\")",
+      "depth": "Depth",
+      "depthTitle": "How many cells the zone extends inward from the opening",
+      "minOpeningWidth": "Min. width",
+      "minOpeningWidthTitle": "Minimum opening width (in cells) for this rule to trigger",
+      "maxWidth": "Max. width",
+      "maxWidthTitle": "Optional cap: if the opening is wider, the zone is centered and clipped to this width"
     },
     "slots": {
       "header": "Slots ({{count}})",
