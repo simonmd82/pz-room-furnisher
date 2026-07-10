@@ -290,6 +290,12 @@ public class LayoutPoolRequiredSlot
     /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
     public List<string> CellRequiredProperties { get; set; } = [];
     public List<LayoutPoolCompanion> Companions { get; set; } = [];
+    /// <summary>
+    /// Geordnete Liste alternativer Platzierungsregeln (wie RoomTypeSlot.FallbackRules),
+    /// die versucht werden falls diese Pflicht-Kategorie (z.B. Herd, Spüle) mit ihren
+    /// Standard-Regeln an keiner Kette-Position platziert werden kann. Leer = kein Fallback.
+    /// </summary>
+    public List<PlacementRules> FallbackRules { get; set; } = [];
 }
 
 /// <summary>Min/max slot count for a pool segment per room size.</summary>
@@ -405,6 +411,18 @@ public class RoomTypeConfig
     /// "random" : zufällig – hoher Jitter-Faktor, kein Richtungs-Bias.
     /// </summary>
     public string PathStyle           { get; set; } = "wall";
+
+    /// <summary>
+    /// Wenn true: nach Platzierung aller Möbel mit Kollision (und daran verankerter Deko)
+    /// wird ein realer Laufweg durch den bereits möblierten Raum berechnet (Tür-zu-Tür,
+    /// bei nur einer Tür bis zur am weitesten entfernten erreichbaren Zelle) und für die
+    /// Platzierung der übrigen freistehenden Deko (ohne AnchorRules, ohne Kollision) als
+    /// Sperrzone behandelt — außer AllowOnPath oder FloorFurniture-Layer (z.B. Teppiche,
+    /// s. IsFloorFurnitureNoCollision). Verhindert, dass Pflanzen/Lampen/Wanddeko mitten
+    /// im Laufweg landen. Unabhängig von PathStyle/"doorOnly", das nur die Möbel mit
+    /// Kollision betrifft. Standard: false (Opt-in für stufenweisen Rollout pro Raumtyp).
+    /// </summary>
+    public bool UsePostPlacementPathAvoidance { get; set; } = false;
 
     /// <summary>
     /// Standard-Farbgruppen-ID für alle Slots dieses Raumtyps.

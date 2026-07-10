@@ -1054,6 +1054,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": true,
     "colorGroupId": "bedroom_main",
     "colorPalettes": {
       "bedroom_main": [
@@ -2120,6 +2121,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "wall",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "dining_room_colors",
     "colorPalettes": {
       "b": [
@@ -2957,6 +2959,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {}
   },
@@ -3846,6 +3849,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "shelfs_color": [
@@ -4962,7 +4966,7 @@
             "requiredSlots": [
               {
                 "category": "Cooking",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Stove",
                 "requiredProperties": [
@@ -4998,7 +5002,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Sink Counter",
                 "requiredProperties": [
@@ -5031,7 +5035,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 2,
                 "count": 1,
                 "label": "Appliance Counter",
                 "requiredProperties": [],
@@ -5104,7 +5108,7 @@
             "label": "L-Left Counter",
             "totalCountBySize": {
               "XS": {
-                "min": 1,
+                "min": 2,
                 "max": 2
               },
               "S": {
@@ -5160,7 +5164,7 @@
             "requiredSlots": [
               {
                 "category": "Cooking",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Stove",
                 "requiredProperties": [
@@ -5196,7 +5200,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Sink Counter",
                 "requiredProperties": [
@@ -5229,7 +5233,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 2,
                 "count": 1,
                 "label": "Appliance Counter",
                 "requiredProperties": [],
@@ -5302,7 +5306,7 @@
             "label": "L-Right Counter",
             "totalCountBySize": {
               "XS": {
-                "min": 1,
+                "min": 2,
                 "max": 2
               },
               "S": {
@@ -5358,7 +5362,7 @@
             "requiredSlots": [
               {
                 "category": "Cooking",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Stove",
                 "requiredProperties": [
@@ -5394,7 +5398,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 4,
                 "count": 1,
                 "label": "Sink Counter",
                 "requiredProperties": [
@@ -5427,7 +5431,7 @@
               },
               {
                 "category": "Counter",
-                "weight": 5,
+                "weight": 2,
                 "count": 1,
                 "label": "",
                 "requiredProperties": [],
@@ -5509,6 +5513,7 @@
     ],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "counter_color": [
@@ -5932,6 +5937,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "metal": [
@@ -6630,6 +6636,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "color_beige": [
@@ -7748,6 +7755,7 @@
     "commonSlotIds": [],
     "reservedZones": [],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "color_group_office_cabinets": [
@@ -8545,6 +8553,7 @@
       }
     ],
     "pathStyle": "doorOnly",
+    "usePostPlacementPathAvoidance": false,
     "colorGroupId": "",
     "colorPalettes": {
       "color_group_metal": [
