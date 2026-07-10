@@ -41,7 +41,9 @@ public record PlacedFurnitureItem(
     string SlotId = "",
     int?   RoomIndex1Based = null,
     int?   AnchorCol = null,
-    int?   AnchorRow = null);
+    int?   AnchorRow = null,
+    // Client-generated identity for manual drag & drop; never populated server-side.
+    string? Id = null);
 
 /// <summary>A reserved rectangular zone (e.g. "Car" spot) that placement must avoid entirely.</summary>
 public record ReservedZonePlacement(

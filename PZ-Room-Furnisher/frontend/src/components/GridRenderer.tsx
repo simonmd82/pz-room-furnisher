@@ -1,10 +1,11 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Floor, Room, WallEdge, Building, FloorObject, PlacedFurnitureItem, ReservedZonePlacement } from '../types/building';
 import type { TileConfigMap, TileSheetInfo } from '../types/tiles';
 import { parseTileId } from '../types/tiles';
 import { sheetImageUrl } from '../api/tilesApi';
 import { recomputeRoomPath } from '../api/buildingApi';
+import { buildReverseFootprintIndex, resolveFootprintGroup, computeDelta, isGroupMoveValid, applyGroupMove } from '../utils/furnitureFootprint';
 import styles from './GridRenderer.module.css';
 
 const SPRITE_W = 128;
@@ -25,6 +26,8 @@ interface Props {
   tileConfig?: TileConfigMap;
   /** Sheet metadata – needed for sprite cropping */
   sheetInfos?: TileSheetInfo[];
+  /** Called with the full (all-floors) placements array after a manual drag-move. */
+  onPlacementsChanged?: (updated: PlacedFurnitureItem[]) => void;
 }
 
 const DOOR_COLOR       = '#d4852a';
@@ -375,9 +378,8 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], reservedZones = [], tileConfig, sheetInfos }: Props) {
+export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], reservedZones = [], tileConfig, sheetInfos, onPlacementsChanged }: Props) {
   const { t } = useTranslation();
-  void tileConfig;
   const grid = floor.roomGrid;
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
@@ -385,6 +387,12 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
   const [recomputingRoom, setRecomputingRoom] = useState<number | null>(null);
   const [hiddenLayers, setHiddenLayers] = useState<Set<string>>(new Set());
   const [showDebug, setShowDebug] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [activeLayer, setActiveLayer] = useState<string | null>(null);
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [dragPreview, setDragPreview] = useState<{ cells: { col: number; row: number }[]; valid: boolean } | null>(null);
+  const dragGroupRef = useRef<PlacedFurnitureItem[] | null>(null);
+  const dragOriginRef = useRef<{ col: number; row: number } | null>(null);
 
   // ── Furniture helpers ────────────────────────────────────────────────────────
   const sheetInfoMap = useMemo(() => {
@@ -393,20 +401,35 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
     return m;
   }, [sheetInfos]);
 
+  const floorPlacements = useMemo(() =>
+    furniturePlacements.filter(p => p.floorIndex === floorIndex),
+  [furniturePlacements, floorIndex]);
+
   const placementLayers = useMemo(() => {
     const layers = new Set<string>();
-    for (const p of furniturePlacements) layers.add(p.layer);
+    for (const p of floorPlacements) layers.add(p.layer);
     return Array.from(layers).sort();
-  }, [furniturePlacements]);
+  }, [floorPlacements]);
 
   const visiblePlacements = useMemo(() =>
-    furniturePlacements.filter(p => !hiddenLayers.has(p.layer)),
-  [furniturePlacements, hiddenLayers]);
+    floorPlacements.filter(p => !hiddenLayers.has(p.layer)),
+  [floorPlacements, hiddenLayers]);
+
+  const reverseFootprintIndex = useMemo(() => buildReverseFootprintIndex(tileConfig), [tileConfig]);
 
   const toggleLayer = useCallback((layer: string) => {
+    if (layer === activeLayer) return; // can't hide the layer you're editing
     setHiddenLayers(prev => {
       const next = new Set(prev);
       if (next.has(layer)) next.delete(layer); else next.add(layer);
+      return next;
+    });
+  }, [activeLayer]);
+
+  const setActiveLayerHandler = useCallback((layer: string) => {
+    setActiveLayer(prev => {
+      const next = prev === layer ? null : layer;
+      if (next) setHiddenLayers(h => { if (!h.has(next)) return h; const n = new Set(h); n.delete(next); return n; });
       return next;
     });
   }, []);
@@ -578,20 +601,33 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
             {showPaths ? t('gridRenderer.hidePaths', { count: pathRoomCount }) : t('gridRenderer.showPaths')}
           </button>
 
-          {furniturePlacements.length > 0 && (
+          {floorPlacements.length > 0 && (
             <button
               className={`${styles.pathToggleBtn} ${showDebug ? styles.pathToggleActive : ''}`}
               style={{ marginTop: 4 }}
               onClick={() => setShowDebug(v => !v)}
             >
-              🐛 {showDebug ? t('gridRenderer.debugOff') : t('gridRenderer.debugOn', { count: furniturePlacements.length })}
+              🐛 {showDebug ? t('gridRenderer.debugOff') : t('gridRenderer.debugOn', { count: floorPlacements.length })}
             </button>
           )}
 
           {placementLayers.length > 0 && (
             <>
               <div className={styles.legendDivider} />
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4 }}>
+              <button
+                className={`${styles.pathToggleBtn} ${editMode ? styles.pathToggleActive : ''}`}
+                onClick={() => {
+                  setEditMode(v => !v);
+                  setActiveLayer(null);
+                  dragGroupRef.current = null;
+                  dragOriginRef.current = null;
+                  setDraggedItemId(null);
+                  setDragPreview(null);
+                }}
+              >
+                🖐 {editMode ? t('gridRenderer.editModeOn') : t('gridRenderer.editModeOff')}
+              </button>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 4, marginTop: 4 }}>
                 <span className={styles.layerLabel}>🛋 Layer</span>
                 {!allLayersVisible && (
                   <button
@@ -605,32 +641,45 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 )}
               </div>
               {placementLayers.map(l => {
-                const count   = furniturePlacements.filter(p => p.layer === l).length;
+                const count   = floorPlacements.filter(p => p.layer === l).length;
                 const visible = !hiddenLayers.has(l);
+                const isActiveLayer = activeLayer === l;
                 return (
-                  <label
-                    key={l}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 5,
-                      cursor: 'pointer', userSelect: 'none',
-                      padding: '2px 4px', borderRadius: 3,
-                      background: visible ? '#1a2a1a' : '#1a1a1a',
-                      border: `1px solid ${visible ? '#3a6a3a' : '#2a2a3a'}`,
-                      fontSize: '0.73rem',
-                      color: visible ? '#9f9' : '#556',
-                      marginTop: 2,
-                    }}
-                    title={visible ? t('gridRenderer.hideLayer', { layer: l }) : t('gridRenderer.showLayer', { layer: l })}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={visible}
-                      onChange={() => toggleLayer(l)}
-                      style={{ accentColor: '#4a9a4a', margin: 0 }}
-                    />
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l}</span>
-                    <span style={{ color: '#556', fontSize: '0.66rem' }}>{count}</span>
-                  </label>
+                  <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
+                    <label
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 5, flex: 1,
+                        cursor: isActiveLayer ? 'default' : 'pointer', userSelect: 'none',
+                        padding: '2px 4px', borderRadius: 3,
+                        background: visible ? '#1a2a1a' : '#1a1a1a',
+                        border: `1px solid ${isActiveLayer ? '#c8a020' : (visible ? '#3a6a3a' : '#2a2a3a')}`,
+                        fontSize: '0.73rem',
+                        color: visible ? '#9f9' : '#556',
+                        opacity: isActiveLayer ? 0.7 : 1,
+                      }}
+                      title={visible ? t('gridRenderer.hideLayer', { layer: l }) : t('gridRenderer.showLayer', { layer: l })}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={visible}
+                        disabled={isActiveLayer}
+                        onChange={() => toggleLayer(l)}
+                        style={{ accentColor: '#4a9a4a', margin: 0 }}
+                      />
+                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l}</span>
+                      <span style={{ color: '#556', fontSize: '0.66rem' }}>{count}</span>
+                    </label>
+                    {editMode && (
+                      <button
+                        className={`${styles.layerBtn} ${isActiveLayer ? styles.layerBtnActive : ''}`}
+                        style={{ fontSize: '0.7rem', padding: '1px 5px' }}
+                        onClick={() => setActiveLayerHandler(l)}
+                        title={isActiveLayer ? t('gridRenderer.clearActiveLayer', { layer: l }) : t('gridRenderer.setActiveLayer', { layer: l })}
+                      >
+                        ✎
+                      </button>
+                    )}
+                  </div>
                 );
               })}
             </>
@@ -689,6 +738,8 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 else if (room) bg = toRgb(room.color, alpha);
                 else           bg = 'transparent';
 
+                const previewHere = dragPreview?.cells.find(c => c.col === colIdx && c.row === rowIdx);
+
                 return (
                   <div
                     key={key}
@@ -697,9 +748,40 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                       room || isStair ? '' : styles.outside,
                       isSelectedRoom ? styles.cellHighlighted : '',
                       isPath ? styles.cellPath : '',
+                      previewHere ? (previewHere && dragPreview?.valid ? styles.cellDropValid : styles.cellDropInvalid) : '',
                     ].join(' ')}
                     style={{ width: cellSize, height: cellSize, background: bg }}
                     title={title}
+                    onDragOver={editMode ? (e) => {
+                      e.preventDefault();
+                      const group = dragGroupRef.current;
+                      const origin = dragOriginRef.current;
+                      if (!group || !origin) return;
+                      const delta = computeDelta(origin, colIdx, rowIdx);
+                      const valid = isGroupMoveValid(group, delta, floorPlacements, floor);
+                      e.dataTransfer.dropEffect = valid ? 'move' : 'none';
+                      setDragPreview(prev => {
+                        if (prev && prev.valid === valid && prev.cells.length === group.length &&
+                            prev.cells[0]?.col === group[0].col + delta.dCol && prev.cells[0]?.row === group[0].row + delta.dRow) {
+                          return prev;
+                        }
+                        return { cells: group.map(g => ({ col: g.col + delta.dCol, row: g.row + delta.dRow })), valid };
+                      });
+                    } : undefined}
+                    onDrop={editMode ? (e) => {
+                      e.preventDefault();
+                      const group = dragGroupRef.current;
+                      const origin = dragOriginRef.current;
+                      if (!group || !origin) return;
+                      const delta = computeDelta(origin, colIdx, rowIdx);
+                      if (isGroupMoveValid(group, delta, floorPlacements, floor)) {
+                        onPlacementsChanged?.(applyGroupMove(furniturePlacements, group, delta));
+                      }
+                      dragGroupRef.current = null;
+                      dragOriginRef.current = null;
+                      setDraggedItemId(null);
+                      setDragPreview(null);
+                    } : undefined}
                   >
                     {isStair && <span className={styles.stairStripe} />}
                     {isEntry  && <span className={styles.stairEntry}>✕</span>}
@@ -752,7 +834,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
           {/* ── Debug overlay ── */}
           {showDebug && visiblePlacements.length > 0 && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 4 }}>
-              {visiblePlacements.map((p, i) => {
+              {visiblePlacements.map((p) => {
                 const orientArrow: Record<string, string> = { N: '↑', S: '↓', E: '→', W: '←' };
                 const layerColor: Record<string, string> = {
                   Furniture:      'rgba(80,200,120,0.65)',
@@ -772,7 +854,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 const fontSize = Math.max(7, Math.min(11, cellSize * 0.22));
                 return (
                   <div
-                    key={i}
+                    key={p.id}
                     title={`Slot: ${p.slotId || '—'}\n${p.tileId}\nLayer: ${p.layer}\nOrient: ${p.orient}\n[${p.col}, ${p.row}]`}
                     style={{
                       position:       'absolute',
@@ -788,7 +870,10 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                       alignItems:     'center',
                       justifyContent: 'center',
                       overflow:       'hidden',
-                      pointerEvents:  'auto',
+                      // In edit mode, let drag/drop pass through to the cell (and drag hotspots) below —
+                      // otherwise this box would intercept drops onto any occupied cell, blocking legitimate
+                      // cross-layer stacking (e.g. dropping a sink back onto a counter).
+                      pointerEvents:  editMode ? 'none' : 'auto',
                     }}
                   >
                     <span style={{ fontSize: fontSize + 3, lineHeight: 1, color: '#fff', fontWeight: 700, textShadow: '0 0 4px #000' }}>
@@ -806,7 +891,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
           {/* ── Furniture sprite overlay ── */}
           {!showDebug && visiblePlacements.length > 0 && (
             <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3 }}>
-              {visiblePlacements.map((p, i) => {
+              {visiblePlacements.map((p) => {
                 const parsed = parseTileId(p.tileId);
                 if (!parsed) return null;
                 const sheet = sheetInfoMap.get(parsed.sheet);
@@ -815,7 +900,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                 const sprH    = SPRITE_H * scale; // natural height = 2 * cellSize
                 return (
                   <div
-                    key={i}
+                    key={p.id}
                     className={styles.furnitureSprite}
                     style={{
                       left:               p.col * cellSize,
@@ -833,6 +918,35 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                   />
                 );
               })}
+            </div>
+          )}
+
+          {/* ── Drag hotspots (edit mode, active layer only) ── */}
+          {editMode && activeLayer && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 6, pointerEvents: 'none' }}>
+              {floorPlacements.filter(p => p.layer === activeLayer).map(p => (
+                <div
+                  key={p.id}
+                  className={`${styles.dragHotspot} ${draggedItemId === p.id ? styles.dragHotspotActive : ''}`}
+                  style={{ left: p.col * cellSize, top: p.row * cellSize, width: cellSize, height: cellSize }}
+                  draggable
+                  title={`${p.tileId} [${p.layer}]`}
+                  onDragStart={(e) => {
+                    const group = resolveFootprintGroup(p, floorPlacements, tileConfig, reverseFootprintIndex);
+                    dragGroupRef.current = group;
+                    dragOriginRef.current = { col: p.col, row: p.row };
+                    setDraggedItemId(p.id);
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', p.id);
+                  }}
+                  onDragEnd={() => {
+                    dragGroupRef.current = null;
+                    dragOriginRef.current = null;
+                    setDraggedItemId(null);
+                    setDragPreview(null);
+                  }}
+                />
+              ))}
             </div>
           )}
 

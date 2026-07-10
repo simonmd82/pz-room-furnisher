@@ -92,7 +92,11 @@
     "allOn":         "all on",
     "hideLayer":     "Hide {{layer}}",
     "showLayer":     "Show {{layer}}",
-    "pathSuffix":    " [Path]"
+    "pathSuffix":    " [Path]",
+    "editModeOn":    "🖐 Edit mode: ON",
+    "editModeOff":   "🖐 Edit mode",
+    "setActiveLayer":   "Set \"{{layer}}\" as active for editing",
+    "clearActiveLayer": "Stop editing \"{{layer}}\""
   },
   "roomTypeEditor": {
     "pathStyle": {

@@ -9,6 +9,7 @@ import s from './FurnishPanel.module.css';
 interface Props {
   building: Building;
   fileName: string;
+  placements: PlacedFurnitureItem[];
   onPlacementsChanged: (placements: PlacedFurnitureItem[]) => void;
   onReservedZonesChanged?: (zones: ReservedZonePlacement[]) => void;
   onLogChanged?: (log: string[]) => void;
@@ -130,7 +131,7 @@ function tbxColorToCss(color: string | undefined): string {
 }
 
 export default function FurnishPanel({
-  building, fileName, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
+  building, fileName, placements, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
   selected, onSelectedChange, overrides, onOverridesChange,
   seed, onSeedChange, densityMin, densityMax, densityPerRoom, onDensityChange,
 }: Props) {
@@ -139,7 +140,6 @@ export default function FurnishPanel({
   const [running, setRunning]           = useState(false);
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
-  const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
   const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
 
@@ -239,11 +239,11 @@ export default function FurnishPanel({
     setRunning(true); setStatus(null);
     try {
       const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityPerRoom);
+      const idPlacements = result.placements.map(p => ({ ...p, id: crypto.randomUUID() }));
       const preserved = placements.filter(p =>
         !selected.has(`${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}`)
       );
-      const merged = [...preserved, ...result.placements];
-      setPlacements(merged);
+      const merged = [...preserved, ...idPlacements];
       onPlacementsChanged(merged);
 
       const selectedRoomKeys = new Set([...selected].map(k => k.split(':').slice(0, 2).join(':')));
@@ -266,7 +266,6 @@ export default function FurnishPanel({
     const filtered = placements.filter(p =>
       !(p.floorIndex === f && p.roomIndex1Based === r && p.anchorCol === c && p.anchorRow === rr)
     );
-    setPlacements(filtered);
     onPlacementsChanged(filtered);
 
     const filteredZones = reservedZones.filter(z => !(z.floorIndex === f && z.roomIndex1Based === r));

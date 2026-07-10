@@ -92,7 +92,11 @@
     "allOn":         "alle an",
     "hideLayer":     "{{layer}} ausblenden",
     "showLayer":     "{{layer}} einblenden",
-    "pathSuffix":    " [Weg]"
+    "pathSuffix":    " [Weg]",
+    "editModeOn":    "🖐 Bearbeiten: EIN",
+    "editModeOff":   "🖐 Bearbeiten",
+    "setActiveLayer":   "\"{{layer}}\" zum Bearbeiten aktivieren",
+    "clearActiveLayer": "Bearbeitung von \"{{layer}}\" beenden"
   },
   "roomTypeEditor": {
     "pathStyle": {

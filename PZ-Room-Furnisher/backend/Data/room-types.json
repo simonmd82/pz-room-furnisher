@@ -2660,7 +2660,7 @@
           "Shower": 5
         },
         "placementRules": {
-          "nearWall": true,
+          "nearWall": false,
           "nearDoor": false,
           "nearWindow": false,
           "centerRoom": false,
@@ -8544,7 +8544,7 @@
         "maxWidth": null
       }
     ],
-    "pathStyle": "wall",
+    "pathStyle": "doorOnly",
     "colorGroupId": "",
     "colorPalettes": {
       "color_group_metal": [

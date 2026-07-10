@@ -393,4 +393,32 @@
   font-weight: 600;
 }
 
+/* ── Drag-and-drop (edit mode) ── */
+.dragHotspot {
+  position: absolute;
+  cursor: grab;
+  outline: 1.5px dashed rgba(255, 240, 90, 0.65);
+  outline-offset: -1px;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+.dragHotspot:hover {
+  outline-color: rgba(255, 240, 90, 0.95);
+  background: rgba(255, 240, 90, 0.08);
+}
+.dragHotspotActive {
+  opacity: 0.35;
+  cursor: grabbing;
+}
+
+.cellDropValid {
+  outline: 2px solid rgba(80,220,120,0.85) !important;
+  outline-offset: -2px;
+  background-color: rgba(80,220,120,0.22) !important;
+}
+.cellDropInvalid {
+  outline: 2px solid rgba(220,70,70,0.9) !important;
+  outline-offset: -2px;
+  background-color: rgba(220,70,70,0.22) !important;
+}
 

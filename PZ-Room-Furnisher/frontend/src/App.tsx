@@ -279,6 +279,7 @@ function App() {
               <FurnishPanel
                 building={building}
                 fileName={fileName}
+                placements={placements}
                 onPlacementsChanged={newPlacements => {
                   setPlacements(newPlacements);
                   // Falls sheetInfos noch leer (Tiles-Pfad nach App-Start gesetzt), nachladen
@@ -316,7 +317,8 @@ function App() {
                       building={building}
                       floorIndex={selectedFloor}
                       onFloorUpdated={handleFloorUpdated}
-                      furniturePlacements={placements.filter(p => p.floorIndex === selectedFloor)}
+                      furniturePlacements={placements}
+                      onPlacementsChanged={setPlacements}
                       reservedZones={reservedZones.filter(z => z.floorIndex === selectedFloor)}
                       tileConfig={tileConfig}
                       sheetInfos={sheetInfos}

@@ -132,6 +132,8 @@ export interface Building {
 // ── Furnishing ────────────────────────────────────────────────────────────────
 
 export interface PlacedFurnitureItem {
+  /** Synthetic client-side id, assigned when placements are first received from the generator. Needed for stable drag identity (col/row change during a move). */
+  id: string;
   floorIndex: number;
   col: number;
   row: number;
