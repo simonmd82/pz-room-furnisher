@@ -361,7 +361,9 @@
             "companion": "Companion {{n}}",
             "label": "Label",
             "anchorPosition": "Anchor pos",
-            "orient": "Orient"
+            "orient": "Orient",
+            "groupId": "Group id",
+            "groupHint": "Companions with the same group id are alternatives — the generator picks exactly one (weighted by weight) instead of placing all of them. Empty = always placed."
           }
         }
       }

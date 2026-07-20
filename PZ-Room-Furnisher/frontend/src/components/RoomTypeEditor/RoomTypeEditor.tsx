@@ -2318,6 +2318,18 @@ export function RoomTypeEditor() {
                                    {Object.keys(ANCHOR_ORIENT_TOOLTIPS).map(o => <option key={o} value={o}>{o}</option>)}
                                  </select>
                                </div>
+                               <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}
+                                 title={t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.groupHint')}>
+                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.groupId')}</span>
+                                 <input className={s.slotSizeInput} style={{ flex: 1, minWidth: 100 }} value={c.slotGroupId}
+                                   onChange={e => updateCompanion(idx, poolIdx, rsIdx, ci, { slotGroupId: e.target.value })} />
+                                 {c.slotGroupId && (<>
+                                   <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.groupWeightLabel')}</span>
+                                   <input type="number" min={1} max={10} className={s.slotNumInput} value={c.groupWeight}
+                                     onChange={e => { const v = +e.target.value; if (v >= 1) updateCompanion(idx, poolIdx, rsIdx, ci, { groupWeight: v }); }}
+                                     onBlur={e => updateCompanion(idx, poolIdx, rsIdx, ci, { groupWeight: Math.max(1, Math.min(10, +e.target.value)) })} />
+                                 </>)}
+                               </div>
                                <div className={s.slotRow} style={{ gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
                                  {(['blocksFrontCell', 'blocksPlacement', 'softBlocks'] as const).map(key => (
                                    <label key={key} className={s.slotCheck}>

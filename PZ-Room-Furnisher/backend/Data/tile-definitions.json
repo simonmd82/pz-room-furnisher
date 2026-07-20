@@ -21235,7 +21235,7 @@
       ]
     ],
     "group": "Clock",
-    "layer": "Furniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -21274,7 +21274,7 @@
       ]
     ],
     "group": "Clock",
-    "layer": "Furniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -21313,7 +21313,7 @@
       ]
     ],
     "group": "Clock",
-    "layer": "Furniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -21352,7 +21352,7 @@
       ]
     ],
     "group": "Clock",
-    "layer": "Furniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
     "isLow": false,
@@ -21695,7 +21695,7 @@
     "id": "trashcontainers_01_019",
     "tileId": "trashcontainers_01_019",
     "label": "",
-    "orientation": "W",
+    "orientation": "E",
     "tileLayout": [
       [
         "trashcontainers_01_019"
@@ -21724,7 +21724,7 @@
     "variantGroup": "trashcan_black_grey_01",
     "styleTags": [],
     "allowedOrients": [
-      "W"
+      "E"
     ],
     "windowBlockedEdge": ""
   },
@@ -21732,7 +21732,7 @@
     "id": "trashcontainers_01_018",
     "tileId": "trashcontainers_01_018",
     "label": "",
-    "orientation": "N",
+    "orientation": "S",
     "tileLayout": [
       [
         "trashcontainers_01_018"
@@ -21761,7 +21761,7 @@
     "variantGroup": "trashcan_black_grey_01",
     "styleTags": [],
     "allowedOrients": [
-      "N"
+      "S"
     ],
     "windowBlockedEdge": ""
   },
@@ -22142,7 +22142,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -22177,7 +22177,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -22212,7 +22212,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -22247,7 +22247,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24038,7 +24038,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24074,7 +24074,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24110,7 +24110,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24146,7 +24146,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24182,7 +24182,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24217,7 +24217,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24252,7 +24252,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24287,7 +24287,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
@@ -24322,7 +24322,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
@@ -24360,7 +24360,7 @@
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
-    "hasCollision": true,
+    "hasCollision": false,
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,

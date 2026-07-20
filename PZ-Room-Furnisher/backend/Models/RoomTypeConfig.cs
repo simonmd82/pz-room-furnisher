@@ -272,6 +272,15 @@ public class LayoutPoolCompanion
     public bool SoftBlocks           { get; set; } = false;
     /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
     public List<string> CellRequiredProperties { get; set; } = [];
+    /// <summary>
+    /// Varianten-Gruppe für Companions desselben Parent-Slots: Companions mit gleicher,
+    /// nicht-leerer SlotGroupId sind Alternativen – der Generator wählt genau eine davon
+    /// (gewichtet nach GroupWeight) statt alle zu platzieren.
+    /// Leer = kein Gruppen-Modus (Companion wird wie bisher immer platziert).
+    /// </summary>
+    public string SlotGroupId        { get; set; } = string.Empty;
+    /// <summary>Gewichtung innerhalb der Companion-Gruppe (1–10). Nur relevant wenn SlotGroupId gesetzt.</summary>
+    public int GroupWeight           { get; set; } = 5;
 }
 
 /// <summary>A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove").</summary>

@@ -283,6 +283,14 @@ export interface LayoutPoolCompanion {
   softBlocks: boolean;
   /** See RoomTypeSlot.cellRequiredProperties. */
   cellRequiredProperties: string[];
+  /**
+   * Companions sharing the same non-empty slotGroupId are alternatives: the generator picks
+   * exactly one of them (weighted by groupWeight) instead of placing all of them.
+   * Empty = no group mode, companion is always placed (default behaviour).
+   */
+  slotGroupId: string;
+  /** Weight within the companion group (1–10). Only relevant when slotGroupId is set. */
+  groupWeight: number;
 }
 
 /** A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove"). */
@@ -428,6 +436,8 @@ export function defaultLayoutPoolCompanion(): LayoutPoolCompanion {
     blocksPlacement: true,
     softBlocks: false,
     cellRequiredProperties: [],
+    slotGroupId: '',
+    groupWeight: 5,
   };
 }
 

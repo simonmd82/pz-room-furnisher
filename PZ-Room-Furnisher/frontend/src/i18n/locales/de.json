@@ -361,7 +361,9 @@
             "companion": "Begleiter {{n}}",
             "label": "Label",
             "anchorPosition": "Anker-Position",
-            "orient": "Ausrichtung"
+            "orient": "Ausrichtung",
+            "groupId": "Gruppen-ID",
+            "groupHint": "Begleiter mit gleicher Gruppen-ID sind Alternativen – der Generator wählt genau einen davon (gewichtet nach Gewicht) statt alle zu platzieren. Leer = wird immer platziert."
           }
         }
       }

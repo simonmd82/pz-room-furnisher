@@ -282,10 +282,17 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 // 3. Slot selection
                 var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
-                var slotsToPlace = SelectSlots(config, roomSize, rng, log, density, activeLayoutSlotIds);
-                var fallbackPoolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, 0, rng, log) : [];
-                if (fallbackPoolSlots.Count > 0)
-                    slotsToPlace = [..slotsToPlace, ..fallbackPoolSlots.Select(s => (s, 1))];
+                var slotsBase = SelectSlots(config, roomSize, rng, log, density, activeLayoutSlotIds);
+
+                // Pool count-step ceiling for the fallback (non-backtracking) placement pass
+                // below — mirrors TryPlaceCompositeLayout's countStep loop so a room that
+                // reaches this fallback still gets a chance to shrink an over-full pool
+                // instead of only ever trying countStep=0 (max pool size) once.
+                int fallbackMaxStep = layoutVariant?.Pools is { Count: > 0 } fallbackPools
+                    ? fallbackPools
+                        .Select(p => p.TotalCountBySize.TryGetValue(roomSize, out var r) ? Math.Max(0, r.Max - r.Min) : 0)
+                        .DefaultIfEmpty(0).Max()
+                    : 0;
 
                 // 4. Place each slot
                 var anchorMap  = new Dictionary<string, (int col, int row, int fpW, int fpH, string orient)>(StringComparer.OrdinalIgnoreCase);
@@ -313,28 +320,73 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCellsForSlot);
                 }
 
-                var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace);
-                var structuralRoomSlots = orderedRoomSlots;
-                var decorRoomSlots = new List<RoomTypeSlot>();
-                if (config.UsePostPlacementPathAvoidance)
-                {
-                    structuralRoomSlots = orderedRoomSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
-                    decorRoomSlots = orderedRoomSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
-                }
+                // Snapshot pre-attempt state so a failed countStep attempt (missing required
+                // pool slots) can be rolled back before retrying with a smaller pool instead
+                // of stacking a second, overlapping placement pass on top of the first.
+                var occupiedSnap          = new HashSet<(int, int)>(occupied);
+                var softOccupiedSnap      = new HashSet<(int, int)>(softOccupied);
+                var physicalOccupiedSnap  = new HashSet<(int, int)>(physicalOccupied);
+                var blockedFrontCellsSnap = new HashSet<(int, int)>(blockedFrontCells);
+                var frontExemptCellsSnap  = new HashSet<(int, int)>(frontExemptCells);
+                var cellPropertyGatesSnap = cellPropertyGates.ToDictionary(kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase));
+                var placementsCountBefore = placements.Count;
 
-                foreach (var slot in structuralRoomSlots)
-                    PlaceOrderedSlot(slot, null);
-
-                if (decorRoomSlots.Count > 0)
+                for (int countStep = 0; countStep <= fallbackMaxStep; countStep++)
                 {
-                    // Computed AFTER all structural (collision + anchor-coupled) furniture is
-                    // placed, so the path reflects the room as actually furnished — see
-                    // RoomTypeConfig.UsePostPlacementPathAvoidance.
-                    var decorPathCells = ComputePostPlacementPathCells(roomCells, doorCells, physicalOccupied);
-                    if (decorPathCells.Count > 0)
-                        log.Add($"  [PATH] post-placement path ({decorPathCells.Count} cells) applied to {decorRoomSlots.Count} freestanding decor slot(s)");
-                    foreach (var slot in decorRoomSlots)
-                        PlaceOrderedSlot(slot, decorPathCells.Count > 0 ? decorPathCells : null);
+                    if (countStep > 0)
+                    {
+                        occupied.Clear(); occupied.UnionWith(occupiedSnap);
+                        softOccupied.Clear(); softOccupied.UnionWith(softOccupiedSnap);
+                        physicalOccupied.Clear(); physicalOccupied.UnionWith(physicalOccupiedSnap);
+                        blockedFrontCells.Clear(); blockedFrontCells.UnionWith(blockedFrontCellsSnap);
+                        frontExemptCells.Clear(); frontExemptCells.UnionWith(frontExemptCellsSnap);
+                        cellPropertyGates.Clear();
+                        foreach (var kv in cellPropertyGatesSnap) cellPropertyGates[kv.Key] = new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase);
+                        anchorMap.Clear();
+                        colorMap.Clear();
+                        foreach (var kv in seededColorMap) colorMap[kv.Key] = kv.Value;
+                        variantMap.Clear();
+                        placements.RemoveRange(placementsCountBefore, placements.Count - placementsCountBefore);
+                    }
+
+                    var poolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, countStep, rng, log) : [];
+                    var slotsToPlace = poolSlots.Count > 0
+                        ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
+                        : slotsBase;
+
+                    var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace);
+                    var structuralRoomSlots = orderedRoomSlots;
+                    var decorRoomSlots = new List<RoomTypeSlot>();
+                    if (config.UsePostPlacementPathAvoidance)
+                    {
+                        structuralRoomSlots = orderedRoomSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                        decorRoomSlots = orderedRoomSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                    }
+
+                    foreach (var slot in structuralRoomSlots)
+                        PlaceOrderedSlot(slot, null);
+
+                    if (decorRoomSlots.Count > 0)
+                    {
+                        // Computed AFTER all structural (collision + anchor-coupled) furniture is
+                        // placed, so the path reflects the room as actually furnished — see
+                        // RoomTypeConfig.UsePostPlacementPathAvoidance.
+                        var decorPathCells = ComputePostPlacementPathCells(roomCells, doorCells, physicalOccupied);
+                        if (decorPathCells.Count > 0)
+                            log.Add($"  [PATH] post-placement path ({decorPathCells.Count} cells) applied to {decorRoomSlots.Count} freestanding decor slot(s)");
+                        foreach (var slot in decorRoomSlots)
+                            PlaceOrderedSlot(slot, decorPathCells.Count > 0 ? decorPathCells : null);
+                    }
+
+                    var missingRequired = poolSlots.Where(s => s.Required).Count(s => !anchorMap.ContainsKey(s.Id));
+                    if (missingRequired == 0)
+                    {
+                        if (countStep > 0)
+                            log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} placed all required pool slots");
+                        break;
+                    }
+                    if (countStep < fallbackMaxStep)
+                        log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} missing {missingRequired} required pool slot(s), retrying with fewer pool slot(s)");
                 }
 
                 // After furnishing: record which opening-adjacent cells are now blocked so
@@ -928,15 +980,23 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             // Only the required entries are shuffled among themselves (relative order variety);
             // default entries are all identical (pool.DefaultCategories) so shuffling them is a
             // no-op and skipped.
+            // Truncation order: highest Weight first (stable tie-break on declaration
+            // order), so when a pool is too small to fit every required category, the
+            // lowest-weight categories are sacrificed first instead of whichever happens
+            // to be declared last in room-types.json.
             var requiredEntries = new List<LayoutPoolRequiredSlot>();
+            var droppedLabels = new List<string>();
             int rawRequiredTotal = pool.RequiredSlots.Sum(rs => rs.Count);
-            foreach (var rs in pool.RequiredSlots)
+            foreach (var rs in pool.RequiredSlots.OrderByDescending(rs => rs.Weight))
             {
-                for (int k = 0; k < rs.Count && requiredEntries.Count < totalCount; k++)
+                int placed = 0;
+                for (; placed < rs.Count && requiredEntries.Count < totalCount; placed++)
                     requiredEntries.Add(rs);
+                if (placed < rs.Count)
+                    droppedLabels.Add(rs.Count > 1 ? $"{rs.Label} (x{rs.Count - placed})" : rs.Label);
             }
             if (rawRequiredTotal > totalCount)
-                log.Add($"    [POOL-WARN] '{pool.Id}': sum of required counts ({rawRequiredTotal}) exceeds totalCount ({totalCount}), excess truncated");
+                log.Add($"    [POOL-WARN] '{pool.Id}': sum of required counts ({rawRequiredTotal}) exceeds totalCount ({totalCount}), dropped: {string.Join(", ", droppedLabels)}");
 
             var positionTypes = new List<LayoutPoolRequiredSlot?>(ShuffleCopy(requiredEntries, rng));
             while (positionTypes.Count < totalCount)
@@ -990,9 +1050,31 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // Spawn companion slots for required types that have them
                 if (rs?.Companions is { Count: > 0 } companions)
                 {
+                    // Resolve "one-of" companion groups: companions sharing a non-empty SlotGroupId
+                    // are alternatives, not additions — roll exactly one winner (weighted by
+                    // GroupWeight), same convention as RoomTypeSlot.SlotGroupId/GroupWeight above.
+                    // Ungrouped companions (SlotGroupId empty) are still all placed, as before.
+                    var companionGroupWinners = new HashSet<int>();
+                    foreach (var grp in companions
+                        .Select((c, ci) => (c, ci))
+                        .Where(t => !string.IsNullOrEmpty(t.c.SlotGroupId))
+                        .GroupBy(t => t.c.SlotGroupId, StringComparer.OrdinalIgnoreCase))
+                    {
+                        var variants = grp.ToList();
+                        var totalW   = variants.Sum(t => t.c.GroupWeight);
+                        if (totalW <= 0) totalW = variants.Count;
+                        int acc = 0, roll = rng.Next(totalW);
+                        var winner = variants[0];
+                        foreach (var v in variants) { acc += v.c.GroupWeight; if (roll < acc) { winner = v; break; } }
+                        companionGroupWinners.Add(winner.ci);
+                        log.Add($"    [GROUP] '{slotId}' companion group '{grp.Key}': chose '{winner.c.Label}' ({winner.c.GroupWeight}/{totalW})");
+                    }
+
                     for (int ci = 0; ci < companions.Count; ci++)
                     {
-                        var c           = companions[ci];
+                        var c = companions[ci];
+                        if (!string.IsNullOrEmpty(c.SlotGroupId) && !companionGroupWinners.Contains(ci))
+                            continue;
                         var companionId = $"{slotId}_companion_{ci}";
                         result.Add(new RoomTypeSlot
                         {
