@@ -21,8 +21,8 @@ interface Props {
   onSeedChange: (seed: number) => void;
   densityMin: number;
   densityMax: number;
-  densityPerRoom: boolean;
-  onDensityChange: (min: number, max: number, perRoom: boolean) => void;
+  densityFixed: boolean;
+  onDensityChange: (min: number, max: number, fixed: boolean) => void;
 }
 
 interface RoomEntry {
@@ -133,7 +133,7 @@ function tbxColorToCss(color: string | undefined): string {
 export default function FurnishPanel({
   building, fileName, placements, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
   selected, onSelectedChange, overrides, onOverridesChange,
-  seed, onSeedChange, densityMin, densityMax, densityPerRoom, onDensityChange,
+  seed, onSeedChange, densityMin, densityMax, densityFixed, onDensityChange,
 }: Props) {
   const { t } = useTranslation();
   const [knownTypes, setKnownTypes]     = useState<string[]>([]);
@@ -238,7 +238,7 @@ export default function FurnishPanel({
 
     setRunning(true); setStatus(null);
     try {
-      const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityPerRoom);
+      const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityFixed);
       const idPlacements = result.placements.map(p => ({ ...p, id: crypto.randomUUID() }));
       const preserved = placements.filter(p =>
         !selected.has(`${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}`)
@@ -444,7 +444,7 @@ export default function FurnishPanel({
           className={s.densitySlider}
           onChange={e => {
             const v = +e.target.value;
-            onDensityChange(v, Math.max(v, densityMax), densityPerRoom);
+            onDensityChange(v, Math.max(v, densityMax), densityFixed);
           }}
         />
       </div>
@@ -456,7 +456,7 @@ export default function FurnishPanel({
           className={s.densitySlider}
           onChange={e => {
             const v = +e.target.value;
-            onDensityChange(Math.min(v, densityMin), v, densityPerRoom);
+            onDensityChange(Math.min(v, densityMin), v, densityFixed);
           }}
         />
       </div>
@@ -464,10 +464,10 @@ export default function FurnishPanel({
       <label className={s.densityToggle}>
         <input
           type="checkbox"
-          checked={densityPerRoom}
+          checked={densityFixed}
           onChange={e => onDensityChange(densityMin, densityMax, e.target.checked)}
         />
-        {t('furnishPanel.densityPerRoom')}
+        {t('furnishPanel.densityFixed')}
       </label>
 
       {/* ── Generate ── */}

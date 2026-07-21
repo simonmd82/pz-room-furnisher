@@ -2925,7 +2925,7 @@
           "mainSubRoom": false,
           "wallAlignment": "any"
         },
-        "requiredLayer": "Furniture",
+        "requiredLayer": "Wallfurniture",
         "requiredProperties": [
           "isHigh"
         ],

@@ -510,7 +510,7 @@
     "densityMin":     "Min",
     "densityMax":     "Max",
     "densityHint":    "Pro Generierung wird ein Zufallswert zwischen {{min}} % und {{max}} % gezogen.",
-    "densityPerRoom": "Dichte pro Raum individuell würfeln",
+    "densityFixed": "Dichte fixieren (für alle Räume gleich)",
     "generate":           "Generieren ({{count}} Räume)",
     "generating":         "Generiere…",
     "noRoomSelected":     "Bitte mindestens einen Raum auswählen.",

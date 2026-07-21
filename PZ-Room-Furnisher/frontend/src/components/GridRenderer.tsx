@@ -417,6 +417,14 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
 
   const reverseFootprintIndex = useMemo(() => buildReverseFootprintIndex(tileConfig), [tileConfig]);
 
+  // Rooms defined in the TBX but never assigned to any cell on this floor (e.g. leftover
+  // room defs from the source map) shouldn't clutter the legend.
+  const usedRoomIndices = useMemo(() => {
+    const s = new Set<number>();
+    floor.roomGrid.forEach(row => row.forEach(v => { if (v > 0) s.add(v); }));
+    return s;
+  }, [floor.roomGrid]);
+
   const toggleLayer = useCallback((layer: string) => {
     if (layer === activeLayer) return; // can't hide the layer you're editing
     setHiddenLayers(prev => {
@@ -510,6 +518,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
           {/* Clickable room entries */}
           {rooms.map((room, idx) => {
             const roomIdx1 = idx + 1;
+            if (!usedRoomIndices.has(roomIdx1)) return null;
             const isSelected = selected.has(roomIdx1);
             const hasPath = (floor.pathsByRoom?.[roomIdx1]?.length ?? 0) > 0;
             const isRegen  = recomputingRoom === roomIdx1;

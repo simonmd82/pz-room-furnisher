@@ -510,7 +510,7 @@
     "densityMin":     "Min",
     "densityMax":     "Max",
     "densityHint":    "Each generation draws a random value between {{min}} % and {{max}} %.",
-    "densityPerRoom": "Roll density individually per room",
+    "densityFixed": "Fix density per room",
     "generate":           "Generate ({{count}} rooms)",
     "generating":         "Generating…",
     "noRoomSelected":     "Please select at least one room.",

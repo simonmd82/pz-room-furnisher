@@ -25,10 +25,10 @@ public record FurnishRequest(
     float               DensityMin     = 0f,
     float               DensityMax     = 1f,
     /// <summary>
-    /// true  = Jeder Raum bekommt einen eigenen Zufallswert aus [DensityMin, DensityMax].
-    /// false = Ein einziger Wert wird pro Aufruf gezogen und für alle Räume verwendet (Standard).
+    /// true  = Ein einziger Wert wird pro Aufruf gezogen und für ALLE Räume erzwungen (auch wenn DensityMin &lt; DensityMax).
+    /// false = Standard: Jeder Raum bekommt einen eigenen Zufallswert, sofern DensityMin &lt; DensityMax.
     /// </summary>
-    bool                DensityPerRoom = false);
+    bool                DensityFixed = false);
 
 /// <summary>A single tile placed on the grid.</summary>
 public record PlacedFurnitureItem(
@@ -98,15 +98,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var roomTypes      = _roomTypeSvc.GetAll();
 
         // Möblierungsdichte: zufälliger Wert aus [DensityMin, DensityMax].
-        // DensityPerRoom=false: ein einziger Wert für alle Räume – einheitliches Bild.
-        // DensityPerRoom=true:  jeder Raum bekommt seinen eigenen Zufallswert.
+        // DensityFixed=true:  ein einziger Wert wird erzwungen und für alle Räume verwendet – einheitliches Bild.
+        // DensityFixed=false: jeder Raum bekommt seinen eigenen Zufallswert, sofern Min≠Max.
         float dMin    = Math.Clamp(req.DensityMin, 0f, 1f);
         float dMax    = Math.Clamp(req.DensityMax, 0f, 1f);
         double DrawDensity() => dMin >= dMax ? dMin : dMin + rng.NextDouble() * (dMax - dMin);
-        // Wenn Min≠Max oder DensityPerRoom aktiv → jeder Raum bekommt einen eigenen Zufallswert.
-        bool perRoom  = req.DensityPerRoom || dMin < dMax;
+        // Nur wenn NICHT DensityFixed und Min≠Max → jeder Raum bekommt einen eigenen Zufallswert.
+        bool perRoom  = !req.DensityFixed && dMin < dMax;
         double density = DrawDensity();
-        log.Add($"[DENSITY] range=[{dMin:P0}–{dMax:P0}] perRoom={perRoom} (flag={req.DensityPerRoom}) → initial={density:P0}");
+        log.Add($"[DENSITY] range=[{dMin:P0}–{dMax:P0}] perRoom={perRoom} (fixed={req.DensityFixed}) → initial={density:P0}");
 
         // Tracks which opening-adjacent cells in one room are blocked by placed furniture,
         // so the opposing room's opening group is reduced accordingly (aligned-pair awareness).

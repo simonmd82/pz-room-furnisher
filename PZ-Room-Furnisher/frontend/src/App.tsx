@@ -100,7 +100,7 @@ function App() {
   const [seed, setSeed]                 = useState<number>(() => Math.floor(Math.random() * 999999));
   const [densityMin, setDensityMin]     = useState(50);
   const [densityMax, setDensityMax]     = useState(100);
-  const [densityPerRoom, setDensityPerRoom] = useState(false);
+  const [densityFixed, setDensityFixed] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('pzrf.showGeneratorLog', String(showGeneratorLog));
@@ -295,11 +295,11 @@ function App() {
                 onSeedChange={setSeed}
                 densityMin={densityMin}
                 densityMax={densityMax}
-                densityPerRoom={densityPerRoom}
-                onDensityChange={(min, max, perRoom) => {
+                densityFixed={densityFixed}
+                onDensityChange={(min, max, fixed) => {
                   setDensityMin(min);
                   setDensityMax(max);
-                  setDensityPerRoom(perRoom);
+                  setDensityFixed(fixed);
                 }}
               />
 
