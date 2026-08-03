@@ -7,6 +7,8 @@ import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap } from '../../types/tiles';
 import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
 import { DirPicker } from '../TileBrowser/DirPicker';
+import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
+import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import s from './FurnitureBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -25,6 +27,7 @@ const CONF_ZOOM  = 0.30; // config panel previews
 
 export function FurnitureBrowser() {
   const { t } = useTranslation();
+  const { selectedSetId } = useActiveConfigSet();
 
   // ── path ─────────────────────────────────────────────────────────────
   const [pathInput, setPathInput] = useState('');
@@ -121,18 +124,25 @@ export function FurnitureBrowser() {
     getBfPath()
       .then(r => { setPathInput(r.path); setPathOk(r.isValid); setBackendOk(true); })
       .catch(() => setBackendOk(false));
-    getTileConfig().then(setConfig).catch(() => {});
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
-    getSheets().then(r => {
+  }, []);
+
+  // Reload the raw config / sheet columns for whichever set is active whenever the selection changes.
+  useEffect(() => {
+    getTileConfig(selectedSetId).then(setConfig).catch(() => {});
+  }, [selectedSetId]);
+
+  useEffect(() => {
+    getSheets(selectedSetId).then(r => {
       if (r.configured) {
         const map: Record<string, number> = {};
         r.sheets.forEach(sh => { map[sh.name] = sh.columns; });
         setSheetCols(map);
       }
     }).catch(() => {});
-  }, []);
+  }, [selectedSetId]);
 
   useEffect(() => {
     if (!pathOk) { setGroups([]); return; }
@@ -256,7 +266,7 @@ export function FurnitureBrowser() {
       const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
       const saved: TileDefinition[] = [];
       for (const def of toSave) {
-        saved.push(await saveTileDefinition(def));
+        saved.push(await saveTileDefinition(def, selectedSetId));
       }
       setConfig(prev => {
         const next = { ...prev };
@@ -322,6 +332,9 @@ export function FurnitureBrowser() {
           </>
         )}
       </div>
+
+      {/* ── Config set bar ── */}
+      <ConfigSetSelector />
 
       {/* ── Group list ── */}
       <div className={s.groupPanel}>

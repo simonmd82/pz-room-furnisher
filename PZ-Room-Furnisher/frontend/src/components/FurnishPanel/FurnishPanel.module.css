@@ -330,3 +330,40 @@
   cursor: pointer;
 }
 
+.configSetsHint {
+  font-size: 0.65rem;
+  color: #556;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.configSetsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.configSetRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #cdd;
+  cursor: pointer;
+  user-select: none;
+}
+
+.configSetRow input {
+  accent-color: #8866ff;
+  cursor: pointer;
+}
+
+.configSetName {
+  font-weight: 600;
+}
+
+.configSetDesc {
+  font-size: 0.68rem;
+  color: #667;
+}
+

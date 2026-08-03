@@ -98,6 +98,15 @@ export interface TileDefinition {
 
 export type TileConfigMap = Record<string, TileDefinition>;
 
+/** Metadata for one furniture tile-definition set (vanilla or a mod pack). */
+export interface TileConfigSetInfo {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  file: string;
+}
+
 // ── Unified tile properties (used in all 3 tabs) ──────────────────────────
 export const TILE_PROPERTIES = [
   'isHigh',

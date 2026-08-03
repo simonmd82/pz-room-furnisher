@@ -4,6 +4,8 @@ import type { Building, PlacedFurnitureItem, ReservedZonePlacement } from '../..
 import { generateFurnishing, exportTbx } from '../../api/furnishApi';
 import type { RoomSelection } from '../../api/furnishApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
+import { getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
+import type { TileConfigSetInfo } from '../../types/tiles';
 import s from './FurnishPanel.module.css';
 
 interface Props {
@@ -142,10 +144,21 @@ export default function FurnishPanel({
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
   const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
+  const [configSets, setConfigSets]     = useState<TileConfigSetInfo[]>([]);
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
+    getTileConfigSets().then(setConfigSets).catch(console.error);
   }, []);
+
+  const toggleConfigSet = async (id: string, enabled: boolean) => {
+    setConfigSets(prev => prev.map(set => set.id === id ? { ...set, enabled } : set));
+    try {
+      await updateTileConfigSet(id, { enabled });
+    } catch {
+      setConfigSets(prev => prev.map(set => set.id === id ? { ...set, enabled: !enabled } : set));
+    }
+  };
 
   useEffect(() => {
     if (!openMenu) return;
@@ -469,6 +482,27 @@ export default function FurnishPanel({
         />
         {t('furnishPanel.densityFixed')}
       </label>
+
+      {/* ── Config sets ── */}
+      {configSets.length > 0 && (
+        <>
+          <span className={s.sectionLabel}>{t('furnishPanel.configSets.title')}</span>
+          <p className={s.configSetsHint}>{t('furnishPanel.configSets.description')}</p>
+          <div className={s.configSetsList}>
+            {configSets.map(set => (
+              <label key={set.id} className={s.configSetRow}>
+                <input
+                  type="checkbox"
+                  checked={set.enabled}
+                  onChange={e => toggleConfigSet(set.id, e.target.checked)}
+                />
+                <span className={s.configSetName}>{set.name}</span>
+                {set.description && <span className={s.configSetDesc}>{set.description}</span>}
+              </label>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* ── Generate ── */}
       <button

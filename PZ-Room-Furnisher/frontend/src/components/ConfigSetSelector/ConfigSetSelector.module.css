@@ -1,0 +1,50 @@
+.configSetBar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: #16162a;
+  border-bottom: 1px solid #2a2a3a;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+.configSetSelect {
+  padding: 5px 10px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #dde;
+  font-size: 0.82rem;
+}
+.configSetDesc { color: #889; font-size: 0.78rem; flex: 1; }
+.configSetDeleteBtn {
+  padding: 4px 9px;
+  background: #2a1616;
+  border: 1px solid #5a3a3a;
+  border-radius: 5px;
+  color: #f88;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+.configSetDeleteBtn:hover { background: #3a1e1e; }
+.configSetAddBtn {
+  padding: 5px 12px;
+  background: #1e1e3a;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #ddf;
+  cursor: pointer;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.configSetAddBtn:hover { border-color: #8866cc; background: #2a2a4a; }
+.configSetInput {
+  width: 140px;
+  padding: 5px 10px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #dde;
+  font-size: 0.82rem;
+}

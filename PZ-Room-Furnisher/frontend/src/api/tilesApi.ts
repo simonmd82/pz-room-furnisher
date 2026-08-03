@@ -1,4 +1,4 @@
-﻿import type { TileDefinition, TileConfigMap, TileSheetInfo } from '../types/tiles';
+﻿import type { TileDefinition, TileConfigMap, TileSheetInfo, TileConfigSetInfo } from '../types/tiles';
 
 const BASE = '/api/tiles';
 
@@ -34,20 +34,22 @@ export async function browseDirectory(path?: string): Promise<BrowseResult> {
   return r.json();
 }
 
-export async function getSheets(): Promise<{ configured: boolean; sheets: TileSheetInfo[] }> {
-  return (await fetch(`${BASE}/sheets`)).json();
+export async function getSheets(setId = 'vanilla'): Promise<{ configured: boolean; sheets: TileSheetInfo[] }> {
+  return (await fetch(`${BASE}/sheets?setId=${encodeURIComponent(setId)}`)).json();
 }
 
 export function sheetImageUrl(name: string): string {
   return `${BASE}/sheet/${encodeURIComponent(name)}/image`;
 }
 
-export async function getTileConfig(): Promise<TileConfigMap> {
-  return (await fetch(`${BASE}/config`)).json();
+/** No setId: merged view across every known set (for rendering/lookup). With setId: raw definitions of exactly that set (for editing it). */
+export async function getTileConfig(setId?: string): Promise<TileConfigMap> {
+  const url = setId ? `${BASE}/config?setId=${encodeURIComponent(setId)}` : `${BASE}/config`;
+  return (await fetch(url)).json();
 }
 
-export async function saveTileDefinition(def: TileDefinition): Promise<TileDefinition> {
-  const r = await fetch(`${BASE}/config/${encodeURIComponent(def.id)}`, {
+export async function saveTileDefinition(def: TileDefinition, setId = 'vanilla'): Promise<TileDefinition> {
+  const r = await fetch(`${BASE}/config/${encodeURIComponent(def.id)}?setId=${encodeURIComponent(setId)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(def),
@@ -56,12 +58,12 @@ export async function saveTileDefinition(def: TileDefinition): Promise<TileDefin
   return r.json();
 }
 
-export async function deleteTileDefinition(id: string): Promise<void> {
-  await fetch(`${BASE}/config/${encodeURIComponent(id)}`, { method: 'DELETE' });
+export async function deleteTileDefinition(id: string, setId = 'vanilla'): Promise<void> {
+  await fetch(`${BASE}/config/${encodeURIComponent(id)}?setId=${encodeURIComponent(setId)}`, { method: 'DELETE' });
 }
 
-export function exportConfigUrl(): string {
-  return `${BASE}/config/export`;
+export function exportConfigUrl(setId = 'vanilla'): string {
+  return `${BASE}/config/export?setId=${encodeURIComponent(setId)}`;
 }
 
 /** Returns distinct non-empty group names from all saved tile definitions. */
@@ -76,4 +78,40 @@ export async function getColors(): Promise<string[]> {
   const r = await fetch(`${BASE}/colors`);
   if (!r.ok) return [];
   return r.json();
+}
+
+// ── Config sets ────────────────────────────────────────────────────────
+
+export async function getTileConfigSets(): Promise<TileConfigSetInfo[]> {
+  const r = await fetch(`${BASE}/config-sets`);
+  if (!r.ok) return [];
+  return r.json();
+}
+
+export async function createTileConfigSet(name: string, description = ''): Promise<TileConfigSetInfo> {
+  const r = await fetch(`${BASE}/config-sets`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, description }),
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+export async function updateTileConfigSet(
+  id: string,
+  changes: { name?: string; description?: string; enabled?: boolean },
+): Promise<TileConfigSetInfo> {
+  const r = await fetch(`${BASE}/config-sets/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(changes),
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+export async function deleteTileConfigSet(id: string): Promise<void> {
+  const r = await fetch(`${BASE}/config-sets/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  if (!r.ok) throw new Error(await r.text());
 }

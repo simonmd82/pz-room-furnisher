@@ -497,7 +497,17 @@
     "noChanges": "💾 No changes",
     "saveHintPre": "Saves to ",
     "saveHintPost": " – tile sheets remain unchanged.",
-    "alreadyConfigured": "already configured"
+    "alreadyConfigured": "already configured",
+    "configSets": {
+      "selectorLabel": "Editing set",
+      "addSet": "Add set",
+      "confirmAdd": "Create",
+      "cancel": "Cancel",
+      "newSetName": "Set name",
+      "newSetDescription": "Description (optional)",
+      "deleteSet": "Delete set",
+      "deleteConfirm": "Delete config set \"{{name}}\" and all its tile definitions? This cannot be undone."
+    }
   },
   "furnishPanel": {
     "title":              "Furnishing",
@@ -529,7 +539,11 @@
     "roomTypePlaceholder": "Room type: {{type}}",
     "unknown":            "unknown",
     "menuLabel":          "Room options",
-    "clearFurniture":     "Clear furniture"
+    "clearFurniture":     "Clear furniture",
+    "configSets": {
+      "title":       "Furniture config sources",
+      "description": "Only enabled sets are used when generating furniture. Manage sets in the Tile Browser."
+    }
   },
   "settingsEditor": {
     "pageTitle":    "⚙ Settings",

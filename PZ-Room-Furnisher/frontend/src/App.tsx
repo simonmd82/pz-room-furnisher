@@ -8,6 +8,7 @@ import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
 import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import FurnishPanel from './components/FurnishPanel/FurnishPanel';
+import { ActiveConfigSetProvider } from './context/ActiveConfigSetContext';
 import type { Building, Floor, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
@@ -187,6 +188,7 @@ function App() {
       : 40;
 
   return (
+    <ActiveConfigSetProvider>
     <div className="app">
       <header className="app-header">
         <div className="app-header-top">
@@ -354,6 +356,7 @@ function App() {
       </main>
       )}
     </div>
+    </ActiveConfigSetProvider>
   );
 }
 

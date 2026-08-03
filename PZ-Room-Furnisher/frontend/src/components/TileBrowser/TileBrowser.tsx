@@ -12,6 +12,8 @@ import {
 } from '../../types/tiles';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { DirPicker } from './DirPicker';
+import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
+import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import s from './TileBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -45,6 +47,9 @@ export function TileBrowser() {
 
   // ── config ────────────────────────────────────────────────────────────
   const [config, setConfig] = useState<TileConfigMap>({});
+
+  // ── config sets (vanilla / mod packs) ───────────────────────────────────
+  const { selectedSetId, reloadSets } = useActiveConfigSet();
 
   // ── group selector ─────────────────────────────────────────────────────
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
@@ -154,18 +159,23 @@ export function TileBrowser() {
     getTilesPath()
       .then(r => { setPathInput(r.path); setPathOk(r.isValid); setBackendOk(true); })
       .catch(() => setBackendOk(false));
-    getTileConfig()
-      .then(setConfig)
-      .catch(() => { /* ignore */ });
+    reloadSets();
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
-  }, []);
+  }, [reloadSets]);
+
+  // Reload the raw config of whichever set is being edited whenever the selection changes.
+  useEffect(() => {
+    getTileConfig(selectedSetId)
+      .then(setConfig)
+      .catch(() => { /* ignore */ });
+  }, [selectedSetId]);
 
   useEffect(() => {
     if (!pathOk) { setSheets([]); return; }
-    getSheets().then(r => setSheets(r.configured ? r.sheets : []));
-  }, [pathOk]);
+    getSheets(selectedSetId).then(r => setSheets(r.configured ? r.sheets : []));
+  }, [pathOk, selectedSetId]);
 
   // ── path ─────────────────────────────────────────────────────────────
   const applyPath = async (p: string) => {
@@ -307,7 +317,7 @@ export function TileBrowser() {
       const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
       const saved: TileDefinition[] = [];
       for (const def of toSave) {
-        saved.push(await saveTileDefinition(def));
+        saved.push(await saveTileDefinition(def, selectedSetId));
       }
       const next = { ...config };
       saved.forEach(def => { next[def.tileId] = def; });
@@ -321,7 +331,7 @@ export function TileBrowser() {
   const handleDelete = async () => {
     if (selDefs.length !== 1) return;
     const def = selDefs[0];
-    await deleteTileDefinition(def.tileId);
+    await deleteTileDefinition(def.tileId, selectedSetId);
     const next = { ...config };
     delete next[def.tileId];
     setConfig(next);
@@ -371,13 +381,16 @@ export function TileBrowser() {
                 : null}
             {pathErr && <span className={s.statusErr}>✗ {pathErr}</span>}
             {pathOk && (
-              <a className={s.exportLink} href={exportConfigUrl()} download="tile-definitions.json">
+              <a className={s.exportLink} href={exportConfigUrl(selectedSetId)} download={`${selectedSetId}-tile-definitions.json`}>
                 ⬇ {t('tileBrowser.export')}
               </a>
             )}
           </>
         )}
       </div>
+
+      {/* ── Config set bar ── */}
+      <ConfigSetSelector />
 
       {/* ── Sheet list ── */}
       <div className={s.sheetPanel}>

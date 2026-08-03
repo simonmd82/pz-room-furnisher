@@ -497,7 +497,17 @@
     "noChanges": "💾 Keine Änderungen",
     "saveHintPre": "Speichert in ",
     "saveHintPost": " – Tile-Sheets bleiben unverändert.",
-    "alreadyConfigured": "bereits konfiguriert"
+    "alreadyConfigured": "bereits konfiguriert",
+    "configSets": {
+      "selectorLabel": "Bearbeitetes Set",
+      "addSet": "Set hinzufügen",
+      "confirmAdd": "Erstellen",
+      "cancel": "Abbrechen",
+      "newSetName": "Set-Name",
+      "newSetDescription": "Beschreibung (optional)",
+      "deleteSet": "Set löschen",
+      "deleteConfirm": "Konfigurationsset \"{{name}}\" und alle zugehörigen Tile-Definitionen löschen? Dies kann nicht rückgängig gemacht werden."
+    }
   },
   "furnishPanel": {
     "title":              "Möblierung",
@@ -529,7 +539,11 @@
     "roomTypePlaceholder": "Raumtyp: {{type}}",
     "unknown":            "unbekannt",
     "menuLabel":          "Raumoptionen",
-    "clearFurniture":     "Möbel entfernen"
+    "clearFurniture":     "Möbel entfernen",
+    "configSets": {
+      "title":       "Möbel-Konfigurationsquellen",
+      "description": "Nur aktivierte Sets werden beim Generieren von Möbeln verwendet. Sets werden im Tile-Browser verwaltet."
+    }
   },
   "settingsEditor": {
     "pageTitle":    "⚙ Einstellungen",

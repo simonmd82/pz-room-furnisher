@@ -94,7 +94,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var placements     = new List<PlacedFurnitureItem>();
         var log            = new List<string>();
         var reservedZones  = new List<ReservedZonePlacement>();
-        var allTiles       = _tileSvc.GetAll();
+        var allTiles       = _tileSvc.GetAllEnabled();
         var roomTypes      = _roomTypeSvc.GetAll();
 
         // Möblierungsdichte: zufälliger Wert aus [DensityMin, DensityMax].
