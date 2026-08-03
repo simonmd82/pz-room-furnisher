@@ -1,7 +1,0 @@
-﻿<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Full Stack" type="CompoundRunConfigurationType">
-    <toRun name="Backend" type="DotNetProject" />
-    <toRun name="Frontend" type="js.build_tools.npm" />
-  </configuration>
-</component>
-
