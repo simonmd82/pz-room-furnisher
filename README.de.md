@@ -9,8 +9,8 @@ KI wurde verwendet dieses Applikation zu erstellen. Wenn dir das nicht gefällt,
 
 ## Inhaltsverzeichnis
 
-- [Voraussetzungen](#voraussetzungen)
-- [Starten](#starten)
+- [App starten](#app-starten)
+- [Aus dem Quellcode starten (Entwickler)](#aus-dem-quellcode-starten-entwickler)
 - [Bedienung: Gebäude & Einstellungen](#bedienung-gebäude--einstellungen)
   - [🏠 Gebäude-Tab](#-gebäude-tab)
   - [⚙ Einstellungen](#-einstellungen)
@@ -18,17 +18,34 @@ KI wurde verwendet dieses Applikation zu erstellen. Wenn dir das nicht gefällt,
 
 ---
 
-## Voraussetzungen
+## App starten
+
+Keine Installation von .NET, Node oder sonst etwas nötig — einfach herunterladen und starten.
+
+1. Auf der [Releases-Seite](https://github.com/simonmd82/pz-room-furnisher/releases) das Zip für dein System herunterladen:
+   - **Windows** – `PzRoomFurnisher-win-x64.zip`
+   - **Linux** – `PzRoomFurnisher-linux-x64.zip`
+2. Zip entpacken.
+3. **Windows** – Doppelklick auf `PzRoomFurnisher.exe`. Ein Konsolenfenster öffnet sich, der Browser öffnet automatisch die App.
+4. **Linux** – im entpackten Ordner im Terminal:
+   ```bash
+   chmod +x PzRoomFurnisher
+   ./PzRoomFurnisher
+   ```
+   Der Standardbrowser sollte automatisch öffnen; falls nicht, `http://localhost:5000` manuell öffnen.
+5. Zum Beenden das Konsolenfenster schließen (Windows) bzw. Ctrl+C im Terminal drücken (Linux).
+
+Einstellungen und Konfiguration werden neben der ausführbaren Datei im Ordner `Data/` gespeichert.
+
+---
+
+## Aus dem Quellcode starten (Entwickler)
 
 | Tool | Version |
 |------|---------|
 | .NET SDK | 10.0+ |
 | Node.js | 18+ |
 | npm | 9+ |
-
----
-
-## Starten
 
 ### Backend
 
