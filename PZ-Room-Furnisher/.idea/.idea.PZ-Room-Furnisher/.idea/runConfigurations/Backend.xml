@@ -1,0 +1,14 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Backend" type="DotNetProject" factoryName=".NET Project">
+    <option name="EXE_PATH" value="$PROJECT_DIR$/backend/backend.csproj" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend" />
+    <option name="PASS_PARENT_ENVS" value="1" />
+    <option name="USE_EXTERNAL_CONSOLE" value="0" />
+    <option name="PROJECT_PATH" value="$PROJECT_DIR$/backend/backend.csproj" />
+    <option name="TARGET_FRAMEWORK_ID" value="net10.0" />
+    <option name="LAUNCH_PROFILE" value="http" />
+    <method v="2" />
+  </configuration>
+</component>
+

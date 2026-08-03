@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "1WoVAS6RIYY=",
+  "success": true,
+  "projectFilePath": "Y:\\Project Zomboid\\VSCode\\pz-room-furnisher\\PZ-Room-Furnisher\\backend\\backend.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\simon\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.9\\microsoft.aspnetcore.openapi.10.0.9.nupkg.sha512",
+    "C:\\Users\\simon\\.nuget\\packages\\microsoft.openapi\\2.10.0\\microsoft.openapi.2.10.0.nupkg.sha512",
+    "C:\\Users\\simon\\.nuget\\packages\\scalar.aspnetcore\\2.16.10\\scalar.aspnetcore.2.16.10.nupkg.sha512",
+    "C:\\Users\\simon\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.9\\microsoft.netcore.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\simon\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.9\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.9.nupkg.sha512",
+    "C:\\Users\\simon\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.9\\microsoft.aspnetcore.app.runtime.win-x64.10.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}
