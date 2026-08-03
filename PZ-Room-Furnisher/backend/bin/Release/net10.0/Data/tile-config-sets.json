@@ -1,0 +1,9 @@
+[
+  {
+    "id": "vanilla",
+    "name": "Vanilla",
+    "description": "Built-in base game furniture",
+    "enabled": true,
+    "file": "tile-definitions.json"
+  }
+]
