@@ -1,21 +1,24 @@
+**Language:** English | [Deutsch](README.de.md)
+
 # PZ Room Furnisher
 
-Ein Tool zur Unterstützung von Project Zomboid Mod- und Mapentwicklern.
+A tool to support Project Zomboid mod and map developers.
+AI was used to create this app. If you don't like that, don't use it. 
 
 ---
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-- [Voraussetzungen](#voraussetzungen)
-- [Starten](#starten)
-- [Bedienung: Gebäude & Einstellungen](#bedienung-gebäude--einstellungen)
-  - [🏠 Gebäude-Tab](#-gebäude-tab)
-  - [⚙ Einstellungen](#-einstellungen)
-- [Räume & Möbel-Einstellungen](#räume--möbel-einstellungen)
+- [Requirements](#requirements)
+- [Getting Started](#getting-started)
+- [Usage: Buildings & Settings](#usage-buildings--settings)
+  - [🏠 Building Tab](#-building-tab)
+  - [⚙ Settings](#-settings)
+- [Rooms & Furniture Settings](#rooms--furniture-settings)
 
 ---
 
-## Voraussetzungen
+## Requirements
 
 | Tool | Version |
 |------|---------|
@@ -25,7 +28,7 @@ Ein Tool zur Unterstützung von Project Zomboid Mod- und Mapentwicklern.
 
 ---
 
-## Starten
+## Getting Started
 
 ### Backend
 
@@ -34,7 +37,7 @@ cd backend
 dotnet run
 ```
 
-Das Backend läuft standardmäßig auf `http://localhost:5000`.
+The backend runs by default on `http://localhost:5000`.
 
 ### Frontend
 
@@ -44,137 +47,168 @@ npm install
 npm run dev
 ```
 
-Das Frontend läuft standardmäßig auf `http://localhost:5173`.
+The frontend runs by default on `http://localhost:5173`.
 
-Alternativ können die mitgelieferten Skripte genutzt werden:
+Alternatively, use the included scripts:
 
 ```powershell
-.\run-frontend.ps1   # oder run-frontend.cmd
+.\run-frontend.ps1   # or run-frontend.cmd
 ```
 
 ---
 
-## Bedienung: Gebäude & Einstellungen
+## Usage: Buildings & Settings
 
-### 🏠 Gebäude-Tab
+### 🏠 Building Tab
 
-Der Einstiegspunkt der Anwendung. Hier wird ein **Project Zomboid `.tbx`-Gebäudefile** geladen und visualisiert.
+The entry point of the application. Here you load and visualize a **Project Zomboid `.tbx` building file**.
+Currently it can only furnish residential buildings and only uses Vanilla furniture!
 
-**Was es kann:**
+**What it can do:**
 
-- **`.tbx`-Upload** – Parst das Gebäudeformat des PZ Building Editors (bis 10 MB).
-- **Gebäude-Info** – Zeigt Abmessungen (Breite × Höhe), Stockwerkanzahl und Gesamt-/Stockwerk-Raumanzahl.
-- **Stockwerk-Navigation** – Wechsel zwischen allen vorhandenen Stockwerken.
-- **Grid-Renderer** – Visualisiert das Raumgitter als farbiges Kachel-Grid mit SVG-Overlay.
-  - Türen (orange) und Fenster (cyan) werden als Balken auf den Wänden dargestellt.
-  - Treppen werden gestreift dargestellt, der Einstiegspunkt mit einem ✕ markiert.
-  - Tooltip je Zelle mit Raumname, Tür-/Fensterinfo und Koordinaten.
-- **Raumauswahl** – Einzelklick oder Ctrl+Klick (Multi-Select) um Räume hervorzuheben / auszublenden.
-- **A\*-Wegfindung** – Berechnet beim Upload automatisch für jeden Raum den kürzesten Weg zwischen allen Tür-Waypoints (mit kleinem Zufalls-Jitter für optische Variation).
-  - Treppen-Zellen werden beim Routing ausgenommen; nur der Einstiegspunkt ist passierbar.
-  - Kostengefälle: offene Fläche > wandnahe Zellen > Ecken.
-- **Wege anzeigen** – Toggle zum Ein-/Ausblenden der berechneten Wege als farbige Punkte im Grid.
-- **Weg neu generieren** – Per Klick auf 🔄 im Raumlegende-Eintrag wird der Weg eines einzelnen Raums mit neuem Zufalls-Seed neu berechnet (ohne Reload).
+- **`.tbx` upload** – Parses the PZ Building Editor's building format (up to 10 MB).
+- **Building info** – Shows dimensions (width × height), floor count, and total/per-floor room count.
+- **Floor navigation** – Switch between all existing floors.
+- **Grid renderer** – Visualizes the room grid as a colored tile grid with an SVG overlay.
+  - Doors (orange) and windows (cyan) are drawn as bars on the walls.
+  - Stairs are shown striped, the entry point marked with an ✕.
+  - Tooltip per cell with room name, door/window info, and coordinates.
+- **Room selection** – Single click or Ctrl+click (multi-select) to highlight / hide rooms.
+- **A\* pathfinding** – Automatically calculates the shortest path between all door waypoints for every room on upload (with a small random jitter for visual variation).
+  - Stair cells are excluded from routing; only the entry point is passable.
+  - Cost gradient: open floor > cells near walls > corners.
+- **Show paths** – Toggle to show/hide the calculated paths as colored dots in the grid.
+- **Regenerate path** – Clicking 🔄 in a room legend entry recalculates that single room's path with a new random seed (no reload needed).
+
+**Preparing the TBX file**
+
+Create a residential building in BuildEd, with doors, windows, open walls, and save it as a `.tbx` file.
+Leave the building unfurnished.
+
+**How to use it:**
+
+Drag the TBX file into the drop zone in the Building tab. The building becomes visible and can be edited.
+Familiarize yourself with the legend above the building UI.
+In the left column you can either select all rooms of a type, or select individual rooms to be furnished.
+Use the sliders below the room list to set how densely furnished each selection should be. Each room then gets its own percentage density, based on your selection.
+If every room should be furnished equally, check the checkbox above the button.
+To furnish all rooms at maximum density, set both sliders to 100%.
+Once you're happy with your selection, click the button and wait for the algorithm to finish. Depending on the building's size, this can take 1-2 minutes.
+For small buildings this only takes a few seconds.
+Afterwards you can review the result, and if you're happy with it, export it with the "TBX Export" button as a new TBX file, then reopen it in TileEd.
+All furniture is placed in "Tile mode".
+
+**Currently supported room types:**
+- `bathroom`
+- `bedroom`
+- `closet`
+- `diningroom`
+- `kitchen`
+- `laundry`
+- `livingroom`
+- `office`
+- `garagestorage`
+
 
 ---
 
-### ⚙ Einstellungen
+### ⚙ Settings
 
-Globale Listen, die von anderen Tabs genutzt werden.
+Global lists used by the other tabs.
 
-**Was es kann:**
+**What it can do:**
 
-- **Bekannte Raumtyp-Namen** – Zentrales Register aller Raumtyp-Bezeichner (wird im Tile Browser und Raumtypen-Editor verwendet).
-- **Bekannte Kategorien** – Zentrales Register aller Tile-Kategorien (wird im Raumtypen-Editor als Kategorie-Auswahl angeboten).
-- Einträge können hinzugefügt und entfernt werden (mit Bestätigungsdialog).
+- **Known room type names** – Central registry of all room type identifiers (used in the Tile Browser and Room Type Editor).
+- **Known categories** – Central registry of all tile categories (offered as a category selection in the Room Type Editor).
+- Entries can be added and removed (with a confirmation dialog).
 
 ---
 
-## Räume & Möbel-Einstellungen
+## Rooms & Furniture Settings
 
-Diese Tabs sind für die Konfiguration des automatischen Möblierungs-Generators gedacht und normalerweise hinter einem Erweitert-Schalter verborgen.
+These tabs are for configuring the automatic furnishing generator and are normally hidden behind an advanced-mode toggle.
 
 ### 🖼 Tile Browser
 
-Werkzeug zum Erfassen und Konfigurieren von **Sprite-Tiles** aus den PZ-Texturordnern.
+Tool for capturing and configuring **sprite tiles** from the PZ texture folders.
 
-**Was es kann:**
+**What it can do:**
 
-- **Pfadkonfiguration** – Pfad zum `media/textures`-Ordner des Spiels setzen. Wird persistent gespeichert.
-- **Verzeichnis-Browser** – Grafischer Datei-Browser (navigiert über das Backend durch das Dateisystem – Laufwerke, Ordner).
-- **Sheet-Liste** – Listet alle `.png`-Sprite-Sheets im konfigurierten Ordner auf, mit Suchfilter.
-  - Zeigt Badge `definiert / gesamt` je Sheet.
-- **Sheet-Viewer** – Rendert das vollständige Sprite-Sheet mit Zoom (0,5× / 1× / 1,5× / 2×).
-  - Bereits definierte Sprites werden hervorgehoben.
-  - Ausgewähltes Sprite wird markiert.
-  - Bei aktivem Layout-Zuweisungsmodus zeigt ein Hinweisbalken die aktive Zelle.
-- **Tile-Konfiguration** – Klick auf ein Sprite öffnet den Konfigurationsbereich:
-  - **Label** – Anzeigename
-  - **Gruppe** – Kategorie (vordef. + eigene; per Chip auswählen oder neu eingeben)
-  - **Orientierung** – N / S / E / W oder beliebig
-  - **Höhe** – low / high (Mehrfachauswahl)
-  - **Layer** – Furniture, Wallfurniture, FloorOverlay, … (10 Layer)
+- **Path configuration** – Set the path to the game's `media/textures` folder. Saved persistently.
+- **Directory browser** – Graphical file browser (navigates the filesystem through the backend – drives, folders).
+- **Sheet list** – Lists all `.png` sprite sheets in the configured folder, with a search filter.
+  - Shows a `defined / total` badge per sheet.
+- **Sheet viewer** – Renders the full sprite sheet with zoom (0.5× / 1× / 1.5× / 2×).
+  - Already-defined sprites are highlighted.
+  - The selected sprite is marked.
+  - When layout-assignment mode is active, a hint bar shows the active cell.
+- **Tile configuration** – Clicking a sprite opens the configuration panel:
+  - **Label** – Display name
+  - **Group** – Category (predefined + custom; pick via chip or type a new one)
+  - **Orientation** – N / S / E / W or any
+  - **Height** – low / high (multi-select)
+  - **Layer** – Furniture, Wallfurniture, FloorOverlay, … (10 layers)
   - **Flags** – `blocksPathing`, `wallMounted`, `canStack`
-  - **Notizen** – Freitext
-- **Multi-Tile Layout-Editor** – Definiert, aus welchen Sprites ein mehrzelliges Möbelstück besteht.
-  - Beliebige Raster-Größe (Spalten + Zeilen dynamisch anpassbar).
-  - Zelle anklicken → aktivieren → Sprite im Sheet anklicken → automatisches Weiterspringen zur nächsten Zelle.
-  - Zellen können einzeln geleert werden.
-  - Mini-Vorschau je Zelle direkt aus dem Sprite-Sheet.
-- **Zufallsgenerator-Metadaten:**
-  - **Farben** – Chip-Auswahl (white, black, brown, …)
-  - **Raumtypen** – welche Räume dieses Tile verwenden dürfen
-  - **Varianten-ID** – Gruppiert farbliche/stilistische Varianten desselben Möbeltyps
-  - **Style-Tags** – Modern, Rustic, … (gespeichert, noch nicht im Generator aktiv)
-  - **Raumtypen-Filter** – Tiles mit mindestens einem Raumtyp-Eintrag werden nur in passenden Räumen verwendet. Tiles ohne Raumtyp-Eintrag gelten als neutral und sind überall erlaubt.
-- **Speichern / Löschen** – Jede Definition wird als JSON auf dem Backend persistiert.
-- **Export** – Download der gesamten `tile-definitions.json` per Link.
+  - **Notes** – Free text
+- **Multi-tile layout editor** – Defines which sprites make up a multi-cell piece of furniture.
+  - Arbitrary grid size (columns + rows adjustable).
+  - Click a cell → activate it → click a sprite in the sheet → automatically jumps to the next cell.
+  - Cells can be cleared individually.
+  - Mini preview per cell taken directly from the sprite sheet.
+- **Random-generator metadata:**
+  - **Colors** – Chip selection (white, black, brown, …)
+  - **Room types** – which rooms this tile is allowed to be used in
+  - **Variant ID** – groups color/style variants of the same furniture type
+  - **Style tags** – Modern, Rustic, … (saved, not yet active in the generator)
+  - **Room type filter** – Tiles with at least one room type entry are only used in matching rooms. Tiles without a room type entry are treated as neutral and allowed everywhere.
+- **Save / Delete** – Every definition is persisted as JSON on the backend.
+- **Export** – Download the entire `tile-definitions.json` via a link.
 
 ---
 
 ### 📋 Furniture Browser
 
-Lesezugriff auf **BuildingFurniture-Dateien** (`.bf`-Format von Project Zomboid) zur Massenimport-Unterstützung.
+Read access to **BuildingFurniture files** (Project Zomboid's `.bf` format) for bulk-import support.
 
-**Was es kann:**
+**What it can do:**
 
-- **Pfad-Konfiguration** – Pfad zu einer `.bf`-Datei setzen (z. B. `BuildingFurniture_01.bf`). Wird persistent gespeichert.
-- **Verzeichnis-Browser** – Gleicher Datei-Browser wie im Tile Browser.
-- **Gruppen-Liste** – Listet alle `group`-Blöcke der Datei mit Bezeichnung, Piece-Anzahl und Entry-Anzahl auf.
-  - Suchfilter.
-- **Detail-Ansicht** – Zeigt alle `furniture`-Einträge (Pieces) einer Gruppe mit ihren Orientierungen und Tile-IDs.
-  - Mini-Sprite-Vorschauen aus den gecachten Sprite-Sheets.
-- **Multi-Select** – Mehrere Entries gleichzeitig auswählen (Checkboxen, auch je Piece).
-- **Import als Tile-Definition** – Ausgewählte Entries werden als TileDefinition-Entwürfe aus der `.bf`-Struktur abgeleitet und können direkt konfiguriert und gespeichert werden.
-  - Bereits importierte Tiles werden mit einem Indikator markiert.
-  - **Konfigurationsfelder wie im Tile Browser** (Gruppe, Farben, Raumtypen, Varianten-ID, Style-Tags, Flags, Notizen).
-    - Tiles mit gesetzten Raumtypen werden nur in passenden Räumen verwendet; leere Raumtypen = überall erlaubt.
+- **Path configuration** – Set the path to a `.bf` file (e.g. `BuildingFurniture_01.bf`). Saved persistently.
+- **Directory browser** – Same file browser as in the Tile Browser.
+- **Group list** – Lists all `group` blocks in the file with label, piece count, and entry count.
+  - Search filter.
+- **Detail view** – Shows all `furniture` entries (pieces) of a group with their orientations and tile IDs.
+  - Mini sprite previews from the cached sprite sheets.
+- **Multi-select** – Select multiple entries at once (checkboxes, also per piece).
+- **Import as tile definition** – Selected entries are derived from the `.bf` structure as TileDefinition drafts and can be configured and saved directly.
+  - Already-imported tiles are marked with an indicator.
+  - **Same configuration fields as the Tile Browser** (group, colors, room types, variant ID, style tags, flags, notes).
+    - Tiles with room types set are only used in matching rooms; empty room types = allowed everywhere.
 
 ---
 
-### 🏠 Raumtypen-Editor
+### 🏠 Room Type Editor
 
-Definiert, welche Möbel-Slots ein Raum eines bestimmten Typs haben soll – als Grundlage für einen künftigen automatischen Raumdekorierer.
+Defines which furniture slots a room of a given type should have – the basis for a future automatic room decorator.
 
-**Was es kann:**
+**What it can do:**
 
-- **Raumtyp-Verwaltung** – Liste aller bekannten Raumtypen. Neue Typen anlegen oder bestehende entfernen (inkl. Löschung gespeicherter Konfiguration).
-- **Slot-System** – Jeder Raumtyp besitzt eine beliebige Zahl an Slots. Ein Slot ist eine „Anfrage" an den Generator:
-  - **Fußabdruck (B × H)** – Wie viele Zellen das Möbelstück belegt (1×1 bis 5×5).
-  - **Drehbar** – Bei nicht-quadratischen Footprints kann B und H getauscht werden. Mini-Visualisierung beider Orientierungen.
-  - **Pflicht / Optional** – Pflicht-Slots werden immer befüllt.
-  - **Priorität** – Optionale Slots werden in Prioritätsreihenfolge gezogen (0 = zuerst).
-  - **Anzahl je Raumgröße** – Min/Max-Tabelle für XS / S / M / L / XL (Max -1 = unbegrenzt).
-  - **Erlaubte Kategorien** – Welche Tile-Gruppen für diesen Slot infrage kommen, mit Gewichtung (1–10).
-  - **Platzierungsregeln** – An der Wand / An einer Tür / An einem Fenster / Raummitte / Nur in Ecken / Auf Pfadzellen erlaubt.
-  - **Wandausrichtung** (nur bei „An der Wand"): Automatisch / ⊥ Senkrecht / ∥ Parallel.
-  - **Fallback-Regeln** – Geordnete Liste alternativer Platzierungsregeln. Findet der Generator mit den primären Regeln keine freie Position, versucht er die Fallbacks der Reihe nach (nur für Pflicht-Slots relevant).
-  - **Layer-Filter** – Schränkt auf einen bestimmten Furniture-Layer ein.
-  - **Erforderliche Eigenschaften** – z. B. `blocksPathing`, `wallMounted`, `canStack`.
-  - **Varianten-Gruppe (one-of)** – Mehrere Slots in einer Gruppe → Generator wählt genau eine Variante (gewichtet).
-  - **Anker-Slot** – Verknüpft diesen Slot relativ zu einem anderen (z. B. Nachttisch „HeadLeft" neben dem Bett).
-- **Raumtypen-Filter im Generator** – Tiles werden beim Möblieren automatisch auf den aktuellen Raumtyp gefiltert. Nur Tiles, deren `RoomTypes`-Liste den Raumtyp enthält oder die keine Einschränkung haben (leere Liste), werden ausgewählt.
-- **Slot duplizieren** – Schnelles Kopieren eines bestehenden Slots.
-- **Info-Panel** – Einblendbare Erklärung aller Slot-Konzepte.
-- **Referenz-Footer** – Zeigt häufige Footprint-Raster und die Raumgrößen-Skala als Nachschlage-Leiste.
-- **Speichern / Löschen** – Konfigurationen werden als JSON auf dem Backend persistiert.
+- **Room type management** – List of all known room types. Create new types or remove existing ones (including deleting their saved configuration).
+- **Slot system** – Each room type has any number of slots. A slot is a "request" to the generator:
+  - **Footprint (W × H)** – How many cells the piece of furniture occupies (1×1 to 5×5).
+  - **Rotatable** – For non-square footprints, W and H can be swapped. Mini visualization of both orientations.
+  - **Required / Optional** – Required slots are always filled.
+  - **Priority** – Optional slots are drawn in priority order (0 = first).
+  - **Count per room size** – Min/max table for XS / S / M / L / XL (max -1 = unlimited).
+  - **Allowed categories** – Which tile groups qualify for this slot, with weighting (1–10).
+  - **Placement rules** – Against the wall / At a door / At a window / Room center / Corners only / Allowed on path cells.
+  - **Wall alignment** (only for "against the wall"): Automatic / ⊥ Perpendicular / ∥ Parallel.
+  - **Fallback rules** – Ordered list of alternative placement rules. If the generator can't find a free position with the primary rules, it tries the fallbacks in order (only relevant for required slots).
+  - **Layer filter** – Restricts to a specific furniture layer.
+  - **Required properties** – e.g. `blocksPathing`, `wallMounted`, `canStack`.
+  - **Variant group (one-of)** – Multiple slots in a group → the generator picks exactly one variant (weighted).
+  - **Anchor slot** – Links this slot relative to another (e.g. a nightstand "HeadLeft" next to the bed).
+- **Room type filter in the generator** – Tiles are automatically filtered by the current room type when furnishing. Only tiles whose `RoomTypes` list contains the room type, or that have no restriction (empty list), are selected.
+- **Duplicate slot** – Quickly copy an existing slot.
+- **Info panel** – Expandable explanation of all slot concepts.
+- **Reference footer** – Shows common footprint grids and the room size scale as a quick-reference bar.
+- **Save / Delete** – Configurations are persisted as JSON on the backend.
