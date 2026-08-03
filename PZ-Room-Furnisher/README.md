@@ -1,42 +1,17 @@
-﻿# PZ Room Furnisher
+# PZ Room Furnisher
 
-Ein Tool zur Unterstützung von Project Zomboid Mod- und Mapentwicklern.  
-Es verbindet einen **.NET 10 ASP.NET Core Backend** mit einem **React 19 + TypeScript Frontend** (Vite).
+Ein Tool zur Unterstützung von Project Zomboid Mod- und Mapentwicklern.
 
 ---
 
 ## Inhaltsverzeichnis
 
-- [Architektur](#architektur)
 - [Voraussetzungen](#voraussetzungen)
 - [Starten](#starten)
-- [Feature-Übersicht](#feature-übersicht)
+- [Bedienung: Gebäude & Einstellungen](#bedienung-gebäude--einstellungen)
   - [🏠 Gebäude-Tab](#-gebäude-tab)
-  - [🖼 Tile Browser](#-tile-browser)
-  - [📋 Furniture Browser](#-furniture-browser)
-  - [🏠 Raumtypen-Editor](#-raumtypen-editor)
   - [⚙ Einstellungen](#-einstellungen)
-- [API-Endpunkte](#api-endpunkte)
-- [Tech Stack](#tech-stack)
-
----
-
-## Architektur
-
-```
-PZ-Room-Furnisher/
-├── backend/          # ASP.NET Core Web API (.NET 10)
-│   ├── Controllers/  # REST-Endpunkte
-│   ├── Services/     # Geschäftslogik (Parser, Pathfinder, …)
-│   ├── Models/       # Datenmodelle
-│   └── Data/         # Persistente JSON-Dateien (settings, tile-definitions)
-└── frontend/         # React 19 + TypeScript (Vite)
-    └── src/
-        ├── api/          # Fetch-Wrapper für alle Backend-Endpunkte
-        ├── components/   # UI-Komponenten je Tab
-        ├── types/        # Gemeinsame TypeScript-Typen
-        └── i18n/         # Übersetzungen (DE / EN)
-```
+- [Räume & Möbel-Einstellungen](#räume--möbel-einstellungen)
 
 ---
 
@@ -59,8 +34,7 @@ cd backend
 dotnet run
 ```
 
-Das Backend läuft standardmäßig auf `http://localhost:5000`.  
-Die OpenAPI-Dokumentation ist über Scalar unter `/scalar/v1` erreichbar.
+Das Backend läuft standardmäßig auf `http://localhost:5000`.
 
 ### Frontend
 
@@ -80,7 +54,7 @@ Alternativ können die mitgelieferten Skripte genutzt werden:
 
 ---
 
-## Feature-Übersicht
+## Bedienung: Gebäude & Einstellungen
 
 ### 🏠 Gebäude-Tab
 
@@ -103,6 +77,22 @@ Der Einstiegspunkt der Anwendung. Hier wird ein **Project Zomboid `.tbx`-Gebäud
 - **Weg neu generieren** – Per Klick auf 🔄 im Raumlegende-Eintrag wird der Weg eines einzelnen Raums mit neuem Zufalls-Seed neu berechnet (ohne Reload).
 
 ---
+
+### ⚙ Einstellungen
+
+Globale Listen, die von anderen Tabs genutzt werden.
+
+**Was es kann:**
+
+- **Bekannte Raumtyp-Namen** – Zentrales Register aller Raumtyp-Bezeichner (wird im Tile Browser und Raumtypen-Editor verwendet).
+- **Bekannte Kategorien** – Zentrales Register aller Tile-Kategorien (wird im Raumtypen-Editor als Kategorie-Auswahl angeboten).
+- Einträge können hinzugefügt und entfernt werden (mit Bestätigungsdialog).
+
+---
+
+## Räume & Möbel-Einstellungen
+
+Diese Tabs sind für die Konfiguration des automatischen Möblierungs-Generators gedacht und normalerweise hinter einem Erweitert-Schalter verborgen.
 
 ### 🖼 Tile Browser
 
@@ -188,63 +178,3 @@ Definiert, welche Möbel-Slots ein Raum eines bestimmten Typs haben soll – als
 - **Info-Panel** – Einblendbare Erklärung aller Slot-Konzepte.
 - **Referenz-Footer** – Zeigt häufige Footprint-Raster und die Raumgrößen-Skala als Nachschlage-Leiste.
 - **Speichern / Löschen** – Konfigurationen werden als JSON auf dem Backend persistiert.
-
----
-
-### ⚙ Einstellungen
-
-Globale Listen, die von anderen Tabs genutzt werden.
-
-**Was es kann:**
-
-- **Bekannte Raumtyp-Namen** – Zentrales Register aller Raumtyp-Bezeichner (wird im Tile Browser und Raumtypen-Editor verwendet).
-- **Bekannte Kategorien** – Zentrales Register aller Tile-Kategorien (wird im Raumtypen-Editor als Kategorie-Auswahl angeboten).
-- Einträge können hinzugefügt und entfernt werden (mit Bestätigungsdialog).
-
----
-
-## API-Endpunkte
-
-| Methode | Pfad | Beschreibung |
-|---------|------|-------------|
-| `POST` | `/api/building/upload` | `.tbx`-Datei hochladen und parsen |
-| `POST` | `/api/building/recompute-paths` | Wege für alle Räume eines Stockwerks neu berechnen |
-| `POST` | `/api/building/recompute-room-path` | Weg für einen einzelnen Raum neu berechnen |
-| `GET` | `/api/tiles/path` | Konfigurierten Textur-Pfad lesen |
-| `POST` | `/api/tiles/path` | Textur-Pfad setzen |
-| `GET` | `/api/tiles/browse` | Verzeichnis-Browser (Laufwerke / Ordner) |
-| `GET` | `/api/tiles/sheets` | Alle Sprite-Sheets auflisten |
-| `GET` | `/api/tiles/sheet/{name}/image` | Sprite-Sheet als PNG ausliefern |
-| `GET` | `/api/tiles/config` | Alle Tile-Definitionen lesen |
-| `PUT` | `/api/tiles/config/{tileId}` | Tile-Definition speichern |
-| `DELETE` | `/api/tiles/config/{tileId}` | Tile-Definition löschen |
-| `GET` | `/api/tiles/config/export` | Gesamte Config als JSON-Download |
-| `POST` | `/api/tiles/config/import` | Config-JSON importieren |
-| `GET` | `/api/tiles/groups` | Alle distinct Gruppen auflisten |
-| `GET` | `/api/bfurniture/path` | BF-Dateipfad lesen |
-| `POST` | `/api/bfurniture/path` | BF-Dateipfad setzen |
-| `GET` | `/api/bfurniture/groups` | BF-Gruppen-Übersicht |
-| `GET` | `/api/bfurniture/groups/{index}` | BF-Gruppen-Detail |
-| `GET` | `/api/roomtypes` | Alle Raumtyp-Konfigurationen |
-| `PUT` | `/api/roomtypes/{roomType}` | Raumtyp-Konfiguration speichern |
-| `DELETE` | `/api/roomtypes/{roomType}` | Raumtyp-Konfiguration löschen |
-| `GET` | `/api/settings/room-type-names` | Bekannte Raumtyp-Namen |
-| `PUT` | `/api/settings/room-type-names` | Raumtyp-Namen setzen |
-| `GET` | `/api/settings/categories` | Bekannte Kategorien |
-| `PUT` | `/api/settings/categories` | Kategorien setzen |
-
-OpenAPI-Dokumentation (Scalar): `http://localhost:5000/scalar/v1`
-
----
-
-## Tech Stack
-
-| Schicht | Technologie |
-|---------|------------|
-| Backend | .NET 10, ASP.NET Core Web API |
-| OpenAPI | Scalar + Microsoft.AspNetCore.OpenApi |
-| Frontend | React 19, TypeScript, Vite 6 |
-| i18n | react-i18next (Deutsch / Englisch) |
-| Pathfinding | A\* mit Manhattan-Heuristik + Zufalls-Jitter |
-| Format-Parser | `.tbx` (PZ Building Editor), `.bf` (PZ BuildingFurniture) |
-

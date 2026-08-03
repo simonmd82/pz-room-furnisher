@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        rid: [win-x64, linux-x64]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy frontend build into backend/wwwroot
+        run: cp -r frontend/dist backend/wwwroot
+
+      - name: Publish backend (${{ matrix.rid }})
+        run: >
+          dotnet publish backend/backend.csproj
+          -c Release
+          -r ${{ matrix.rid }}
+          --self-contained true
+          -p:PublishSingleFile=false
+          -o dist/${{ matrix.rid }}
+
+      - name: Zip package
+        working-directory: dist/${{ matrix.rid }}
+        run: zip -r ../PzRoomFurnisher-${{ matrix.rid }}.zip .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PzRoomFurnisher-${{ matrix.rid }}
+          path: dist/PzRoomFurnisher-${{ matrix.rid }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*.zip

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics;
+using System.Text.Json.Serialization;
 using backend.Services;
 using Scalar.AspNetCore;
 
@@ -39,9 +40,36 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseCors();
+}
+else
+{
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
+
+    var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+    lifetime.ApplicationStarted.Register(() =>
+    {
+        var url = app.Urls.FirstOrDefault() ?? "http://localhost:5000";
+        try
+        {
+            if (OperatingSystem.IsWindows())
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+            else if (OperatingSystem.IsLinux())
+                Process.Start("xdg-open", url);
+        }
+        catch
+        {
+            // Best-effort only — user can still open the URL manually.
+        }
+    });
 }
 
-app.UseCors();
 app.MapControllers();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.MapFallbackToFile("index.html");
+}
 
 app.Run();
