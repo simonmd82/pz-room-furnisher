@@ -10,6 +10,9 @@ import {
   saveRoomTypesSnapshot, restoreRoomTypesSnapshot,
   type RoomTypesStatus,
 } from '../../api/roomTypesApi';
+import { getTilesPath, setTilesPath } from '../../api/tilesApi';
+import { getBfPath, setBfPath } from '../../api/bfApi';
+import { DirPicker } from '../TileBrowser/DirPicker';
 import s from './SettingsEditor.module.css';
 
 // ── Wiederverwendbare editierbare Liste ──────────────────────────────────────
@@ -77,6 +80,125 @@ function EditableList({
       </div>
 
       <div className={s.sectionFooter}>{t('settingsEditor.itemCount', { count: items.length })}</div>
+    </div>
+  );
+}
+
+// ── File Paths Section (machine-local, not shipped) ──────────────────────────
+
+function FilePathRow({
+  label, path, ok, err, placeholder, onPathChange, onSet, onBrowse,
+}: {
+  label:        string;
+  path:         string;
+  ok:           boolean;
+  err:          string;
+  placeholder:  string;
+  onPathChange: (v: string) => void;
+  onSet:        () => void;
+  onBrowse:     () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div className={s.configRow}>
+      <span className={s.configRowLabel}>{label}</span>
+      <div className={s.pathRowActions}>
+        <input
+          className={s.pathInput}
+          value={path}
+          onChange={e => onPathChange(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && onSet()}
+          placeholder={placeholder}
+        />
+        <button className={s.configBtn} onClick={onBrowse}>{t('settingsEditor.filePaths.browse')}</button>
+        <button className={s.configBtn} onClick={onSet}>{t('settingsEditor.filePaths.setPath')}</button>
+        {ok
+          ? <span className={s.configFeedbackOk}>✓ {t('settingsEditor.filePaths.pathOk')}</span>
+          : <span className={s.configFeedbackErr}>✗ {err || t('settingsEditor.filePaths.pathNotFound')}</span>}
+      </div>
+    </div>
+  );
+}
+
+function FilePathsSection() {
+  const { t } = useTranslation();
+
+  const [tilesPath, setTilesPathInput] = useState('');
+  const [tilesOk,   setTilesOk]        = useState(false);
+  const [tilesErr,  setTilesErr]       = useState('');
+  const [tilesPicking, setTilesPicking] = useState(false);
+
+  const [bfPath, setBfPathInput] = useState('');
+  const [bfOk,   setBfOk]        = useState(false);
+  const [bfErr,  setBfErr]       = useState('');
+  const [bfPicking, setBfPicking] = useState(false);
+
+  useEffect(() => {
+    getTilesPath().then(r => { setTilesPathInput(r.path); setTilesOk(r.isValid); }).catch(() => {});
+    getBfPath().then(r => { setBfPathInput(r.path); setBfOk(r.isValid); }).catch(() => {});
+  }, []);
+
+  const applyTilesPath = async (p: string) => {
+    setTilesErr('');
+    try {
+      const r = await setTilesPath(p);
+      setTilesPathInput(r.path);
+      setTilesOk(r.isValid);
+    } catch (e) {
+      setTilesOk(false);
+      setTilesErr(e instanceof Error ? e.message : t('settingsEditor.filePaths.setPathError'));
+    }
+  };
+
+  const applyBfPath = async (p: string) => {
+    setBfErr('');
+    try {
+      const r = await setBfPath(p);
+      setBfPathInput(r.path);
+      setBfOk(r.isValid);
+    } catch (e) {
+      setBfOk(false);
+      setBfErr(e instanceof Error ? e.message : t('settingsEditor.filePaths.setPathError'));
+    }
+  };
+
+  return (
+    <div className={`${s.section} ${s.fullWidth}`}>
+      <div className={s.sectionHeader}>
+        <span className={s.sectionTitle}>{t('settingsEditor.filePaths.title')}</span>
+        <span className={s.sectionDesc}>{t('settingsEditor.filePaths.description')}</span>
+      </div>
+      <div className={s.configTable}>
+        <FilePathRow
+          label={t('settingsEditor.filePaths.tilesFolder')}
+          path={tilesPath} ok={tilesOk} err={tilesErr}
+          placeholder={t('settingsEditor.filePaths.tilesFolderPlaceholder')}
+          onPathChange={setTilesPathInput}
+          onSet={() => applyTilesPath(tilesPath)}
+          onBrowse={() => setTilesPicking(true)}
+        />
+        <FilePathRow
+          label={t('settingsEditor.filePaths.bfFile')}
+          path={bfPath} ok={bfOk} err={bfErr}
+          placeholder={t('settingsEditor.filePaths.bfFilePlaceholder')}
+          onPathChange={setBfPathInput}
+          onSet={() => applyBfPath(bfPath)}
+          onBrowse={() => setBfPicking(true)}
+        />
+      </div>
+
+      {tilesPicking && (
+        <DirPicker
+          onSelect={p => { setTilesPicking(false); applyTilesPath(p); }}
+          onClose={() => setTilesPicking(false)}
+        />
+      )}
+      {bfPicking && (
+        <DirPicker
+          onSelect={p => { setBfPicking(false); applyBfPath(p); }}
+          onClose={() => setBfPicking(false)}
+        />
+      )}
     </div>
   );
 }
@@ -196,6 +318,8 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
       </div>
 
       <div className={s.columns}>
+        <FilePathsSection />
+
         {furnishingConfigEnabled && (
           <>
             <EditableList

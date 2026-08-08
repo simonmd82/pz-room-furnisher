@@ -120,6 +120,31 @@ export interface Floor {
   pathsByRoom: Record<number, [number, number][]>;
 }
 
+/** Classification values for a wall-mounted "furniture" placement. */
+export type WallFurnitureClassification = 'WindowHigh' | 'WindowHighLow' | 'Door' | 'Ignore';
+
+/** One sub-tile of a WallFurnitureCandidate, independently classifiable. */
+export interface WallFurnitureTileCandidate {
+  name: string;
+  /** Current classification from the persisted global store, or null if never classified. */
+  classification: WallFurnitureClassification | null;
+}
+
+/**
+ * A distinct wall-mounted door/window/arch piece placed via the generic
+ * type="furniture" mechanism instead of a normal type="door"/"window" object.
+ * Deduplicated per building by `signature` — the same multi-tile entry used
+ * many times only needs classifying once. Multi-tile entries (e.g. a 2-wide
+ * arch, or a door tile sitting right next to a window tile) are classified
+ * per individual tile, not per whole entry — see `tiles`.
+ */
+export interface WallFurnitureCandidate {
+  signature: string;
+  /** How many times this entry was placed in the building. */
+  count: number;
+  tiles: WallFurnitureTileCandidate[];
+}
+
 export interface Building {
   width: number;
   height: number;
@@ -127,6 +152,8 @@ export interface Building {
   floors: Floor[];
   /** TBX metadata for lossless roundtrip export. Populated by the parser. */
   tbx: TbxMetadata;
+  /** Distinct wall-mounted door/window/arch pieces needing/having classification. */
+  wallFurnitureCandidates: WallFurnitureCandidate[];
 }
 
 // ── Furnishing ────────────────────────────────────────────────────────────────

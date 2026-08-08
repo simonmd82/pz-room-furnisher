@@ -14,4 +14,10 @@ public class Building
     /// zu überladen.
     /// </summary>
     public global::backend.Models.TbxMetadata Tbx { get; set; } = new();
+    /// <summary>
+    /// Distinct wall-mounted door/window/arch pieces placed via the generic
+    /// &lt;object type="furniture"&gt; mechanism (see TbxParserService), for the
+    /// frontend's classification review panel.
+    /// </summary>
+    public List<WallFurnitureCandidate> WallFurnitureCandidates { get; set; } = [];
 }

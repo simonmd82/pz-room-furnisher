@@ -21,6 +21,9 @@ resources/
 # User-generated snapshots (runtime only)
 backend/Data/Snapshots/
 
+# Per-machine paths (PZ tiles folder, BuildingFurniture.txt) — never ship
+backend/Data/local-settings.json
+
 # Frontend build output copied into backend for release packaging
 backend/wwwroot/
 

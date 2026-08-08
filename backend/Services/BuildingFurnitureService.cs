@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using backend.Models;
 
@@ -22,7 +23,8 @@ public class BuildingFurnitureService : IBuildingFurnitureService
 
     public BuildingFurnitureService(IWebHostEnvironment env)
     {
-        _settingsFile = Path.Combine(env.ContentRootPath, "Data", "settings.json");
+        // Machine-local path, kept separate from settings.json (which ships with the app).
+        _settingsFile = Path.Combine(env.ContentRootPath, "Data", "local-settings.json");
         Load();
     }
 
@@ -209,18 +211,17 @@ public class BuildingFurnitureService : IBuildingFurnitureService
     {
         try
         {
-            // Merge with existing settings
-            var existing = new Dictionary<string, object?>();
+            JsonNode root = new JsonObject();
             if (File.Exists(_settingsFile))
             {
-                using var doc = JsonDocument.Parse(File.ReadAllText(_settingsFile));
-                foreach (var prop in doc.RootElement.EnumerateObject())
-                    existing[prop.Name] = prop.Value.GetString();
+                try { root = JsonNode.Parse(File.ReadAllText(_settingsFile)) ?? new JsonObject(); }
+                catch { root = new JsonObject(); }
             }
-            existing[_settingsKey] = _filePath;
+            root[_settingsKey] = _filePath;
+
             Directory.CreateDirectory(Path.GetDirectoryName(_settingsFile)!);
             File.WriteAllText(_settingsFile,
-                JsonSerializer.Serialize(existing, new JsonSerializerOptions { WriteIndented = true }));
+                root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
         }
         catch { /* ignore */ }
     }

@@ -37,6 +37,41 @@ public class TbxMetadata
     /// semantics are implemented.
     /// </summary>
     public string UsedFurnitureRaw { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Geordnete Liste aller root-level furniture-Blöcke (z.B. layer="Walls").
+    /// Die Position in dieser Liste ist der 0-basierte Index, auf den
+    /// &lt;object type="furniture" FurnitureTiles="N"&gt;-Platzierungen verweisen.
+    /// </summary>
+    public List<TbxFurnitureBlock> FurnitureBlocks { get; set; } = [];
+}
+
+/// <summary>
+/// Ein root-level furniture-Block (z.B. &lt;furniture layer="Walls"&gt;), der ein
+/// wandmontiertes Objekt (Tür, Fenster, Bogen, …) über mehrere Orientierungen
+/// hinweg definiert.
+/// </summary>
+public class TbxFurnitureBlock
+{
+    public string Layer   { get; set; } = string.Empty; // meist "Walls"
+    public bool   Corners { get; set; }
+    public List<TbxFurnitureEntry> Entries { get; set; } = [];
+}
+
+/// <summary>Eine orient-spezifische Variante innerhalb eines TbxFurnitureBlock.</summary>
+public class TbxFurnitureEntry
+{
+    public string Orient { get; set; } = string.Empty; // W | N | NW
+    public bool   Grime  { get; set; }
+    public List<TbxFurnitureTile> Tiles { get; set; } = [];
+}
+
+/// <summary>Eine einzelne Sub-Tile-Zelle innerhalb eines TbxFurnitureEntry.</summary>
+public class TbxFurnitureTile
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -436,7 +436,7 @@
     "searchSheets": "Search sheets…",
     "noSheets": "No PNG files found",
     "selectSheet": "Select a sheet from the list",
-    "configurePath": "Please configure a tiles folder first",
+    "configurePath": "Please configure the PZ Tiles folder in Settings first",
     "selectSprite": "Click a sprite in the sheet to configure it",
     "zoom": "Zoom",
     "export": "Export",
@@ -514,6 +514,7 @@
     "selectRooms":        "Select rooms",
     "selectAll":          "Select all",
     "deselectAll":        "Deselect all",
+    "toggleFloor":        "Expand/collapse floor",
     "seed":               "Seed",
     "randomSeed":         "New random seed",
     "density":        "Furnishing density",
@@ -595,6 +596,36 @@
       "error":                   "❌ {{msg}}",
       "noDefault":               "No bundled default available",
       "noSnapshot":              "No snapshot saved yet"
+    },
+    "filePaths": {
+      "title":                  "📁 File Paths",
+      "description":            "Local folder/file paths used by the Tile Browser and Furniture Templates tabs. Specific to this machine — not shared or shipped with the app.",
+      "tilesFolder":            "PZ Tiles folder",
+      "tilesFolderPlaceholder": "e.g. C:\\Games\\ProjectZomboid\\media\\textures",
+      "bfFile":                 "BuildingFurniture.txt",
+      "bfFilePlaceholder":      "e.g. C:\\Users\\…\\TileZed\\BuildingFurniture.txt",
+      "browse":                 "Browse",
+      "setPath":                "Set",
+      "pathOk":                 "Found",
+      "pathNotFound":           "Not found",
+      "setPathError":           "Error setting the path"
+    }
+  },
+  "wallFurniture": {
+    "toggle_one":            "{{count}} wall-furniture element found",
+    "toggle_other":          "{{count}} wall-furniture elements found",
+    "unclassifiedBadge_one":   "{{count}} needs review",
+    "unclassifiedBadge_other": "{{count}} need review",
+    "hint": "These wall-mounted pieces were placed as generic furniture instead of a normal door/window. Classify each tile once — the choice is remembered for every future building using the same tile. Multi-tile entries are classified per tile, since a door and a window can sit right next to each other in the same entry.",
+    "count_one":  "{{count}} placement",
+    "count_other": "{{count}} placements",
+    "applyAll": "Set all tiles to:",
+    "applyAllPlaceholder": "Choose…",
+    "classification": {
+      "WindowHigh":     "Window (high)",
+      "WindowHighLow":  "Window (high & low)",
+      "Door":           "Door",
+      "Ignore":         "Ignore"
     }
   },
   "furnitureBrowser": {
@@ -607,7 +638,7 @@
     "groupsLoaded_other": "✓ {{count}} groups loaded",
     "searchGroup": "Search group…",
     "loadingGroups": "Loading groups…",
-    "setPathHint": "Please set the BuildingFurniture.txt path.",
+    "setPathHint": "Please configure the BuildingFurniture.txt path in Settings first.",
     "noGroups": "No groups found.",
     "selectGroup": "Select group",
     "selectedCount_one": "{{count}} selected",

@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getBfPath, setBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
+import { getBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap } from '../../types/tiles';
 import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
-import { DirPicker } from '../TileBrowser/DirPicker';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import s from './FurnitureBrowser.module.css';
@@ -29,12 +28,10 @@ export function FurnitureBrowser() {
   const { t } = useTranslation();
   const { selectedSetId } = useActiveConfigSet();
 
-  // ── path ─────────────────────────────────────────────────────────────
+  // ── path (configured in Settings tab) ──────────────────────────────────
   const [pathInput, setPathInput] = useState('');
   const [pathOk, setPathOk]       = useState(false);
-  const [pathErr, setPathErr]     = useState('');
   const [backendOk, setBackendOk] = useState(true);
-  const [showPicker, setShowPicker] = useState(false);
 
   // ── groups ────────────────────────────────────────────────────────────
   const [loading, setLoading]       = useState(false);
@@ -152,19 +149,6 @@ export function FurnitureBrowser() {
       .catch(() => setGroups([]))
       .finally(() => setLoading(false));
   }, [pathOk]);
-
-  // ── path ─────────────────────────────────────────────────────────────
-  const applyPath = async (p: string) => {
-    setPathErr('');
-    try {
-      const r = await setBfPath(p);
-      setPathInput(r.path);
-      setPathOk(r.isValid);
-    } catch (e) {
-      setPathOk(false);
-      setPathErr(e instanceof Error ? e.message : t('furnitureBrowser.pathError'));
-    }
-  };
 
   // ── group select ──────────────────────────────────────────────────────
   const handleGroupSelect = async (g: BfGroupSummary) => {
@@ -302,34 +286,20 @@ export function FurnitureBrowser() {
 
   return (
     <div className={s.layout}>
-      {showPicker && (
-        <DirPicker
-          onSelect={p => { setShowPicker(false); applyPath(p); }}
-          onClose={() => setShowPicker(false)}
-        />
-      )}
-
-      {/* ── Path bar ── */}
+      {/* ── Path status bar (path itself is configured in Settings) ── */}
       <div className={s.pathBar}>
         {!backendOk ? (
           <span className={s.statusErr} style={{ flex: 1 }}>
             {t('furnitureBrowser.backendUnreachable')}
           </span>
-        ) : (
+        ) : pathOk ? (
           <>
             <span className={s.pathLabel}>BuildingFurniture.txt:</span>
-            <input
-              className={s.pathInput}
-              value={pathInput}
-              onChange={e => setPathInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && applyPath(pathInput)}
-              placeholder={t('furnitureBrowser.pathPlaceholder')}
-            />
-            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('furnitureBrowser.browseFile')}>📁</button>
-            <button className={s.setBtn} onClick={() => applyPath(pathInput)}>{t('furnitureBrowser.load')}</button>
-            {pathOk && <span className={s.statusOk}>{t('furnitureBrowser.groupsLoaded', { count: groups.length })}</span>}
-            {pathErr && <span className={s.statusErr}>✗ {pathErr}</span>}
+            <span className={s.statusOk}>{pathInput}</span>
+            <span className={s.statusOk}>— {t('furnitureBrowser.groupsLoaded', { count: groups.length })}</span>
           </>
+        ) : (
+          <span className={s.statusErr}>✗ {t('furnitureBrowser.setPathHint')}</span>
         )}
       </div>
 

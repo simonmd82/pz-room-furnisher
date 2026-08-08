@@ -436,7 +436,7 @@
     "searchSheets": "Sheet suchen…",
     "noSheets": "Keine PNG-Dateien gefunden",
     "selectSheet": "Sheet in der Liste auswählen",
-    "configurePath": "Bitte zuerst einen Tiles-Ordner konfigurieren",
+    "configurePath": "Bitte zuerst den PZ-Tiles-Ordner in den Einstellungen konfigurieren",
     "selectSprite": "Sprite im Sheet anklicken um es zu konfigurieren",
     "zoom": "Zoom",
     "export": "Exportieren",
@@ -514,6 +514,7 @@
     "selectRooms":        "Räume auswählen",
     "selectAll":          "Alle auswählen",
     "deselectAll":        "Auswahl aufheben",
+    "toggleFloor":        "Etage ein-/ausklappen",
     "seed":               "Seed",
     "randomSeed":         "Neuer Zufalls-Seed",
     "density":        "Möblierungsdichte",
@@ -595,6 +596,36 @@
       "error":                   "❌ {{msg}}",
       "noDefault":               "Keine Standard-Voreinstellungen vorhanden",
       "noSnapshot":              "Noch kein Snapshot gespeichert"
+    },
+    "filePaths": {
+      "title":                  "📁 Datei-Pfade",
+      "description":            "Lokale Ordner-/Datei-Pfade für den Tile Browser und die Furniture-Vorlagen. Gerätespezifisch — werden nicht geteilt oder mit der App ausgeliefert.",
+      "tilesFolder":            "PZ-Tiles-Ordner",
+      "tilesFolderPlaceholder": "z.B. C:\\Games\\ProjectZomboid\\media\\textures",
+      "bfFile":                 "BuildingFurniture.txt",
+      "bfFilePlaceholder":      "z.B. C:\\Users\\…\\TileZed\\BuildingFurniture.txt",
+      "browse":                 "Durchsuchen",
+      "setPath":                "Setzen",
+      "pathOk":                 "Gefunden",
+      "pathNotFound":           "Nicht gefunden",
+      "setPathError":           "Fehler beim Setzen des Pfads"
+    }
+  },
+  "wallFurniture": {
+    "toggle_one":            "{{count}} Wand-Möbelelement gefunden",
+    "toggle_other":          "{{count}} Wand-Möbelelemente gefunden",
+    "unclassifiedBadge_one":   "{{count}} zu prüfen",
+    "unclassifiedBadge_other": "{{count}} zu prüfen",
+    "hint": "Diese wandmontierten Elemente wurden als generisches Möbelstück statt als normale Tür/Fenster platziert. Jedes Tile einmal klassifizieren – die Wahl gilt für jedes künftige Gebäude mit demselben Tile. Mehrteilige Einträge werden pro Tile klassifiziert, da Tür und Fenster im selben Eintrag direkt nebeneinander liegen können.",
+    "count_one":  "{{count}} Platzierung",
+    "count_other": "{{count}} Platzierungen",
+    "applyAll": "Alle Tiles setzen auf:",
+    "applyAllPlaceholder": "Wählen…",
+    "classification": {
+      "WindowHigh":     "Fenster (hoch)",
+      "WindowHighLow":  "Fenster (hoch & niedrig)",
+      "Door":           "Tür",
+      "Ignore":         "Ignorieren"
     }
   },
   "furnitureBrowser": {
@@ -607,7 +638,7 @@
     "groupsLoaded_other": "✓ {{count}} Gruppen geladen",
     "searchGroup": "Gruppe suchen…",
     "loadingGroups": "Lade Gruppen…",
-    "setPathHint": "Bitte BuildingFurniture.txt Pfad setzen.",
+    "setPathHint": "Bitte den BuildingFurniture.txt-Pfad in den Einstellungen konfigurieren.",
     "noGroups": "Keine Gruppen gefunden.",
     "selectGroup": "Gruppe wählen",
     "selectedCount_one": "{{count}} ausgewählt",

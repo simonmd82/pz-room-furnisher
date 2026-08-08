@@ -1,0 +1,135 @@
+.panel {
+  margin: 4px 0;
+}
+
+.toggle {
+  font-size: 0.74rem;
+  color: #778;
+  cursor: pointer;
+  background: #0e0e18;
+  border: 1px solid #2a2a3a;
+  border-radius: 5px;
+  padding: 5px 10px;
+  text-align: left;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.12s, color 0.12s;
+}
+.toggle:hover { background: #141428; color: #aab; border-color: #445; }
+
+.badge {
+  font-size: 0.68rem;
+  background: #4a2a00;
+  color: #ffaa44;
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+.list {
+  background: #080812;
+  border: 1px solid #272736;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.hint {
+  font-size: 0.72rem;
+  color: #556;
+  margin: 0 0 4px;
+  line-height: 1.4;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: #141422;
+  border: 1px solid #2a2a3a;
+  border-radius: 5px;
+}
+
+.rowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.count {
+  font-size: 0.66rem;
+  color: #667;
+}
+
+.applyAll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.applyAllLabel {
+  font-size: 0.68rem;
+  color: #8899cc;
+}
+
+.tileList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tileRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  background: #0e0e18;
+  border: 1px solid #22223a;
+  border-radius: 4px;
+}
+
+.previewCell {
+  background: #0a0a14;
+  border: 1px solid #2a2a3a;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.previewMissing {
+  font-size: 0.7rem;
+  color: #446;
+  padding: 4px;
+}
+
+.tileName {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.74rem;
+  color: #ccd;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.select {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  color: #dde;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.select:focus { outline: none; border-color: #8866cc; }
+.select:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -1,13 +1,31 @@
 ﻿.panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   padding: 14px;
   background: #0a0a14;
   border-left: 1px solid #2a2a3a;
   width: 280px;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.scrollArea {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stickyFooter {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 1px solid #2a2a3a;
 }
 
 .panelTitle {
@@ -31,6 +49,84 @@
   flex-direction: column;
   gap: 3px;
 }
+
+.floorGroup {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 4px;
+}
+
+.floorHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.floorHeaderMain {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  cursor: pointer;
+  padding: 3px 4px;
+  border-radius: 4px;
+  user-select: none;
+}
+.floorHeaderMain:hover { background: #141422; }
+
+.floorChevron {
+  background: none;
+  border: none;
+  color: #778;
+  font-size: 0.7rem;
+  width: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 2px;
+}
+.floorChevron:hover { color: #ddf; }
+
+.floorLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #ccd;
+  flex: 1;
+}
+
+.floorRoomCount {
+  font-size: 0.66rem;
+  color: #667;
+}
+
+.floorCheck {
+  accent-color: #8866cc;
+}
+
+.floorRooms {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 16px;
+  margin-top: 3px;
+}
+
+.typeToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.typeBtn {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid #3a3a5a;
+  background: #141422;
+  color: #99a;
+  cursor: pointer;
+}
+.typeBtn:hover { border-color: #6655aa; color: #ddd; }
+.typeBtnActive { background: #3d2d6a; border-color: #8866cc; color: #fff; }
 
 .roomRow {
   display: flex;

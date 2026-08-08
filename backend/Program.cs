@@ -19,6 +19,7 @@ builder.Services.AddSingleton<ITileConfigService, TileConfigService>();
 builder.Services.AddSingleton<IBuildingFurnitureService, BuildingFurnitureService>();
 builder.Services.AddSingleton<IRoomTypeConfigService, RoomTypeConfigService>();
 builder.Services.AddSingleton<ISettingsService, SettingsService>();
+builder.Services.AddSingleton<IWallFurnitureClassificationService, WallFurnitureClassificationService>();
 builder.Services.AddSingleton<IPathfinderService, PathfinderService>();
 builder.Services.AddSingleton<IFurnishingGeneratorService, FurnishingGeneratorService>();
 builder.Services.AddSingleton<ITbxExportService, TbxExportService>();

@@ -145,6 +145,7 @@ export default function FurnishPanel({
   const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
   const [configSets, setConfigSets]     = useState<TileConfigSetInfo[]>([]);
+  const [collapsedFloors, setCollapsedFloors] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
@@ -234,6 +235,14 @@ export default function FurnishPanel({
   const floorLabel = (floorIndex: number) =>
     floorIndex === 0 ? t('floor.ground') : t('floor.upper', { n: floorIndex });
 
+  const toggleFloorCollapse = (floorIndex: number) => {
+    setCollapsedFloors(prev => {
+      const next = new Set(prev);
+      next.has(floorIndex) ? next.delete(floorIndex) : next.add(floorIndex);
+      return next;
+    });
+  };
+
 
   const handleGenerate = async () => {
     const selections: RoomSelection[] = [];
@@ -303,6 +312,7 @@ export default function FurnishPanel({
 
   return (
     <div className={s.panel}>
+    <div className={s.scrollArea}>
       <p className={s.panelTitle}>{t('furnishPanel.title')}</p>
 
       {/* ── Quick-select toolbar ── */}
@@ -327,19 +337,33 @@ export default function FurnishPanel({
         ))}
       </div>
 
-      {/* ── Room list grouped by floor ── */}
+      {/* ── Room list grouped by floor (collapsible tree) ── */}
       <div className={s.roomList}>
-        {[...roomsByFloor.entries()].map(([floorIndex, rooms]) => (
+        {[...roomsByFloor.entries()].map(([floorIndex, rooms]) => {
+          const collapsed = collapsedFloors.has(floorIndex);
+          return (
           <div key={floorIndex} className={s.floorGroup}>
 
             {/* Floor header */}
-            <div className={s.floorHeader} onClick={() => toggleFloor(floorIndex)}>
-              <FloorCheckbox state={floorCheckState(floorIndex)} />
-              <span className={s.floorLabel}>{floorLabel(floorIndex)}</span>
-              <span className={s.floorRoomCount}>{rooms.length}</span>
+            <div className={s.floorHeader}>
+              <button
+                className={s.floorChevron}
+                onClick={() => toggleFloorCollapse(floorIndex)}
+                aria-label={t('furnishPanel.toggleFloor')}
+                title={t('furnishPanel.toggleFloor')}
+              >
+                {collapsed ? '▸' : '▾'}
+              </button>
+              <div className={s.floorHeaderMain} onClick={() => toggleFloor(floorIndex)}>
+                <FloorCheckbox state={floorCheckState(floorIndex)} />
+                <span className={s.floorLabel}>{floorLabel(floorIndex)}</span>
+                <span className={s.floorRoomCount}>{rooms.length}</span>
+              </div>
             </div>
 
             {/* Room rows */}
+            {!collapsed && (
+            <div className={s.floorRooms}>
             {rooms.map((entry) => {
               const { roomIndex1Based, cellCount, instanceNo, instanceTotal } = entry;
               const key         = selKey(entry);
@@ -421,14 +445,19 @@ export default function FurnishPanel({
                 </div>
               );
             })}
+            </div>
+            )}
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <datalist id="knownTypesList">
         {knownTypes.map(tn => <option key={tn} value={tn} />)}
       </datalist>
+    </div>
 
+    <div className={s.stickyFooter}>
       {/* ── Seed ── */}
       <span className={s.sectionLabel}>{t('furnishPanel.seed')}</span>
       <div className={s.seedRow}>
@@ -535,6 +564,7 @@ export default function FurnishPanel({
           {status.msg}
         </div>
       )}
+    </div>
     </div>
   );
 }

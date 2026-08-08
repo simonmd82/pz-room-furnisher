@@ -8,10 +8,12 @@ import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
 import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import FurnishPanel from './components/FurnishPanel/FurnishPanel';
+import { WallFurniturePanel } from './components/WallFurniturePanel/WallFurniturePanel';
 import { ActiveConfigSetProvider } from './context/ActiveConfigSetContext';
 import type { Building, Floor, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
+import { uploadTbx } from './api/buildingApi';
 import './App.css';
 import s from './components/FurnishPanel/FurnishPanel.module.css';
 
@@ -102,6 +104,7 @@ function App() {
   const [densityMin, setDensityMin]     = useState(50);
   const [densityMax, setDensityMax]     = useState(100);
   const [densityFixed, setDensityFixed] = useState(false);
+  const [lastFile, setLastFile]         = useState<File | null>(null);
 
   useEffect(() => {
     localStorage.setItem('pzrf.showGeneratorLog', String(showGeneratorLog));
@@ -120,9 +123,10 @@ function App() {
     getSheets().then(r => setSheetInfos(r.sheets)).catch(console.error);
   }, []);
 
-  const handleBuildingLoaded = (b: Building, name: string) => {
+  const handleBuildingLoaded = (b: Building, name: string, file: File) => {
     setBuilding(b);
     setFileName(name);
+    setLastFile(file);
     setSelectedFloor(0);
     setPlacements([]);
     setReservedZones([]);
@@ -130,6 +134,23 @@ function App() {
     setLogOpen(false);
     setSelected(new Set());
     setOverrides({});
+  };
+
+  /**
+   * Wall-furniture classifications are resolved into WallEdges at parse time
+   * (backend), so saving a new classification doesn't retroactively touch the
+   * already-parsed building — silently re-parse the same file to pick it up.
+   * placements/selected/overrides are keyed by floor/room/anchor coordinates
+   * that don't change across a re-parse of the identical file, so they stay valid.
+   */
+  const handleWallFurnitureClassified = async () => {
+    if (!lastFile) return;
+    try {
+      const refreshed = await uploadTbx(lastFile);
+      setBuilding(refreshed);
+    } catch (e) {
+      console.error('Failed to re-parse building after wall-furniture classification:', e);
+    }
   };
 
   /** Called by GridRenderer after a single room's path was regenerated. */
@@ -276,6 +297,11 @@ function App() {
                 )}
               </div>
             </section>
+
+            <WallFurniturePanel
+              candidates={building.wallFurnitureCandidates}
+              onClassified={handleWallFurnitureClassified}
+            />
 
             <section className="floor-section">
               <FurnishPanel

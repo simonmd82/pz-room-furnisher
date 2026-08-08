@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  getTilesPath, setTilesPath, getSheets, getTileConfig,
+  getTilesPath, getSheets, getTileConfig,
   saveTileDefinition, deleteTileDefinition, sheetImageUrl, exportConfigUrl,
 } from '../../api/tilesApi';
 import type { TileSheetInfo, TileDefinition, TileConfigMap } from '../../types/tiles';
@@ -11,7 +11,6 @@ import {
   TILE_PROPERTIES,
 } from '../../types/tiles';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
-import { DirPicker } from './DirPicker';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import s from './TileBrowser.module.css';
@@ -33,11 +32,9 @@ const LAYOUT_ZOOM = 0.28;
 export function TileBrowser() {
   const { t } = useTranslation();
 
-  // ── path ─────────────────────────────────────────────────────────────
+  // ── path (configured in Settings tab) ──────────────────────────────────
   const [pathInput, setPathInput] = useState('');
   const [pathOk, setPathOk]   = useState(false);
-  const [pathErr, setPathErr] = useState('');
-  const [pathTried, setPathTried] = useState(false);
   const [backendOk, setBackendOk] = useState(true);
 
   // ── sheets ────────────────────────────────────────────────────────────
@@ -147,9 +144,6 @@ export function TileBrowser() {
   // ── zoom ──────────────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(1);
 
-  // ── dir picker ────────────────────────────────────────────────────────
-  const [showPicker, setShowPicker] = useState(false);
-
   // ── room types (from settings) ────────────────────────────────────────────
   const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
   const [materialList, setMaterialList] = useState<string[]>([]);
@@ -176,24 +170,6 @@ export function TileBrowser() {
     if (!pathOk) { setSheets([]); return; }
     getSheets(selectedSetId).then(r => setSheets(r.configured ? r.sheets : []));
   }, [pathOk, selectedSetId]);
-
-  // ── path ─────────────────────────────────────────────────────────────
-  const applyPath = async (p: string) => {
-    setPathErr('');
-    setPathTried(true);
-    try {
-      const r = await setTilesPath(p);
-      setPathInput(r.path);
-      setPathOk(r.isValid);
-      getSheets().then(r2 => setSheets(r2.configured ? r2.sheets : []));
-    } catch (e) {
-      setPathOk(false);
-      setPathErr(e instanceof Error ? e.message : t('tileBrowser.setPathError'));
-    }
-  };
-
-  const handleSetPath = () => applyPath(pathInput);
-  const handlePickerSelect = (picked: string) => { setShowPicker(false); applyPath(picked); };
 
   // ── sheet select ──────────────────────────────────────────────────────
   const handleSheetSelect = (sh: TileSheetInfo) => {
@@ -351,41 +327,22 @@ export function TileBrowser() {
   return (
     <div className={s.layout}>
 
-      {/* Dir picker modal */}
-      {showPicker && (
-        <DirPicker onSelect={handlePickerSelect} onClose={() => setShowPicker(false)} />
-      )}
-
-      {/* ── Path bar ── */}
+      {/* ── Path status bar (path itself is configured in Settings) ── */}
       <div className={s.pathBar}>
         {!backendOk ? (
           <span className={s.statusErr} style={{ flex: 1 }}>
             {t('tileBrowser.backendUnreachable')}
           </span>
-        ) : (
+        ) : pathOk ? (
           <>
-            <span>{t('tileBrowser.tilesPath')}:</span>
-            <input
-              className={s.pathInput}
-              value={pathInput}
-              onChange={e => setPathInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSetPath()}
-              placeholder={t('tileBrowser.pathPlaceholder')}
-            />
-            <button className={s.browseBtn} onClick={() => setShowPicker(true)} title={t('tileBrowser.browse')}></button>
-            <button className={s.setBtn} onClick={handleSetPath}>{t('tileBrowser.setPath')}</button>
-            {pathOk
-              ? <span className={s.statusOk}>✓ {t('tileBrowser.pathOk')} — {t('tileBrowser.sheetsCount', { count: sheets.length })}</span>
-              : pathTried && !pathErr
-                ? <span className={s.statusErr}>✗ {t('tileBrowser.pathNotFound')}</span>
-                : null}
-            {pathErr && <span className={s.statusErr}>✗ {pathErr}</span>}
-            {pathOk && (
-              <a className={s.exportLink} href={exportConfigUrl(selectedSetId)} download={`${selectedSetId}-tile-definitions.json`}>
-                ⬇ {t('tileBrowser.export')}
-              </a>
-            )}
+            <span className={s.statusOk}>✓ {t('tileBrowser.tilesPath')}: {pathInput}</span>
+            <span className={s.statusOk}>— {t('tileBrowser.sheetsCount', { count: sheets.length })}</span>
+            <a className={s.exportLink} href={exportConfigUrl(selectedSetId)} download={`${selectedSetId}-tile-definitions.json`}>
+              ⬇ {t('tileBrowser.export')}
+            </a>
           </>
+        ) : (
+          <span className={s.statusErr}>✗ {t('tileBrowser.configurePath')}</span>
         )}
       </div>
 

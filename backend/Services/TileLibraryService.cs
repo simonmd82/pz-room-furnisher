@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using backend.Models;
 
 namespace backend.Services;
@@ -23,7 +24,8 @@ public class TileLibraryService : ITileLibraryService
 
     public TileLibraryService(IWebHostEnvironment env)
     {
-        _settingsFile = Path.Combine(env.ContentRootPath, "Data", "settings.json");
+        // Machine-local path, kept separate from settings.json (which ships with the app).
+        _settingsFile = Path.Combine(env.ContentRootPath, "Data", "local-settings.json");
         Load();
     }
 
@@ -111,9 +113,16 @@ public class TileLibraryService : ITileLibraryService
 
     private void Save()
     {
+        JsonNode root = new JsonObject();
+        if (File.Exists(_settingsFile))
+        {
+            try { root = JsonNode.Parse(File.ReadAllText(_settingsFile)) ?? new JsonObject(); }
+            catch { root = new JsonObject(); }
+        }
+        root["tilesPath"] = _tilesPath;
+
         Directory.CreateDirectory(Path.GetDirectoryName(_settingsFile)!);
         File.WriteAllText(_settingsFile,
-            JsonSerializer.Serialize(new { tilesPath = _tilesPath },
-                new JsonSerializerOptions { WriteIndented = true }));
+            root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
     }
 }
