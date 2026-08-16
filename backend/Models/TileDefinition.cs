@@ -29,6 +29,7 @@ public class TileDefinition
 
     // ── Unified properties ────────────────────────────────────────────────
     public bool IsHigh          { get; set; } = true;
+    public bool IsMedium        { get; set; } = false;
     public bool IsLow           { get; set; } = false;
     public bool IsWallMounted   { get; set; } = false;
     public bool HasSurface      { get; set; } = false;

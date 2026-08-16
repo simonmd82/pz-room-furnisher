@@ -38,7 +38,8 @@
   cursor: pointer;
   font-size: 0.88rem;
 }
-.browseBtn:hover { border-color: #8866cc; background: #2a2a4a; }
+.browseBtn:hover:not(:disabled) { border-color: #8866cc; background: #2a2a4a; }
+.browseBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 .setBtn {
   padding: 5px 14px;
   background: #3d2d6a;
@@ -253,6 +254,19 @@
   border-radius: 4px;
   padding: 1px 6px;
 }
+
+/* ── Settings copy/paste ── */
+.clipboardBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.clipboardFlash {
+  font-size: 0.7rem;
+  color: #6c6;
+}
+
 .cfgLayoutPreview {
   background: #141422;
   border: 1px solid #2a2a3a;
@@ -512,6 +526,44 @@ textarea.fieldInput {
 .entryCardDirty {
   box-shadow: 0 0 0 1px #664400 inset;
 }
+.entryCardHighlight {
+  box-shadow: 0 0 0 2px #33bbff inset;
+}
+
+/* ── Property highlight filter ── */
+.highlightBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  width: 100%;
+}
+.chipHighlight {
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid #3a3a5a;
+  background: #141422;
+  color: #889;
+  font-size: 0.72rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.1s, background 0.1s, color 0.1s;
+}
+.chipHighlight:hover { border-color: #33bbff; color: #bde; }
+.chipHighlightActive { border-color: #33bbff !important; background: #0a2a3a !important; color: #88ddff !important; }
+.modeToggle { display: flex; gap: 2px; margin-left: 6px; }
+.modeBtn {
+  padding: 2px 8px;
+  background: #1e1e3a;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #99a;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.modeBtn:hover { border-color: #33bbff; color: #ddf; }
+.modeBtnActive { border-color: #33bbff !important; color: #fff !important; background: #0a2a3a !important; }
 .chipPartial {
   border-color: #aa6600 !important;
   background: #1c1200 !important;

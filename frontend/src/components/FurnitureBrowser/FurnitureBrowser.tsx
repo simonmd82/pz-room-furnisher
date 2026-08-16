@@ -4,10 +4,12 @@ import { getBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
-import type { TileDefinition, TileConfigMap } from '../../types/tiles';
+import type { TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
 import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
+import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
+import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import s from './FurnitureBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -27,6 +29,40 @@ const CONF_ZOOM  = 0.30; // config panel previews
 export function FurnitureBrowser() {
   const { t } = useTranslation();
   const { selectedSetId } = useActiveConfigSet();
+
+  // ── settings clipboard (shared with Tile Browser tab) ────────────────────
+  const { clipboard, copiedFrom, copy: copyToClipboard } = useTileSettingsClipboard();
+  const [clipboardFlash, setClipboardFlash] = useState<string | null>(null);
+
+  // ── property/layer highlight filter (independent of the config panel) ──
+  const [highlightProps, setHighlightProps]   = useState<Set<TileProperty>>(new Set());
+  const [highlightMode, setHighlightMode]     = useState<'AND' | 'OR'>('OR');
+  const [highlightLayers, setHighlightLayers] = useState<Set<TileDefinition['layer']>>(new Set());
+
+  const toggleHighlightProp = (p: TileProperty) => setHighlightProps(prev => {
+    const next = new Set(prev);
+    next.has(p) ? next.delete(p) : next.add(p);
+    return next;
+  });
+  const toggleHighlightLayer = (l: TileDefinition['layer']) => setHighlightLayers(prev => {
+    const next = new Set(prev);
+    next.has(l) ? next.delete(l) : next.add(l);
+    return next;
+  });
+
+  // Properties combine via the AND/OR toggle; layers are always any-of (a tile has one
+  // layer, so "match all selected layers" would never match). The two categories combine
+  // with AND between them, so picking a layer + a property narrows further.
+  const matchesHighlight = (entryId: string): boolean => {
+    const def = config[entryId];
+    if (!def || (highlightProps.size === 0 && highlightLayers.size === 0)) return false;
+    const propOk = highlightProps.size === 0 || (() => {
+      const props = [...highlightProps];
+      return highlightMode === 'AND' ? props.every(p => def[p]) : props.some(p => def[p]);
+    })();
+    const layerOk = highlightLayers.size === 0 || highlightLayers.has(def.layer);
+    return propOk && layerOk;
+  };
 
   // ── path (configured in Settings tab) ──────────────────────────────────
   const [pathInput, setPathInput] = useState('');
@@ -73,6 +109,7 @@ export function FurnitureBrowser() {
   // ── group selector ────────────────────────────────────────────────────
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
   const [groupInput, setGroupInput]   = useState('');
+  const [groupSearch, setGroupSearch] = useState('');
 
   const allGroups = useMemo(() => {
     const fromConfig = Object.values(config).map(d => d.group).filter(Boolean);
@@ -223,6 +260,26 @@ export function FurnitureBrowser() {
     setSaveState('idle');
   };
 
+  // ── settings copy/paste ─────────────────────────────────────────────────
+  const handleCopySettings = () => {
+    if (selDefs.length !== 1) return;
+    copyToClipboard(selDefs[0]);
+    setClipboardFlash(t('common.settingsCopied'));
+    setTimeout(() => setClipboardFlash(null), 2000);
+  };
+  const handlePasteSettings = () => {
+    if (!clipboard || selIds.length === 0) return;
+    setViewDefs(prev => {
+      const next = { ...prev };
+      selIds.forEach(id => { if (next[id]) next[id] = { ...next[id], ...clipboard }; });
+      return next;
+    });
+    setDirtyIds(prev => new Set([...prev, ...selIds]));
+    setSaveState('idle');
+    setClipboardFlash(t('common.settingsPasted', { count: selIds.length }));
+    setTimeout(() => setClipboardFlash(null), 2000);
+  };
+
   // ── mixed-value helpers ────────────────────────────────────────────────
   function sv<T>(getter: (d: TileDefinition) => T): T | undefined {
     if (!selDefs.length) return undefined;
@@ -348,6 +405,42 @@ export function FurnitureBrowser() {
             {dirtyIds.size > 0 && <span className={s.dirtyBadge}>{t('furnitureBrowser.unsavedCount', { count: dirtyIds.size })}</span>}
             <span className={s.ctrlHint}>{t('furnitureBrowser.ctrlClickHint')}</span>
           </div>
+          {selGroup && (
+            <div className={s.highlightBar}>
+              <span className={s.fieldHint}>{t('common.highlightHint')}</span>
+              {TILE_PROPERTIES.map(p => (
+                <span
+                  key={p}
+                  className={`${s.chipHighlight} ${highlightProps.has(p) ? s.chipHighlightActive : ''}`}
+                  onClick={() => toggleHighlightProp(p)}
+                >{t(`tileBrowser.properties.${p}`)}</span>
+              ))}
+              {highlightProps.size > 0 && (
+                <div className={s.modeToggle}>
+                  <button
+                    className={`${s.modeBtn} ${highlightMode === 'OR' ? s.modeBtnActive : ''}`}
+                    onClick={() => setHighlightMode('OR')}
+                  >{t('common.matchAny')}</button>
+                  <button
+                    className={`${s.modeBtn} ${highlightMode === 'AND' ? s.modeBtnActive : ''}`}
+                    onClick={() => setHighlightMode('AND')}
+                  >{t('common.matchAll')}</button>
+                </div>
+              )}
+            </div>
+          )}
+          {selGroup && (
+            <div className={s.highlightBar}>
+              <span className={s.fieldHint}>{t('common.highlightLayersHint')}</span>
+              {FURNITURE_LAYERS.map(l => (
+                <span
+                  key={l}
+                  className={`${s.chipHighlight} ${highlightLayers.has(l) ? s.chipHighlightActive : ''}`}
+                  onClick={() => toggleHighlightLayer(l)}
+                >{l}</span>
+              ))}
+            </div>
+          )}
         </div>
         <div className={s.pieceList}>
           {detailLoading && <p className={s.hint}>{t('furnitureBrowser.loading')}</p>}
@@ -364,12 +457,18 @@ export function FurnitureBrowser() {
                   const isActive = selKeys.includes(key);
                   const isDirty  = dirtyIds.has(entryId);
                   const imported = !isDirty && !!config[entryId];
+                  const highlighted = matchesHighlight(entryId);
                   const cols = entry.tileLayout[0]?.length ?? 1;
                   const rows = entry.tileLayout.length;
                   return (
                     <div
                       key={ei}
-                      className={[s.entryCard, isActive ? s.entryCardActive : '', isDirty ? s.entryCardDirty : ''].filter(Boolean).join(' ')}
+                      className={[
+                        s.entryCard,
+                        isActive    ? s.entryCardActive    : '',
+                        isDirty     ? s.entryCardDirty     : '',
+                        highlighted ? s.entryCardHighlight : '',
+                      ].filter(Boolean).join(' ')}
                       onClick={evt => handleEntryClick(pi, ei, entry, detail.label, piece.layer ?? undefined, evt)}
                     >
                       {/* Mini layout preview – tooltip = full tileId */}
@@ -430,6 +529,23 @@ export function FurnitureBrowser() {
                 : <span className={s.cfgTileId}>{t('furnitureBrowser.entriesSelected', { count: selDefs.length })}</span>}
               {selDefs.length === 1 && config[selDefs[0].id] && <span className={s.alreadyImported}>{t('furnitureBrowser.alreadyConfigured')}</span>}
               {dirtyIds.size > 0 && <span className={s.pendingBadge}>{dirtyIds.size} ✎</span>}
+            </div>
+
+            {/* Settings copy/paste */}
+            <div className={s.clipboardBar}>
+              <button
+                className={s.browseBtn}
+                disabled={selDefs.length !== 1}
+                title={selDefs.length === 1 ? selDefs[0].tileId : undefined}
+                onClick={handleCopySettings}
+              >{t('common.copySettings')}</button>
+              <button
+                className={s.browseBtn}
+                disabled={!clipboard || selIds.length === 0}
+                title={clipboard && copiedFrom ? t('common.settingsCopiedHint', { tileId: copiedFrom }) : undefined}
+                onClick={handlePasteSettings}
+              >{selIds.length > 1 ? t('common.pasteSettings', { count: selIds.length }) : t('common.pasteSettingsEmpty')}</button>
+              {clipboardFlash && <span className={s.clipboardFlash}>{clipboardFlash}</span>}
             </div>
 
             {/* Layout preview + sprites – nur bei Einzelauswahl */}
@@ -504,19 +620,33 @@ export function FurnitureBrowser() {
             {(() => {
               const mixed  = isMixed(d => d.group);
               const curVal = sv(d => d.group);
+              const q = groupSearch.trim().toLowerCase();
+              const groupChips = allGroups
+                .map(g => ({
+                  g,
+                  isActive:  !mixed && curVal === g,
+                  isPartial:  mixed && selDefs.some(d => d.group === g),
+                }))
+                .filter(({ g, isActive, isPartial }) => isActive || isPartial || !q || g.toLowerCase().includes(q));
               return (
                 <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
                   <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.group')}{mixed ? ' ⚠' : ''}</span>
+                  {allGroups.length > 8 && (
+                    <input
+                      className={s.fieldInput}
+                      placeholder={t('common.searchGroupsPlaceholder')}
+                      value={groupSearch}
+                      onChange={e => setGroupSearch(e.target.value)}
+                      style={{ width: '100%' }}
+                    />
+                  )}
                   <div className={s.chipGroup}>
-                    {allGroups.map(g => {
-                      const isActive  = !mixed && curVal === g;
-                      const isPartial =  mixed && selDefs.some(d => d.group === g);
-                      return (
-                        <span key={g}
-                          className={`${s.chip} ${isActive ? s.chipActive : ''} ${isPartial ? s.chipPartial : ''}`}
-                          onClick={() => applyField('group', g)}>{g}</span>
-                      );
-                    })}
+                    {groupChips.map(({ g, isActive, isPartial }) => (
+                      <span key={g}
+                        className={`${s.chip} ${isActive ? s.chipActive : ''} ${isPartial ? s.chipPartial : ''}`}
+                        onClick={() => applyField('group', g)}>{g}</span>
+                    ))}
+                    {groupChips.length === 0 && <span className={s.fieldHint}>{t('common.noGroupsMatch')}</span>}
                   </div>
                   <div style={{ display: 'flex', gap: 4, width: '100%' }}>
                     <input className={s.fieldInput} placeholder={t('common.newGroupPlaceholder')} value={groupInput}

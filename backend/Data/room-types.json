@@ -318,6 +318,158 @@
         "materialGroupId": ""
       },
       {
+        "id": "slot_bedtable_left_picture_01",
+        "label": "Picture Bedtable Left 01",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Picture": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isMedium",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_left",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_bed_table_left",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_bedtable_left_picture_02",
+        "label": "Picture Bedtable Left 02",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Picture": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture2",
+        "requiredProperties": [
+          "isMedium",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_left",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_bed_table_left",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
         "id": "slot_bed_table_right",
         "label": "Bed Table right",
         "footprint": {
@@ -389,6 +541,158 @@
         "cellRequiredProperties": [],
         "blocksFrontCell": false,
         "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_bedtable_right_picture_01",
+        "label": "Picture Bedtable Right 01",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Picture": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isMedium",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_right",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_bed_table_right",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_bedtable_right_picture_02",
+        "label": "Picture Bedtable Right 02",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Picture": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture2",
+        "requiredProperties": [
+          "isWallMounted",
+          "isMedium"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_bed_table_right",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_bed_table_right",
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
@@ -520,7 +824,7 @@
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
         "softBlocks": false,
         "cellRequiredProperties": [],
         "blocksFrontCell": false,
@@ -594,7 +898,7 @@
         "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
-        "blocksPlacement": true,
+        "blocksPlacement": false,
         "softBlocks": false,
         "cellRequiredProperties": [],
         "blocksFrontCell": false,
@@ -768,8 +1072,8 @@
           }
         },
         "allowedCategories": {
-          "Walldecoration": 5,
-          "Poster": 5
+          "Poster": 4,
+          "Picture": 6
         },
         "placementRules": {
           "nearWall": true,
@@ -2120,7 +2424,7 @@
     "layoutVariants": [],
     "commonSlotIds": [],
     "reservedZones": [],
-    "pathStyle": "wall",
+    "pathStyle": "doorOnly",
     "usePostPlacementPathAvoidance": false,
     "colorGroupId": "dining_room_colors",
     "colorPalettes": {

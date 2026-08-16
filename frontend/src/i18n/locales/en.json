@@ -68,7 +68,19 @@
     "any": "Any (none)",
     "addGroup": "Add group",
     "newGroupPlaceholder": "New group…",
-    "clear": "Clear"
+    "searchGroupsPlaceholder": "Search groups…",
+    "noGroupsMatch": "No groups match",
+    "clear": "Clear",
+    "copySettings": "📋 Copy settings",
+    "pasteSettings": "📥 Paste settings ({{count}})",
+    "pasteSettingsEmpty": "📥 Paste settings",
+    "settingsCopied": "Settings copied",
+    "settingsCopiedHint": "Group, layer, notes, properties, colors, materials, room types, variant, allowed directions, window edge and style tags — from {{tileId}}.",
+    "settingsPasted": "Pasted to {{count}} tile(s)",
+    "highlightHint": "Highlight tiles with:",
+    "highlightLayersHint": "Highlight layers:",
+    "matchAny": "OR",
+    "matchAll": "AND"
   },
   "tabs": {
     "building": "Building",
@@ -463,6 +475,7 @@
     "tileLayoutHint": "Click a cell → then click a sprite in the sheet to assign it. Selection auto-advances to the next cell.",
     "properties": {
       "isHigh": "High",
+      "isMedium": "Medium",
       "isLow": "Low",
       "isWallMounted": "Wall mounted",
       "hasSurface": "Has surface",

@@ -1691,6 +1691,14 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, null, blockedFrontCells, innerWallKeys))
             return false;
+        // Anchored orientation (e.g. "match" the anchor's facing) can land on an orientation
+        // the tile itself doesn't support — ResolveFinalTileForOrient falls back to the
+        // unmodified base tile when no matching variant exists, so this is the only gate that
+        // catches it. Mirrors the AllowedOrients check EnumerateFreePlacementCandidates/
+        // ResolveVariantForCell already does for free (non-anchored) placement.
+        if (tile.AllowedOrients.Count > 0
+            && !tile.AllowedOrients.Any(o => o.Equals(orient, StringComparison.OrdinalIgnoreCase)))
+            return false;
         if (!SatisfiesCellPropertyGates(col, row, fpW, fpH, tile, cellPropertyGates))
             return false;
         if (BlockedByReservedZone(col, row, fpW, fpH, tile, reservedZoneCells))
@@ -2107,9 +2115,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var tile = SelectTile(candidates, slot, rng);
         if (tile is null) return;
 
-        (int col, int row, string orient, TileDefinition placedTile, int rejNoVariant, int rejNoFit, int rejDoor, int rejWindow, int rejConnectivity)? result;
+        (int col, int row, string orient, TileDefinition placedTile, int rejNoVariant, int rejNoFit, int rejDoor, int rejWindow, int rejConnectivity)? result = null;
         if (anchorInfo.HasValue && anchorPos != null)
         {
+            // Anchored placement gets exactly one shot at the anchor's single target position
+            // (or its few named alternates) — unlike free placement, which has many pool cells
+            // to try, so a single bad tile pick (wrong orientation, missing VariantGroup variant,
+            // etc.) can fail the whole slot even though other candidates would fit. Retry every
+            // matching candidate tile in turn, same as the composite-layout solver
+            // (BuildLayoutCandidates) already does via OrderTileCandidatesForLayout.
+            foreach (var candidateTile in OrderTileCandidatesForLayout(candidates, slot, rng))
+            {
+            tile = candidateTile;
+            result = null;
             // Delegates to the shared static ResolveAnchoredOrient (also used by the composite
             // layout solver) instead of keeping a second, independently-maintained copy of the
             // same switch — two copies previously drifted apart (missing cases, swapped corner
@@ -2148,7 +2166,6 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 return axisFallback ?? tile;
             }
 
-            result = null;
             var initialAnchorPos = anchorPos;
             // Mirrors the non-anchored FallbackRules chain below: try the primary PlacementRules
             // across every anchor position first; only if NONE of them validate, retry the same
@@ -2169,6 +2186,14 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, innerWallKeys: innerWallKeys)  // kein softOccupied!
                                   && SatisfiesCellPropertyGates(ac, ar, fpW, fpH, finalTile, cellPropertyGates)
                                   && !BlockedByReservedZone(ac, ar, fpW, fpH, finalTile, reservedZoneCells);
+                    // Anchored orientation (e.g. "match" the anchor's facing) can land on an
+                    // orientation the tile itself doesn't support — ResolveFinalTile falls back to
+                    // the unmodified tile when no matching variant exists, so this is the only gate
+                    // that catches it. Mirrors the AllowedOrients check the free-placement path
+                    // (ResolveVariantForCell) already does; see also IsValidAnchoredPlacement, the
+                    // composite-layout solver's independent copy of this same anchored-placement logic.
+                    bool orientOk = finalTile.AllowedOrients.Count == 0
+                                  || finalTile.AllowedOrients.Any(o => o.Equals(anchoredOrient, StringComparison.OrdinalIgnoreCase));
                     bool doorOk = (rules.NearDoor
                                   || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
                                   && (openingGroups is not { Count: > 0 }
@@ -2193,7 +2218,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                                   || !FootprintTouchesWallDir(anchorInfo.Value.col, anchorInfo.Value.row,
                                          anchorInfo.Value.fpW, anchorInfo.Value.fpH, cellWalls,
                                          Enum.Parse<Direction>(sc.ToString()));
-                    bool anchorValid = fitOk && doorOk && gapOk && pathOk && winOk && sideOk;
+                    bool anchorValid = fitOk && doorOk && gapOk && pathOk && winOk && sideOk && orientOk;
 
                     if (anchorValid)
                     {
@@ -2203,11 +2228,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                     var sideSuffix = chosenOpenSide.HasValue ? $" side='{chosenOpenSide.Value}'" : string.Empty;
                     var ruleSuffix = ruleIdx > 0 ? $" rule#{ruleIdx}" : string.Empty;
-                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}'{ruleSuffix}: pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} gap={gapOk} path={pathOk} window={winOk} side={sideOk}");
+                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}'{ruleSuffix} tile='{tile.TileId}': pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} gap={gapOk} path={pathOk} window={winOk} side={sideOk} orient={orientOk}");
                     return false;
                 }
 
-                if (anchorPos.Equals("openSidePlacement", StringComparison.OrdinalIgnoreCase))
+                if (anchorPos!.Equals("openSidePlacement", StringComparison.OrdinalIgnoreCase))
             {
                 foreach (var side in ComputeOpenSideOrder(anchorInfo.Value.orient))
                 {
@@ -2218,7 +2243,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     var pos = ComputeOpenSidePosition(anchorInfo.Value.col, anchorInfo.Value.row,
                         anchorInfo.Value.fpW, anchorInfo.Value.fpH, fpW, fpH, side);
 
-                    log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='openSidePlacement' side='{side}' -> anchoredOrient='{anchoredOrient}'");
+                    log.Add($"    [ANCHOR] '{slot.Id}' tile='{tile.TileId}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='openSidePlacement' side='{side}' -> anchoredOrient='{anchoredOrient}'");
                     if (TryAnchorPosition(pos.col, pos.row, anchoredOrient, finalTile, fpW, fpH, side))
                         break;
                 }
@@ -2238,7 +2263,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     ? int.MaxValue
                     : Math.Max(minDist, maxCfg);
 
-                log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='oppositeWall' minDist={minDist} maxDist={(maxDist == int.MaxValue ? "inf" : maxDist.ToString())} -> anchoredOrient='{anchoredOrient}'");
+                log.Add($"    [ANCHOR] '{slot.Id}' tile='{tile.TileId}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='oppositeWall' minDist={minDist} maxDist={(maxDist == int.MaxValue ? "inf" : maxDist.ToString())} -> anchoredOrient='{anchoredOrient}'");
                 foreach (var candidate in ComputeOppositeWallCandidates(
                              anchorInfo.Value.col, anchorInfo.Value.row,
                              anchorInfo.Value.fpW, anchorInfo.Value.fpH,
@@ -2275,7 +2300,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 {
                     anchorPos = candidatePos;
                     var anchoredOrient = ResolveAnchoredOrient();
-                    log.Add($"    [ANCHOR] '{slot.Id}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='{anchorPos}' anchorFpW={anchorInfo.Value.fpW} anchorFpH={anchorInfo.Value.fpH} -> anchoredOrient='{anchoredOrient}'");
+                    log.Add($"    [ANCHOR] '{slot.Id}' tile='{tile.TileId}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='{anchorPos}' anchorFpW={anchorInfo.Value.fpW} anchorFpH={anchorInfo.Value.fpH} -> anchoredOrient='{anchoredOrient}'");
                     var finalTile = ResolveFinalTile(anchoredOrient);
                     int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                     int fpH = finalTile.TileLayout.Count;
@@ -2302,6 +2327,9 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 if (result is not null && ruleIdx > 0)
                     log.Add($"    [ANCHOR-FALLBACK {ruleIdx}] '{slot.Id}': used fallback rule #{ruleIdx}");
+            }
+
+            if (result is not null) break;
             }
         }
         else
@@ -2512,6 +2540,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     private static bool GetBoolProperty(TileDefinition t, string prop) => prop switch
     {
         "isHigh"        => t.IsHigh,
+        "isMedium"      => t.IsMedium,
         "isLow"         => t.IsLow,
         "isWallMounted" => t.IsWallMounted,
         "hasSurface"    => t.HasSurface,
@@ -2706,7 +2735,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     { rejDoor++; continue; }
 
                 // Fensterschutz:
-                // - Standard: IsHigh darf keine Fensterzellen berühren.
+                // - Standard: IsHigh/IsMedium dürfen keine Fensterzellen berühren.
                 // - Mit WindowBlockedEdge: nur diese Kante ist gesperrt (z.B. Armaturseite).
                 if (!rules.NearWindow
                     && ViolatesWindowPlacement(anchorCol, anchorRow, fpW, fpH, resolvedTile, orient, windowCells))
@@ -3248,7 +3277,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             return FootprintTouchesEdge(col, row, fpW, fpH, windowCells, worldEdge);
         }
 
-        return tile.IsHigh && FootprintTouchesCells(col, row, fpW, fpH, windowCells);
+        // High furniture blocks the window entirely; medium-height furniture (e.g. a picture
+        // hung at bedtable height) sits too low for a full-height window but still collides
+        // with a windowsill, so it's blocked the same way.
+        return (tile.IsHigh || tile.IsMedium) && FootprintTouchesCells(col, row, fpW, fpH, windowCells);
     }
 
     private static bool FootprintTouchesEdge(

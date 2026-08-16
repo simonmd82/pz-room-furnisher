@@ -68,7 +68,19 @@
     "any": "Beliebig (keine)",
     "addGroup": "Gruppe hinzufügen",
     "newGroupPlaceholder": "Neue Gruppe…",
-    "clear": "Leeren"
+    "searchGroupsPlaceholder": "Gruppen suchen…",
+    "noGroupsMatch": "Keine Gruppen gefunden",
+    "clear": "Leeren",
+    "copySettings": "📋 Einstellungen kopieren",
+    "pasteSettings": "📥 Einstellungen einfügen ({{count}})",
+    "pasteSettingsEmpty": "📥 Einstellungen einfügen",
+    "settingsCopied": "Einstellungen kopiert",
+    "settingsCopiedHint": "Gruppe, Ebene, Notizen, Eigenschaften, Farben, Materialien, Raumtypen, Variante, erlaubte Richtungen, Fensterkante und Style-Tags — von {{tileId}}.",
+    "settingsPasted": "Auf {{count}} Tile(s) eingefügt",
+    "highlightHint": "Hervorheben mit:",
+    "highlightLayersHint": "Ebenen hervorheben:",
+    "matchAny": "ODER",
+    "matchAll": "UND"
   },
   "tabs": {
     "building": "Gebäude",
@@ -463,6 +475,7 @@
     "tileLayoutHint": "Zelle anklicken → dann Sprite im Sheet anklicken zum Zuweisen. Automatischer Vorschub zur nächsten Zelle.",
     "properties": {
       "isHigh": "Hoch",
+      "isMedium": "Mittel",
       "isLow": "Niedrig",
       "isWallMounted": "Wandmontiert",
       "hasSurface": "Hat Oberfläche",

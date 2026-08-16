@@ -125,6 +125,7 @@ export interface AnchorRule {
 /** Spezielle Eigenschaften, die ein Möbelstück haben muss, damit es in diesen Slot passt */
 export const REQUIRED_PROPERTIES = [
   'isHigh',
+  'isMedium',
   'isLow',
   'isWallMounted',
   'hasSurface',

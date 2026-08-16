@@ -465,6 +465,44 @@ textarea.fieldInput { resize: vertical; }
 .chipPartial:hover { border-color: #cc8800 !important; color: #ddaa44 !important; }
 
 .spriteCellDirty { box-shadow: 0 0 0 2px #664400 inset; }
+.spriteHighlighted { box-shadow: 0 0 0 2px #33bbff inset; }
+
+/* ── Property highlight filter ── */
+.highlightBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 6px 12px;
+  background: #10101c;
+  border-bottom: 1px solid #2a2a3a;
+  flex-shrink: 0;
+}
+.chipHighlight {
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid #3a3a5a;
+  background: #141422;
+  color: #889;
+  font-size: 0.72rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.1s, background 0.1s, color 0.1s;
+}
+.chipHighlight:hover { border-color: #33bbff; color: #bde; }
+.chipHighlightActive { border-color: #33bbff !important; background: #0a2a3a !important; color: #88ddff !important; }
+.modeToggle { display: flex; gap: 2px; margin-left: 6px; }
+.modeBtn {
+  padding: 2px 8px;
+  background: #1e1e3a;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #99a;
+  cursor: pointer;
+  font-size: 0.72rem;
+}
+.modeBtn:hover { border-color: #33bbff; color: #ddf; }
+.modeBtnActive { border-color: #33bbff !important; color: #fff !important; background: #0a2a3a !important; }
 
 /* Aufklappbarer Abschnitts-Toggle */
 .collapsibleHeader {
@@ -535,5 +573,17 @@ textarea.fieldInput { resize: vertical; }
   border: 1px solid #2a5a2a;
   border-radius: 4px;
   padding: 1px 6px;
+}
+
+/* ── Settings copy/paste ── */
+.clipboardBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.clipboardFlash {
+  font-size: 0.7rem;
+  color: #6c6;
 }
 

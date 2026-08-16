@@ -10,6 +10,7 @@ import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import FurnishPanel from './components/FurnishPanel/FurnishPanel';
 import { WallFurniturePanel } from './components/WallFurniturePanel/WallFurniturePanel';
 import { ActiveConfigSetProvider } from './context/ActiveConfigSetContext';
+import { TileSettingsClipboardProvider } from './context/TileSettingsClipboardContext';
 import type { Building, Floor, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
@@ -210,6 +211,7 @@ function App() {
 
   return (
     <ActiveConfigSetProvider>
+    <TileSettingsClipboardProvider>
     <div className="app">
       <header className="app-header">
         <div className="app-header-top">
@@ -382,6 +384,7 @@ function App() {
       </main>
       )}
     </div>
+    </TileSettingsClipboardProvider>
     </ActiveConfigSetProvider>
   );
 }

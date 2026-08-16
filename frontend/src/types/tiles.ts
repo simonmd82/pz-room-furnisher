@@ -72,6 +72,7 @@ export interface TileDefinition {
   notes: string;
   // ── Unified boolean properties ────────────────────────────────────────
   isHigh:        boolean;
+  isMedium:      boolean;
   isLow:         boolean;
   isWallMounted: boolean;
   hasSurface:    boolean;
@@ -110,6 +111,7 @@ export interface TileConfigSetInfo {
 // ── Unified tile properties (used in all 3 tabs) ──────────────────────────
 export const TILE_PROPERTIES = [
   'isHigh',
+  'isMedium',
   'isLow',
   'isWallMounted',
   'hasSurface',
@@ -166,6 +168,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     layer: 'Furniture',
     notes: '',
     isHigh:        true,
+    isMedium:      false,
     isLow:         false,
     isWallMounted: false,
     hasSurface:    false,

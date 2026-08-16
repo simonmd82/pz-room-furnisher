@@ -4,15 +4,17 @@ import {
   getTilesPath, getSheets, getTileConfig,
   saveTileDefinition, deleteTileDefinition, sheetImageUrl, exportConfigUrl,
 } from '../../api/tilesApi';
-import type { TileSheetInfo, TileDefinition, TileConfigMap } from '../../types/tiles';
+import type { TileSheetInfo, TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
 import {
-  makeTileId, defaultDefinition, parseTileId,
+  makeTileId, defaultDefinition, parseTileId, computeTileDefId,
   layoutCols, layoutRows, COLORS, STYLE_TAGS,
   TILE_PROPERTIES,
 } from '../../types/tiles';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
+import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
+import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
 import s from './TileBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -48,9 +50,14 @@ export function TileBrowser() {
   // ── config sets (vanilla / mod packs) ───────────────────────────────────
   const { selectedSetId, reloadSets } = useActiveConfigSet();
 
+  // ── settings clipboard (shared with Furniture Templates tab) ────────────
+  const { clipboard, copiedFrom, copy: copyToClipboard } = useTileSettingsClipboard();
+  const [clipboardFlash, setClipboardFlash] = useState<string | null>(null);
+
   // ── group selector ─────────────────────────────────────────────────────
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
   const [groupInput, setGroupInput]   = useState('');
+  const [groupSearch, setGroupSearch] = useState('');
 
   // ── known categories (from settings) ──────────────────────────────────────
   const [knownCategories, setKnownCategories] = useState<string[]>([]);
@@ -87,10 +94,29 @@ export function TileBrowser() {
   /** Which layout cell is currently active for sprite assignment (null = none) */
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
 
+  // ── composite-def resolution ─────────────────────────────────────────────
+  /** root sprite tileId -> id of the multi-cell def rooted there (if any) */
+  const compositeByRoot = useMemo(() => {
+    const map = new Map<string, string>();
+    Object.values(config).forEach(d => { if (d.id !== d.tileId) map.set(d.tileId, d.id); });
+    return map;
+  }, [config]);
+
+  /**
+   * Resolves a clicked sprite's tileId to the identity key of its existing definition.
+   * A multi-cell def rooted at this sprite (e.g. one created from the Furniture Templates
+   * tab) takes priority over a plain 1x1 match — a sprite shouldn't normally have both,
+   * and if it does (leftover from before this resolution existed), the multi-cell one is
+   * the more complete/authoritative entry to keep editing.
+   */
+  const resolveDefId = useCallback((spriteTileId: string): string =>
+    compositeByRoot.get(spriteTileId) ?? spriteTileId,
+  [compositeByRoot]);
+
   // ── derived selection ─────────────────────────────────────────────────
   const selTileIds = useMemo(() =>
-    active ? selIndices.map(i => makeTileId(active.name, i)) : [],
-    [active, selIndices]);
+    active ? selIndices.map(i => resolveDefId(makeTileId(active.name, i))) : [],
+    [active, selIndices, resolveDefId]);
 
   const selDefs = useMemo(() =>
     selTileIds.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
@@ -114,12 +140,32 @@ export function TileBrowser() {
       selDefs.forEach(def => {
         const cur     = def[field] as string[];
         const updated = allHave ? cur.filter(x => x !== val) : cur.includes(val) ? cur : [...cur, val];
-        next[def.tileId] = { ...next[def.tileId], [field]: updated };
+        next[def.id] = { ...next[def.id], [field]: updated };
       });
       return next;
     });
     setDirtyIds(prev => new Set([...prev, ...selTileIds]));
     setSaveState('idle');
+  };
+
+  // ── settings copy/paste ─────────────────────────────────────────────────
+  const handleCopySettings = () => {
+    if (selDefs.length !== 1) return;
+    copyToClipboard(selDefs[0]);
+    setClipboardFlash(t('common.settingsCopied'));
+    setTimeout(() => setClipboardFlash(null), 2000);
+  };
+  const handlePasteSettings = () => {
+    if (!clipboard || selTileIds.length === 0) return;
+    setViewDefs(prev => {
+      const next = { ...prev };
+      selTileIds.forEach(id => { if (next[id]) next[id] = { ...next[id], ...clipboard }; });
+      return next;
+    });
+    setDirtyIds(prev => new Set([...prev, ...selTileIds]));
+    setSaveState('idle');
+    setClipboardFlash(t('common.settingsPasted', { count: selTileIds.length }));
+    setTimeout(() => setClipboardFlash(null), 2000);
   };
 
   // ── mixed-value helpers ────────────────────────────────────────────────
@@ -143,6 +189,42 @@ export function TileBrowser() {
 
   // ── zoom ──────────────────────────────────────────────────────────────
   const [zoom, setZoom] = useState(1);
+
+  // ── property/layer highlight filter (independent of the config panel) ──
+  const [highlightProps, setHighlightProps]   = useState<Set<TileProperty>>(new Set());
+  const [highlightMode, setHighlightMode]     = useState<'AND' | 'OR'>('OR');
+  const [highlightLayers, setHighlightLayers] = useState<Set<TileDefinition['layer']>>(new Set());
+
+  const toggleHighlightProp = (p: TileProperty) => setHighlightProps(prev => {
+    const next = new Set(prev);
+    next.has(p) ? next.delete(p) : next.add(p);
+    return next;
+  });
+  const toggleHighlightLayer = (l: TileDefinition['layer']) => setHighlightLayers(prev => {
+    const next = new Set(prev);
+    next.has(l) ? next.delete(l) : next.add(l);
+    return next;
+  });
+
+  /** Saved def for a sprite, resolving through the composite-def root if needed */
+  const getEffectiveDef = useCallback((tileId: string): TileDefinition | undefined => {
+    if (config[tileId]) return config[tileId];
+    const compositeId = compositeByRoot.get(tileId);
+    return compositeId ? config[compositeId] : undefined;
+  }, [config, compositeByRoot]);
+
+  // Properties combine via the AND/OR toggle; layers are always any-of (a tile has one
+  // layer, so "match all selected layers" would never match). The two categories combine
+  // with AND between them, so picking a layer + a property narrows further.
+  const matchesHighlight = useCallback((def: TileDefinition | undefined): boolean => {
+    if (!def || (highlightProps.size === 0 && highlightLayers.size === 0)) return false;
+    const propOk = highlightProps.size === 0 || (() => {
+      const props = [...highlightProps];
+      return highlightMode === 'AND' ? props.every(p => def[p]) : props.some(p => def[p]);
+    })();
+    const layerOk = highlightLayers.size === 0 || highlightLayers.has(def.layer);
+    return propOk && layerOk;
+  }, [highlightProps, highlightMode, highlightLayers]);
 
   // ── room types (from settings) ────────────────────────────────────────────
   const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
@@ -181,7 +263,7 @@ export function TileBrowser() {
   // ── sprite click (Ctrl = multi-select) ─────────────────────────────────
   const handleSprite = useCallback((idx: number, evt?: React.MouseEvent) => {
     if (!active) return;
-    const tileId = makeTileId(active.name, idx);
+    const spriteTileId = makeTileId(active.name, idx);
 
     // If exactly one sprite is being edited and a layout cell is selected → assign this sprite to that cell
     if (selectedCell && selIndices.length === 1) {
@@ -189,12 +271,12 @@ export function TileBrowser() {
       if (def) {
         const next = def.tileLayout.map((row, ri) =>
           row.map((cell, ci) =>
-            ri === selectedCell.row && ci === selectedCell.col ? tileId : cell
+            ri === selectedCell.row && ci === selectedCell.col ? spriteTileId : cell
           )
         );
         const updated = { ...def, tileLayout: next };
-        setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-        setDirtyIds(prev => new Set([...prev, def.tileId]));
+        setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+        setDirtyIds(prev => new Set([...prev, def.id]));
         setSaveState('idle');
 
         // Auto-advance selection to the next cell (right → next row → done)
@@ -212,10 +294,13 @@ export function TileBrowser() {
       return;
     }
 
-    // Lazily seed viewDefs for this sprite, preserving any in-progress edit
+    // Resolve to an existing def's identity (a plain match, or a multi-cell def rooted
+    // at this sprite — e.g. saved from the Furniture Templates tab) and lazily seed
+    // viewDefs for it, preserving any in-progress edit.
+    const defId = resolveDefId(spriteTileId);
     setViewDefs(prev => {
-      if (prev[tileId]) return prev;
-      return { ...prev, [tileId]: config[tileId] ? { ...config[tileId] } : defaultDefinition(tileId) };
+      if (prev[defId]) return prev;
+      return { ...prev, [defId]: config[defId] ? { ...config[defId] } : defaultDefinition(spriteTileId) };
     });
 
     if (evt?.ctrlKey || evt?.metaKey) {
@@ -229,7 +314,7 @@ export function TileBrowser() {
       setSelectedCell(null);
     }
     setSaveState('idle');
-  }, [active, config, selectedCell, selIndices, selTileIds, viewDefs]);
+  }, [active, config, selectedCell, selIndices, selTileIds, viewDefs, resolveDefId]);
 
   // ── layout manipulation (single-select only) ───────────────────────────
   const clearCell = (row: number, col: number) => {
@@ -241,40 +326,40 @@ export function TileBrowser() {
         r.map((c, ci) => ri === row && ci === col ? '' : c)
       ),
     };
-    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.id]));
     setSaveState('idle');
   };
   const addRow = () => {
     if (selDefs.length !== 1) return;
     const def = selDefs[0];
     const updated = { ...def, tileLayout: [...def.tileLayout, Array(layoutCols(def)).fill('')] };
-    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.id]));
     setSaveState('idle');
   };
   const removeRow = () => {
     if (selDefs.length !== 1 || layoutRows(selDefs[0]) <= 1) return;
     const def = selDefs[0];
     const updated = { ...def, tileLayout: def.tileLayout.slice(0, -1) };
-    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.id]));
     setSaveState('idle');
   };
   const addCol = () => {
     if (selDefs.length !== 1) return;
     const def = selDefs[0];
     const updated = { ...def, tileLayout: def.tileLayout.map(r => [...r, '']) };
-    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.id]));
     setSaveState('idle');
   };
   const removeCol = () => {
     if (selDefs.length !== 1 || layoutCols(selDefs[0]) <= 1) return;
     const def = selDefs[0];
     const updated = { ...def, tileLayout: def.tileLayout.map(r => r.slice(0, -1)) };
-    setViewDefs(prev => ({ ...prev, [def.tileId]: updated }));
-    setDirtyIds(prev => new Set([...prev, def.tileId]));
+    setViewDefs(prev => ({ ...prev, [def.id]: updated }));
+    setDirtyIds(prev => new Set([...prev, def.id]));
     setSaveState('idle');
   };
 
@@ -286,19 +371,40 @@ export function TileBrowser() {
   };
 
   // ── save ALL dirty (sequenziell – verhindert gleichzeitige Datei-Schreibzugriffe) ──
+  // Recomputes each def's identity key from its current footprint before saving (same
+  // convention as the Furniture Templates tab), and cleans up the old key if the
+  // footprint changed shape since it was last saved.
   const handleSave = async () => {
     if (dirtyIds.size === 0) return;
     setSaveState('saving');
     try {
-      const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
-      const saved: TileDefinition[] = [];
-      for (const def of toSave) {
-        saved.push(await saveTileDefinition(def, selectedSetId));
+      const drafts = [...dirtyIds]
+        .map(oldId => ({ oldId, def: viewDefs[oldId] }))
+        .filter((e): e is { oldId: string; def: TileDefinition } => !!e.def);
+
+      const nextConfig = { ...config };
+      const viewUpdates: Record<string, TileDefinition> = {};
+      const staleIds: string[] = [];
+
+      for (const { oldId, def } of drafts) {
+        const newId = computeTileDefId(def.tileId, def.tileLayout);
+        const saved = await saveTileDefinition({ ...def, id: newId }, selectedSetId);
+        if (newId !== oldId) {
+          await deleteTileDefinition(oldId, selectedSetId);
+          delete nextConfig[oldId];
+          staleIds.push(oldId);
+        }
+        nextConfig[saved.id] = saved;
+        viewUpdates[saved.id] = saved;
       }
-      const next = { ...config };
-      saved.forEach(def => { next[def.tileId] = def; });
-      setConfig(next);
-      recomputeDefinedCounts(next);
+
+      setConfig(nextConfig);
+      recomputeDefinedCounts(nextConfig);
+      setViewDefs(prev => {
+        const next = { ...prev, ...viewUpdates };
+        staleIds.forEach(id => delete next[id]);
+        return next;
+      });
       setDirtyIds(new Set());
       setSaveState('ok');
     } catch { setSaveState('err'); }
@@ -307,13 +413,18 @@ export function TileBrowser() {
   const handleDelete = async () => {
     if (selDefs.length !== 1) return;
     const def = selDefs[0];
-    await deleteTileDefinition(def.tileId, selectedSetId);
+    await deleteTileDefinition(def.id, selectedSetId);
     const next = { ...config };
-    delete next[def.tileId];
+    delete next[def.id];
     setConfig(next);
     recomputeDefinedCounts(next);
-    setViewDefs(prev => ({ ...prev, [def.tileId]: defaultDefinition(def.tileId) }));
-    setDirtyIds(prev => { const nextDirty = new Set(prev); nextDirty.delete(def.tileId); return nextDirty; });
+    setViewDefs(prev => {
+      const nextViews = { ...prev };
+      delete nextViews[def.id];
+      nextViews[def.tileId] = defaultDefinition(def.tileId);
+      return nextViews;
+    });
+    setDirtyIds(prev => { const nextDirty = new Set(prev); nextDirty.delete(def.id); return nextDirty; });
   };
 
   // ── helpers ───────────────────────────────────────────────────────────
@@ -405,6 +516,38 @@ export function TileBrowser() {
                 >{z}×</button>
               ))}
             </div>
+            <div className={s.highlightBar}>
+              <span className={s.fieldHint}>{t('common.highlightHint')}</span>
+              {TILE_PROPERTIES.map(p => (
+                <span
+                  key={p}
+                  className={`${s.chipHighlight} ${highlightProps.has(p) ? s.chipHighlightActive : ''}`}
+                  onClick={() => toggleHighlightProp(p)}
+                >{t(`tileBrowser.properties.${p}`)}</span>
+              ))}
+              {highlightProps.size > 0 && (
+                <div className={s.modeToggle}>
+                  <button
+                    className={`${s.modeBtn} ${highlightMode === 'OR' ? s.modeBtnActive : ''}`}
+                    onClick={() => setHighlightMode('OR')}
+                  >{t('common.matchAny')}</button>
+                  <button
+                    className={`${s.modeBtn} ${highlightMode === 'AND' ? s.modeBtnActive : ''}`}
+                    onClick={() => setHighlightMode('AND')}
+                  >{t('common.matchAll')}</button>
+                </div>
+              )}
+            </div>
+            <div className={s.highlightBar}>
+              <span className={s.fieldHint}>{t('common.highlightLayersHint')}</span>
+              {FURNITURE_LAYERS.map(l => (
+                <span
+                  key={l}
+                  className={`${s.chipHighlight} ${highlightLayers.has(l) ? s.chipHighlightActive : ''}`}
+                  onClick={() => toggleHighlightLayer(l)}
+                >{l}</span>
+              ))}
+            </div>
             <div className={s.viewerScroll}>
               <div
                 className={s.sheetWrap}
@@ -426,18 +569,20 @@ export function TileBrowser() {
                   }}
                 >
                   {Array.from({ length: active.spriteCount }, (_, i) => {
-                    const tileId   = makeTileId(active.name, i);
-                    const defined  = !!config[tileId];
-                    const selected = selIndices.includes(i);
-                    const dirty    = dirtyIds.has(tileId);
+                    const tileId     = makeTileId(active.name, i);
+                    const defined    = !!config[tileId] || compositeByRoot.has(tileId);
+                    const selected   = selIndices.includes(i);
+                    const dirty      = dirtyIds.has(tileId);
+                    const highlighted = matchesHighlight(getEffectiveDef(tileId));
                     return (
                       <div
                         key={i}
                         className={[
                           s.spriteCell,
-                          defined  ? s.spriteDefined  : '',
-                          selected ? s.spriteSelected : '',
-                          dirty    ? s.spriteCellDirty : '',
+                          defined     ? s.spriteDefined     : '',
+                          selected    ? s.spriteSelected    : '',
+                          dirty       ? s.spriteCellDirty   : '',
+                          highlighted ? s.spriteHighlighted : '',
                           selectedCell ? s.spriteCellAssignMode : '',
                         ].join(' ')}
                         onClick={evt => handleSprite(i, evt)}
@@ -465,8 +610,25 @@ export function TileBrowser() {
               {selDefs.length === 1
                 ? <span className={s.cfgTileId} title={selDefs[0].tileId}>{selDefs[0].tileId}</span>
                 : <span className={s.cfgTileId}>{t('tileBrowser.spritesSelected', { count: selDefs.length })}</span>}
-              {selDefs.length === 1 && config[selDefs[0].tileId] && <span className={s.alreadyImported}>{t('tileBrowser.alreadyConfigured')}</span>}
+              {selDefs.length === 1 && config[selDefs[0].id] && <span className={s.alreadyImported}>{t('tileBrowser.alreadyConfigured')}</span>}
               {dirtyIds.size > 0 && <span className={s.pendingBadge}>{dirtyIds.size} ✎</span>}
+            </div>
+
+            {/* Settings copy/paste */}
+            <div className={s.clipboardBar}>
+              <button
+                className={s.layoutBtn}
+                disabled={selDefs.length !== 1}
+                title={selDefs.length === 1 ? selDefs[0].tileId : undefined}
+                onClick={handleCopySettings}
+              >{t('common.copySettings')}</button>
+              <button
+                className={s.layoutBtn}
+                disabled={!clipboard || selTileIds.length === 0}
+                title={clipboard && copiedFrom ? t('common.settingsCopiedHint', { tileId: copiedFrom }) : undefined}
+                onClick={handlePasteSettings}
+              >{selTileIds.length > 1 ? t('common.pasteSettings', { count: selTileIds.length }) : t('common.pasteSettingsEmpty')}</button>
+              {clipboardFlash && <span className={s.clipboardFlash}>{clipboardFlash}</span>}
             </div>
 
             {/* Sprite preview (root tile) – single-select only */}
@@ -499,21 +661,35 @@ export function TileBrowser() {
             {(() => {
               const mixed  = isMixed(d => d.group);
               const curVal = sv(d => d.group);
+              const q = groupSearch.trim().toLowerCase();
+              const groupChips = allGroups
+                .map(g => ({
+                  g,
+                  isActive:  !mixed && curVal === g,
+                  isPartial:  mixed && selDefs.some(d => d.group === g),
+                }))
+                .filter(({ g, isActive, isPartial }) => isActive || isPartial || !q || g.toLowerCase().includes(q));
               return (
                 <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
                   <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.group')}{mixed ? ' ⚠' : ''}</span>
+                  {allGroups.length > 8 && (
+                    <input
+                      className={s.fieldInput}
+                      placeholder={t('common.searchGroupsPlaceholder')}
+                      value={groupSearch}
+                      onChange={e => setGroupSearch(e.target.value)}
+                      style={{ width: '100%' }}
+                    />
+                  )}
                   <div className={s.chipGroup}>
-                    {allGroups.map(g => {
-                      const isActive  = !mixed && curVal === g;
-                      const isPartial =  mixed && selDefs.some(d => d.group === g);
-                      return (
-                        <span
-                          key={g}
-                          className={`${s.chip} ${isActive ? s.chipActive : ''} ${isPartial ? s.chipPartial : ''}`}
-                          onClick={() => applyField('group', g)}
-                        >{g}</span>
-                      );
-                    })}
+                    {groupChips.map(({ g, isActive, isPartial }) => (
+                      <span
+                        key={g}
+                        className={`${s.chip} ${isActive ? s.chipActive : ''} ${isPartial ? s.chipPartial : ''}`}
+                        onClick={() => applyField('group', g)}
+                      >{g}</span>
+                    ))}
+                    {groupChips.length === 0 && <span className={s.fieldHint}>{t('common.noGroupsMatch')}</span>}
                   </div>
                   <div style={{ display: 'flex', gap: 4, width: '100%' }}>
                     <input
@@ -546,6 +722,21 @@ export function TileBrowser() {
                 </div>
               );
             })()}
+            {/* Allowed placement directions */}
+            <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+              <span className={s.fieldLabel}>{t('furnitureBrowser.allowedOrients')} <span className={s.fieldHint}>{t('furnitureBrowser.emptyMeansAll')}</span></span>
+              <div className={s.chipGroup}>
+                {(['N','S','E','W','NW','NE','SW','SE'] as const).map(o => {
+                  const st = arrState(d => d.allowedOrients ?? [], o);
+                  return (
+                    <span key={o}
+                      className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                      onClick={() => toggleArrayField('allowedOrients', o)}>{o}</span>
+                  );
+                })}
+              </div>
+            </div>
+
             {(() => {
               const mixed  = isMixed(d => d.layer);
               const curVal = sv(d => d.layer);
@@ -775,7 +966,7 @@ export function TileBrowser() {
               <p className={s.saveHint}>
                 {t('tileBrowser.saveHintPre')}<em>tile-definitions.json</em>{t('tileBrowser.saveHintPost')}
               </p>
-              {selDefs.length === 1 && config[selDefs[0].tileId] && (
+              {selDefs.length === 1 && config[selDefs[0].id] && (
                 <button className={s.deleteBtn} onClick={handleDelete}> {t('tileBrowser.delete')}</button>
               )}
             </div>

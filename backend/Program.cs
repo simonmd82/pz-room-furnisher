@@ -45,8 +45,11 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseDefaultFiles();
-    app.UseStaticFiles();
+    if (Directory.Exists(app.Environment.WebRootPath))
+    {
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
+    }
 
     var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
     lifetime.ApplicationStarted.Register(() =>
