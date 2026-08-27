@@ -5,5 +5,12 @@
     "description": "Built-in base game furniture",
     "enabled": true,
     "file": "tile-definitions.json"
+  },
+  {
+    "id": "melos",
+    "name": "Melos",
+    "description": "",
+    "enabled": false,
+    "file": "TileConfigSets\\melos.json"
   }
 ]

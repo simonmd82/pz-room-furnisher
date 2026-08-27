@@ -250,6 +250,16 @@ public class RoomTypeSlot
     public string TileGroupId { get; set; } = string.Empty;
 
     /// <summary>
+    /// Nur relevant wenn TileGroupId gesetzt. Standard (false) = bei fehlendem Match im
+    /// gesperrten VariantGroup wird auf den ungefilterten Pool zurückgefallen (Slot wird
+    /// trotzdem platziert, ggf. mit abweichender Farbe/Variante). true = kein Match →
+    /// keine Kandidaten (Slot wird komplett übersprungen statt mit falscher Variante
+    /// platziert zu werden). Für optionale Slots (Required=false) hängt eine hängende
+    /// Theke lieber gar nicht als in falscher Farbe über der Bodentheke.
+    /// </summary>
+    public bool RequireTileGroupMatch { get; set; } = false;
+
+    /// <summary>
     /// Material-Filter für diesen Slot (AND-verknüpft mit Farbfilter).
     ///   Leer   = kein Materialfilter.
     ///   "none" = kein Materialfilter für diesen Slot (explizit deaktiviert).
@@ -281,6 +291,17 @@ public class LayoutPoolCompanion
     public string SlotGroupId        { get; set; } = string.Empty;
     /// <summary>Gewichtung innerhalb der Companion-Gruppe (1–10). Nur relevant wenn SlotGroupId gesetzt.</summary>
     public int GroupWeight           { get; set; } = 5;
+    /// <summary>See RoomTypeSlot.TileGroupId. Lets a companion match its parent's color/variant group.</summary>
+    public string TileGroupId        { get; set; } = string.Empty;
+    /// <summary>See RoomTypeSlot.RequireTileGroupMatch.</summary>
+    public bool RequireTileGroupMatch { get; set; } = false;
+    /// <summary>
+    /// true (default) = companion must place or the fallback pass retries with a smaller pool
+    /// (existing behavior, e.g. Cooking Hood/Sink). false = best-effort: density-gated at
+    /// expansion time and never counted toward the fallback pass's missing-required retry check,
+    /// so a companion that can't fit never shrinks or cascades into skipping its siblings.
+    /// </summary>
+    public bool Required             { get; set; } = true;
 }
 
 /// <summary>A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove").</summary>
@@ -343,6 +364,8 @@ public class LayoutPool
     public string MaterialGroupId    { get; set; } = string.Empty;
     public string TileGroupId        { get; set; } = string.Empty;
     public List<LayoutPoolRequiredSlot> RequiredSlots { get; set; } = [];
+    /// <summary>Companions spawned for the pool's default (non-required-category) filler positions.</summary>
+    public List<LayoutPoolCompanion> DefaultCompanions { get; set; } = [];
 }
 
 /// <summary>

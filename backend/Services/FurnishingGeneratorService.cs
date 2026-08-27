@@ -349,7 +349,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         placements.RemoveRange(placementsCountBefore, placements.Count - placementsCountBefore);
                     }
 
-                    var poolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, countStep, rng, log) : [];
+                    var poolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, countStep, rng, log, density) : [];
                     var slotsToPlace = poolSlots.Count > 0
                         ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
                         : slotsBase;
@@ -687,7 +687,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 }
 
                 // Expand pool slots at current count step and merge
-                var poolSlots = ExpandPoolSlots(variant, roomSize, countStep, rng, attemptLog);
+                var poolSlots = ExpandPoolSlots(variant, roomSize, countStep, rng, attemptLog, density);
                 var slotsToPlace = poolSlots.Count > 0
                     ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
                     : slotsBase;
@@ -951,7 +951,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     /// ExpandLayoutSlotSequence and SearchCompositeLayout unchanged.
     /// </summary>
     private static List<RoomTypeSlot> ExpandPoolSlots(
-        LayoutVariant variant, string roomSizeKey, int countStep, Random rng, List<string> log)
+        LayoutVariant variant, string roomSizeKey, int countStep, Random rng, List<string> log, double density)
     {
         var result = new List<RoomTypeSlot>();
         if (variant.Pools is null || variant.Pools.Count == 0) return result;
@@ -1047,8 +1047,10 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 };
                 result.Add(slot);
 
-                // Spawn companion slots for required types that have them
-                if (rs?.Companions is { Count: > 0 } companions)
+                // Spawn companion slots for required types that have them, or for default
+                // filler positions via the pool's DefaultCompanions.
+                var companionSource = rs is not null ? rs.Companions : pool.DefaultCompanions;
+                if (companionSource is { Count: > 0 } companions)
                 {
                     // Resolve "one-of" companion groups: companions sharing a non-empty SlotGroupId
                     // are alternatives, not additions — roll exactly one winner (weighted by
@@ -1075,13 +1077,20 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         var c = companions[ci];
                         if (!string.IsNullOrEmpty(c.SlotGroupId) && !companionGroupWinners.Contains(ci))
                             continue;
+                        // Non-required companions (e.g. a hanging counter above a floor counter)
+                        // are density-gated like an ordinary optional 0-1 slot (SelectSlots' own
+                        // single-optional-slot branch) instead of always being attempted — this
+                        // is what makes "how many counters get a hanging companion" scale with
+                        // density instead of always being every placed counter.
+                        if (!c.Required && rng.NextDouble() >= density)
+                            continue;
                         var companionId = $"{slotId}_companion_{ci}";
                         result.Add(new RoomTypeSlot
                         {
                             Id                 = companionId,
                             Label              = c.Label,
                             Footprint          = new SlotFootprint { Width = 1, Height = 1, CanRotate = false },
-                            Required           = true,
+                            Required           = c.Required,
                             Priority           = 0,
                             CountBySize        = [],
                             AllowedCategories  = new Dictionary<string, int>(c.AllowedCategories),
@@ -1096,7 +1105,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             CellRequiredProperties = [..c.CellRequiredProperties],
                             ColorGroupId       = string.Empty,
                             MaterialGroupId    = string.Empty,
-                            TileGroupId        = string.Empty,
+                            TileGroupId        = c.TileGroupId,
+                            RequireTileGroupMatch = c.RequireTileGroupMatch,
                             SlotGroupId        = string.Empty,
                             SlotGroupMode      = string.Empty,
                             GroupWeight        = 5,
@@ -1202,6 +1212,38 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             openingGroups,
             gapCells,
             decorPathCells);
+
+        // An optional slot (e.g. a hanging counter above a floor counter) with nowhere to go
+        // is simply omitted — it must never sink the whole backtracking branch and force a
+        // smaller/worse layout for everything else in it. A required slot still hard-fails
+        // this branch (falls through to the empty-candidates case below) exactly as before.
+        if (candidates.Count == 0 && !slot.Required)
+        {
+            return SearchCompositeLayout(
+                index + 1,
+                orderedSlots,
+                state,
+                floorIndex,
+                roomCells,
+                cellWalls,
+                doorCells,
+                windowCells,
+                pathCells,
+                allTiles,
+                config,
+                rng,
+                roomTypeName,
+                roomIndex1Based,
+                selectionAnchorCol,
+                selectionAnchorRow,
+                innerWallKeys,
+                mainSubRoomCells,
+                openingGroups,
+                gapCells,
+                ref visitedNodes,
+                out finalState,
+                decorPathCells);
+        }
 
         foreach (var candidate in candidates)
         {
@@ -1450,6 +1492,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 .ToList();
             if (grouped.Count > 0)
                 candidates = grouped;
+            else if (slot.RequireTileGroupMatch)
+                candidates = [];
         }
 
         if (!string.IsNullOrEmpty(slot.MaterialGroupId)
@@ -1871,13 +1915,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     {
         if (string.IsNullOrEmpty(baseTile.VariantGroup)) return baseTile;
 
+        // Same VariantGroup can legitimately be shared across layers (e.g. a hanging counter's
+        // Wallfurniture tile shares its floor counter's VariantGroup so tileGroupId can lock them
+        // to matching colors) — Layer must also match, or this can silently swap in a tile from a
+        // completely different layer just because the orientation happened to fit.
         var exact = allTiles.Values.FirstOrDefault(t =>
             t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
             t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
         if (exact is not null) return exact;
 
         var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
             t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
             t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
         if (byAllowedOrient is not null) return byAllowedOrient;
 
@@ -1888,6 +1938,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         var axisFallback = allTiles.Values.FirstOrDefault(t =>
             t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
             ((IsNorthSouth(desiredOrient) && IsNorthSouth(t.Orientation)) ||
              (IsEastWest(desiredOrient) && IsEastWest(t.Orientation))));
 
@@ -2066,6 +2117,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 candidates = grouped;
                 log.Add($"    [TILEGROUP] '{slot.Id}': group='{slot.TileGroupId}' → filter variantGroup='{requiredVariantGroup}' ({grouped.Count} tiles)");
             }
+            else if (slot.RequireTileGroupMatch)
+            {
+                candidates = [];
+                log.Add($"    [TILEGROUP] '{slot.Id}': group='{slot.TileGroupId}' → no tile matches variantGroup='{requiredVariantGroup}', requireTileGroupMatch=true, skipping");
+            }
             // else: kein Match → ungefilterten Pool behalten
         }
 
@@ -2139,9 +2195,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 if (string.IsNullOrEmpty(tile.VariantGroup)) return tile;
 
+                // Same VariantGroup can legitimately be shared across layers (e.g. a hanging
+                // counter's Wallfurniture tile shares its floor counter's VariantGroup so
+                // tileGroupId can lock them to matching colors) — Layer must also match, or this
+                // can silently swap in a tile from a completely different layer just because the
+                // orientation happened to fit.
+
                 // 1) Exakte Orientierung bevorzugen (z.B. N, S, E, W vorhanden).
                 var exact = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
                     t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
                 if (exact is not null) return exact;
 
@@ -2149,6 +2212,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 // Viele Sets haben nur N/W als Basis, aber allowedOrients enthält N/S bzw. E/W.
                 var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
                     t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
                 if (byAllowedOrient is not null) return byAllowedOrient;
 
@@ -2160,6 +2224,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 var axisFallback = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+                    t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
                     ((IsNorthSouth(desiredOrient) && IsNorthSouth(t.Orientation)) ||
                      (IsEastWest(desiredOrient) && IsEastWest(t.Orientation))));
 
@@ -2893,8 +2958,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             if (string.IsNullOrEmpty(baseTile.VariantGroup))
                 return one.HasValue ? [one.Value] : [];
 
+            // Layer must match too — a shared VariantGroup can legitimately span layers (e.g. a
+            // hanging counter's Wallfurniture tile shares its floor counter's VariantGroup so
+            // tileGroupId can lock them to matching colors), and without this guard a floor
+            // slot's own variant search could pick up a Wallfurniture tile of the same group.
             var groupVariants = allTiles.Values
-                .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase))
+                .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase)
+                         && t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             var cellWallDirs = cellWalls.TryGetValue(cell, out var dirsAtCell) ? dirsAtCell : new HashSet<Direction>();
@@ -2967,7 +3037,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             return [(baseTile, baseTile.Orientation, Direction.N)];
 
         var variants = allTiles.Values
-            .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase))
+            .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase)
+                     && t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase))
             .Where(t => t.AllowedOrients.Count == 0
                      || t.AllowedOrients.Any(o => o.Equals(t.Orientation, StringComparison.OrdinalIgnoreCase)))
             .OrderBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)

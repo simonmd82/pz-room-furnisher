@@ -5198,6 +5198,237 @@
         "colorGroupId": "",
         "tileGroupId": "",
         "materialGroupId": ""
+      },
+      {
+        "id": "slot_counter_hanging_main",
+        "label": "Slot Counter Hanging Main",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_main_2",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_counter_main_2",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group",
+        "requireTileGroupMatch": true,
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_counter_hanging_corner_left",
+        "label": "Slot Counter Hanging Corner Left",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": true,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_left_corner",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_counter_l_left_corner",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group",
+        "requireTileGroupMatch": true,
+        "materialGroupId": ""
+      },
+      {
+        "id": "slot_counter_hanging_corner_right",
+        "label": "Slot Counter Hanging Corner Right",
+        "footprint": {
+          "width": 1,
+          "height": 1,
+          "canRotate": false
+        },
+        "required": false,
+        "priority": 0,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 1
+          },
+          "XL": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "allowedCategories": {
+          "Counter": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": true,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Wallfurniture",
+        "requiredProperties": [
+          "isHigh",
+          "isWallMounted"
+        ],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_counter_l_right_corner",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": false,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "slot_counter_l_right_corner",
+        "colorGroupId": "",
+        "tileGroupId": "counter_tile_group",
+        "requireTileGroupMatch": true,
+        "materialGroupId": ""
       }
     ],
     "layoutVariants": [
@@ -5206,7 +5437,8 @@
         "label": "Kitchen Line Shape",
         "weight": 3,
         "slotIds": [
-          "slot_counter_main_2"
+          "slot_counter_main_2",
+          "slot_counter_hanging_main"
         ],
         "pools": [
           {
@@ -5302,7 +5534,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   }
                 ],
                 "fallbackRules": []
@@ -5338,7 +5572,31 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
@@ -5369,7 +5627,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5385,7 +5645,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5401,10 +5663,58 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
+              }
+            ],
+            "defaultCompanions": [
+              {
+                "anchorPosition": "Center",
+                "orient": "match",
+                "allowedCategories": {
+                  "Counter": 5
+                },
+                "requiredProperties": [
+                  "isHigh",
+                  "isWallMounted"
+                ],
+                "requiredLayer": "Wallfurniture",
+                "label": "Hanging Counter",
+                "blocksFrontCell": false,
+                "blocksPlacement": false,
+                "softBlocks": false,
+                "cellRequiredProperties": [],
+                "slotGroupId": "",
+                "groupWeight": 5,
+                "tileGroupId": "counter_tile_group",
+                "requireTileGroupMatch": true,
+                "required": false
               }
             ]
           }
@@ -5417,7 +5727,8 @@
         "weight": 3,
         "slotIds": [
           "slot_counter_main_2",
-          "slot_counter_l_left_corner"
+          "slot_counter_l_left_corner",
+          "slot_counter_hanging_corner_left"
         ],
         "pools": [
           {
@@ -5513,7 +5824,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   }
                 ],
                 "fallbackRules": []
@@ -5549,7 +5862,31 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
@@ -5580,7 +5917,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5596,7 +5935,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5612,10 +5953,58 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
+              }
+            ],
+            "defaultCompanions": [
+              {
+                "anchorPosition": "Center",
+                "orient": "match",
+                "allowedCategories": {
+                  "Counter": 5
+                },
+                "requiredProperties": [
+                  "isHigh",
+                  "isWallMounted"
+                ],
+                "requiredLayer": "Wallfurniture",
+                "label": "Hanging Counter",
+                "blocksFrontCell": false,
+                "blocksPlacement": false,
+                "softBlocks": false,
+                "cellRequiredProperties": [],
+                "slotGroupId": "",
+                "groupWeight": 5,
+                "tileGroupId": "counter_tile_group",
+                "requireTileGroupMatch": true,
+                "required": false
               }
             ]
           }
@@ -5628,7 +6017,8 @@
         "weight": 3,
         "slotIds": [
           "slot_counter_main_2",
-          "slot_counter_l_right_corner"
+          "slot_counter_l_right_corner",
+          "slot_counter_hanging_corner_right"
         ],
         "pools": [
           {
@@ -5724,7 +6114,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   }
                 ],
                 "fallbackRules": []
@@ -5760,7 +6152,31 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
@@ -5791,7 +6207,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5807,7 +6225,9 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
                   },
                   {
                     "anchorPosition": "Center",
@@ -5823,10 +6243,58 @@
                     "softBlocks": false,
                     "cellRequiredProperties": [],
                     "slotGroupId": "group_cooking_appliance",
-                    "groupWeight": 5
+                    "groupWeight": 5,
+                    "tileGroupId": "",
+                    "required": true
+                  },
+                  {
+                    "anchorPosition": "Center",
+                    "orient": "match",
+                    "allowedCategories": {
+                      "Counter": 5
+                    },
+                    "requiredProperties": [
+                      "isHigh",
+                      "isWallMounted"
+                    ],
+                    "requiredLayer": "Wallfurniture",
+                    "label": "Hanging Counter",
+                    "blocksFrontCell": false,
+                    "blocksPlacement": false,
+                    "softBlocks": false,
+                    "cellRequiredProperties": [],
+                    "slotGroupId": "",
+                    "groupWeight": 5,
+                    "tileGroupId": "counter_tile_group",
+                    "requireTileGroupMatch": true,
+                    "required": false
                   }
                 ],
                 "fallbackRules": []
+              }
+            ],
+            "defaultCompanions": [
+              {
+                "anchorPosition": "Center",
+                "orient": "match",
+                "allowedCategories": {
+                  "Counter": 5
+                },
+                "requiredProperties": [
+                  "isHigh",
+                  "isWallMounted"
+                ],
+                "requiredLayer": "Wallfurniture",
+                "label": "Hanging Counter",
+                "blocksFrontCell": false,
+                "blocksPlacement": false,
+                "softBlocks": false,
+                "cellRequiredProperties": [],
+                "slotGroupId": "",
+                "groupWeight": 5,
+                "tileGroupId": "counter_tile_group",
+                "requireTileGroupMatch": true,
+                "required": false
               }
             ]
           }

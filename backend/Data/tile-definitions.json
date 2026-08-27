@@ -45930,5 +45930,2381 @@
       "E"
     ],
     "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_027": {
+    "id": "fixtures_counters_01_027",
+    "tileId": "fixtures_counters_01_027",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_027"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_026": {
+    "id": "fixtures_counters_01_026",
+    "tileId": "fixtures_counters_01_026",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_026"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_024": {
+    "id": "fixtures_counters_01_024",
+    "tileId": "fixtures_counters_01_024",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_024"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_025": {
+    "id": "fixtures_counters_01_025",
+    "tileId": "fixtures_counters_01_025",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_025"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_169": {
+    "id": "fixtures_counters_01_169",
+    "tileId": "fixtures_counters_01_169",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_169"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_168": {
+    "id": "fixtures_counters_01_168",
+    "tileId": "fixtures_counters_01_168",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_168"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_171": {
+    "id": "fixtures_counters_01_171",
+    "tileId": "fixtures_counters_01_171",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_171"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_170": {
+    "id": "fixtures_counters_01_170",
+    "tileId": "fixtures_counters_01_170",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_170"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_02",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_023": {
+    "id": "fixtures_counters_01_023",
+    "tileId": "fixtures_counters_01_023",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_023"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_020": {
+    "id": "fixtures_counters_01_020",
+    "tileId": "fixtures_counters_01_020",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_020"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_165": {
+    "id": "fixtures_counters_01_165",
+    "tileId": "fixtures_counters_01_165",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_165"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_167": {
+    "id": "fixtures_counters_01_167",
+    "tileId": "fixtures_counters_01_167",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_167"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_166": {
+    "id": "fixtures_counters_01_166",
+    "tileId": "fixtures_counters_01_166",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_166"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_164": {
+    "id": "fixtures_counters_01_164",
+    "tileId": "fixtures_counters_01_164",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_164"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_021": {
+    "id": "fixtures_counters_01_021",
+    "tileId": "fixtures_counters_01_021",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_021"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_022": {
+    "id": "fixtures_counters_01_022",
+    "tileId": "fixtures_counters_01_022",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_022"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_031": {
+    "id": "fixtures_counters_01_031",
+    "tileId": "fixtures_counters_01_031",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_031"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_028": {
+    "id": "fixtures_counters_01_028",
+    "tileId": "fixtures_counters_01_028",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_028"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_173": {
+    "id": "fixtures_counters_01_173",
+    "tileId": "fixtures_counters_01_173",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_173"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_175": {
+    "id": "fixtures_counters_01_175",
+    "tileId": "fixtures_counters_01_175",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_175"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_174": {
+    "id": "fixtures_counters_01_174",
+    "tileId": "fixtures_counters_01_174",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_174"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_172": {
+    "id": "fixtures_counters_01_172",
+    "tileId": "fixtures_counters_01_172",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_172"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_029": {
+    "id": "fixtures_counters_01_029",
+    "tileId": "fixtures_counters_01_029",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_029"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_030": {
+    "id": "fixtures_counters_01_030",
+    "tileId": "fixtures_counters_01_030",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_030"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Metal"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen",
+      "Laundry",
+      "Garagestorage"
+    ],
+    "variantGroup": "counter_metal_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_019": {
+    "id": "fixtures_counters_01_019",
+    "tileId": "fixtures_counters_01_019",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_019"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_018": {
+    "id": "fixtures_counters_01_018",
+    "tileId": "fixtures_counters_01_018",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_018"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_017": {
+    "id": "fixtures_counters_01_017",
+    "tileId": "fixtures_counters_01_017",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_017"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_016": {
+    "id": "fixtures_counters_01_016",
+    "tileId": "fixtures_counters_01_016",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_016"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_161": {
+    "id": "fixtures_counters_01_161",
+    "tileId": "fixtures_counters_01_161",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_161"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_160": {
+    "id": "fixtures_counters_01_160",
+    "tileId": "fixtures_counters_01_160",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_160"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_162": {
+    "id": "fixtures_counters_01_162",
+    "tileId": "fixtures_counters_01_162",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_162"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_163": {
+    "id": "fixtures_counters_01_163",
+    "tileId": "fixtures_counters_01_163",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_163"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_151": {
+    "id": "fixtures_counters_01_151",
+    "tileId": "fixtures_counters_01_151",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_151"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_148": {
+    "id": "fixtures_counters_01_148",
+    "tileId": "fixtures_counters_01_148",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_148"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_181": {
+    "id": "fixtures_counters_01_181",
+    "tileId": "fixtures_counters_01_181",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_181"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_183": {
+    "id": "fixtures_counters_01_183",
+    "tileId": "fixtures_counters_01_183",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_183"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_182": {
+    "id": "fixtures_counters_01_182",
+    "tileId": "fixtures_counters_01_182",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_182"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_180": {
+    "id": "fixtures_counters_01_180",
+    "tileId": "fixtures_counters_01_180",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_180"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_149": {
+    "id": "fixtures_counters_01_149",
+    "tileId": "fixtures_counters_01_149",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_149"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_150": {
+    "id": "fixtures_counters_01_150",
+    "tileId": "fixtures_counters_01_150",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_150"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_black_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_155": {
+    "id": "fixtures_counters_01_155",
+    "tileId": "fixtures_counters_01_155",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_155"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_152": {
+    "id": "fixtures_counters_01_152",
+    "tileId": "fixtures_counters_01_152",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_152"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_185": {
+    "id": "fixtures_counters_01_185",
+    "tileId": "fixtures_counters_01_185",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_185"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_187": {
+    "id": "fixtures_counters_01_187",
+    "tileId": "fixtures_counters_01_187",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_187"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_186": {
+    "id": "fixtures_counters_01_186",
+    "tileId": "fixtures_counters_01_186",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_186"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_184": {
+    "id": "fixtures_counters_01_184",
+    "tileId": "fixtures_counters_01_184",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_184"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_153": {
+    "id": "fixtures_counters_01_153",
+    "tileId": "fixtures_counters_01_153",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_153"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_154": {
+    "id": "fixtures_counters_01_154",
+    "tileId": "fixtures_counters_01_154",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_154"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_159": {
+    "id": "fixtures_counters_01_159",
+    "tileId": "fixtures_counters_01_159",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_159"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_156": {
+    "id": "fixtures_counters_01_156",
+    "tileId": "fixtures_counters_01_156",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_156"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_189": {
+    "id": "fixtures_counters_01_189",
+    "tileId": "fixtures_counters_01_189",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_189"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_191": {
+    "id": "fixtures_counters_01_191",
+    "tileId": "fixtures_counters_01_191",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_191"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_190": {
+    "id": "fixtures_counters_01_190",
+    "tileId": "fixtures_counters_01_190",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_190"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_188": {
+    "id": "fixtures_counters_01_188",
+    "tileId": "fixtures_counters_01_188",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_188"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_157": {
+    "id": "fixtures_counters_01_157",
+    "tileId": "fixtures_counters_01_157",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_157"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_158": {
+    "id": "fixtures_counters_01_158",
+    "tileId": "fixtures_counters_01_158",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_158"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_147": {
+    "id": "fixtures_counters_01_147",
+    "tileId": "fixtures_counters_01_147",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_147"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_144": {
+    "id": "fixtures_counters_01_144",
+    "tileId": "fixtures_counters_01_144",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_144"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_146": {
+    "id": "fixtures_counters_01_146",
+    "tileId": "fixtures_counters_01_146",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_146"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_145": {
+    "id": "fixtures_counters_01_145",
+    "tileId": "fixtures_counters_01_145",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_145"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_176": {
+    "id": "fixtures_counters_01_176",
+    "tileId": "fixtures_counters_01_176",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_176"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_177": {
+    "id": "fixtures_counters_01_177",
+    "tileId": "fixtures_counters_01_177",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_177"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_178": {
+    "id": "fixtures_counters_01_178",
+    "tileId": "fixtures_counters_01_178",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_178"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": ""
+  },
+  "fixtures_counters_01_179": {
+    "id": "fixtures_counters_01_179",
+    "tileId": "fixtures_counters_01_179",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "fixtures_counters_01_179"
+      ]
+    ],
+    "group": "Counter",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "counter_brown_03",
+    "styleTags": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": ""
   }
 }
