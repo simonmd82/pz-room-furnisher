@@ -1,1 +1,2934 @@
-{}
+{
+  "melos_tiles_appliances_03_000": {
+    "id": "melos_tiles_appliances_03_000",
+    "tileId": "melos_tiles_appliances_03_000",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_000"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "White",
+      "Brown Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_brown_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_001": {
+    "id": "melos_tiles_appliances_03_001",
+    "tileId": "melos_tiles_appliances_03_001",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_001"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "White",
+      "Brown Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_brown_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_002": {
+    "id": "melos_tiles_appliances_03_002",
+    "tileId": "melos_tiles_appliances_03_002",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_002"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "White",
+      "Brown Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_brown_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_003": {
+    "id": "melos_tiles_appliances_03_003",
+    "tileId": "melos_tiles_appliances_03_003",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_003"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "White",
+      "Brown Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_brown_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_004": {
+    "id": "melos_tiles_appliances_03_004",
+    "tileId": "melos_tiles_appliances_03_004",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_004"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_005": {
+    "id": "melos_tiles_appliances_03_005",
+    "tileId": "melos_tiles_appliances_03_005",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_005"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_006": {
+    "id": "melos_tiles_appliances_03_006",
+    "tileId": "melos_tiles_appliances_03_006",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_006"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_007": {
+    "id": "melos_tiles_appliances_03_007",
+    "tileId": "melos_tiles_appliances_03_007",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_007"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_black_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_015": {
+    "id": "melos_tiles_appliances_03_015",
+    "tileId": "melos_tiles_appliances_03_015",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_015"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Green",
+      "Green Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_green_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_014": {
+    "id": "melos_tiles_appliances_03_014",
+    "tileId": "melos_tiles_appliances_03_014",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_014"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Green",
+      "Green Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_green_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_013": {
+    "id": "melos_tiles_appliances_03_013",
+    "tileId": "melos_tiles_appliances_03_013",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_013"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Green",
+      "Green Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_green_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_012": {
+    "id": "melos_tiles_appliances_03_012",
+    "tileId": "melos_tiles_appliances_03_012",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_012"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Green",
+      "Green Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_green_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_011": {
+    "id": "melos_tiles_appliances_03_011",
+    "tileId": "melos_tiles_appliances_03_011",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_011"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Red",
+      "Red Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_red_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_010": {
+    "id": "melos_tiles_appliances_03_010",
+    "tileId": "melos_tiles_appliances_03_010",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_010"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Red",
+      "Red Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_red_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_009": {
+    "id": "melos_tiles_appliances_03_009",
+    "tileId": "melos_tiles_appliances_03_009",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_009"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Red",
+      "Red Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_red_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_03_008": {
+    "id": "melos_tiles_appliances_03_008",
+    "tileId": "melos_tiles_appliances_03_008",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_03_008"
+      ]
+    ],
+    "group": "Laundry",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White",
+      "Red",
+      "Red Light"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Laundry"
+    ],
+    "variantGroup": "melos_laundry_red_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_000": {
+    "id": "melos_tiles_appliances_01_000",
+    "tileId": "melos_tiles_appliances_01_000",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_000"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_001": {
+    "id": "melos_tiles_appliances_01_001",
+    "tileId": "melos_tiles_appliances_01_001",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_001"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_002": {
+    "id": "melos_tiles_appliances_01_002",
+    "tileId": "melos_tiles_appliances_01_002",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_002"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_003": {
+    "id": "melos_tiles_appliances_01_003",
+    "tileId": "melos_tiles_appliances_01_003",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_003"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_004": {
+    "id": "melos_tiles_appliances_01_004",
+    "tileId": "melos_tiles_appliances_01_004",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_004"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_005": {
+    "id": "melos_tiles_appliances_01_005",
+    "tileId": "melos_tiles_appliances_01_005",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_005"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_006": {
+    "id": "melos_tiles_appliances_01_006",
+    "tileId": "melos_tiles_appliances_01_006",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_006"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_007": {
+    "id": "melos_tiles_appliances_01_007",
+    "tileId": "melos_tiles_appliances_01_007",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_007"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_015": {
+    "id": "melos_tiles_appliances_01_015",
+    "tileId": "melos_tiles_appliances_01_015",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_015"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_014": {
+    "id": "melos_tiles_appliances_01_014",
+    "tileId": "melos_tiles_appliances_01_014",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_014"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_013": {
+    "id": "melos_tiles_appliances_01_013",
+    "tileId": "melos_tiles_appliances_01_013",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_013"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_012": {
+    "id": "melos_tiles_appliances_01_012",
+    "tileId": "melos_tiles_appliances_01_012",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_012"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_011": {
+    "id": "melos_tiles_appliances_01_011",
+    "tileId": "melos_tiles_appliances_01_011",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_011"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_010": {
+    "id": "melos_tiles_appliances_01_010",
+    "tileId": "melos_tiles_appliances_01_010",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_010"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_009": {
+    "id": "melos_tiles_appliances_01_009",
+    "tileId": "melos_tiles_appliances_01_009",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_009"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_008": {
+    "id": "melos_tiles_appliances_01_008",
+    "tileId": "melos_tiles_appliances_01_008",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_008"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_016": {
+    "id": "melos_tiles_appliances_01_016",
+    "tileId": "melos_tiles_appliances_01_016",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_016"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_017": {
+    "id": "melos_tiles_appliances_01_017",
+    "tileId": "melos_tiles_appliances_01_017",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_017"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_018": {
+    "id": "melos_tiles_appliances_01_018",
+    "tileId": "melos_tiles_appliances_01_018",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_018"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_019": {
+    "id": "melos_tiles_appliances_01_019",
+    "tileId": "melos_tiles_appliances_01_019",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_019"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_white_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_020": {
+    "id": "melos_tiles_appliances_01_020",
+    "tileId": "melos_tiles_appliances_01_020",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_020"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_021": {
+    "id": "melos_tiles_appliances_01_021",
+    "tileId": "melos_tiles_appliances_01_021",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_021"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_022": {
+    "id": "melos_tiles_appliances_01_022",
+    "tileId": "melos_tiles_appliances_01_022",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_022"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_023": {
+    "id": "melos_tiles_appliances_01_023",
+    "tileId": "melos_tiles_appliances_01_023",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_023"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_green_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_024": {
+    "id": "melos_tiles_appliances_01_024",
+    "tileId": "melos_tiles_appliances_01_024",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_024"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_025": {
+    "id": "melos_tiles_appliances_01_025",
+    "tileId": "melos_tiles_appliances_01_025",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_025"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_026": {
+    "id": "melos_tiles_appliances_01_026",
+    "tileId": "melos_tiles_appliances_01_026",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_026"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_027": {
+    "id": "melos_tiles_appliances_01_027",
+    "tileId": "melos_tiles_appliances_01_027",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_027"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_028": {
+    "id": "melos_tiles_appliances_01_028",
+    "tileId": "melos_tiles_appliances_01_028",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_028"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_029": {
+    "id": "melos_tiles_appliances_01_029",
+    "tileId": "melos_tiles_appliances_01_029",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_029"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_030": {
+    "id": "melos_tiles_appliances_01_030",
+    "tileId": "melos_tiles_appliances_01_030",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_030"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_031": {
+    "id": "melos_tiles_appliances_01_031",
+    "tileId": "melos_tiles_appliances_01_031",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_031"
+      ]
+    ],
+    "group": "Cooking",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_oven_blue_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_048": {
+    "id": "melos_tiles_appliances_01_048",
+    "tileId": "melos_tiles_appliances_01_048",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_048"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_049": {
+    "id": "melos_tiles_appliances_01_049",
+    "tileId": "melos_tiles_appliances_01_049",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_049"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_050": {
+    "id": "melos_tiles_appliances_01_050",
+    "tileId": "melos_tiles_appliances_01_050",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_050"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_051": {
+    "id": "melos_tiles_appliances_01_051",
+    "tileId": "melos_tiles_appliances_01_051",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_051"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_052": {
+    "id": "melos_tiles_appliances_01_052",
+    "tileId": "melos_tiles_appliances_01_052",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_052"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_053": {
+    "id": "melos_tiles_appliances_01_053",
+    "tileId": "melos_tiles_appliances_01_053",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_053"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_054": {
+    "id": "melos_tiles_appliances_01_054",
+    "tileId": "melos_tiles_appliances_01_054",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_054"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_055": {
+    "id": "melos_tiles_appliances_01_055",
+    "tileId": "melos_tiles_appliances_01_055",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_055"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_059": {
+    "id": "melos_tiles_appliances_01_059",
+    "tileId": "melos_tiles_appliances_01_059",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_059"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_058": {
+    "id": "melos_tiles_appliances_01_058",
+    "tileId": "melos_tiles_appliances_01_058",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_058"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_057": {
+    "id": "melos_tiles_appliances_01_057",
+    "tileId": "melos_tiles_appliances_01_057",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_057"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_056": {
+    "id": "melos_tiles_appliances_01_056",
+    "tileId": "melos_tiles_appliances_01_056",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_056"
+      ]
+    ],
+    "group": "Coffee",
+    "layer": "Furniture3",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Plastic"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_coffe_machine_red_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_060": {
+    "id": "melos_tiles_appliances_01_060",
+    "tileId": "melos_tiles_appliances_01_060",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_060"
+      ]
+    ],
+    "group": "",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_cooking_hood_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_061": {
+    "id": "melos_tiles_appliances_01_061",
+    "tileId": "melos_tiles_appliances_01_061",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_061"
+      ]
+    ],
+    "group": "",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_cooking_hood_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_062": {
+    "id": "melos_tiles_appliances_01_062",
+    "tileId": "melos_tiles_appliances_01_062",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_062"
+      ]
+    ],
+    "group": "",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_cooking_hood_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_063": {
+    "id": "melos_tiles_appliances_01_063",
+    "tileId": "melos_tiles_appliances_01_063",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_063"
+      ]
+    ],
+    "group": "",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Metal"
+    ],
+    "roomTypes": [],
+    "variantGroup": "melos_cooking_hood_white_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_064": {
+    "id": "melos_tiles_appliances_01_064",
+    "tileId": "melos_tiles_appliances_01_064",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_064"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_065": {
+    "id": "melos_tiles_appliances_01_065",
+    "tileId": "melos_tiles_appliances_01_065",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_065"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_066": {
+    "id": "melos_tiles_appliances_01_066",
+    "tileId": "melos_tiles_appliances_01_066",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_066"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_067": {
+    "id": "melos_tiles_appliances_01_067",
+    "tileId": "melos_tiles_appliances_01_067",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_067"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_068": {
+    "id": "melos_tiles_appliances_01_068",
+    "tileId": "melos_tiles_appliances_01_068",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_068"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_069": {
+    "id": "melos_tiles_appliances_01_069",
+    "tileId": "melos_tiles_appliances_01_069",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_069"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_070": {
+    "id": "melos_tiles_appliances_01_070",
+    "tileId": "melos_tiles_appliances_01_070",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_070"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_071": {
+    "id": "melos_tiles_appliances_01_071",
+    "tileId": "melos_tiles_appliances_01_071",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_071"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_yellow_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_079": {
+    "id": "melos_tiles_appliances_01_079",
+    "tileId": "melos_tiles_appliances_01_079",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_079"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_078": {
+    "id": "melos_tiles_appliances_01_078",
+    "tileId": "melos_tiles_appliances_01_078",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_078"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_077": {
+    "id": "melos_tiles_appliances_01_077",
+    "tileId": "melos_tiles_appliances_01_077",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_077"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_076": {
+    "id": "melos_tiles_appliances_01_076",
+    "tileId": "melos_tiles_appliances_01_076",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_076"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown",
+      "Brown Light"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_brown_02",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_075": {
+    "id": "melos_tiles_appliances_01_075",
+    "tileId": "melos_tiles_appliances_01_075",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_075"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_074": {
+    "id": "melos_tiles_appliances_01_074",
+    "tileId": "melos_tiles_appliances_01_074",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_074"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_073": {
+    "id": "melos_tiles_appliances_01_073",
+    "tileId": "melos_tiles_appliances_01_073",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_073"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "melos_tiles_appliances_01_072": {
+    "id": "melos_tiles_appliances_01_072",
+    "tileId": "melos_tiles_appliances_01_072",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "melos_tiles_appliances_01_072"
+      ]
+    ],
+    "group": "Fridge",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Kitchen"
+    ],
+    "variantGroup": "melos_fridge_blue_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  }
+}

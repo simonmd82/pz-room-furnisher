@@ -66,6 +66,7 @@
     "styleTags": "Style-Tags",
     "styleTagsSavedNotActive": "(gespeichert, noch nicht aktiv)",
     "any": "Beliebig (keine)",
+    "showConfiguredOnly": "Nur konfigurierte anzeigen",
     "addGroup": "Gruppe hinzufügen",
     "newGroupPlaceholder": "Neue Gruppe…",
     "searchGroupsPlaceholder": "Gruppen suchen…",
@@ -90,7 +91,9 @@
     "settings": "Einstellungen"
   },
   "generatorLog": {
-    "toggle": "Log ({{count}})"
+    "toggle": "Log ({{count}})",
+    "copy": "📋 Kopieren",
+    "copied": "✓ Kopiert"
   },
   "gridRenderer": {
     "edgeLabel":     "{{type}} [{{c1}},{{r1}}] ↔ [{{c2}},{{r2}}]",
@@ -111,6 +114,7 @@
     "clearActiveLayer": "Bearbeitung von \"{{layer}}\" beenden"
   },
   "roomTypeEditor": {
+    "loading": "Raumtypen werden geladen…",
     "pathStyle": {
       "label":    "Laufweg-Stil",
       "wall":     "Wandnah (Standard)",
@@ -328,6 +332,7 @@
       "noVariants": "Keine Layout-Varianten definiert – der Generator behandelt die Slots dann normal.",
       "variant": "Variante {{n}}",
       "disabledTooltip": "Wenn deaktiviert, wird diese Variante bei der Layout-Auswahl und beim Fallback nicht berücksichtigt. Damit lässt sich eine Variante vorübergehend deaktivieren, ohne sie zu löschen.",
+      "disabledBadge": "deaktiviert",
       "removeVariant": "Variante entfernen",
       "idLabel": "ID",
       "idPlaceholder": "z.B. kitchen_l_shape",
@@ -446,6 +451,7 @@
     "sheetsCount_other": "{{count}} Sheets",
     "pathNotFound": "Ordner nicht gefunden",
     "searchSheets": "Sheet suchen…",
+    "loadingSheets": "Sheets werden geladen…",
     "noSheets": "Keine PNG-Dateien gefunden",
     "selectSheet": "Sheet in der Liste auswählen",
     "configurePath": "Bitte zuerst den PZ-Tiles-Ordner in den Einstellungen konfigurieren",
@@ -456,7 +462,10 @@
     "label": "Bezeichnung",
     "group": "Gruppe",
     "orientation": "Orientierung",
+    "useFacingOrientation": "Blickrichtung verwenden",
+    "useFacingOrientationHint": "(deaktivieren, falls Orientierung/erlaubte Orientierungen direkt aus dem PZ-Editor übernommen wurden, wo die Wandseite statt der Blickrichtung angegeben wird)",
     "layer": "Layer",
+    "selectLayer": "-auswählen-",
     "size": "Größe (Zellen)",
     "flags": "Eigenschaften",
     "blocksPathing": "Blockiert Bewegung",
@@ -505,6 +514,8 @@
     "saving": "⏳ Speichert…",
     "saved": "✅ Gespeichert",
     "saveError": "❌ Fehler",
+    "selectLayerRequired": "Bitte eine Ebene auswählen.",
+    "selectOrientationRequired": "Bitte eine Ausrichtung auswählen.",
     "saveEntries_one": "💾 {{count}} Sprite speichern",
     "saveEntries_other": "💾 {{count}} Sprites speichern",
     "noChanges": "💾 Keine Änderungen",
@@ -554,6 +565,8 @@
     "unknown":            "unbekannt",
     "menuLabel":          "Raumoptionen",
     "clearFurniture":     "Möbel entfernen",
+    "clearAllFurniture":  "Alle Möbel im Gebäude entfernen",
+    "clearAllConfirm":    "Alle platzierten Möbel im gesamten Gebäude entfernen?",
     "configSets": {
       "title":       "Möbel-Konfigurationsquellen",
       "description": "Nur aktivierte Sets werden beim Generieren von Möbeln verwendet. Sets werden im Tile-Browser verwaltet."
@@ -678,6 +691,7 @@
     "saving": "⏳ Speichert…",
     "saved": "✅ Gespeichert",
     "saveError": "❌ Fehler",
+    "selectLayerRequired": "Bitte eine Ebene auswählen.",
     "saveEntries_one": "💾 {{count}} Eintrag speichern",
     "saveEntries_other": "💾 {{count}} Einträge speichern",
     "noChanges": "💾 Keine Änderungen",

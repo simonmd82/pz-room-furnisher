@@ -10,7 +10,7 @@ public interface IBuildingFurnitureService
     bool   IsConfigured { get; }
     string FilePath     { get; }
     void   SetFilePath(string path);
-    List<BfGroupSummary>  GetGroupSummaries();
+    List<BfGroupSummary>  GetGroupSummaries(IReadOnlyDictionary<string, TileDefinition> configuredTiles);
     BfGroupDetail?        GetGroupDetail(int index);
 }
 
@@ -38,7 +38,7 @@ public class BuildingFurnitureService : IBuildingFurnitureService
         Save();
     }
 
-    public List<BfGroupSummary> GetGroupSummaries()
+    public List<BfGroupSummary> GetGroupSummaries(IReadOnlyDictionary<string, TileDefinition> configuredTiles)
     {
         var groups = EnsureParsed();
         return groups.Select((g, i) => new BfGroupSummary
@@ -47,7 +47,17 @@ public class BuildingFurnitureService : IBuildingFurnitureService
             Label      = g.Label,
             PieceCount = g.Pieces.Count,
             EntryCount = g.Pieces.Sum(p => p.Entries.Count),
+            ConfiguredCount = g.Pieces.Sum(p => p.Entries.Count(e => IsEntryConfigured(e, configuredTiles))),
         }).ToList();
+    }
+
+    private static bool IsEntryConfigured(BfEntry entry, IReadOnlyDictionary<string, TileDefinition> configuredTiles)
+    {
+        var layout = entry.ToTileLayout();
+        int cols = layout.Count > 0 ? (layout[0]?.Count ?? 1) : 1;
+        int rows = layout.Count;
+        var id = TileDefinition.ComputeId(entry.RootTileId, cols, rows);
+        return configuredTiles.ContainsKey(id);
     }
 
     public BfGroupDetail? GetGroupDetail(int index)

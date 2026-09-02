@@ -1,13 +1,13 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  getTilesPath, getSheets, getTileConfig,
+  getTilesPath, getSheets, getTileConfig, getGroups,
   saveTileDefinition, deleteTileDefinition, sheetImageUrl, exportConfigUrl,
 } from '../../api/tilesApi';
 import type { TileSheetInfo, TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
 import {
   makeTileId, defaultDefinition, parseTileId, computeTileDefId,
-  layoutCols, layoutRows, COLORS, STYLE_TAGS,
+  layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS,
   TILE_PROPERTIES,
 } from '../../types/tiles';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
@@ -15,6 +15,7 @@ import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
+import { Spinner } from '../Spinner/Spinner';
 import s from './TileBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -42,6 +43,7 @@ export function TileBrowser() {
   // ── sheets ────────────────────────────────────────────────────────────
   const [sheets, setSheets]           = useState<TileSheetInfo[]>([]);
   const [sheetFilter, setSheetFilter] = useState('');
+  const [configuredOnly, setConfiguredOnly] = useState(false);
   const [active, setActive]           = useState<TileSheetInfo | null>(null);
 
   // ── config ────────────────────────────────────────────────────────────
@@ -62,12 +64,16 @@ export function TileBrowser() {
   // ── known categories (from settings) ──────────────────────────────────────
   const [knownCategories, setKnownCategories] = useState<string[]>([]);
 
+  // ── groups already used on tiles, merged across every config set (global — not
+  // scoped to selectedSetId) so switching sets never hides categories used elsewhere ──
+  const [globalGroups, setGlobalGroups] = useState<string[]>([]);
+
   const allGroups = useMemo(() => {
     const fromConfig = Object.values(config).map(d => d.group).filter(Boolean);
-    const combined = [...knownCategories, ...fromConfig, ...extraGroups];
+    const combined = [...knownCategories, ...globalGroups, ...fromConfig, ...extraGroups];
     const seen = new Set<string>();
     return combined.filter(g => { const l = g.toLowerCase(); if (seen.has(l)) return false; seen.add(l); return true; });
-  }, [config, extraGroups, knownCategories]);
+  }, [config, extraGroups, knownCategories, globalGroups]);
 
   const handleAddGroup = () => {
     const trimmed = groupInput.trim();
@@ -89,7 +95,7 @@ export function TileBrowser() {
   const [viewDefs, setViewDefs] = useState<Record<string, TileDefinition>>({});
   /** tileIds with unsaved changes */
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err' | 'noLayer' | 'noOrientation'>('idle');
   const [notesOpen, setNotesOpen] = useState(false);
   /** Which layout cell is currently active for sprite assignment (null = none) */
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
@@ -239,6 +245,7 @@ export function TileBrowser() {
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
+    getGroups().then(setGlobalGroups).catch(console.error);
   }, [reloadSets]);
 
   // Reload the raw config of whichever set is being edited whenever the selection changes.
@@ -248,9 +255,13 @@ export function TileBrowser() {
       .catch(() => { /* ignore */ });
   }, [selectedSetId]);
 
+  const [sheetsLoading, setSheetsLoading] = useState(false);
   useEffect(() => {
     if (!pathOk) { setSheets([]); return; }
-    getSheets(selectedSetId).then(r => setSheets(r.configured ? r.sheets : []));
+    setSheetsLoading(true);
+    getSheets(selectedSetId)
+      .then(r => setSheets(r.configured ? r.sheets : []))
+      .finally(() => setSheetsLoading(false));
   }, [pathOk, selectedSetId]);
 
   // ── sheet select ──────────────────────────────────────────────────────
@@ -376,12 +387,19 @@ export function TileBrowser() {
   // footprint changed shape since it was last saved.
   const handleSave = async () => {
     if (dirtyIds.size === 0) return;
+    const drafts = [...dirtyIds]
+      .map(oldId => ({ oldId, def: viewDefs[oldId] }))
+      .filter((e): e is { oldId: string; def: TileDefinition } => !!e.def);
+    if (drafts.some(({ def }) => !def.layer)) {
+      setSaveState('noLayer');
+      return;
+    }
+    if (drafts.some(({ def }) => !def.orientation)) {
+      setSaveState('noOrientation');
+      return;
+    }
     setSaveState('saving');
     try {
-      const drafts = [...dirtyIds]
-        .map(oldId => ({ oldId, def: viewDefs[oldId] }))
-        .filter((e): e is { oldId: string; def: TileDefinition } => !!e.def);
-
       const nextConfig = { ...config };
       const viewUpdates: Record<string, TileDefinition> = {};
       const staleIds: string[] = [];
@@ -429,7 +447,8 @@ export function TileBrowser() {
 
   // ── helpers ───────────────────────────────────────────────────────────
   const filtered = sheets.filter(sh =>
-    sh.name.toLowerCase().includes(sheetFilter.toLowerCase()));
+    sh.name.toLowerCase().includes(sheetFilter.toLowerCase())
+    && (!configuredOnly || sh.definedCount > 0));
 
   const previewBgPos = (active && selIndices.length === 1)
     ? `${-(selIndices[0] % active.columns) * SPRITE_W * zoom}px ${-Math.floor(selIndices[0] / active.columns) * SPRITE_H * zoom}px`
@@ -469,9 +488,17 @@ export function TileBrowser() {
             value={sheetFilter}
             onChange={e => setSheetFilter(e.target.value)}
           />
+          <label className={s.checkRow}>
+            <input type="checkbox" checked={configuredOnly}
+              onChange={e => setConfiguredOnly(e.target.checked)} />
+            {t('common.showConfiguredOnly')}
+          </label>
         </div>
         <div className={s.sheetList}>
-          {filtered.map(sh => (
+          {sheetsLoading && (
+            <p className={`${s.emptyHint} ${s.hintRow}`}><Spinner /> {t('tileBrowser.loadingSheets')}</p>
+          )}
+          {!sheetsLoading && filtered.map(sh => (
             <div
               key={sh.name}
               className={`${s.sheetItem} ${active?.name === sh.name ? s.sheetItemActive : ''}`}
@@ -483,7 +510,7 @@ export function TileBrowser() {
               )}
             </div>
           ))}
-          {filtered.length === 0 && (
+          {!sheetsLoading && filtered.length === 0 && (
             <p className={s.emptyHint}>
               {pathOk ? t('tileBrowser.noSheets') : t('tileBrowser.configurePath')}
             </p>
@@ -707,12 +734,13 @@ export function TileBrowser() {
             })()}
 
             {(() => {
-              const mixed  = isMixed(d => d.orientation);
-              const curVal = sv(d => d.orientation);
+              const mixed   = isMixed(d => d.orientation);
+              const curVal  = sv(d => d.orientation);
+              const missing = !mixed && !curVal;
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.orientation')}{mixed ? ' ⚠' : ''}</span>
-                  <select className={s.fieldSelect} style={mixStyle(mixed)}
+                  <span className={s.fieldLabel} style={mixed || missing ? { color: '#bb8833' } : {}}>{t('tileBrowser.orientation')}{mixed ? ' ⚠' : missing ? ' *' : ''}</span>
+                  <select className={s.fieldSelect} style={mixed ? mixStyle(mixed) : missing ? { borderColor: '#cc4444', color: '#ff8888' } : {}}
                     value={mixed ? '__mixed__' : (curVal ?? '')}
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('orientation', e.target.value as TileDefinition['orientation']); }}>
                     {mixed && <option value="__mixed__" disabled>{t('tileBrowser.mixedValues')}</option>}
@@ -720,6 +748,18 @@ export function TileBrowser() {
                     {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
                   </select>
                 </div>
+              );
+            })()}
+            {(() => {
+              const mixed  = isMixed(d => d.useFacingOrientation);
+              const curVal = sv(d => d.useFacingOrientation) as boolean | undefined;
+              return (
+                <label className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
+                  <IndeterminateCheckbox checked={mixed ? false : (curVal ?? true)} indeterminate={mixed}
+                    onChange={v => applyField('useFacingOrientation', v as TileDefinition['useFacingOrientation'])} />
+                  {t('tileBrowser.useFacingOrientation')}{mixed ? ' ⚠' : ''}
+                  <span className={s.fieldHint}> {t('tileBrowser.useFacingOrientationHint')}</span>
+                </label>
               );
             })()}
             {/* Allowed placement directions */}
@@ -738,15 +778,17 @@ export function TileBrowser() {
             </div>
 
             {(() => {
-              const mixed  = isMixed(d => d.layer);
-              const curVal = sv(d => d.layer);
+              const mixed   = isMixed(d => d.layer);
+              const curVal  = sv(d => d.layer);
+              const missing = !mixed && !curVal;
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : ''}</span>
-                  <select className={s.fieldSelect} style={mixStyle(mixed)}
-                    value={mixed ? '__mixed__' : (curVal ?? 'Furniture')}
+                  <span className={s.fieldLabel} style={mixed || missing ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : missing ? ' *' : ''}</span>
+                  <select className={s.fieldSelect} style={mixed ? mixStyle(mixed) : missing ? { borderColor: '#cc4444' } : {}}
+                    value={mixed ? '__mixed__' : (curVal ?? '')}
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('layer', e.target.value as TileDefinition['layer']); }}>
                     {mixed && <option value="__mixed__" disabled>{t('tileBrowser.mixedValues')}</option>}
+                    <option value="">{t('tileBrowser.selectLayer')}</option>
                     {['Furniture','Furniture2','Furniture3','Furniture4','Wallfurniture','Wallfurniture2','Wallfurniture3','Wallfurniture4','FloorOverlay','FloorFurniture'].map(l => <option key={l}>{l}</option>)}
                   </select>
                 </div>
@@ -862,10 +904,21 @@ export function TileBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
-                {COLORS.map(c => { const st = arrState(d => d.colors, c); return (
-                  <span key={c} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
-                    onClick={() => toggleArrayField('colors', c)}>{c}</span>
-                ); })}
+                {COLORS.map(c => {
+                  const st = arrState(d => d.colors, c);
+                  const shadeStates = SHADES.map(sh => arrState(d => d.colors, shadeColor(c, sh)));
+                  const showShades = st !== 'none' || shadeStates.some(st2 => st2 !== 'none');
+                  return (
+                    <span key={c} className={s.colorSwatch}>
+                      <span className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                        onClick={() => toggleArrayField('colors', c)}>{c}</span>
+                      {showShades && SHADES.map((sh, i) => (
+                        <span key={sh} className={`${s.chip} ${s.chipShade} ${shadeStates[i]==='all'?s.chipActive:shadeStates[i]==='some'?s.chipPartial:''}`}
+                          onClick={() => toggleArrayField('colors', shadeColor(c, sh))}>{t(`common.shade${sh}`)}</span>
+                      ))}
+                    </span>
+                  );
+                })}
               </div>
             </div>
 
@@ -957,12 +1010,20 @@ export function TileBrowser() {
               <button className={s.saveBtn}
                 disabled={saveState === 'saving' || dirtyIds.size === 0}
                 onClick={handleSave}>
-                {saveState === 'saving' ? t('tileBrowser.saving')
+                {saveState === 'saving' ? <><Spinner /> {t('tileBrowser.saving')}</>
                  : saveState === 'ok'  ? t('tileBrowser.saved')
                  : saveState === 'err' ? t('tileBrowser.saveError')
+                 : saveState === 'noLayer' ? t('tileBrowser.selectLayerRequired')
+                 : saveState === 'noOrientation' ? t('tileBrowser.selectOrientationRequired')
                  : dirtyIds.size > 0  ? t('tileBrowser.saveEntries', { count: dirtyIds.size })
                  : t('tileBrowser.noChanges')}
               </button>
+              {saveState === 'noLayer' && (
+                <p className={s.saveErrorHint}>{t('tileBrowser.selectLayerRequired')}</p>
+              )}
+              {saveState === 'noOrientation' && (
+                <p className={s.saveErrorHint}>{t('tileBrowser.selectOrientationRequired')}</p>
+              )}
               <p className={s.saveHint}>
                 {t('tileBrowser.saveHintPre')}<em>tile-definitions.json</em>{t('tileBrowser.saveHintPost')}
               </p>

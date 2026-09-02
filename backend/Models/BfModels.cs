@@ -7,6 +7,8 @@ public class BfGroupSummary
     public string Label      { get; set; } = string.Empty;
     public int    PieceCount { get; set; }
     public int    EntryCount { get; set; }
+    /// <summary>Number of this group's entries that already have a matching TileDefinition configured.</summary>
+    public int    ConfiguredCount { get; set; }
 }
 
 /// <summary>Full group with all pieces – loaded on demand.</summary>

@@ -93,6 +93,7 @@ function App() {
   const [sheetInfos, setSheetInfos]     = useState<TileSheetInfo[] | undefined>(undefined);
   const [generatorLog, setGeneratorLog] = useState<string[]>([]);
   const [logOpen, setLogOpen]           = useState(false);
+  const [logCopied, setLogCopied]       = useState(false);
   const [showGeneratorLog, setShowGeneratorLog] = useState<boolean>(
     () => localStorage.getItem('pzrf.showGeneratorLog') !== 'false'
   );
@@ -174,6 +175,16 @@ function App() {
     () => floor ? roomsOnFloor(floor).size : 0,
     [floor],
   );
+
+  const handleCopyLog = async () => {
+    try {
+      await navigator.clipboard.writeText(generatorLog.join('\n'));
+      setLogCopied(true);
+      setTimeout(() => setLogCopied(false), 2000);
+    } catch (e) {
+      console.error('Failed to copy log:', e);
+    }
+  };
 
   /** Sheet-Metadaten neu laden – z.B. nach Setzen des Tiles-Pfads nach App-Start. */
   const reloadSheets = () => {
@@ -363,6 +374,9 @@ function App() {
                   <div className="log-panel-header">
                     <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>
                       {logOpen ? '▼' : '▶'} {t('generatorLog.toggle', { count: generatorLog.length })}
+                    </button>
+                    <button className={s.logCopyBtn} onClick={handleCopyLog} title={t('generatorLog.copy')}>
+                      {logCopied ? t('generatorLog.copied') : t('generatorLog.copy')}
                     </button>
                   </div>
                   {logOpen && (

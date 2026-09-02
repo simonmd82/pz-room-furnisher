@@ -11,7 +11,7 @@ export const COPYABLE_FIELDS = [
   'isHigh', 'isMedium', 'isLow', 'isWallMounted', 'hasSurface', 'hasCollision',
   'canStack', 'isTableTop', 'isLootContainer',
   'colors', 'materials', 'roomTypes', 'variantGroup',
-  'allowedOrients', 'windowBlockedEdge', 'styleTags',
+  'allowedOrients', 'windowBlockedEdge', 'styleTags', 'useFacingOrientation',
 ] as const satisfies readonly (keyof TileDefinition)[];
 
 export type CopyableTileSettings = Pick<TileDefinition, typeof COPYABLE_FIELDS[number]>;

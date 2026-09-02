@@ -16,8 +16,8 @@ export async function setBfPath(path: string): Promise<{ path: string; isValid: 
   return r.json();
 }
 
-export async function getBfGroups(): Promise<{ configured: boolean; groups: BfGroupSummary[] }> {
-  const r = await fetch(`${BASE}/groups`);
+export async function getBfGroups(setId: string): Promise<{ configured: boolean; groups: BfGroupSummary[] }> {
+  const r = await fetch(`${BASE}/groups?setId=${encodeURIComponent(setId)}`);
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }

@@ -66,6 +66,7 @@
     "styleTags": "Style tags",
     "styleTagsSavedNotActive": "(saved, not yet active)",
     "any": "Any (none)",
+    "showConfiguredOnly": "Show configured only",
     "addGroup": "Add group",
     "newGroupPlaceholder": "New group…",
     "searchGroupsPlaceholder": "Search groups…",
@@ -90,7 +91,9 @@
     "settings": "Settings"
   },
   "generatorLog": {
-    "toggle": "Log ({{count}})"
+    "toggle": "Log ({{count}})",
+    "copy": "📋 Copy",
+    "copied": "✓ Copied"
   },
   "gridRenderer": {
     "edgeLabel":     "{{type}} [{{c1}},{{r1}}] ↔ [{{c2}},{{r2}}]",
@@ -111,6 +114,7 @@
     "clearActiveLayer": "Stop editing \"{{layer}}\""
   },
   "roomTypeEditor": {
+    "loading": "Loading room types…",
     "pathStyle": {
       "label":    "Path style",
       "wall":     "Wall-hugging (default)",
@@ -328,6 +332,7 @@
       "noVariants": "No layout variants defined – the generator treats the slots normally.",
       "variant": "Variant {{n}}",
       "disabledTooltip": "When unchecked, this variant is excluded from layout selection and fallback attempts. Use this to temporarily disable a variant without deleting it.",
+      "disabledBadge": "disabled",
       "removeVariant": "Remove variant",
       "idLabel": "ID",
       "idPlaceholder": "e.g. kitchen_l_shape",
@@ -446,6 +451,7 @@
     "sheetsCount_other": "{{count}} sheets",
     "pathNotFound": "Directory not found",
     "searchSheets": "Search sheets…",
+    "loadingSheets": "Loading sheets…",
     "noSheets": "No PNG files found",
     "selectSheet": "Select a sheet from the list",
     "configurePath": "Please configure the PZ Tiles folder in Settings first",
@@ -456,7 +462,10 @@
     "label": "Label",
     "group": "Group",
     "orientation": "Orientation",
+    "useFacingOrientation": "Use facing direction",
+    "useFacingOrientationHint": "(uncheck if this tile's orientation/allowed orients were pasted directly from the PZ editor's wall-side convention instead)",
     "layer": "Layer",
+    "selectLayer": "-select-",
     "size": "Size (cells)",
     "flags": "Properties",
     "blocksPathing": "Blocks pathing",
@@ -505,6 +514,8 @@
     "saving": "⏳ Saving…",
     "saved": "✅ Saved",
     "saveError": "❌ Error",
+    "selectLayerRequired": "Please select a layer.",
+    "selectOrientationRequired": "Please select an orientation.",
     "saveEntries_one": "💾 Save {{count}} sprite",
     "saveEntries_other": "💾 Save {{count}} sprites",
     "noChanges": "💾 No changes",
@@ -554,6 +565,8 @@
     "unknown":            "unknown",
     "menuLabel":          "Room options",
     "clearFurniture":     "Clear furniture",
+    "clearAllFurniture":  "Clear all furniture in building",
+    "clearAllConfirm":    "Remove all placed furniture from the entire building?",
     "configSets": {
       "title":       "Furniture config sources",
       "description": "Only enabled sets are used when generating furniture. Manage sets in the Tile Browser."
@@ -678,6 +691,7 @@
     "saving": "⏳ Saving…",
     "saved": "✅ Saved",
     "saveError": "❌ Error",
+    "selectLayerRequired": "Please select a layer.",
     "saveEntries_one": "💾 Save {{count}} entry",
     "saveEntries_other": "💾 Save {{count}} entries",
     "noChanges": "💾 No changes",

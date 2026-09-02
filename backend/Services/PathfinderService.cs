@@ -132,6 +132,15 @@ public class PathfinderService : IPathfinderService
 
         if (roomCells.Count == 0) return [];
 
+        // Sealed inner-wall edges within this room — movement must route around them just like
+        // FurnishingGeneratorService's ComputeReachableCells does, instead of A* cutting straight
+        // through a wall segment that happens to separate two sub-areas of the same room index.
+        var innerWallKeys = floor.Edges
+            .Where(e => e.Type == FloorObjectType.InnerWall
+                && (roomCells.Contains((e.Cell1Col, e.Cell1Row)) || roomCells.Contains((e.Cell2Col, e.Cell2Row))))
+            .Select(e => e.EdgeKey)
+            .ToHashSet();
+
         var costMap = BuildCostMap(roomCells, pathStyle);
 
         // Jitter-Stärke je nach PathStyle
@@ -196,7 +205,7 @@ public class PathfinderService : IPathfinderService
         var pathSet = new HashSet<(int, int)>();
         for (int i = 0; i < waypoints.Count - 1; i++)
         {
-            var segment = AStar(waypoints[i], waypoints[i + 1], roomCells, costMap, jitter);
+            var segment = AStar(waypoints[i], waypoints[i + 1], roomCells, costMap, jitter, innerWallKeys);
             foreach (var cell in segment) pathSet.Add(cell);
         }
 
@@ -229,7 +238,8 @@ public class PathfinderService : IPathfinderService
         (int col, int row) start, (int col, int row) goal,
         HashSet<(int, int)> passable,
         Dictionary<(int, int), float> costMap,
-        Dictionary<(int, int), float> jitter)
+        Dictionary<(int, int), float> jitter,
+        HashSet<string>? innerWallKeys = null)
     {
         var open     = new PriorityQueue<(int, int), float>();
         var gScore   = new Dictionary<(int, int), float> { [start] = 0 };
@@ -259,6 +269,16 @@ public class PathfinderService : IPathfinderService
             {
                 var nb = (cur.Item1 + dx[d], cur.Item2 + dy[d]);
                 if (!passable.Contains(nb)) continue;
+
+                // Skip the step if a sealed inner wall covers the shared edge between cur and nb
+                // (same edge-key convention as FurnishingGeneratorService.ComputeReachableCells).
+                if (innerWallKeys is { Count: > 0 })
+                {
+                    string edgeKey = nb.Item1 == cur.Item1
+                        ? $"H:{cur.Item1},{Math.Max(cur.Item2, nb.Item2)}"
+                        : $"V:{Math.Max(cur.Item1, nb.Item1)},{cur.Item2}";
+                    if (innerWallKeys.Contains(edgeKey)) continue;
+                }
 
                 float tentG = gScore[cur]
                     + costMap.GetValueOrDefault(nb, CostOpen_Wall)

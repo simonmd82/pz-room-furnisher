@@ -66,7 +66,8 @@ export interface TileDefinition {
    */
   tileLayout: string[][];
   group: string;
-  layer: 'Furniture' | 'Furniture2' | 'Furniture3' | 'Furniture4'
+  /** '' = not yet chosen — must be set before the definition can be saved. */
+  layer: '' | 'Furniture' | 'Furniture2' | 'Furniture3' | 'Furniture4'
        | 'Wallfurniture' | 'Wallfurniture2' | 'Wallfurniture3' | 'Wallfurniture4'
        | 'FloorOverlay' | 'FloorFurniture';
   notes: string;
@@ -95,6 +96,13 @@ export interface TileDefinition {
   windowBlockedEdge: '' | 'N' | 'E' | 'S' | 'W';
   /** Style tags – stored but not yet used by the generator */
   styleTags: string[];
+  /**
+   * true (default) = orientation/allowedOrients are authored as the direction the piece faces
+   * (this tool's historical convention). false = authored directly in Project Zomboid's own
+   * editor convention instead (the wall side the piece sits against) — lets new tiles be copied
+   * straight from the PZ editor without manually inverting N/S/E/W by hand.
+   */
+  useFacingOrientation: boolean;
 }
 
 export type TileConfigMap = Record<string, TileDefinition>;
@@ -165,7 +173,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     orientation: '',
     tileLayout: [[tileId]],
     group: '',
-    layer: 'Furniture',
+    layer: '',
     notes: '',
     isHigh:        true,
     isMedium:      false,
@@ -183,6 +191,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     allowedOrients: [],
     windowBlockedEdge: '',
     styleTags: [],
+    useFacingOrientation: true,
   };
 }
 

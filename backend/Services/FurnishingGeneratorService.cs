@@ -233,6 +233,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     : new HashSet<(int, int)>();
                 pathCells.IntersectWith(roomCells);
 
+                log.Add(RoomSeparatorLine(sel.FloorIndex, room.Name));
                 log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, density {density:P0}");
 
                 var seededColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -482,6 +483,17 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         }
 
         return result;
+    }
+
+    /// <summary>Visual "====Floor N - RoomName====" divider so each room's log section is easy to spot.</summary>
+    private static string RoomSeparatorLine(int floorIndex, string roomName)
+    {
+        const int totalWidth = 70;
+        var label = $"Floor {floorIndex} - {roomName}";
+        int pad = Math.Max(totalWidth - label.Length, 8);
+        int padLeft = pad / 2;
+        int padRight = pad - padLeft;
+        return new string('=', padLeft) + label + new string('=', padRight);
     }
 
     private static LayoutVariant? SelectLayoutVariant(RoomTypeConfig config, Random rng, List<string> log)
@@ -1741,7 +1753,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         // catches it. Mirrors the AllowedOrients check EnumerateFreePlacementCandidates/
         // ResolveVariantForCell already does for free (non-anchored) placement.
         if (tile.AllowedOrients.Count > 0
-            && !tile.AllowedOrients.Any(o => o.Equals(orient, StringComparison.OrdinalIgnoreCase)))
+            && !AllowedOrientsMatch(tile, orient))
             return false;
         if (!SatisfiesCellPropertyGates(col, row, fpW, fpH, tile, cellPropertyGates))
             return false;
@@ -1922,13 +1934,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var exact = allTiles.Values.FirstOrDefault(t =>
             t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
             t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
-            t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
+            OrientMatches(t, desiredOrient));
         if (exact is not null) return exact;
 
         var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
             t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
             t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
-            t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
+            AllowedOrientsMatch(t, desiredOrient));
         if (byAllowedOrient is not null) return byAllowedOrient;
 
         static bool IsNorthSouth(string o) => o.Equals("N", StringComparison.OrdinalIgnoreCase)
@@ -2205,7 +2217,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 var exact = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
                     t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
-                    t.Orientation.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase));
+                    OrientMatches(t, desiredOrient));
                 if (exact is not null) return exact;
 
                 // 2) Falls es keine exakte Variante gibt, auf Achsen-Ebene auflösen.
@@ -2213,7 +2225,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                 var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
                     t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
                     t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
-                    t.AllowedOrients.Any(o => o.Equals(desiredOrient, StringComparison.OrdinalIgnoreCase)));
+                    AllowedOrientsMatch(t, desiredOrient));
                 if (byAllowedOrient is not null) return byAllowedOrient;
 
                 // 3) Letzter Fallback: gleiche Achse über Orientation-Feld (NS oder EW).
@@ -2258,7 +2270,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     // (ResolveVariantForCell) already does; see also IsValidAnchoredPlacement, the
                     // composite-layout solver's independent copy of this same anchored-placement logic.
                     bool orientOk = finalTile.AllowedOrients.Count == 0
-                                  || finalTile.AllowedOrients.Any(o => o.Equals(anchoredOrient, StringComparison.OrdinalIgnoreCase));
+                                  || AllowedOrientsMatch(finalTile, anchoredOrient);
                     bool doorOk = (rules.NearDoor
                                   || !FootprintTouchesCells(ac, ar, fpW, fpH, doorCells))
                                   && (openingGroups is not { Count: > 0 }
@@ -2864,7 +2876,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         }
 
         // Wandrichtung bestimmen: bevorzugt die, die zum Rücken des BaseTile passt
-        var backExpected = BackWall(baseTile.Orientation);
+        var backExpected = BackWallOf(baseTile);
         return (backExpected.HasValue && wallDirs.Contains(backExpected.Value))
             ? backExpected.Value
             : wallDirs.OrderByDescending(d => d).First();
@@ -2896,18 +2908,18 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         // Wenn das Tile erlaubte Orientierungen hat, prüfen ob neededOrient erlaubt ist
         if (baseTile.AllowedOrients.Count > 0
-            && !baseTile.AllowedOrients.Any(o => o.Equals(neededOrient, StringComparison.OrdinalIgnoreCase)))
+            && !AllowedOrientsMatch(baseTile, neededOrient))
             return null; // neededOrient ist für dieses Tile nicht erlaubt → Zelle ablehnen
 
         // Prüfe ob baseTile selbst schon passt (richtiger Orient + passendes Aspektverhältnis)
-        if (baseTile.Orientation.Equals(neededOrient, StringComparison.OrdinalIgnoreCase)
+        if (OrientMatches(baseTile, neededOrient)
             && MatchesAlignment(baseTile, wallDir, rules.WallAlignment))
             return (baseTile, neededOrient, wallDir);
 
         // AllowedOrients enthält neededOrient explizit → Tile ist symmetrisch/multi-direktional
         // und kann in dieser Orientierung verwendet werden (z.B. 1×2-Regal mit allowedOrients=[W,E])
         if (baseTile.AllowedOrients.Count > 0
-            && baseTile.AllowedOrients.Any(o => o.Equals(neededOrient, StringComparison.OrdinalIgnoreCase))
+            && AllowedOrientsMatch(baseTile, neededOrient)
             && MatchesAlignment(baseTile, wallDir, rules.WallAlignment))
             return (baseTile, neededOrient, wallDir);
 
@@ -2916,7 +2928,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         {
             var variants = allTiles.Values
                 .Where(t => t.VariantGroup == baseTile.VariantGroup
-                         && t.Orientation.Equals(neededOrient, StringComparison.OrdinalIgnoreCase))
+                         && OrientMatches(t, neededOrient))
                 .ToList();
 
             if (variants.Count > 0)
@@ -2974,13 +2986,13 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
             bool BackOnCellWall(TileDefinition t)
             {
-                var back = BackWall(t.Orientation);
+                var back = BackWallOf(t);
                 return back.HasValue && cellWallDirs.Contains(back.Value);
             }
 
             Direction CandidateWallDir(TileDefinition t)
             {
-                var back = BackWall(t.Orientation);
+                var back = BackWallOf(t);
                 // Immer die Rücken-Wandrichtung des Tiles verwenden.
                 // Caller stellt sicher dass BackOnCellWall=true ist.
                 return back.HasValue ? back.Value : wallDir;
@@ -2999,7 +3011,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 foreach (var t in cornerVariants)
                     if (seen.Add(t.TileId))
-                        ordered.Add((t, t.Orientation, wallDir));
+                        ordered.Add((t, CanonicalOrient(t), wallDir));
             }
 
             // 1) Präferenz: Rücken liegt auf einer echten Wand der Kandidatenzelle + Alignment passt.
@@ -3008,12 +3020,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             && BackOnCellWall(t)
                             && MatchesAlignment(t, CandidateWallDir(t), rules.WallAlignment))
                 .OrderBy(t => 0)
-                .ThenBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(t => OrientMatches(t, CanonicalOrient(baseTile)) ? 0 : 1)
                 .ToList();
 
             foreach (var t in strict)
                 if (seen.Add(t.TileId))
-                    ordered.Add((t, t.Orientation, CandidateWallDir(t)));
+                    ordered.Add((t, CanonicalOrient(t), CandidateWallDir(t)));
 
             // 2) Last-resort: Rücken an echter Wand MUSS erhalten bleiben, nur WallAlignment relaxen.
             //    Varianten ohne Wandkontakt (z.B. Dusche in SE-Ecke ohne N/W-Wand) werden
@@ -3021,12 +3033,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             var relaxed = groupVariants
                 .Where(t => AllowedByOwnOrient(t) && BackOnCellWall(t))
                 .OrderBy(t => 0)
-                .ThenBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .ThenBy(t => OrientMatches(t, CanonicalOrient(baseTile)) ? 0 : 1)
                 .ToList();
 
             foreach (var t in relaxed)
                 if (seen.Add(t.TileId))
-                    ordered.Add((t, t.Orientation, CandidateWallDir(t)));
+                    ordered.Add((t, CanonicalOrient(t), CandidateWallDir(t)));
 
             return ordered;
         }
@@ -3034,15 +3046,15 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         // Ohne NearWall: Für rotierbare VariantGroups alle Orientierungsvarianten prüfen,
         // damit 1×2/2×1-Slots (z.B. Badewanne in Ecken) nicht an einer Zufallsvariante hängen.
         if (string.IsNullOrEmpty(baseTile.VariantGroup))
-            return [(baseTile, baseTile.Orientation, Direction.N)];
+            return [(baseTile, CanonicalOrient(baseTile), Direction.N)];
 
         var variants = allTiles.Values
             .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase)
                      && t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase))
             .Where(t => t.AllowedOrients.Count == 0
                      || t.AllowedOrients.Any(o => o.Equals(t.Orientation, StringComparison.OrdinalIgnoreCase)))
-            .OrderBy(t => t.Orientation.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
-            .Select(t => (t, t.Orientation, Direction.N))
+            .OrderBy(t => OrientMatches(t, CanonicalOrient(baseTile)) ? 0 : 1)
+            .Select(t => (t, CanonicalOrient(t), Direction.N))
             .ToList();
 
         if (variants.Count > 0) return variants;
@@ -3053,7 +3065,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         // verhindert dass ein widersprüchlich konfiguriertes Tile ungefiltert landet.
         if (baseTile.AllowedOrients.Count == 0
             || baseTile.AllowedOrients.Any(o => o.Equals(baseTile.Orientation, StringComparison.OrdinalIgnoreCase)))
-            return [(baseTile, baseTile.Orientation, Direction.N)];
+            return [(baseTile, CanonicalOrient(baseTile), Direction.N)];
 
         return [];
     }
@@ -3344,7 +3356,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var localEdge = NormalizeEdge(tile.WindowBlockedEdge);
         if (localEdge is not null)
         {
-            var worldEdge = RotateEdge(localEdge, tile.Orientation, placedOrient);
+            var worldEdge = RotateEdge(localEdge, CanonicalOrient(tile), placedOrient);
             return FootprintTouchesEdge(col, row, fpW, fpH, windowCells, worldEdge);
         }
 
@@ -3514,6 +3526,38 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         Direction.W => "E",
         _           => null,
     };
+
+    /// <summary>Opposite cardinal direction. Corner (NW/NE/SE/SW) and unknown values pass through unchanged.</summary>
+    private static string Opposite(string orient) => orient switch
+    {
+        "N" => "S",
+        "S" => "N",
+        "E" => "W",
+        "W" => "E",
+        _   => orient,
+    };
+
+    /// <summary>
+    /// A tile's Orientation/AllowedOrients translated into this tool's internal (facing-direction)
+    /// convention, regardless of which convention they were actually authored in. Everything
+    /// downstream of tile selection (FrontCells, anchor rotation, head/foot offsets, etc.) works
+    /// exclusively with this canonical value — only the small set of tile-selection/matching call
+    /// sites need to be aware of TileDefinition.UseFacingOrientation at all.
+    /// </summary>
+    private static string CanonicalOrient(TileDefinition t) =>
+        t.UseFacingOrientation ? t.Orientation : Opposite(t.Orientation);
+
+    private static bool OrientMatches(TileDefinition t, string canonicalDesired) =>
+        CanonicalOrient(t).Equals(canonicalDesired, StringComparison.OrdinalIgnoreCase);
+
+    private static bool AllowedOrientsMatch(TileDefinition t, string canonicalDesired) => t.UseFacingOrientation
+        ? t.AllowedOrients.Any(o => o.Equals(canonicalDesired, StringComparison.OrdinalIgnoreCase))
+        : t.AllowedOrients.Any(o => Opposite(o).Equals(canonicalDesired, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Wall at the back of a tile, honoring its UseFacingOrientation convention.</summary>
+    private static Direction? BackWallOf(TileDefinition t) => t.UseFacingOrientation
+        ? BackWall(t.Orientation)
+        : (Enum.TryParse<Direction>(t.Orientation, true, out var d) ? d : null);
 
     /// <summary>
     /// Löst "facingAnchor" auf: gibt die Orientierung zurück, mit der ein Slot zum Anker
@@ -4523,8 +4567,22 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var visited = ComputeReachableCells(roomCells, tempOccupied, doorCells, innerWallKeys, out var walkable);
         if (walkable.Count == 0) return true; // Raum komplett voll – kein Connectivity-Check nötig
 
-        // Alle begehbaren Zellen müssen von der BFS erreicht worden sein
-        if (visited.Count != walkable.Count) return false;
+        // Alle Tür-/Opening-Zellen müssen weiterhin gegenseitig erreichbar bleiben – verhindert,
+        // dass eine Platzierung den Raum in zwei durch unterschiedliche Türen erschlossene
+        // Bereiche zerschneidet.
+        foreach (var d in doorCells)
+            if (walkable.Contains(d) && !visited.Contains(d))
+                return false;
+
+        // Jede sonstige neu abgeschnittene Zelle muss real begehbarer Bodenraum bleiben — nur
+        // eine winzige türlose Nische (maximal MaxTolerableIsolatedCells Zellen, z.B. eine
+        // einzelne Ecke hinter einem neu platzierten Schrank) wird toleriert. Eine größere
+        // isolierte Fläche (mehrere Zellen) bleibt weiterhin verboten, auch ohne Tür/Möbel darin —
+        // das war der eigentliche Bug: zu locker gefasst hätte jede leere Fläche ohne Tür oder
+        // Möbel unbegrenzt abgeschnitten werden dürfen.
+        const int MaxTolerableIsolatedCells = 1;
+        int isolated = walkable.Count - visited.Count;
+        if (isolated > MaxTolerableIsolatedCells) return false;
 
         // Zuvor geschützte, bereits belegte Zellen (z.B. eine platzierte Badewanne) müssen
         // weiterhin mindestens eine begehbar-erreichbare Nachbarzelle haben.

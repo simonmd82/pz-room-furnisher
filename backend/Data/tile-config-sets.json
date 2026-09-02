@@ -10,7 +10,7 @@
     "id": "melos",
     "name": "Melos",
     "description": "",
-    "enabled": false,
+    "enabled": true,
     "file": "TileConfigSets\\melos.json"
   }
 ]

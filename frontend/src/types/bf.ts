@@ -3,6 +3,7 @@
   label:      string;
   pieceCount: number;
   entryCount: number;
+  configuredCount: number;
 }
 
 export interface BfGroupDetail {

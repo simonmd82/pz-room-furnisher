@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { uploadTbx } from '../api/buildingApi';
 import type { Building } from '../types/building';
+import { Spinner } from './Spinner/Spinner';
 import styles from './FileUpload.module.css';
 
 interface Props {
@@ -49,7 +50,9 @@ export function FileUpload({ onBuildingLoaded }: Props) {
     >
       <input ref={inputRef} type="file" accept=".tbx" className={styles.hidden} onChange={handleChange} />
       {loading ? (
-        <p className={styles.hint}>⏳ {t('upload.processing')}</p>
+        <p className={styles.hint} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <Spinner /> {t('upload.processing')}
+        </p>
       ) : (
         <>
           <p className={styles.icon}></p>

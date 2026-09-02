@@ -117,7 +117,7 @@
 .selectBtn:hover { background: #54409a; }
 .selectBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.loading { padding: 24px; text-align: center; color: #446; font-size: 0.85rem; }
+.loading { padding: 24px; text-align: center; color: #446; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .empty   { padding: 24px; text-align: center; color: #446; font-style: italic; font-size: 0.82rem; }
 .errMsg  { padding: 16px; color: #f77; font-size: 0.82rem; background: #2a1010; border-radius: 6px; margin: 8px 12px; }
 

@@ -15,6 +15,7 @@ import { SHADES, shadeColor } from '../../types/tiles';
 /** A color is a "base" (shade-combinable) color unless it's already a "X Light"/"X Dark" compound. */
 const isBaseColor = (color: string): boolean => !SHADES.some(sh => color.endsWith(` ${sh}`));
 import { AnchorRulePreview } from './AnchorRulePreview';
+import { Spinner } from '../Spinner/Spinner';
 import s from './RoomTypeEditor.module.css';
 
 const FALLBACK_GROUPS = [
@@ -78,11 +79,14 @@ export function RoomTypeEditor() {
   const [draft, setDraft]             = useState<RoomTypeConfig | null>(null);
   const [dirty, setDirty]             = useState(false);
   const [saving, setSaving]           = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
   const [status, setStatus]           = useState<string | null>(null);
   const [newRoomName, setNewRoomName] = useState('');
   const [infoOpen, setInfoOpen]       = useState(false);
   /** Indices der eingeklappten Slot-Karten */
   const [collapsedSlots, setCollapsedSlots] = useState<Set<number>>(new Set());
+  /** Indices der eingeklappten Layout-Varianten */
+  const [collapsedLayoutVariants, setCollapsedLayoutVariants] = useState<Set<number>>(new Set());
   /** Drag & Drop: Index des aktuell gezogenen Slots */
   const dragIndexRef = useRef<number | null>(null);
   /** Index des Slots über dem der Cursor gerade schwebt */
@@ -96,7 +100,7 @@ export function RoomTypeEditor() {
    const [dragOverLayoutVariant, setDragOverLayoutVariant] = useState<number | null>(null);
 
   useEffect(() => {
-    getRoomTypes().then(cfgs => setConfigs(cfgs)).catch(console.error);
+    getRoomTypes().then(cfgs => setConfigs(cfgs)).catch(console.error).finally(() => setInitLoading(false));
     getRoomTypeNames().then(names => setKnownRooms(names)).catch(console.error);
     // Kategorien primär aus Settings laden, Tile-DB-Gruppen als Ergänzung
     Promise.all([getCategories(), getGroups()]).then(([cats, tileGroups]) => {
@@ -695,6 +699,14 @@ export function RoomTypeEditor() {
     setStatus(null);
   };
 
+  if (initLoading) {
+    return (
+      <div className={s.layout}>
+        <div className={s.initLoading}><Spinner size={18} /> {t('roomTypeEditor.loading')}</div>
+      </div>
+    );
+  }
+
   return (
     <div className={s.layout}>
       {/* ── Left: list ── */}
@@ -735,6 +747,18 @@ export function RoomTypeEditor() {
               <span className={s.editorTitle}>{draft.roomType}</span>
               {configs[draft.roomType] && (
                 <button className={s.deleteBtn} onClick={handleDelete}>{t('roomTypeEditor.header.delete')}</button>
+              )}
+            </div>
+
+            {/* ── Sticky save bar: stays visible while scrolling through slots below ── */}
+            <div className={s.stickySaveBar}>
+              <button className={s.saveBtn} disabled={!dirty || saving} onClick={handleSave}>
+                {saving ? <><Spinner /> {t('roomTypeEditor.saving')}</> : t('roomTypeEditor.save', { room: draft.roomType })}
+              </button>
+              {status && (
+                <div style={{ fontSize: '0.76rem', color: status.startsWith('✓') ? '#6c6' : '#f88', textAlign: 'center' }}>
+                  {status}
+                </div>
               )}
             </div>
 
@@ -1896,16 +1920,45 @@ export function RoomTypeEditor() {
               </div>
             )}
 
-            {(draft.layoutVariants ?? []).map((variant, idx) => (
+            {(draft.layoutVariants ?? []).map((variant, idx) => {
+              const isCollapsed = collapsedLayoutVariants.has(idx);
+              const toggleCollapse = () => setCollapsedLayoutVariants(prev => {
+                const next = new Set(prev);
+                next.has(idx) ? next.delete(idx) : next.add(idx);
+                return next;
+              });
+              return (
               <div key={idx} className={s.anchorRuleCard}>
-                <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 4 }}>
-                  <label className={s.slotCheck} style={{ gap: 6 }}>
+
+                {/* ── Zusammengeklappte Zusammenfassung (immer sichtbar) ── */}
+                <div className={s.slotSummaryBar} onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
+                  <span className={s.collapseToggleIcon}>{isCollapsed ? '▶' : '▼'}</span>
+                  <span className={s.slotIndex}>#{idx + 1}</span>
+                  <span className={s.slotSummaryId}
+                    style={{ color: variant.id ? '#aac' : '#446', fontStyle: variant.id ? 'normal' : 'italic', opacity: variant.disabled ? 0.45 : 1 }}>
+                    {variant.id || t('roomTypeEditor.layoutVariants.noId')}
+                  </span>
+                  {variant.label && (
+                    <span className={s.slotSummaryLabel} style={{ opacity: variant.disabled ? 0.45 : 1 }}>{variant.label}</span>
+                  )}
+                  <span className={s.slotSummaryBadge} style={{ background: '#1a1a2a', color: '#778' }}
+                    title={t('roomTypeEditor.layoutVariants.weightLabel')}>
+                    W{variant.weight ?? 5}
+                  </span>
+                  {variant.disabled && (
+                    <span className={s.slotSummaryBadge} style={{ background: '#2a1a1a', color: '#a66' }}
+                      title={t('roomTypeEditor.layoutVariants.disabledTooltip')}>
+                      {t('roomTypeEditor.layoutVariants.disabledBadge')}
+                    </span>
+                  )}
+                  <span style={{ flex: 1 }} />
+                  <label className={s.slotCheck} style={{ gap: 6 }} onClick={e => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={!variant.disabled}
                       onChange={e => updateLayoutVariant(idx, { disabled: !e.target.checked })}
                     />
-                    <span className={s.slotGroupLabel} style={{ opacity: variant.disabled ? 0.45 : 1 }}>
+                    <span className={s.slotGroupLabel}>
                       {t('roomTypeEditor.layoutVariants.variant', { n: idx + 1 })}
                     </span>
                     <span
@@ -1913,8 +1966,11 @@ export function RoomTypeEditor() {
                       title={t('roomTypeEditor.layoutVariants.disabledTooltip')}
                     >ℹ</span>
                   </label>
-                  <button className={s.removeSlotBtn} title={t('roomTypeEditor.layoutVariants.removeVariant')} onClick={() => removeLayoutVariant(idx)}>✕</button>
+                  <button className={s.removeSlotBtn} title={t('roomTypeEditor.layoutVariants.removeVariant')}
+                    onClick={e => { e.stopPropagation(); removeLayoutVariant(idx); }}>✕</button>
                 </div>
+
+                {!isCollapsed && (<>
 
                 <div className={s.slotRow} style={{ gap: 8, flexWrap: 'wrap' }}>
                   <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.idLabel')}</span>
@@ -2376,18 +2432,12 @@ export function RoomTypeEditor() {
                    <div className={s.slotHint} style={{ marginTop: 4 }}>
                     {t('roomTypeEditor.layoutVariants.variantHint')}
                  </div>
-              </div>
-            ))}
 
-            <button className={s.saveBtn} disabled={!dirty || saving} onClick={handleSave}>
-              {saving ? t('roomTypeEditor.saving') : t('roomTypeEditor.save', { room: draft.roomType })}
-            </button>
-
-            {status && (
-              <div style={{ fontSize: '0.76rem', color: status.startsWith('✓') ? '#6c6' : '#f88', textAlign: 'center' }}>
-                {status}
+                </>)}
               </div>
-            )}
+              );
+            })}
+
           </>)}
         </div>
 

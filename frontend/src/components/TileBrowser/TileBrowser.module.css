@@ -165,6 +165,13 @@
   font-style: italic;
 }
 
+.hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 /* ── Config panel ── */
 .configPanel {
   display: flex;
@@ -266,6 +273,10 @@
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .saveBtn:hover:not(:disabled) { background: #3a6a3a; }
 .saveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -276,6 +287,12 @@
   margin: 0;
 }
 .saveHint em { font-style: normal; color: #669; }
+.saveErrorHint {
+  font-size: 0.72rem;
+  color: #f88;
+  text-align: center;
+  margin: 0;
+}
 .deleteBtn {
   width: 100%;
   padding: 5px;
@@ -415,6 +432,16 @@ textarea.fieldInput { resize: vertical; }
 }
 .chip:hover       { border-color: #7755bb; color: #bbb; }
 .chipActive       { border-color: #8866cc; background: #2a1a4a; color: #ddf; }
+.colorSwatch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.chipShade {
+  padding: 2px 6px;
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
 
 /* number inputs for weight / maxCount */
 .fieldInputSmall {

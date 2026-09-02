@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { browseDirectory } from '../../api/tilesApi';
 import type { BrowseResult } from '../../api/tilesApi';
+import { Spinner } from '../Spinner/Spinner';
 import s from './DirPicker.module.css';
 
 interface Props {
@@ -54,7 +55,7 @@ export function DirPicker({ onSelect, onClose }: Props) {
         </div>
 
         <div className={s.list}>
-          {loading && <p className={s.loading}>{t('dirPicker.loading')}</p>}
+          {loading && <p className={s.loading}><Spinner /> {t('dirPicker.loading')}</p>}
           {error   && <p className={s.errMsg}>{error}</p>}
           {!loading && !error && result && (
             <>

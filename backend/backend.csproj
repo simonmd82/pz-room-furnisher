@@ -10,6 +10,9 @@
     <ItemGroup>
       <Folder Include="Data\" />
       <Content Update="Data\**" CopyToPublishDirectory="PreserveNewest" />
+      <!-- Backend writes to Data\*.json at runtime (saves, config edits) — must not
+           trigger dotnet watch restarts, or the API drops mid-session after every save. -->
+      <Watch Remove="Data\**" />
     </ItemGroup>
 
     <ItemGroup>

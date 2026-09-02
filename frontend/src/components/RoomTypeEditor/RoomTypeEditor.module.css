@@ -5,6 +5,17 @@
   min-height: 0;
   overflow: hidden;
 }
+
+.initLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  color: #778;
+  font-size: 0.85rem;
+  font-style: italic;
+}
 /* Wrapper: editor + ref footer */
 .rightPane {
   display: flex;
@@ -426,6 +437,20 @@
   font-size: 0.6rem;
   opacity: 0.85;
 }
+/* -- Sticky save bar (stays visible while scrolling the slot list below) -- */
+.stickySaveBar {
+  position: sticky;
+  top: -14px;
+  z-index: 10;
+  margin: 0 -14px 10px;
+  padding: 10px 14px;
+  background: #0a0a14;
+  border-bottom: 1px solid #2a2a3a;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 /* -- Save -- */
 .saveBtn {
   padding: 8px;
@@ -438,6 +463,10 @@
   font-weight: 600;
   max-width: 860px;
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   margin-top: 8px;
   margin-bottom: 8px;
 }

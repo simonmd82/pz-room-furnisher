@@ -175,11 +175,16 @@
 }
 .log-panel-header {
   flex-shrink: 0;
+  display: flex;
 }
 .log-panel .log-panel-header button {
   border-radius: 0;
   border: none;
   border-bottom: 1px solid #2a2a3a;
+  border-left: 1px solid #2a2a3a;
+}
+.log-panel .log-panel-header button:first-child {
+  border-left: none;
 }
 
 

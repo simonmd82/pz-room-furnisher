@@ -65,6 +65,15 @@ public class TileDefinition
     /// Kante keine Fensterzellen berühren.
     /// </summary>
     public string WindowBlockedEdge { get; set; } = string.Empty;
+    /// <summary>
+    /// true (default) = Orientation/AllowedOrients are authored as the direction the piece
+    /// faces (this tool's historical convention). false = authored directly in Project
+    /// Zomboid's own editor convention instead (the wall side the piece sits against, e.g.
+    /// a cabinet against the west wall is "W" even though it faces east) — lets new tiles be
+    /// copied straight from the PZ editor without manually inverting N/S/E/W by hand.
+    /// Existing tiles keep this true so their already-authored values keep working unchanged.
+    /// </summary>
+    public bool UseFacingOrientation { get; set; } = true;
 
     /// <summary>
     /// Computes the identity key for a piece from its root tile id and footprint shape.

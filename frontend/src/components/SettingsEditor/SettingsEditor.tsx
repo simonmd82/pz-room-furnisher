@@ -13,6 +13,7 @@ import {
 import { getTilesPath, setTilesPath } from '../../api/tilesApi';
 import { getBfPath, setBfPath } from '../../api/bfApi';
 import { DirPicker } from '../TileBrowser/DirPicker';
+import { Spinner } from '../Spinner/Spinner';
 import s from './SettingsEditor.module.css';
 
 // ── Wiederverwendbare editierbare Liste ──────────────────────────────────────
@@ -63,7 +64,7 @@ function EditableList({
           disabled={saving}
         />
         <button className={s.addBtn} onClick={add} disabled={saving || !newValue.trim()}>
-          {t('settingsEditor.add')}
+          {saving ? <Spinner /> : t('settingsEditor.add')}
         </button>
       </div>
 
@@ -253,14 +254,14 @@ function ConfigManagementSection() {
                 run('restore-default', restoreRoomTypesDefault);
               }}
             >
-              {busy === 'restore-default' ? '…' : t('settingsEditor.configManagement.restoreDefault')}
+              {busy === 'restore-default' ? <Spinner /> : t('settingsEditor.configManagement.restoreDefault')}
             </button>
             <button
               className={s.configBtn}
               disabled={!!busy}
               onClick={() => run('save-snapshot', saveRoomTypesSnapshot)}
             >
-              {busy === 'save-snapshot' ? '…' : t('settingsEditor.configManagement.saveSnapshot')}
+              {busy === 'save-snapshot' ? <Spinner /> : t('settingsEditor.configManagement.saveSnapshot')}
             </button>
             <button
               className={s.configBtn}
@@ -271,7 +272,7 @@ function ConfigManagementSection() {
                 run('restore-snapshot', restoreRoomTypesSnapshot);
               }}
             >
-              {busy === 'restore-snapshot' ? '…' : t('settingsEditor.configManagement.restoreSnapshot')}
+              {busy === 'restore-snapshot' ? <Spinner /> : t('settingsEditor.configManagement.restoreSnapshot')}
             </button>
             {msg && (
               <span className={msg.ok ? s.configFeedbackOk : s.configFeedbackErr}>
@@ -308,7 +309,7 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className={s.loading}>{t('settingsEditor.loading')}</div>;
+  if (loading) return <div className={s.loading}><Spinner size={18} /> {t('settingsEditor.loading')}</div>;
 
   return (
     <div className={s.layout}>

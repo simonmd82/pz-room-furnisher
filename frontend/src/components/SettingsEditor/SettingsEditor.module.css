@@ -13,6 +13,10 @@
   text-align: center;
   font-style: italic;
   font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 /* ── Page header ── */
@@ -112,6 +116,9 @@
   cursor: pointer;
   font-size: 0.8rem;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .addBtn:hover:not(:disabled) { background: #2a3a2a; }
 .addBtn:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -235,6 +242,9 @@
   font-size: 0.78rem;
   white-space: nowrap;
   transition: background 0.1s, border-color 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .configBtn:hover:not(:disabled) {
   background: #1e1e40;

@@ -89,6 +89,13 @@
   text-align: center;
 }
 
+.hintRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 /* ── Group panel ── */
 .groupPanel {
   display: flex;
@@ -424,6 +431,10 @@ textarea.fieldInput {
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 /* Aufklappbarer Abschnitts-Toggle */
@@ -450,6 +461,12 @@ textarea.fieldInput {
   margin: 0;
 }
 .saveHint em { font-style: normal; color: #669; }
+.saveErrorHint {
+  font-size: 0.72rem;
+  color: #f88;
+  text-align: center;
+  margin: 0;
+}
 
 /* ── Chip toggles (colors / roomTypes / styleTags) ── */
 .chipGroup {
@@ -612,6 +629,19 @@ textarea.fieldInput {
   padding: 1px 7px;
   margin-left: auto;
 }
+
+/* ── Entry-preview zoom ── */
+.zoomBtn {
+  padding: 2px 8px;
+  background: #1e1e3a;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #aab;
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+.zoomBtn:hover { border-color: #8866cc; color: #ddf; }
+.zoomActive    { border-color: #8866cc !important; color: #fff !important; background: #2e1e5a !important; }
 
 
 

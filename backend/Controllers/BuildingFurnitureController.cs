@@ -8,8 +8,13 @@ namespace backend.Controllers;
 public class BuildingFurnitureController : ControllerBase
 {
     private readonly IBuildingFurnitureService _bf;
+    private readonly ITileConfigService _cfg;
 
-    public BuildingFurnitureController(IBuildingFurnitureService bf) => _bf = bf;
+    public BuildingFurnitureController(IBuildingFurnitureService bf, ITileConfigService cfg)
+    {
+        _bf  = bf;
+        _cfg = cfg;
+    }
 
     // ── Path ─────────────────────────────────────────────────────────────────
 
@@ -36,12 +41,13 @@ public class BuildingFurnitureController : ControllerBase
     // ── Groups ────────────────────────────────────────────────────────────────
 
     [HttpGet("groups")]
-    public IActionResult GetGroups()
+    public IActionResult GetGroups([FromQuery] string setId = "vanilla")
     {
         if (!_bf.IsConfigured)
             return Ok(new { configured = false, groups = Array.Empty<object>() });
 
-        return Ok(new { configured = true, groups = _bf.GetGroupSummaries() });
+        var defs = _cfg.GetAllForSet(setId);
+        return Ok(new { configured = true, groups = _bf.GetGroupSummaries(defs) });
     }
 
     [HttpGet("groups/{index:int}")]

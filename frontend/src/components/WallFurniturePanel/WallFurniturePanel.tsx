@@ -4,6 +4,7 @@ import type { WallFurnitureCandidate, WallFurnitureClassification } from '../../
 import { setWallFurnitureClassification } from '../../api/wallFurnitureApi';
 import { getSheets, sheetImageUrl } from '../../api/tilesApi';
 import { parseTileId } from '../../types/tiles';
+import { Spinner } from '../Spinner/Spinner';
 import s from './WallFurniturePanel.module.css';
 
 const SPRITE_W = 128;
@@ -110,6 +111,7 @@ export function WallFurniturePanel({ candidates, onClassified }: Props) {
                         <option key={cl} value={cl}>{t(`wallFurniture.classification.${cl}`)}</option>
                       ))}
                     </select>
+                    {saving === `__group__${c.signature}` && <Spinner />}
                   </div>
                 )}
               </div>
@@ -132,6 +134,7 @@ export function WallFurniturePanel({ candidates, onClassified }: Props) {
                           <option key={cl} value={cl}>{t(`wallFurniture.classification.${cl}`)}</option>
                         ))}
                       </select>
+                      {saving === tile.name && <Spinner />}
                     </div>
                   );
                 })}

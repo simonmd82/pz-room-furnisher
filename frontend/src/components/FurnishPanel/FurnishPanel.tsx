@@ -6,6 +6,7 @@ import type { RoomSelection } from '../../api/furnishApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
 import { getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
 import type { TileConfigSetInfo } from '../../types/tiles';
+import { Spinner } from '../Spinner/Spinner';
 import s from './FurnishPanel.module.css';
 
 interface Props {
@@ -297,6 +298,15 @@ export default function FurnishPanel({
     setOpenMenu(null);
   };
 
+  const handleClearAllFurniture = () => {
+    if (placements.length === 0 && reservedZones.length === 0) return;
+    if (!window.confirm(t('furnishPanel.clearAllConfirm'))) return;
+    onPlacementsChanged([]);
+    setReservedZones([]);
+    onReservedZonesChanged?.([]);
+    setOpenMenu(null);
+  };
+
   const handleExport = async () => {
     if (placements.length === 0) return;
     setExporting(true);
@@ -316,7 +326,17 @@ export default function FurnishPanel({
       <p className={s.panelTitle}>{t('furnishPanel.title')}</p>
 
       {/* ── Quick-select toolbar ── */}
-      <span className={s.sectionLabel}>{t('furnishPanel.selectRooms')}</span>
+      <div className={s.sectionLabelRow}>
+        <span className={s.sectionLabel}>{t('furnishPanel.selectRooms')}</span>
+        <button
+          className={s.clearAllBtn}
+          onClick={handleClearAllFurniture}
+          disabled={placements.length === 0 && reservedZones.length === 0}
+          title={t('furnishPanel.clearAllFurniture')}
+        >
+          🗑
+        </button>
+      </div>
       <div className={s.typeToolbar}>
         <button
           className={`${s.typeBtn} ${allSel ? s.typeBtnActive : ''}`}
@@ -539,7 +559,7 @@ export default function FurnishPanel({
         disabled={running || selected.size === 0}
         onClick={handleGenerate}>
         {running
-          ? `⏳ ${t('furnishPanel.generating')}`
+          ? <><Spinner /> {t('furnishPanel.generating')}</>
           : `✨ ${t('furnishPanel.generate', { count: selected.size })}`}
       </button>
 
@@ -553,7 +573,7 @@ export default function FurnishPanel({
             className={s.exportBtn}
             disabled={exporting}
             onClick={handleExport}>
-            {exporting ? `⏳ ${t('furnishPanel.exporting')}` : t('furnishPanel.exportTbx')}
+            {exporting ? <><Spinner /> {t('furnishPanel.exporting')}</> : t('furnishPanel.exportTbx')}
           </button>
         </>
       )}

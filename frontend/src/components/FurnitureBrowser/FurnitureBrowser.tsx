@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
-import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets } from '../../api/tilesApi';
+import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets, getGroups } from '../../api/tilesApi';
 import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
@@ -10,6 +10,7 @@ import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
 import { FURNITURE_LAYERS } from '../../types/roomTypes';
+import { Spinner } from '../Spinner/Spinner';
 import s from './FurnitureBrowser.module.css';
 
 // Checkbox mit indeterminate-Support – muss AUSSERHALB der Hauptkomponente definiert sein
@@ -73,11 +74,15 @@ export function FurnitureBrowser() {
   const [loading, setLoading]       = useState(false);
   const [groups, setGroups]         = useState<BfGroupSummary[]>([]);
   const [groupFilter, setGroupFilter] = useState('');
+  const [configuredOnly, setConfiguredOnly] = useState(false);
   const [selGroup, setSelGroup]     = useState<BfGroupSummary | null>(null);
 
   // ── detail (lazy) ─────────────────────────────────────────────────────
   const [detail, setDetail]         = useState<BfGroupDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+
+  // ── entry preview zoom ──────────────────────────────────────────────────
+  const [entryZoom, setEntryZoom] = useState(1);
 
   // ── multi-select & pending state ──────────────────────────────────────
   /** Ausgewählte Karten als "pieceIdx-entryIdx" */
@@ -89,7 +94,7 @@ export function FurnitureBrowser() {
 
   // ── tile config (for "already imported" indicator) ────────────────────
   const [config, setConfig] = useState<TileConfigMap>({});
-  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err'>('idle');
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'ok' | 'err' | 'noLayer'>('idle');
   /** sheet name → column count, loaded once for correct sprite positioning */
   const [sheetCols, setSheetCols] = useState<Record<string, number>>({});
 
@@ -98,6 +103,10 @@ export function FurnitureBrowser() {
 
   // ── known categories (from settings) ──────────────────────────────────────
   const [knownCategories, setKnownCategories] = useState<string[]>([]);
+
+  // ── groups already used on tiles, merged across every config set (global — not
+  // scoped to selectedSetId) so switching sets never hides categories used elsewhere ──
+  const [globalGroups, setGlobalGroups] = useState<string[]>([]);
 
   // ── known materials (from settings) ───────────────────────────────────────
   const [materialList, setMaterialList] = useState<string[]>([]);
@@ -113,10 +122,10 @@ export function FurnitureBrowser() {
 
   const allGroups = useMemo(() => {
     const fromConfig = Object.values(config).map(d => d.group).filter(Boolean);
-    const combined = [...knownCategories, ...fromConfig, ...extraGroups];
+    const combined = [...knownCategories, ...globalGroups, ...fromConfig, ...extraGroups];
     const seen = new Set<string>();
     return combined.filter(g => { const l = g.toLowerCase(); if (seen.has(l)) return false; seen.add(l); return true; });
-  }, [config, extraGroups, knownCategories]);
+  }, [config, extraGroups, knownCategories, globalGroups]);
 
   const handleAddGroup = () => {
     const trimmed = groupInput.trim();
@@ -161,6 +170,7 @@ export function FurnitureBrowser() {
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
+    getGroups().then(setGlobalGroups).catch(console.error);
   }, []);
 
   // Reload the raw config / sheet columns for whichever set is active whenever the selection changes.
@@ -181,11 +191,11 @@ export function FurnitureBrowser() {
   useEffect(() => {
     if (!pathOk) { setGroups([]); return; }
     setLoading(true);
-    getBfGroups()
+    getBfGroups(selectedSetId)
       .then(r => setGroups(r.configured ? r.groups : []))
       .catch(() => setGroups([]))
       .finally(() => setLoading(false));
-  }, [pathOk]);
+  }, [pathOk, selectedSetId]);
 
   // ── group select ──────────────────────────────────────────────────────
   const handleGroupSelect = async (g: BfGroupSummary) => {
@@ -218,7 +228,11 @@ export function FurnitureBrowser() {
       } else {
         def = defaultDefinition(rootId);
         def.id          = id;
+        // entry.orient comes straight from Project Zomboid's own .bf file (already in PZ's
+        // wall-side convention, not this tool's facing convention) — mark it as such so it
+        // doesn't need to be hand-inverted after import.
         def.orientation = entry.orient as TileDefinition['orientation'];
+        def.useFacingOrientation = false;
         def.tileLayout  = entry.tileLayout;
         def.group       = groupLabel;
         if (layer) def.layer = layer as TileDefinition['layer'];
@@ -302,9 +316,13 @@ export function FurnitureBrowser() {
   // ── save ALL dirty (sequenziell – verhindert gleichzeitige Datei-Schreibzugriffe) ──
   const handleSave = async () => {
     if (dirtyIds.size === 0) return;
+    const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
+    if (toSave.some(d => !d.layer)) {
+      setSaveState('noLayer');
+      return;
+    }
     setSaveState('saving');
     try {
-      const toSave = [...dirtyIds].map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d);
       const saved: TileDefinition[] = [];
       for (const def of toSave) {
         saved.push(await saveTileDefinition(def, selectedSetId));
@@ -321,7 +339,8 @@ export function FurnitureBrowser() {
 
   // ── helpers ───────────────────────────────────────────────────────────
   const filtered = groups.filter(g =>
-    g.label.toLowerCase().includes(groupFilter.toLowerCase()));
+    g.label.toLowerCase().includes(groupFilter.toLowerCase())
+    && (!configuredOnly || g.configuredCount > 0));
 
   /** Build CSS for a single sprite using actual sheet column count */
   const spriteStyle = (tileId: string, zoom: number): React.CSSProperties | null => {
@@ -372,9 +391,14 @@ export function FurnitureBrowser() {
             value={groupFilter}
             onChange={e => setGroupFilter(e.target.value)}
           />
+          <label className={s.checkRow}>
+            <input type="checkbox" checked={configuredOnly}
+              onChange={e => setConfiguredOnly(e.target.checked)} />
+            {t('common.showConfiguredOnly')}
+          </label>
         </div>
         <div className={s.groupList}>
-          {loading && <p className={s.hint}>{t('furnitureBrowser.loadingGroups')}</p>}
+          {loading && <p className={`${s.hint} ${s.hintRow}`}><Spinner /> {t('furnitureBrowser.loadingGroups')}</p>}
           {!loading && !pathOk && (
             <p className={s.hint}>{t('furnitureBrowser.setPathHint')}</p>
           )}
@@ -404,6 +428,14 @@ export function FurnitureBrowser() {
             {selKeys.length > 0 && <span className={s.selCount}>{t('furnitureBrowser.selectedCount', { count: selKeys.length })}</span>}
             {dirtyIds.size > 0 && <span className={s.dirtyBadge}>{t('furnitureBrowser.unsavedCount', { count: dirtyIds.size })}</span>}
             <span className={s.ctrlHint}>{t('furnitureBrowser.ctrlClickHint')}</span>
+            <span style={{ marginLeft: 'auto', color: '#778' }}>{t('tileBrowser.zoom')}:</span>
+            {[0.5, 1, 1.5, 2, 3].map(z => (
+              <button
+                key={z}
+                className={`${s.zoomBtn} ${entryZoom === z ? s.zoomActive : ''}`}
+                onClick={() => setEntryZoom(z)}
+              >{z}×</button>
+            ))}
           </div>
           {selGroup && (
             <div className={s.highlightBar}>
@@ -443,7 +475,7 @@ export function FurnitureBrowser() {
           )}
         </div>
         <div className={s.pieceList}>
-          {detailLoading && <p className={s.hint}>{t('furnitureBrowser.loading')}</p>}
+          {detailLoading && <p className={`${s.hint} ${s.hintRow}`}><Spinner /> {t('furnitureBrowser.loading')}</p>}
           {!selGroup && !detailLoading && (
             <p className={s.hint}>{t('furnitureBrowser.selectGroupHint')}</p>
           )}
@@ -474,12 +506,12 @@ export function FurnitureBrowser() {
                       {/* Mini layout preview – tooltip = full tileId */}
                       <div
                         className={s.miniLayout}
-                        style={{ gridTemplateColumns: `repeat(${cols}, ${Math.round(SPRITE_W * ENTRY_ZOOM)}px)` }}
+                        style={{ gridTemplateColumns: `repeat(${cols}, ${Math.round(SPRITE_W * ENTRY_ZOOM * entryZoom)}px)` }}
                       >
                         {entry.tileLayout.flatMap((row, ri) =>
                           row.map((cellId, ci) => {
-                            const cw = Math.round(SPRITE_W * ENTRY_ZOOM);
-                            const ch = Math.round(SPRITE_H * ENTRY_ZOOM);
+                            const cw = Math.round(SPRITE_W * ENTRY_ZOOM * entryZoom);
+                            const ch = Math.round(SPRITE_H * ENTRY_ZOOM * entryZoom);
                             return (
                               <div
                                 key={`${ri}-${ci}`}
@@ -487,8 +519,8 @@ export function FurnitureBrowser() {
                                 style={{ width: cw, height: ch }}
                                 title={cellId || t('furnitureBrowser.emptyCell', { row: ri, col: ci })}
                               >
-                                {cellId && spriteStyle(cellId, ENTRY_ZOOM) ? (
-                                  <div style={spriteStyle(cellId, ENTRY_ZOOM)!} />
+                                {cellId && spriteStyle(cellId, ENTRY_ZOOM * entryZoom) ? (
+                                  <div style={spriteStyle(cellId, ENTRY_ZOOM * entryZoom)!} />
                                 ) : (
                                   <span style={{ fontSize: '0.45rem', color: '#446' }}>—</span>
                                 )}
@@ -677,6 +709,20 @@ export function FurnitureBrowser() {
               );
             })()}
 
+            {/* PZ-Editor-Konvention statt Blickrichtung */}
+            {(() => {
+              const mixed  = isMixed(d => d.useFacingOrientation);
+              const curVal = sv(d => d.useFacingOrientation) as boolean | undefined;
+              return (
+                <label className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}>
+                  <IndeterminateCheckbox checked={mixed ? false : (curVal ?? true)} indeterminate={mixed}
+                    onChange={v => applyField('useFacingOrientation', v as TileDefinition['useFacingOrientation'])} />
+                  {t('tileBrowser.useFacingOrientation')}{mixed ? ' ⚠' : ''}
+                  <span className={s.fieldHint}> {t('tileBrowser.useFacingOrientationHint')}</span>
+                </label>
+              );
+            })()}
+
             {/* Erlaubte Wandrichtungen */}
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('furnitureBrowser.allowedOrients')} <span className={s.fieldHint}>{t('furnitureBrowser.emptyMeansAll')}</span></span>
@@ -726,15 +772,17 @@ export function FurnitureBrowser() {
 
             {/* Layer */}
             {(() => {
-              const mixed  = isMixed(d => d.layer);
-              const curVal = sv(d => d.layer);
+              const mixed   = isMixed(d => d.layer);
+              const curVal  = sv(d => d.layer);
+              const missing = !mixed && !curVal;
               return (
                 <div className={s.fieldRow}>
-                  <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : ''}</span>
-                  <select className={s.fieldSelect} style={mixStyle(mixed)}
-                    value={mixed ? '__mixed__' : (curVal ?? 'Furniture')}
+                  <span className={s.fieldLabel} style={mixed || missing ? { color: '#bb8833' } : {}}>{t('tileBrowser.layer')}{mixed ? ' ⚠' : missing ? ' *' : ''}</span>
+                  <select className={s.fieldSelect} style={mixed ? mixStyle(mixed) : missing ? { borderColor: '#cc4444' } : {}}
+                    value={mixed ? '__mixed__' : (curVal ?? '')}
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('layer', e.target.value as TileDefinition['layer']); }}>
                     {mixed && <option value="__mixed__" disabled>{t('furnitureBrowser.mixedValues')}</option>}
+                    <option value="">{t('tileBrowser.selectLayer')}</option>
                     <option>Furniture</option><option>Furniture2</option><option>Furniture3</option>
                     <option>Furniture4</option><option>Wallfurniture</option><option>Wallfurniture2</option>
                     <option>Wallfurniture3</option><option>Wallfurniture4</option>
@@ -850,12 +898,16 @@ export function FurnitureBrowser() {
               <button className={s.saveBtn}
                 disabled={saveState === 'saving' || dirtyIds.size === 0}
                 onClick={handleSave}>
-                {saveState === 'saving' ? t('furnitureBrowser.saving')
+                {saveState === 'saving' ? <><Spinner /> {t('furnitureBrowser.saving')}</>
                  : saveState === 'ok'  ? t('furnitureBrowser.saved')
                  : saveState === 'err' ? t('furnitureBrowser.saveError')
+                 : saveState === 'noLayer' ? t('furnitureBrowser.selectLayerRequired')
                  : dirtyIds.size > 0  ? t('furnitureBrowser.saveEntries', { count: dirtyIds.size })
                  : t('furnitureBrowser.noChanges')}
               </button>
+              {saveState === 'noLayer' && (
+                <p className={s.saveErrorHint}>{t('furnitureBrowser.selectLayerRequired')}</p>
+              )}
               <p className={s.saveHint}>
                 {t('furnitureBrowser.saveHintPre')}<em>tile-definitions.json</em>{t('furnitureBrowser.saveHintPost')}
               </p>
