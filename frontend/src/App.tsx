@@ -6,6 +6,7 @@ import { GridRenderer } from './components/GridRenderer';
 import { TileBrowser } from './components/TileBrowser/TileBrowser';
 import { FurnitureBrowser } from './components/FurnitureBrowser/FurnitureBrowser';
 import { RoomTypeEditor } from './components/RoomTypeEditor/RoomTypeEditor';
+import { RugEditor } from './components/RugEditor/RugEditor';
 import { SettingsEditor } from './components/SettingsEditor/SettingsEditor';
 import FurnishPanel from './components/FurnishPanel/FurnishPanel';
 import { WallFurniturePanel } from './components/WallFurniturePanel/WallFurniturePanel';
@@ -86,7 +87,7 @@ function App() {
   const [building, setBuilding]         = useState<Building | null>(null);
   const [fileName, setFileName]         = useState('building');
   const [selectedFloor, setSelectedFloor] = useState(0);
-  const [activeTab, setActiveTab]       = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'settings'>('building');
+  const [activeTab, setActiveTab]       = useState<'building' | 'tiles' | 'furniture' | 'roomtypes' | 'rugs' | 'settings'>('building');
   const [placements, setPlacements]     = useState<PlacedFurnitureItem[]>([]);
   const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
   const [tileConfig, setTileConfig]     = useState<TileConfigMap | undefined>(undefined);
@@ -114,7 +115,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('pzrf.furnishingConfigEnabled', String(furnishingConfigEnabled));
-    if (!furnishingConfigEnabled && (activeTab === 'tiles' || activeTab === 'furniture' || activeTab === 'roomtypes')) {
+    if (!furnishingConfigEnabled && (activeTab === 'tiles' || activeTab === 'furniture' || activeTab === 'roomtypes' || activeTab === 'rugs')) {
       setActiveTab('building');
     }
   }, [furnishingConfigEnabled]);
@@ -269,6 +270,12 @@ function App() {
               >
                 🏠 {t('tabs.roomTypes')}
               </button>
+              <button
+                className={`tab-btn ${activeTab === 'rugs' ? 'tab-active' : ''}`}
+                onClick={() => handleTabChange('rugs')}
+              >
+                🧵 {t('tabs.rugs')}
+              </button>
             </>
           )}
           <button
@@ -286,6 +293,8 @@ function App() {
         <div className="tab-full"><FurnitureBrowser /></div>
       ) : activeTab === 'roomtypes' ? (
         <div className="tab-full"><RoomTypeEditor /></div>
+      ) : activeTab === 'rugs' ? (
+        <div className="tab-full"><RugEditor /></div>
       ) : activeTab === 'settings' ? (
         <div className="tab-full"><SettingsEditor showGeneratorLog={showGeneratorLog} onShowGeneratorLogChange={setShowGeneratorLog} furnishingConfigEnabled={furnishingConfigEnabled} onFurnishingConfigEnabledChange={setFurnishingConfigEnabled} /></div>
       ) : (

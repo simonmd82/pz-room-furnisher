@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets, getGroups } from '../../api/tilesApi';
-import { getRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
+import { getRoomTypeNames, getCategories, getMaterials, getColorNames } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
-import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, COLORS, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
+import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
@@ -108,8 +108,9 @@ export function FurnitureBrowser() {
   // scoped to selectedSetId) so switching sets never hides categories used elsewhere ──
   const [globalGroups, setGlobalGroups] = useState<string[]>([]);
 
-  // ── known materials (from settings) ───────────────────────────────────────
+  // ── known materials / colors (from settings) ───────────────────────────────
   const [materialList, setMaterialList] = useState<string[]>([]);
+  const [colorList,    setColorList]    = useState<string[]>([]);
 
   // ── collapsible sections ──────────────────────────────────────────────────
   const [notesOpen, setNotesOpen]     = useState(false);
@@ -126,6 +127,20 @@ export function FurnitureBrowser() {
     const seen = new Set<string>();
     return combined.filter(g => { const l = g.toLowerCase(); if (seen.has(l)) return false; seen.add(l); return true; });
   }, [config, extraGroups, knownCategories, globalGroups]);
+
+  // variantGroup value -> ids of tiles (in the saved config) using it, for the
+  // "already in use" hint next to the Variant ID field. Reusing an id is intentional
+  // (that's how variant groups work), so this is informational, not a validation error.
+  const variantGroupUsage = useMemo(() => {
+    const map = new Map<string, string[]>();
+    Object.values(config).forEach(d => {
+      if (!d.variantGroup) return;
+      const ids = map.get(d.variantGroup) ?? [];
+      ids.push(d.id);
+      map.set(d.variantGroup, ids);
+    });
+    return map;
+  }, [config]);
 
   const handleAddGroup = () => {
     const trimmed = groupInput.trim();
@@ -162,6 +177,24 @@ export function FurnitureBrowser() {
     selIds.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
     [selIds, viewDefs]);
 
+  // ── position-ordered selection (piece/entry order, not click order) — used for
+  // copy/paste so pasting onto a same-layout group maps entry-for-entry by position ──
+  const selKeysOrdered = useMemo(() =>
+    [...selKeys].sort((a, b) => {
+      const [ap, ae] = a.split('-').map(Number);
+      const [bp, be] = b.split('-').map(Number);
+      return ap - bp || ae - be;
+    }), [selKeys]);
+  const selIdsOrdered = useMemo(() =>
+    selKeysOrdered.map(k => {
+      const e = keyToEntry[k]?.entry;
+      return e ? computeTileDefId(e.rootTileId, e.tileLayout) : undefined;
+    }).filter((id): id is string => !!id),
+    [selKeysOrdered, keyToEntry]);
+  const selDefsOrdered = useMemo(() =>
+    selIdsOrdered.map(id => viewDefs[id]).filter((d): d is TileDefinition => !!d),
+    [selIdsOrdered, viewDefs]);
+
   // ── init ─────────────────────────────────────────────────────────────
   useEffect(() => {
     getBfPath()
@@ -170,6 +203,7 @@ export function FurnitureBrowser() {
     getRoomTypeNames().then(setRoomTypeList).catch(console.error);
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
+    getColorNames().then(setColorList).catch(console.error);
     getGroups().then(setGlobalGroups).catch(console.error);
   }, []);
 
@@ -276,16 +310,26 @@ export function FurnitureBrowser() {
 
   // ── settings copy/paste ─────────────────────────────────────────────────
   const handleCopySettings = () => {
-    if (selDefs.length !== 1) return;
-    copyToClipboard(selDefs[0]);
-    setClipboardFlash(t('common.settingsCopied'));
+    if (selDefsOrdered.length === 0) return;
+    copyToClipboard(selDefsOrdered);
+    setClipboardFlash(selDefsOrdered.length === 1
+      ? t('common.settingsCopied')
+      : t('common.settingsCopiedMulti', { count: selDefsOrdered.length }));
     setTimeout(() => setClipboardFlash(null), 2000);
   };
   const handlePasteSettings = () => {
     if (!clipboard || selIds.length === 0) return;
     setViewDefs(prev => {
       const next = { ...prev };
-      selIds.forEach(id => { if (next[id]) next[id] = { ...next[id], ...clipboard }; });
+      let prevPiece = -1;
+      let pos = 0;
+      selKeysOrdered.forEach((key, i) => {
+        const piece = Number(key.split('-')[0]);
+        if (piece !== prevPiece) { prevPiece = piece; pos = 0; }
+        const id = selIdsOrdered[i];
+        if (id && next[id]) next[id] = { ...next[id], ...clipboard[pos % clipboard.length] };
+        pos++;
+      });
       return next;
     });
     setDirtyIds(prev => new Set([...prev, ...selIds]));
@@ -567,14 +611,20 @@ export function FurnitureBrowser() {
             <div className={s.clipboardBar}>
               <button
                 className={s.browseBtn}
-                disabled={selDefs.length !== 1}
+                disabled={selDefs.length === 0}
                 title={selDefs.length === 1 ? selDefs[0].tileId : undefined}
                 onClick={handleCopySettings}
               >{t('common.copySettings')}</button>
               <button
                 className={s.browseBtn}
                 disabled={!clipboard || selIds.length === 0}
-                title={clipboard && copiedFrom ? t('common.settingsCopiedHint', { tileId: copiedFrom }) : undefined}
+                title={
+                  clipboard && copiedFrom
+                    ? (clipboard.length === 1
+                      ? t('common.settingsCopiedHint', { tileId: copiedFrom[0] })
+                      : t('common.settingsCopiedHintMulti', { count: clipboard.length }))
+                    : undefined
+                }
                 onClick={handlePasteSettings}
               >{selIds.length > 1 ? t('common.pasteSettings', { count: selIds.length }) : t('common.pasteSettingsEmpty')}</button>
               {clipboardFlash && <span className={s.clipboardFlash}>{clipboardFlash}</span>}
@@ -703,7 +753,7 @@ export function FurnitureBrowser() {
                     onChange={e => { if (e.target.value !== '__mixed__') applyField('orientation', e.target.value as TileDefinition['orientation']); }}>
                     {mixed && <option value="__mixed__" disabled>{t('furnitureBrowser.mixedValues')}</option>}
                     <option value="">{t('common.any')}</option>
-                    {(['N','S','E','W'] as const).map(o => <option key={o}>{o}</option>)}
+                    {(['N','S','E','W','NW','NE','SW','SE'] as const).map(o => <option key={o}>{o}</option>)}
                   </select>
                 </div>
               );
@@ -826,7 +876,7 @@ export function FurnitureBrowser() {
             <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
               <span className={s.fieldLabel}>{t('common.colors')}</span>
               <div className={s.chipGroup}>
-                {COLORS.map(c => {
+                {colorList.map(c => {
                   const st = arrState(d => d.colors, c);
                   const shadeStates = SHADES.map(sh => arrState(d => d.colors, shadeColor(c, sh)));
                   const showShades = st !== 'none' || shadeStates.some(st2 => st2 !== 'none');
@@ -842,6 +892,9 @@ export function FurnitureBrowser() {
                   );
                 })}
               </div>
+              {colorList.length === 0 && (
+                <span style={{ fontSize: '0.75rem', color: '#888' }}>{t('common.noColorsConfigured')}</span>
+              )}
             </div>
 
             {/* Materialien */}
@@ -873,13 +926,19 @@ export function FurnitureBrowser() {
             {(() => {
               const mixed  = isMixed(d => d.variantGroup);
               const curVal = sv(d => d.variantGroup);
+              const otherCount = !mixed && curVal
+                ? (variantGroupUsage.get(curVal) ?? []).filter(id => !selIds.includes(id)).length
+                : 0;
               return (
-                <div className={s.fieldRow}>
+                <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
                   <span className={s.fieldLabel} style={mixed ? { color: '#bb8833' } : {}}>{t('common.variantId')}{mixed ? ' ⚠' : ''}</span>
                   <input className={s.fieldInput}
                     placeholder={mixed ? t('furnitureBrowser.mixedValuesPlaceholder') : t('common.variantIdPlaceholder')}
                     value={mixed ? '' : (curVal ?? '')} style={mixStyle(mixed)}
                     onChange={e => applyField('variantGroup', e.target.value)} />
+                  {otherCount > 0 && (
+                    <span className={s.fieldHint}>ℹ {t('common.variantIdInUse', { count: otherCount })}</span>
+                  )}
                 </div>
               );
             })()}

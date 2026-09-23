@@ -48,4 +48,17 @@ public class SettingsController : ControllerBase
         _svc.SetKnownMaterials(materials.Where(m => !string.IsNullOrWhiteSpace(m)).Distinct().ToList());
         return Ok(_svc.GetKnownMaterials());
     }
+
+    /// <summary>Returns the list of known colors.</summary>
+    [HttpGet("colors")]
+    public IActionResult GetColors() => Ok(_svc.GetKnownColors());
+
+    /// <summary>Replaces the list of known colors.</summary>
+    [HttpPut("colors")]
+    public IActionResult SetColors([FromBody] List<string>? colors)
+    {
+        if (colors is null) return BadRequest("Body must be a JSON array of strings.");
+        _svc.SetKnownColors(colors.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList());
+        return Ok(_svc.GetKnownColors());
+    }
 }

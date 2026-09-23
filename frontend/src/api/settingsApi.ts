@@ -59,3 +59,19 @@ export async function saveMaterials(materials: string[]): Promise<string[]> {
   return r.json();
 }
 
+export async function getColorNames(): Promise<string[]> {
+  const r = await fetch(`${BASE}/colors`);
+  await checkResponse(r, 'getColorNames');
+  return r.json();
+}
+
+export async function saveColorNames(colors: string[]): Promise<string[]> {
+  const r = await fetch(`${BASE}/colors`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(colors),
+  });
+  await checkResponse(r, 'saveColorNames');
+  return r.json();
+}
+

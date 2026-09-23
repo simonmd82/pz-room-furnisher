@@ -269,6 +269,45 @@ export interface RoomTypeSlot {
    *   Wert   = nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.
    */
   materialGroupId: string;
+  /**
+   * Non-null = this is a rug slot, resolved against the rug catalog (see rugsApi/RugDefinition)
+   * instead of the normal tile-definition candidate pool. Null/undefined = ordinary slot.
+   */
+  rugSlot?: RugSlotConfig | null;
+}
+
+/** Sizing strategy for a rug slot. */
+export interface RugSizing {
+  /**
+   * "fixed" (default) = target size is footprint.width/height exactly, like any other slot
+   * (e.g. a dining rug anchored to the table).
+   * "fill" = ignore footprint; target size is computed from room geometry at generation time
+   * (e.g. a hallway runner sized to the room's long axis).
+   */
+  mode: 'fixed' | 'fill';
+  /** Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner. */
+  fillShortAxis: number;
+  /** Fill mode only: cells subtracted from each end of the long axis (door clearance etc.). */
+  fillMarginEachEnd: number;
+  /** Fill mode only: hard cap on the long axis so a huge room doesn't get one giant rug. */
+  fillMaxLongAxis?: number | null;
+}
+
+/** Marks a RoomTypeSlot as a rug slot — see RoomTypeSlot.rugSlot. */
+export interface RugSlotConfig {
+  /** Optional: restrict to specific rug catalog IDs. Empty = any catalog entry matching room type + tile-set-enabled. */
+  allowedRugIds: string[];
+  sizing: RugSizing;
+  /** "any" (default) | "modular" | "preassembled" — restrict which catalog entries are eligible. */
+  modeFilter: 'any' | 'modular' | 'preassembled';
+}
+
+export function defaultRugSizing(): RugSizing {
+  return { mode: 'fixed', fillShortAxis: 2, fillMarginEachEnd: 1, fillMaxLongAxis: null };
+}
+
+export function defaultRugSlotConfig(): RugSlotConfig {
+  return { allowedRugIds: [], sizing: defaultRugSizing(), modeFilter: 'any' };
 }
 
 /** Companion slot spawned when its parent required-pool-slot is placed (e.g. cooking hood above stove). */

@@ -16,7 +16,7 @@ export const shadeColor = (color: string, shade: string): string => `${color} ${
 
 export const ROOM_TYPES = [
   'Bedroom', 'Kitchen', 'Bathroom', 'LivingRoom', 'Office',
-  'Storage', 'Hallway', 'Garage', 'Bar', 'Restaurant',
+  'Storage', 'Hall', 'Garage', 'Bar', 'Restaurant',
 ] as const;
 export type RoomType = typeof ROOM_TYPES[number];
 

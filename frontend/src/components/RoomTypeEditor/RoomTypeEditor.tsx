@@ -5,6 +5,7 @@ import {
   REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
   defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion, defaultReservedZone,
+  defaultRugSlotConfig,
 } from '../../types/roomTypes';
 import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
@@ -1572,6 +1573,49 @@ export function RoomTypeEditor() {
                     }
                   </div>
 
+                  {/* ── Rug Slot ── */}
+                  <div className={s.slotRow} style={{ marginTop: 6, gap: 8, flexWrap: 'wrap' }}>
+                    <label className={s.slotCheck}>
+                      <input type="checkbox" checked={!!slot.rugSlot}
+                        onChange={e => updateSlot(idx, { rugSlot: e.target.checked ? defaultRugSlotConfig() : null })} />
+                      {t('roomTypeEditor.slotCard.rugSlotCheck')}
+                    </label>
+                    {slot.rugSlot && (<>
+                      <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugSizingMode')}</span>
+                      <select className={s.slotSizeInput} style={{ flex: '0 0 auto' }}
+                        value={slot.rugSlot.sizing.mode}
+                        onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, mode: e.target.value as 'fixed' | 'fill' } } })}>
+                        <option value="fixed">{t('roomTypeEditor.slotCard.rugSizingFixed')}</option>
+                        <option value="fill">{t('roomTypeEditor.slotCard.rugSizingFill')}</option>
+                      </select>
+                      {slot.rugSlot.sizing.mode === 'fill' && (<>
+                        <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillShortAxis')}</span>
+                        <input type="number" min={1} max={20} className={s.slotNumInput}
+                          value={slot.rugSlot.sizing.fillShortAxis}
+                          onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, fillShortAxis: Math.max(1, +e.target.value) } } })} />
+                        <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillMargin')}</span>
+                        <input type="number" min={0} max={10} className={s.slotNumInput}
+                          value={slot.rugSlot.sizing.fillMarginEachEnd}
+                          onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, fillMarginEachEnd: Math.max(0, +e.target.value) } } })} />
+                        <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillMaxLong')}</span>
+                        <input type="number" min={0} className={s.slotNumInput}
+                          placeholder={t('roomTypeEditor.slotCard.rugFillMaxLongPlaceholder')}
+                          value={slot.rugSlot.sizing.fillMaxLongAxis ?? ''}
+                          onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, fillMaxLongAxis: e.target.value ? +e.target.value : null } } })} />
+                      </>)}
+                      <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugModeFilter')}</span>
+                      <div className={s.chipGroup}>
+                        {(['any', 'modular', 'preassembled'] as const).map(mf => (
+                          <span key={mf}
+                            className={`${s.chip} ${slot.rugSlot!.modeFilter === mf ? s.chipActive : ''}`}
+                            onClick={() => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, modeFilter: mf } })}>
+                            {mf}
+                          </span>
+                        ))}
+                      </div>
+                    </>)}
+                  </div>
+
                   {/* ── Benötigt Slot ── */}
                   <div className={s.slotRow} style={{ marginTop: 6, gap: 8 }}>
                     <span className={s.slotGroupLabel}
@@ -2345,10 +2389,23 @@ export function RoomTypeEditor() {
                              </button>
                            </div>
 
-                           {(rs.companions ?? []).map((c, ci) => (
-                             <div key={ci} className={s.anchorRuleCard} style={{ marginTop: 3, background: '#141c2c' }}>
+                           {(() => {
+                             const companionGroupIds = Array.from(new Set(
+                               (rs.companions ?? []).map(cc => cc.slotGroupId).filter(g => g)
+                             ));
+                             return (rs.companions ?? []).map((c, ci) => {
+                             const groupColor = c.slotGroupId ? getGroupColor(c.slotGroupId, companionGroupIds) : undefined;
+                             return (
+                             <div key={ci} className={`${s.anchorRuleCard} ${groupColor ? s.slotCardGrouped : ''}`}
+                               style={{ marginTop: 3, background: '#141c2c', ...(groupColor ? { '--group-color': groupColor } as React.CSSProperties : {}) }}>
                                <div className={s.slotRow} style={{ justifyContent: 'space-between', marginBottom: 3 }}>
-                                 <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.companion', { n: ci + 1 })}: {c.label || '—'}</span>
+                                 <span className={s.slotGroupLabel}>
+                                   {groupColor && <span style={{
+                                     display: 'inline-block', width: 8, height: 8, borderRadius: '50%',
+                                     background: groupColor, marginRight: 5,
+                                   }} title={c.slotGroupId} />}
+                                   {t('roomTypeEditor.layoutVariants.pools.requiredSlots.companions.companion', { n: ci + 1 })}: {c.label || '—'}
+                                 </span>
                                  <button className={s.removeSlotBtn} onClick={() => removeCompanion(idx, poolIdx, rsIdx, ci)}>✕</button>
                                </div>
                                <div className={s.slotRow} style={{ gap: 6, flexWrap: 'wrap', alignItems: 'center', marginTop: 2 }}>
@@ -2423,7 +2480,8 @@ export function RoomTypeEditor() {
                                  ))}
                                </div>
                              </div>
-                           ))}
+                             );});
+                           })()}
                          </div>
                        ))}
                      </div>

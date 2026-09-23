@@ -11,6 +11,8 @@ public interface ISettingsService
     void         SetKnownCategories(List<string> categories);
     List<string> GetKnownMaterials();
     void         SetKnownMaterials(List<string> materials);
+    List<string> GetKnownColors();
+    void         SetKnownColors(List<string> colors);
 }
 
 public class SettingsService : ISettingsService
@@ -21,7 +23,7 @@ public class SettingsService : ISettingsService
     private static readonly List<string> DefaultRoomTypes =
     [
         "Bedroom", "Kitchen", "Bathroom", "LivingRoom", "Office",
-        "Storage", "Hallway", "Garage", "Bar", "Restaurant"
+        "Storage", "Hall", "Garage", "Bar", "Restaurant"
     ];
 
     private static readonly List<string> DefaultCategories =
@@ -36,6 +38,12 @@ public class SettingsService : ISettingsService
         "Holz", "Metall", "Plastik", "Stein"
     ];
 
+    private static readonly List<string> DefaultColors =
+    [
+        "Brown", "Black", "White", "Grey", "Red", "Blue", "Green",
+        "Yellow", "Metal", "Wood", "Beige", "Mixed"
+    ];
+
     public SettingsService(IWebHostEnvironment env)
     {
         _path = Path.Combine(env.ContentRootPath, "Data", "settings.json");
@@ -44,10 +52,12 @@ public class SettingsService : ISettingsService
     public List<string> GetKnownRoomTypes()  => ReadList("knownRoomTypes",  DefaultRoomTypes);
     public List<string> GetKnownCategories() => ReadList("knownCategories", DefaultCategories);
     public List<string> GetKnownMaterials()  => ReadList("knownMaterials",  DefaultMaterials);
+    public List<string> GetKnownColors()     => ReadList("knownColors",     DefaultColors);
 
     public void SetKnownRoomTypes(List<string> names)       => WriteList("knownRoomTypes",  names);
     public void SetKnownCategories(List<string> categories) => WriteList("knownCategories", categories);
     public void SetKnownMaterials(List<string> materials)   => WriteList("knownMaterials",  materials);
+    public void SetKnownColors(List<string> colors)         => WriteList("knownColors",     colors);
 
     private List<string> ReadList(string key, List<string> defaults)
     {

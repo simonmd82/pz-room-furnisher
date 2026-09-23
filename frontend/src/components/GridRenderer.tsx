@@ -411,9 +411,14 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
     return Array.from(layers).sort();
   }, [floorPlacements]);
 
-  const visiblePlacements = useMemo(() =>
-    floorPlacements.filter(p => !hiddenLayers.has(p.layer)),
-  [floorPlacements, hiddenLayers]);
+  const visiblePlacements = useMemo(() => {
+    const filtered = floorPlacements.filter(p => !hiddenLayers.has(p.layer));
+    // Render order == paint order for these stacked absolutely-positioned sprites (no
+    // per-item z-index) — FloorFurniture (rugs, floor decor) must paint first so every
+    // other layer (chairs, tables, wall furniture, ...) visually sits on top of it.
+    return [...filtered].sort((a, b) =>
+      (a.layer === 'FloorFurniture' ? 0 : 1) - (b.layer === 'FloorFurniture' ? 0 : 1));
+  }, [floorPlacements, hiddenLayers]);
 
   const reverseFootprintIndex = useMemo(() => buildReverseFootprintIndex(tileConfig), [tileConfig]);
 
@@ -492,6 +497,10 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
   const rows        = grid.length;
   const svgW        = cols * cellSize;
   const svgH        = rows * cellSize;
+  // Extra headroom above row 0 so wall-mounted furniture sprites (which render upward from
+  // their cell, up to a full extra cellSize tall) and north-wall door/window markers on the
+  // first row aren't clipped by the scroll container's top edge.
+  const TOP_PAD      = cellSize;
   const hasSelection = selected.size > 0;
 
   // Build per-room path sets from floor.pathsByRoom
@@ -704,7 +713,10 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
 
       {/* ── Scrollable grid + SVG overlay ── */}
       <div className={styles.scrollArea}>
-        <div style={{ position: 'relative', width: svgW, height: svgH }}>
+        <div style={{ position: 'relative', width: svgW, height: svgH + TOP_PAD }}>
+        {/* Offsets everything below by TOP_PAD, so row-0 wall furniture/edges have headroom
+            without any of the col/row → px math further down needing to know about the pad. */}
+        <div style={{ position: 'absolute', top: TOP_PAD, left: 0, width: svgW, height: svgH }}>
 
           {/* CSS grid layer */}
           <div
@@ -990,6 +1002,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
             ))}
           </svg>
 
+        </div>
         </div>
       </div>
     </div>

@@ -333,11 +333,39 @@
   font-style: italic;
   margin: 0;
 }
+.layoutGridWrap {
+  overflow-x: auto;
+  margin-top: 4px;
+  /* .configPanel is a flex column; an item with non-visible overflow gets an
+     automatic min-height of 0 per the flexbox spec, so without flex-shrink:0
+     it gets crushed to 0 height whenever the panel's content doesn't fit. */
+  flex-shrink: 0;
+}
 .layoutGrid {
   display: grid;
   gap: 3px;
-  margin-top: 4px;
+  width: max-content;
 }
+.layoutCorner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: #556;
+}
+.layoutColHeader,
+.layoutRowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #99a;
+  background: #17172a;
+  border-radius: 3px;
+}
+.layoutColHeader { color: #cc9944; }
+.layoutRowHeader { color: #4499cc; }
 .layoutCell {
   position: relative;
   box-sizing: border-box;
@@ -355,6 +383,17 @@
 .layoutCellSelected      { border-color: #ffcc44 !important; box-shadow: 0 0 0 1px #ffcc44; }
 .layoutCellEmpty         { background: #0e0e18; }
 .layoutCellEmpty:hover   { background: #1a1a2e; }
+.layoutCellOrigin        { border-color: #4499cc; }
+.layoutCellOrigin::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-style: solid;
+  border-width: 7px 7px 0 0;
+  border-color: #4499cc transparent transparent transparent;
+  pointer-events: none;
+}
 
 .layoutCellSprite {
   width: 100%;

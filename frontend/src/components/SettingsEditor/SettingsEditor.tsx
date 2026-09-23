@@ -4,6 +4,7 @@ import {
   getRoomTypeNames, saveRoomTypeNames,
   getCategories,    saveCategories,
   getMaterials,     saveMaterials,
+  getColorNames,    saveColorNames,
 } from '../../api/settingsApi';
 import {
   getRoomTypesStatus, restoreRoomTypesDefault,
@@ -300,11 +301,12 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [materials,  setMaterials]  = useState<string[]>([]);
+  const [colors,     setColors]     = useState<string[]>([]);
   const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
-    Promise.all([getRoomTypeNames(), getCategories(), getMaterials()])
-      .then(([rt, cats, mats]) => { setRoomTypes(rt); setCategories(cats); setMaterials(mats); })
+    Promise.all([getRoomTypeNames(), getCategories(), getMaterials(), getColorNames()])
+      .then(([rt, cats, mats, cols]) => { setRoomTypes(rt); setCategories(cats); setMaterials(mats); setColors(cols); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -353,6 +355,17 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
               onSave={async updated => {
                 const saved = await saveMaterials(updated);
                 setMaterials(saved);
+              }}
+            />
+
+            <EditableList
+              title={t('settingsEditor.colors.title')}
+              description={t('settingsEditor.colors.description')}
+              items={colors}
+              placeholder={t('settingsEditor.colors.placeholder')}
+              onSave={async updated => {
+                const saved = await saveColorNames(updated);
+                setColors(saved);
               }}
             />
           </>

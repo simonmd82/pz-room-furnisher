@@ -1,0 +1,2668 @@
+{
+  "vanilla-green": {
+    "id": "vanilla-green",
+    "label": "Vanilla Green",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_green",
+    "pieces": {
+      "TL": "floors_rugs_01_006",
+      "N": "floors_rugs_01_005",
+      "TR": "floors_rugs_01_007",
+      "W": "floors_rugs_01_002",
+      "Center": "floors_rugs_01_060",
+      "E": "floors_rugs_01_003",
+      "BL": "floors_rugs_01_000",
+      "S": "floors_rugs_01_004",
+      "BR": "floors_rugs_01_001"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "rug_vanilla_floors_rugs_01_006": {
+    "id": "rug_vanilla_floors_rugs_01_006",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_006",
+            "floors_rugs_01_007"
+          ],
+          [
+            "floors_rugs_01_002",
+            "floors_rugs_01_003"
+          ],
+          [
+            "floors_rugs_01_000",
+            "floors_rugs_01_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_006",
+            "floors_rugs_01_005",
+            "floors_rugs_01_007"
+          ],
+          [
+            "floors_rugs_01_000",
+            "floors_rugs_01_004",
+            "floors_rugs_01_001"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_014": {
+    "id": "rug_vanilla_floors_rugs_01_014",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_014",
+            "floors_rugs_01_015"
+          ],
+          [
+            "floors_rugs_01_010",
+            "floors_rugs_01_011"
+          ],
+          [
+            "floors_rugs_01_008",
+            "floors_rugs_01_009"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_014",
+            "floors_rugs_01_013",
+            "floors_rugs_01_015"
+          ],
+          [
+            "floors_rugs_01_008",
+            "floors_rugs_01_012",
+            "floors_rugs_01_009"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_022": {
+    "id": "rug_vanilla_floors_rugs_01_022",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_022",
+            "floors_rugs_01_023"
+          ],
+          [
+            "floors_rugs_01_018",
+            "floors_rugs_01_019"
+          ],
+          [
+            "floors_rugs_01_016",
+            "floors_rugs_01_017"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_022",
+            "floors_rugs_01_021",
+            "floors_rugs_01_023"
+          ],
+          [
+            "floors_rugs_01_016",
+            "floors_rugs_01_020",
+            "floors_rugs_01_017"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_024": {
+    "id": "rug_vanilla_floors_rugs_01_024",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_024",
+            "floors_rugs_01_025"
+          ],
+          [
+            "floors_rugs_01_032",
+            "floors_rugs_01_033"
+          ],
+          [
+            "floors_rugs_01_040",
+            "floors_rugs_01_041"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_119",
+            "floors_rugs_01_127",
+            "floors_rugs_01_135"
+          ],
+          [
+            "floors_rugs_01_118",
+            "floors_rugs_01_126",
+            "floors_rugs_01_134"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_027": {
+    "id": "rug_vanilla_floors_rugs_01_027",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_027",
+            "floors_rugs_01_035",
+            "floors_rugs_01_043"
+          ],
+          [
+            "floors_rugs_01_026",
+            "floors_rugs_01_034",
+            "floors_rugs_01_042"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_116",
+            "floors_rugs_01_117"
+          ],
+          [
+            "floors_rugs_01_124",
+            "floors_rugs_01_125"
+          ],
+          [
+            "floors_rugs_01_132",
+            "floors_rugs_01_133"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_028": {
+    "id": "rug_vanilla_floors_rugs_01_028",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_028",
+            "floors_rugs_01_029"
+          ],
+          [
+            "floors_rugs_01_036",
+            "floors_rugs_01_037"
+          ],
+          [
+            "floors_rugs_01_044",
+            "floors_rugs_01_045"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_115",
+            "floors_rugs_01_123",
+            "floors_rugs_01_131"
+          ],
+          [
+            "floors_rugs_01_114",
+            "floors_rugs_01_122",
+            "floors_rugs_01_130"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_031": {
+    "id": "rug_vanilla_floors_rugs_01_031",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_031",
+            "floors_rugs_01_039",
+            "floors_rugs_01_047"
+          ],
+          [
+            "floors_rugs_01_030",
+            "floors_rugs_01_038",
+            "floors_rugs_01_046"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_112",
+            "floors_rugs_01_113"
+          ],
+          [
+            "floors_rugs_01_120",
+            "floors_rugs_01_121"
+          ],
+          [
+            "floors_rugs_01_128",
+            "floors_rugs_01_129"
+          ]
+        ]
+      }
+    ]
+  },
+  "vanilla-white-brown-carpet": {
+    "id": "vanilla-white-brown-carpet",
+    "label": "Vanilla White Brown Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Brown"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_white_brown_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_003",
+      "N": "floors_rugs_02_003",
+      "TR": "floors_rugs_02_003",
+      "W": "floors_rugs_02_003",
+      "Center": "floors_rugs_02_003",
+      "E": "floors_rugs_02_003",
+      "BL": "floors_rugs_02_003",
+      "S": "floors_rugs_02_003",
+      "BR": "floors_rugs_02_003"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "rug_vanilla_floors_rugs_01_048": {
+    "id": "rug_vanilla_floors_rugs_01_048",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "floors_rugs_01_048",
+            "floors_rugs_01_049"
+          ]
+        ]
+      },
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_051"
+          ],
+          [
+            "floors_rugs_01_050"
+          ]
+        ]
+      }
+    ]
+  },
+  "vanilla-brown-carpet": {
+    "id": "vanilla-brown-carpet",
+    "label": "Vanilla Brown Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_brown_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_002",
+      "N": "floors_rugs_02_002",
+      "TR": "floors_rugs_02_002",
+      "W": "floors_rugs_02_002",
+      "Center": "floors_rugs_02_002",
+      "E": "floors_rugs_02_002",
+      "BL": "floors_rugs_02_002",
+      "S": "floors_rugs_02_002",
+      "BR": "floors_rugs_02_002"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "rug_vanilla_floors_rugs_01_052": {
+    "id": "rug_vanilla_floors_rugs_01_052",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "floors_rugs_01_052",
+            "floors_rugs_01_053"
+          ]
+        ]
+      },
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_055"
+          ],
+          [
+            "floors_rugs_01_054"
+          ]
+        ]
+      }
+    ]
+  },
+  "vanilla-black-carpet": {
+    "id": "vanilla-black-carpet",
+    "label": "Vanilla Black Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_black_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_001",
+      "N": "floors_rugs_02_001",
+      "TR": "floors_rugs_02_001",
+      "W": "floors_rugs_02_001",
+      "Center": "floors_rugs_02_001",
+      "E": "floors_rugs_02_001",
+      "BL": "floors_rugs_02_001",
+      "S": "floors_rugs_02_001",
+      "BR": "floors_rugs_02_001"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "rug_vanilla_floors_rugs_01_056": {
+    "id": "rug_vanilla_floors_rugs_01_056",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "floors_rugs_01_056",
+            "floors_rugs_01_057"
+          ]
+        ]
+      },
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_01_059"
+          ],
+          [
+            "floors_rugs_01_058"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_002": {
+    "id": "rug_vanilla_rugs_animals_002",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_002",
+            "rugs_animals_003"
+          ],
+          [
+            "rugs_animals_001",
+            "rugs_animals_000"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_010": {
+    "id": "rug_vanilla_rugs_animals_010",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_010",
+            "rugs_animals_011"
+          ],
+          [
+            "rugs_animals_009",
+            "rugs_animals_008"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_015": {
+    "id": "rug_vanilla_rugs_animals_015",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_015",
+            "rugs_animals_014"
+          ],
+          [
+            "rugs_animals_013",
+            "rugs_animals_012"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_007": {
+    "id": "rug_vanilla_rugs_animals_007",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_007",
+            "rugs_animals_006"
+          ],
+          [
+            "rugs_animals_005",
+            "rugs_animals_004"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_018": {
+    "id": "rug_vanilla_rugs_animals_018",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_018",
+            "rugs_animals_019"
+          ],
+          [
+            "rugs_animals_017",
+            "rugs_animals_016"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_027": {
+    "id": "rug_vanilla_rugs_animals_027",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_027",
+            "rugs_animals_026"
+          ],
+          [
+            "rugs_animals_025",
+            "rugs_animals_024"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_031": {
+    "id": "rug_vanilla_rugs_animals_031",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_031",
+            "rugs_animals_030"
+          ],
+          [
+            "rugs_animals_029",
+            "rugs_animals_028"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_023": {
+    "id": "rug_vanilla_rugs_animals_023",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_023",
+            "rugs_animals_021"
+          ],
+          [
+            "rugs_animals_022",
+            "rugs_animals_020"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_060": {
+    "id": "rug_vanilla_rugs_animals_060",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_060",
+            "rugs_animals_061"
+          ],
+          [
+            "rugs_animals_059",
+            "rugs_animals_062"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_069": {
+    "id": "rug_vanilla_rugs_animals_069",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_069",
+            "rugs_animals_070"
+          ],
+          [
+            "rugs_animals_068",
+            "rugs_animals_067"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_074": {
+    "id": "rug_vanilla_rugs_animals_074",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_074",
+            "rugs_animals_075"
+          ],
+          [
+            "rugs_animals_072",
+            "rugs_animals_073"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_083": {
+    "id": "rug_vanilla_rugs_animals_083",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_083",
+            "rugs_animals_082"
+          ],
+          [
+            "rugs_animals_080",
+            "rugs_animals_081"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_101": {
+    "id": "rug_vanilla_rugs_animals_101",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_101",
+            "rugs_animals_103"
+          ],
+          [
+            "rugs_animals_100",
+            "rugs_animals_102"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_087": {
+    "id": "rug_vanilla_rugs_animals_087",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_087",
+            "rugs_animals_086"
+          ],
+          [
+            "rugs_animals_084",
+            "rugs_animals_085"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_099": {
+    "id": "rug_vanilla_rugs_animals_099",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_099",
+            "rugs_animals_098"
+          ],
+          [
+            "rugs_animals_096",
+            "rugs_animals_097"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_091": {
+    "id": "rug_vanilla_rugs_animals_091",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_091",
+            "rugs_animals_089"
+          ],
+          [
+            "rugs_animals_088",
+            "rugs_animals_090"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_095": {
+    "id": "rug_vanilla_rugs_animals_095",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_animals_095",
+            "rugs_animals_094"
+          ],
+          [
+            "rugs_animals_092",
+            "rugs_animals_093"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_066": {
+    "id": "rug_vanilla_floors_rugs_01_066",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_066",
+            "floors_rugs_01_069",
+            "floors_rugs_01_063"
+          ],
+          [
+            "floors_rugs_01_065",
+            "floors_rugs_01_068",
+            "floors_rugs_01_071"
+          ],
+          [
+            "floors_rugs_01_064",
+            "floors_rugs_01_067",
+            "floors_rugs_01_070"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_01_072": {
+    "id": "rug_vanilla_floors_rugs_01_072",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_01_072",
+            "floors_rugs_01_077",
+            "floors_rugs_01_073"
+          ],
+          [
+            "floors_rugs_01_074",
+            "floors_rugs_01_087",
+            "floors_rugs_01_075"
+          ],
+          [
+            "floors_rugs_01_078",
+            "floors_rugs_01_076",
+            "floors_rugs_01_079"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_040": {
+    "id": "rug_vanilla_rugs_animals_040",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_animals_040",
+            "rugs_animals_039",
+            "rugs_animals_036"
+          ],
+          [
+            "rugs_animals_038",
+            "rugs_animals_033",
+            "rugs_animals_035"
+          ],
+          [
+            "rugs_animals_037",
+            "rugs_animals_034",
+            "rugs_animals_032"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_047": {
+    "id": "rug_vanilla_rugs_animals_047",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_animals_047",
+            "rugs_animals_046",
+            "rugs_animals_044"
+          ],
+          [
+            "rugs_animals_048",
+            "rugs_animals_043",
+            "rugs_animals_049"
+          ],
+          [
+            "rugs_animals_041",
+            "rugs_animals_042",
+            "rugs_animals_045"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_055": {
+    "id": "rug_vanilla_rugs_animals_055",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_animals_055",
+            "rugs_animals_054",
+            "rugs_animals_057"
+          ],
+          [
+            "rugs_animals_056",
+            "rugs_animals_050",
+            "rugs_animals_052"
+          ],
+          [
+            "rugs_animals_058",
+            "rugs_animals_051",
+            "rugs_animals_053"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_076": {
+    "id": "rug_vanilla_rugs_animals_076",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 1,
+        "tileLayout": [
+          [
+            "rugs_animals_076"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_077": {
+    "id": "rug_vanilla_rugs_animals_077",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 1,
+        "tileLayout": [
+          [
+            "rugs_animals_077"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_078": {
+    "id": "rug_vanilla_rugs_animals_078",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 1,
+        "tileLayout": [
+          [
+            "rugs_animals_078"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_079": {
+    "id": "rug_vanilla_rugs_animals_079",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 1,
+        "tileLayout": [
+          [
+            "rugs_animals_079"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_rugs_animals_071": {
+    "id": "rug_vanilla_rugs_animals_071",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 1,
+        "tileLayout": [
+          [
+            "rugs_animals_071"
+          ]
+        ]
+      }
+    ]
+  },
+  "vanilla-white-carpet": {
+    "id": "vanilla-white-carpet",
+    "label": "Vanilla White Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_white_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_000",
+      "N": "floors_rugs_02_000",
+      "TR": "floors_rugs_02_000",
+      "W": "floors_rugs_02_000",
+      "Center": "floors_rugs_02_000",
+      "E": "floors_rugs_02_000",
+      "BL": "floors_rugs_02_000",
+      "S": "floors_rugs_02_000",
+      "BR": "floors_rugs_02_000"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "rug_vanilla_floors_rugs_02_004": {
+    "id": "rug_vanilla_floors_rugs_02_004",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ],
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ],
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ],
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ],
+          [
+            "floors_rugs_02_004",
+            "floors_rugs_02_004",
+            "floors_rugs_02_004"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_005": {
+    "id": "rug_vanilla_floors_rugs_02_005",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ],
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ],
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ],
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ],
+          [
+            "floors_rugs_02_005",
+            "floors_rugs_02_005",
+            "floors_rugs_02_005"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_006": {
+    "id": "rug_vanilla_floors_rugs_02_006",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ],
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ],
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ],
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ],
+          [
+            "floors_rugs_02_006",
+            "floors_rugs_02_006",
+            "floors_rugs_02_006"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_007": {
+    "id": "rug_vanilla_floors_rugs_02_007",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ],
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ],
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ],
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ],
+          [
+            "floors_rugs_02_007",
+            "floors_rugs_02_007",
+            "floors_rugs_02_007"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_000": {
+    "id": "rug_vanilla_floors_rugs_02_000",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ],
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ],
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ],
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ],
+          [
+            "floors_rugs_02_000",
+            "floors_rugs_02_000"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_001": {
+    "id": "rug_vanilla_floors_rugs_02_001",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ],
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ],
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ],
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ],
+          [
+            "floors_rugs_02_001",
+            "floors_rugs_02_001"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_002": {
+    "id": "rug_vanilla_floors_rugs_02_002",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ],
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ],
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ],
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ],
+          [
+            "floors_rugs_02_002",
+            "floors_rugs_02_002"
+          ]
+        ]
+      }
+    ]
+  },
+  "rug_vanilla_floors_rugs_02_003": {
+    "id": "rug_vanilla_floors_rugs_02_003",
+    "label": "",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [],
+    "materials": [],
+    "variantGroup": "",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ],
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ],
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ],
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ],
+          [
+            "floors_rugs_02_003",
+            "floors_rugs_02_003"
+          ]
+        ]
+      }
+    ]
+  },
+  "vanilla-green-2": {
+    "id": "vanilla-green-2",
+    "label": "Vanilla Green 2",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_green",
+    "pieces": {
+      "TL": "floors_rugs_01_006",
+      "N": "floors_rugs_01_005",
+      "TR": "floors_rugs_01_007",
+      "W": "floors_rugs_01_002",
+      "Center": "floors_rugs_01_092",
+      "E": "floors_rugs_01_003",
+      "BL": "floors_rugs_01_000",
+      "S": "floors_rugs_01_004",
+      "BR": "floors_rugs_01_001"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-green-3": {
+    "id": "vanilla-green-3",
+    "label": "Vanilla Green 3",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_green",
+    "pieces": {
+      "TL": "floors_rugs_01_006",
+      "N": "floors_rugs_01_005",
+      "TR": "floors_rugs_01_007",
+      "W": "floors_rugs_01_002",
+      "Center": "floors_rugs_01_093",
+      "E": "floors_rugs_01_003",
+      "BL": "floors_rugs_01_000",
+      "S": "floors_rugs_01_004",
+      "BR": "floors_rugs_01_001"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-grey": {
+    "id": "vanilla-grey",
+    "label": "Vanilla Grey",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_grey",
+    "pieces": {
+      "TL": "floors_rugs_01_014",
+      "N": "floors_rugs_01_013",
+      "TR": "floors_rugs_01_015",
+      "W": "floors_rugs_01_010",
+      "Center": "floors_rugs_01_061",
+      "E": "floors_rugs_01_011",
+      "BL": "floors_rugs_01_008",
+      "S": "floors_rugs_01_012",
+      "BR": "floors_rugs_01_009"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-grey-2": {
+    "id": "vanilla-grey-2",
+    "label": "Vanilla Grey 2",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_grey",
+    "pieces": {
+      "TL": "floors_rugs_01_014",
+      "N": "floors_rugs_01_013",
+      "TR": "floors_rugs_01_015",
+      "W": "floors_rugs_01_010",
+      "Center": "floors_rugs_01_108",
+      "E": "floors_rugs_01_011",
+      "BL": "floors_rugs_01_008",
+      "S": "floors_rugs_01_012",
+      "BR": "floors_rugs_01_009"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-grey-3": {
+    "id": "vanilla-grey-3",
+    "label": "Vanilla Grey 3",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_grey",
+    "pieces": {
+      "TL": "floors_rugs_01_014",
+      "N": "floors_rugs_01_013",
+      "TR": "floors_rugs_01_015",
+      "W": "floors_rugs_01_010",
+      "Center": "floors_rugs_01_109",
+      "E": "floors_rugs_01_011",
+      "BL": "floors_rugs_01_008",
+      "S": "floors_rugs_01_012",
+      "BR": "floors_rugs_01_009"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-red": {
+    "id": "vanilla-red",
+    "label": "Vanilla Red",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_red",
+    "pieces": {
+      "TL": "floors_rugs_01_022",
+      "N": "floors_rugs_01_021",
+      "TR": "floors_rugs_01_023",
+      "W": "floors_rugs_01_018",
+      "Center": "floors_rugs_01_062",
+      "E": "floors_rugs_01_019",
+      "BL": "floors_rugs_01_016",
+      "S": "floors_rugs_01_020",
+      "BR": "floors_rugs_01_017"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-red-2": {
+    "id": "vanilla-red-2",
+    "label": "Vanilla Red 2",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_red",
+    "pieces": {
+      "TL": "floors_rugs_01_022",
+      "N": "floors_rugs_01_021",
+      "TR": "floors_rugs_01_023",
+      "W": "floors_rugs_01_018",
+      "Center": "floors_rugs_01_100",
+      "E": "floors_rugs_01_019",
+      "BL": "floors_rugs_01_016",
+      "S": "floors_rugs_01_020",
+      "BR": "floors_rugs_01_017"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-red-3": {
+    "id": "vanilla-red-3",
+    "label": "Vanilla Red 3",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_red",
+    "pieces": {
+      "TL": "floors_rugs_01_022",
+      "N": "floors_rugs_01_021",
+      "TR": "floors_rugs_01_023",
+      "W": "floors_rugs_01_018",
+      "Center": "floors_rugs_01_101",
+      "E": "floors_rugs_01_019",
+      "BL": "floors_rugs_01_016",
+      "S": "floors_rugs_01_020",
+      "BR": "floors_rugs_01_017"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-pink-carpet": {
+    "id": "vanilla-pink-carpet",
+    "label": "Vanilla Pink Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Pink"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_pink_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_004",
+      "N": "floors_rugs_02_004",
+      "TR": "floors_rugs_02_004",
+      "W": "floors_rugs_02_004",
+      "Center": "floors_rugs_02_004",
+      "E": "floors_rugs_02_004",
+      "BL": "floors_rugs_02_004",
+      "S": "floors_rugs_02_004",
+      "BR": "floors_rugs_02_004"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-blue-carpet": {
+    "id": "vanilla-blue-carpet",
+    "label": "Vanilla Blue Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_blue_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_005",
+      "N": "floors_rugs_02_005",
+      "TR": "floors_rugs_02_005",
+      "W": "floors_rugs_02_005",
+      "Center": "floors_rugs_02_005",
+      "E": "floors_rugs_02_005",
+      "BL": "floors_rugs_02_005",
+      "S": "floors_rugs_02_005",
+      "BR": "floors_rugs_02_005"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-grey-carpet": {
+    "id": "vanilla-grey-carpet",
+    "label": "Vanilla Grey Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_grey_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_006",
+      "N": "floors_rugs_02_006",
+      "TR": "floors_rugs_02_006",
+      "W": "floors_rugs_02_006",
+      "Center": "floors_rugs_02_006",
+      "E": "floors_rugs_02_006",
+      "BL": "floors_rugs_02_006",
+      "S": "floors_rugs_02_006",
+      "BR": "floors_rugs_02_006"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "vanilla-rainbow-carpet": {
+    "id": "vanilla-rainbow-carpet",
+    "label": "Vanilla Rainbow Carpet",
+    "mode": "modular",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Mixed"
+    ],
+    "materials": [],
+    "variantGroup": "vanilla_rainbow_carpet",
+    "pieces": {
+      "TL": "floors_rugs_02_007",
+      "N": "floors_rugs_02_007",
+      "TR": "floors_rugs_02_007",
+      "W": "floors_rugs_02_007",
+      "Center": "floors_rugs_02_007",
+      "E": "floors_rugs_02_007",
+      "BL": "floors_rugs_02_007",
+      "S": "floors_rugs_02_007",
+      "BR": "floors_rugs_02_007"
+    },
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": []
+  },
+  "melos-rugs-1": {
+    "id": "melos-rugs-1",
+    "label": "Melos Rugs 1",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Yellow"
+    ],
+    "materials": [],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_004",
+            "melos_tiles_rugs_01_005"
+          ],
+          [
+            "melos_tiles_rugs_01_002",
+            "melos_tiles_rugs_01_003"
+          ],
+          [
+            "melos_tiles_rugs_01_000",
+            "melos_tiles_rugs_01_001"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-2": {
+    "id": "melos-rugs-2",
+    "label": "Melos Rugs 2",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "Kitchen",
+      "LivingRoom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue"
+    ],
+    "materials": [],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_006",
+            "melos_tiles_rugs_01_007"
+          ],
+          [
+            "melos_tiles_rugs_01_014",
+            "melos_tiles_rugs_01_015"
+          ]
+        ]
+      }
+    ]
+  }
+}

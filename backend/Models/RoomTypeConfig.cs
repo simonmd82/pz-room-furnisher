@@ -266,6 +266,46 @@ public class RoomTypeSlot
     ///   Wert   = nur Tiles deren Materials-Liste diesen Wert enthält kommen in Frage.
     /// </summary>
     public string MaterialGroupId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Non-null = this is a rug slot, resolved against the RugDefinition catalog
+    /// (see IRugCatalogService) instead of the normal TileDefinition candidate pool via
+    /// FilterTiles. Null (default) = ordinary slot, unchanged behavior.
+    /// </summary>
+    public RugSlotConfig? RugSlot { get; set; } = null;
+}
+
+/// <summary>Sizing strategy for a rug slot.</summary>
+public class RugSizing
+{
+    /// <summary>
+    /// "fixed" (default) = target size is slot.Footprint.Width/Height exactly, like any other
+    /// slot today (e.g. a dining rug anchored to the table).
+    /// "fill" = ignore slot.Footprint; target size is computed from room geometry at generation
+    /// time (e.g. a hallway runner sized to the room's long axis). See ComputeRugFillSize.
+    /// "matchAnchorCluster" = ignore slot.Footprint and the slot's own AnchorRules; target size
+    /// AND position are the bounding box of slot.RequiresSlot's placed instance unioned with
+    /// every other placed slot that also has RequiresSlot pointing at the same parent (e.g. a
+    /// dining table's chairs) — so the rug's edge pieces land on the chairs, not just the table.
+    /// See ComputeAnchorClusterBounds/PlaceSlot.
+    /// </summary>
+    public string Mode { get; set; } = "fixed";
+    /// <summary>Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner.</summary>
+    public int FillShortAxis { get; set; } = 2;
+    /// <summary>Fill mode only: cells subtracted from each end of the long axis (door clearance etc.).</summary>
+    public int FillMarginEachEnd { get; set; } = 1;
+    /// <summary>Fill mode only: hard cap on the long axis so a huge room doesn't get one giant rug.</summary>
+    public int? FillMaxLongAxis { get; set; }
+}
+
+/// <summary>Marks a RoomTypeSlot as a rug slot — see RoomTypeSlot.RugSlot.</summary>
+public class RugSlotConfig
+{
+    /// <summary>Optional: restrict to specific RugDefinition Ids. Empty = any catalog entry matching room type + tile-set-enabled.</summary>
+    public List<string> AllowedRugIds { get; set; } = [];
+    public RugSizing Sizing { get; set; } = new();
+    /// <summary>"any" (default) | "modular" | "preassembled" — restrict which catalog entries are eligible.</summary>
+    public string ModeFilter { get; set; } = "any";
 }
 
 /// <summary>Companion slot spawned when its parent required-pool-slot is placed (e.g. cooking hood above stove).</summary>
