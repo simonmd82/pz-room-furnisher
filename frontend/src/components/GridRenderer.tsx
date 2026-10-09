@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Floor, Room, WallEdge, Building, FloorObject, PlacedFurnitureItem, ReservedZonePlacement } from '../types/building';
 import type { TileConfigMap, TileSheetInfo } from '../types/tiles';
@@ -11,10 +11,30 @@ import styles from './GridRenderer.module.css';
 const SPRITE_W = 128;
 const SPRITE_H = 256;
 
+// Cell size bounds (px) and the factor one zoom step multiplies/divides by.
+const MIN_CELL  = 4;
+const MAX_CELL  = 160;
+const ZOOM_STEP = 1.25;
+// Margin (px) around the grid so outer-wall door/window markers, which straddle the edge,
+// are drawn inside their layer's box. Nothing may paint outside its box: Chrome does not
+// reliably repaint such overflow when the box resizes, leaving ghosts of the old zoom.
+const EDGE_PAD  = 8;
+
+// Stable per-Floor-object id. A new Floor object (floor switch, re-uploaded file, path
+// regen, wall-furniture re-parse) gets a fresh id, which remounts the grid content below:
+// reusing the old floor's DOM (door/window markers share edgeKey across floors) let
+// Chrome keep painting markers of the previous floor.
+const floorRenderIds = new WeakMap<Floor, number>();
+let nextFloorRenderId = 0;
+function floorRenderId(floor: Floor): number {
+  let id = floorRenderIds.get(floor);
+  if (id === undefined) floorRenderIds.set(floor, id = ++nextFloorRenderId);
+  return id;
+}
+
 interface Props {
   floor: Floor;
   rooms: Room[];
-  cellSize?: number;
   building?: Building;
   floorIndex?: number;
   onFloorUpdated?: (floor: Floor) => void;
@@ -378,7 +398,7 @@ function EdgeMarker({ edge, cellSize }: { edge: WallEdge; cellSize: number }) {
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], reservedZones = [], tileConfig, sheetInfos, onPlacementsChanged }: Props) {
+export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUpdated, furniturePlacements = [], reservedZones = [], tileConfig, sheetInfos, onPlacementsChanged }: Props) {
   const { t } = useTranslation();
   const grid = floor.roomGrid;
 
@@ -393,6 +413,138 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
   const [dragPreview, setDragPreview] = useState<{ cells: { col: number; row: number }[]; valid: boolean } | null>(null);
   const dragGroupRef = useRef<PlacedFurnitureItem[] | null>(null);
   const dragOriginRef = useRef<{ col: number; row: number } | null>(null);
+
+  // ── Viewport fit + zoom ──────────────────────────────────────────────────────
+  // cellSize = (size that fits the whole floor into the viewport) * zoom; zoom 1 == "fit".
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [viewport, setViewport] = useState({ w: 0, h: 0 });
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setViewport({ w: el.clientWidth, h: el.clientHeight }));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const gridCols = grid[0]?.length ?? 1;
+  const gridRows = grid.length || 1;
+  // A different building/floor footprint starts over at "fit".
+  useEffect(() => { setZoom(1); }, [gridCols, gridRows]);
+
+  // rows + 1: the grid reserves one cell of headroom above row 0 (TOP_PAD below).
+  const fitCellSize = viewport.w > 0 && viewport.h > 0
+    ? Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(Math.min(
+        (viewport.w - 4 - 2 * EDGE_PAD) / gridCols,
+        (viewport.h - 4 - EDGE_PAD) / (gridRows + 1),
+      ))))
+    : 40;
+  const cellSize = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.round(fitCellSize * zoom)));
+  const minZoom  = MIN_CELL / fitCellSize;
+  const maxZoom  = MAX_CELL / fitCellSize;
+
+  // Keeps the content point under the cursor (or viewport centre) fixed across a zoom change.
+  const zoomAnchorRef = useRef<{ x: number; y: number; cell: number } | null>(null);
+  const cellSizeRef   = useRef(cellSize);
+  cellSizeRef.current = cellSize;
+
+  const applyZoom = useCallback((factor: number, anchor?: { x: number; y: number }) => {
+    const el = scrollRef.current;
+    if (el) {
+      const x = anchor?.x ?? el.clientWidth / 2;
+      const y = anchor?.y ?? el.clientHeight / 2;
+      zoomAnchorRef.current = { x, y, cell: cellSizeRef.current };
+    }
+    setZoom(z => Math.max(minZoom, Math.min(maxZoom, z * factor)));
+  }, [minZoom, maxZoom]);
+
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    const a  = zoomAnchorRef.current;
+    zoomAnchorRef.current = null;
+    if (!el || !a || a.cell === cellSize) return;
+    // Content scales linearly with cellSize (width = cols*cell, height = (rows+1)*cell).
+    const ratio = cellSize / a.cell;
+    el.scrollLeft = (el.scrollLeft + a.x) * ratio - a.x;
+    el.scrollTop  = (el.scrollTop  + a.y) * ratio - a.y;
+  }, [cellSize]);
+
+  // Ctrl + mouse wheel zooms around the cursor. Non-passive so browser page zoom is suppressed.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      const rect = el.getBoundingClientRect();
+      applyZoom(e.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP, { x: e.clientX - rect.left, y: e.clientY - rect.top });
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [applyZoom]);
+
+  // Drag to pan: middle mouse anywhere, or left mouse anywhere except on draggable furniture
+  // and controls. A press only becomes a pan after a few px of movement, so plain clicks
+  // (room selection etc.) still work; the click that ends a pan is swallowed.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const PAN_THRESHOLD = 4;
+    let pan: { id: number; x: number; y: number; left: number; top: number; moved: boolean } | null = null;
+    let swallowClick = false;
+
+    const onDown = (e: PointerEvent) => {
+      swallowClick = false;
+      const target = e.target as HTMLElement;
+      const leftOk = e.button === 0 && !target.closest('[draggable="true"], button, input, select, textarea');
+      if (e.button !== 1 && !leftOk) return;
+      if (e.button === 1) e.preventDefault(); // no browser autoscroll
+      pan = { id: e.pointerId, x: e.clientX, y: e.clientY, left: el.scrollLeft, top: el.scrollTop, moved: false };
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!pan || e.pointerId !== pan.id) return;
+      const dx = e.clientX - pan.x;
+      const dy = e.clientY - pan.y;
+      if (!pan.moved) {
+        if (Math.hypot(dx, dy) < PAN_THRESHOLD) return;
+        pan.moved = true;
+        el.setPointerCapture(e.pointerId);
+        el.classList.add(styles.panning);
+      }
+      el.scrollLeft = pan.left - dx;
+      el.scrollTop  = pan.top  - dy;
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!pan || e.pointerId !== pan.id) return;
+      if (pan.moved) {
+        swallowClick = true;
+        if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+        el.classList.remove(styles.panning);
+      }
+      pan = null;
+    };
+    const onClick = (e: MouseEvent) => {
+      if (!swallowClick) return;
+      swallowClick = false;
+      e.stopPropagation();
+      e.preventDefault();
+    };
+
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+    el.addEventListener('click', onClick, true);
+    el.addEventListener('auxclick', onClick, true);
+    return () => {
+      el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', onUp);
+      el.removeEventListener('pointercancel', onUp);
+      el.removeEventListener('click', onClick, true);
+      el.removeEventListener('auxclick', onClick, true);
+    };
+  }, []);
 
   // ── Furniture helpers ────────────────────────────────────────────────────────
   const sheetInfoMap = useMemo(() => {
@@ -500,7 +652,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
   // Extra headroom above row 0 so wall-mounted furniture sprites (which render upward from
   // their cell, up to a full extra cellSize tall) and north-wall door/window markers on the
   // first row aren't clipped by the scroll container's top edge.
-  const TOP_PAD      = cellSize;
+  const TOP_PAD      = Math.max(cellSize, EDGE_PAD); // >= EDGE_PAD keeps the padded SVG inside the content box
   const hasSelection = selected.size > 0;
 
   // Build per-room path sets from floor.pathsByRoom
@@ -712,11 +864,28 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
       </div>
 
       {/* ── Scrollable grid + SVG overlay ── */}
-      <div className={styles.scrollArea}>
-        <div style={{ position: 'relative', width: svgW, height: svgH + TOP_PAD }}>
+      <div className={styles.viewport}>
+      <div className={styles.zoomBar}>
+        <button className={styles.zoomBtn} onClick={() => applyZoom(1 / ZOOM_STEP)} disabled={zoom <= minZoom + 1e-6} title={t('gridRenderer.zoomOut')}>−</button>
+        <span className={styles.zoomValue} title={t('gridRenderer.zoomHint')}>{Math.round(zoom * 100)}%</span>
+        <button className={styles.zoomBtn} onClick={() => applyZoom(ZOOM_STEP)} disabled={zoom >= maxZoom - 1e-6} title={t('gridRenderer.zoomIn')}>+</button>
+        <button
+          className={`${styles.zoomBtn} ${zoom === 1 ? styles.zoomBtnActive : ''}`}
+          onClick={() => setZoom(1)}
+          title={t('gridRenderer.zoomFitTitle')}
+        >
+          {t('gridRenderer.zoomFit')}
+        </button>
+      </div>
+      <div ref={scrollRef} className={styles.scrollArea}>
+        <div
+          key={floorRenderId(floor)}
+          className={styles.content}
+          style={{ width: svgW + 2 * EDGE_PAD, height: svgH + TOP_PAD + EDGE_PAD }}
+        >
         {/* Offsets everything below by TOP_PAD, so row-0 wall furniture/edges have headroom
             without any of the col/row → px math further down needing to know about the pad. */}
-        <div style={{ position: 'absolute', top: TOP_PAD, left: 0, width: svgW, height: svgH }}>
+        <div style={{ position: 'absolute', top: TOP_PAD, left: EDGE_PAD, width: svgW, height: svgH }}>
 
           {/* CSS grid layer */}
           <div
@@ -911,7 +1080,7 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
 
           {/* ── Furniture sprite overlay ── */}
           {!showDebug && visiblePlacements.length > 0 && (
-            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3 }}>
+            <div style={{ position: 'absolute', left: 0, right: 0, top: -TOP_PAD, bottom: 0, pointerEvents: 'none', zIndex: 3 }}>
               {visiblePlacements.map((p) => {
                 const parsed = parseTileId(p.tileId);
                 if (!parsed) return null;
@@ -926,7 +1095,8 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
                     style={{
                       left:               p.col * cellSize,
                       // bottom-align to cell bottom (sprite grows upward – PZ convention)
-                      top:                (p.row + 1) * cellSize - sprH,
+                      // (+ TOP_PAD: this overlay starts TOP_PAD above row 0)
+                      top:                TOP_PAD + (p.row + 1) * cellSize - sprH,
                       width:              cellSize,
                       height:             sprH,
                       backgroundImage:    `url(${sheetImageUrl(parsed.sheet)})`,
@@ -973,10 +1143,11 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
 
           {/* SVG overlay – doors/windows + path dots */}
           <svg
-            width={svgW}
-            height={svgH}
-            style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'visible' }}
+            width={svgW + 2 * EDGE_PAD}
+            height={svgH + 2 * EDGE_PAD}
+            style={{ position: 'absolute', left: -EDGE_PAD, top: -EDGE_PAD, pointerEvents: 'none' }}
           >
+          <g transform={`translate(${EDGE_PAD} ${EDGE_PAD})`}>
             {/* Path dots */}
             {showPaths && Array.from(pathSets.entries()).map(([roomIdx1, pset]) => {
               const room = rooms[roomIdx1 - 1];
@@ -1000,10 +1171,12 @@ export function GridRenderer({ floor, rooms, cellSize = 40, building, floorIndex
             {floor.edges.map(edge => (
               <EdgeMarker key={edge.edgeKey} edge={edge} cellSize={cellSize} />
             ))}
+          </g>
           </svg>
 
         </div>
         </div>
+      </div>
       </div>
     </div>
   );

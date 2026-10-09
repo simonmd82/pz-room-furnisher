@@ -615,3 +615,15 @@
   font-size: 0.78rem;
 }
 .pathStyleSelect:focus { outline: none; border-color: #8866cc; }
+
+.fromFurnitureBtn {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #99b;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+.fromFurnitureBtn:hover { border-color: #7755bb; color: #ddf; }

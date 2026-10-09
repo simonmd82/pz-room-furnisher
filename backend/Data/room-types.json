@@ -2357,7 +2357,8 @@
           }
         },
         "allowedCategories": {
-          "Rug": 5
+          "Rug": 7,
+          "__empty__": 3
         },
         "placementRules": {
           "nearWall": false,
@@ -2401,7 +2402,7 @@
         "id": "slot_rug_dining_small",
         "label": "Dining Rug Small",
         "footprint": {
-          "width": 2,
+          "width": 3,
           "height": 3,
           "canRotate": true
         },
@@ -2430,7 +2431,8 @@
           }
         },
         "allowedCategories": {
-          "Rug": 5
+          "Rug": 7,
+          "__empty__": 3
         },
         "placementRules": {
           "nearWall": false,
@@ -2445,7 +2447,18 @@
         },
         "requiredLayer": "FloorFurniture",
         "requiredProperties": [],
-        "anchorRules": [],
+        "anchorRules": [
+          {
+            "anchorTarget": "slot_table_small",
+            "positions": [
+              "Center"
+            ],
+            "offsetAlongAnchor": 0,
+            "minOppositeWallDistance": null,
+            "maxOppositeWallDistance": null,
+            "orient": "match"
+          }
+        ],
         "slotGroupId": "",
         "slotGroupMode": "",
         "groupWeight": 5,
@@ -2467,7 +2480,7 @@
             "fillMarginEachEnd": 1,
             "fillMaxLongAxis": null
           },
-          "modeFilter": "any"
+          "modeFilter": "modular"
         }
       },
       {
@@ -2926,6 +2939,75 @@
         "requiredProperties": [
           "isHigh",
           "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "requireTileGroupMatch": false,
+        "materialGroupId": "",
+        "rugSlot": null
+      },
+      {
+        "id": "slot_cabinet_low",
+        "label": "Cabinet Low",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 4,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Cabinet": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
         ],
         "anchorRules": [],
         "slotGroupId": "",
@@ -4264,7 +4346,8 @@
           }
         },
         "allowedCategories": {
-          "Rug": 5
+          "Rug": 7,
+          "__empty__": 3
         },
         "placementRules": {
           "nearWall": false,
@@ -4337,7 +4420,8 @@
           }
         },
         "allowedCategories": {
-          "Rug": 5
+          "Rug": 7,
+          "__empty__": 3
         },
         "placementRules": {
           "nearWall": false,
@@ -5046,7 +5130,8 @@
         "requiredProperties": [
           "isWallMounted",
           "hasCollision",
-          "isHigh"
+          "isHigh",
+          "isMedium"
         ],
         "anchorRules": [],
         "slotGroupId": "",
@@ -5114,6 +5199,75 @@
         "requiredProperties": [
           "isHigh",
           "hasCollision"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "requireTileGroupMatch": false,
+        "materialGroupId": "",
+        "rugSlot": null
+      },
+      {
+        "id": "slot_cabinet_low",
+        "label": "Cabinet Low",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 4,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Cabinet": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
         ],
         "anchorRules": [],
         "slotGroupId": "",
@@ -8019,74 +8173,6 @@
         "rugSlot": null
       },
       {
-        "id": "slot_storage_card_box_top_dummy",
-        "label": "Card Box Top Dummy",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": false,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 0
-          },
-          "M": {
-            "min": 0,
-            "max": 0
-          },
-          "L": {
-            "min": 0,
-            "max": 0
-          },
-          "XL": {
-            "min": 0,
-            "max": 0
-          }
-        },
-        "allowedCategories": {
-          "Storage": 5
-        },
-        "placementRules": {
-          "nearWall": false,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "avoidCorners": false,
-          "allowOnPath": false,
-          "mainSubRoom": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "hasCollision",
-          "canStack",
-          "isHigh"
-        ],
-        "anchorRules": [],
-        "slotGroupId": "group_cardbox",
-        "slotGroupMode": "one-of",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "cellRequiredProperties": [],
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_storage_card_box",
-        "colorGroupId": "color_beige",
-        "tileGroupId": "",
-        "requireTileGroupMatch": false,
-        "materialGroupId": "Cardboard",
-        "rugSlot": null
-      },
-      {
         "id": "slot_storage_card_box_top",
         "label": "Card Box Top",
         "footprint": {
@@ -8119,7 +8205,8 @@
           }
         },
         "allowedCategories": {
-          "Storage": 5
+          "Storage": 5,
+          "__empty__": 5
         },
         "placementRules": {
           "nearWall": false,
@@ -8150,8 +8237,8 @@
             "orient": null
           }
         ],
-        "slotGroupId": "group_cardbox",
-        "slotGroupMode": "one-of",
+        "slotGroupId": "",
+        "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
@@ -8236,74 +8323,6 @@
         "rugSlot": null
       },
       {
-        "id": "slot_storage_wooden_crate_top_dummy",
-        "label": "Wooden Crate Top Dummy",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": false,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 0
-          },
-          "M": {
-            "min": 0,
-            "max": 0
-          },
-          "L": {
-            "min": 0,
-            "max": 0
-          },
-          "XL": {
-            "min": 0,
-            "max": 0
-          }
-        },
-        "allowedCategories": {
-          "Storage": 5
-        },
-        "placementRules": {
-          "nearWall": false,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "avoidCorners": false,
-          "allowOnPath": false,
-          "mainSubRoom": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "hasCollision",
-          "canStack",
-          "isHigh"
-        ],
-        "anchorRules": [],
-        "slotGroupId": "group_wooden_crate",
-        "slotGroupMode": "one-of",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": false,
-        "softBlocks": true,
-        "cellRequiredProperties": [],
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_storage_wooden_crate",
-        "colorGroupId": "color_brown",
-        "tileGroupId": "",
-        "requireTileGroupMatch": false,
-        "materialGroupId": "Wood",
-        "rugSlot": null
-      },
-      {
         "id": "slot_storage_wooden_crate_mid",
         "label": "Wooden Crate Mid",
         "footprint": {
@@ -8336,7 +8355,8 @@
           }
         },
         "allowedCategories": {
-          "Storage": 5
+          "Storage": 5,
+          "__empty__": 5
         },
         "placementRules": {
           "nearWall": false,
@@ -8367,8 +8387,8 @@
             "orient": null
           }
         ],
-        "slotGroupId": "group_wooden_crate",
-        "slotGroupMode": "one-of",
+        "slotGroupId": "",
+        "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
@@ -9432,7 +9452,9 @@
           "wallAlignment": "any"
         },
         "requiredLayer": "Furniture2",
-        "requiredProperties": [],
+        "requiredProperties": [
+          "isMedium"
+        ],
         "anchorRules": [
           {
             "anchorTarget": "slot_office_table",
@@ -9507,7 +9529,9 @@
           "wallAlignment": "any"
         },
         "requiredLayer": "Furniture2",
-        "requiredProperties": [],
+        "requiredProperties": [
+          "isMedium"
+        ],
         "anchorRules": [
           {
             "anchorTarget": "slot_office_table_long",
@@ -10158,7 +10182,8 @@
           }
         },
         "allowedCategories": {
-          "Storage": 5
+          "Storage": 5,
+          "__empty__": 5
         },
         "placementRules": {
           "nearWall": false,
@@ -10189,76 +10214,8 @@
             "orient": null
           }
         ],
-        "slotGroupId": "group_cardbox",
-        "slotGroupMode": "one-of",
-        "groupWeight": 5,
-        "fallbackRules": [],
-        "blocksPlacement": true,
-        "softBlocks": false,
-        "cellRequiredProperties": [],
-        "blocksFrontCell": false,
-        "requiresSlot": "slot_storage_card_box",
-        "colorGroupId": "color_beige",
-        "tileGroupId": "",
-        "requireTileGroupMatch": false,
-        "materialGroupId": "Cardboard",
-        "rugSlot": null
-      },
-      {
-        "id": "slot_storage_card_box_top_dummy",
-        "label": "Card Box Top Dummy",
-        "footprint": {
-          "width": 1,
-          "height": 1,
-          "canRotate": false
-        },
-        "required": false,
-        "priority": 0,
-        "countBySize": {
-          "XS": {
-            "min": 0,
-            "max": 0
-          },
-          "S": {
-            "min": 0,
-            "max": 0
-          },
-          "M": {
-            "min": 0,
-            "max": 0
-          },
-          "L": {
-            "min": 0,
-            "max": 0
-          },
-          "XL": {
-            "min": 0,
-            "max": 0
-          }
-        },
-        "allowedCategories": {
-          "Storage": 5
-        },
-        "placementRules": {
-          "nearWall": false,
-          "nearDoor": false,
-          "nearWindow": false,
-          "centerRoom": false,
-          "cornerOnly": false,
-          "avoidCorners": false,
-          "allowOnPath": false,
-          "mainSubRoom": false,
-          "wallAlignment": "any"
-        },
-        "requiredLayer": "Furniture2",
-        "requiredProperties": [
-          "hasCollision",
-          "canStack",
-          "isHigh"
-        ],
-        "anchorRules": [],
-        "slotGroupId": "group_cardbox",
-        "slotGroupMode": "one-of",
+        "slotGroupId": "",
+        "slotGroupMode": "",
         "groupWeight": 5,
         "fallbackRules": [],
         "blocksPlacement": true,
@@ -10666,15 +10623,15 @@
           },
           "M": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "L": {
             "min": 0,
-            "max": 2
+            "max": 1
           },
           "XL": {
             "min": 0,
-            "max": 3
+            "max": 1
           }
         },
         "allowedCategories": {
@@ -10859,6 +10816,75 @@
           },
           "modeFilter": "modular"
         }
+      },
+      {
+        "id": "slot_cabinet_low",
+        "label": "Cabinet Low",
+        "footprint": {
+          "width": 1,
+          "height": 2,
+          "canRotate": true
+        },
+        "required": false,
+        "priority": 4,
+        "countBySize": {
+          "XS": {
+            "min": 0,
+            "max": 1
+          },
+          "S": {
+            "min": 0,
+            "max": 1
+          },
+          "M": {
+            "min": 0,
+            "max": 1
+          },
+          "L": {
+            "min": 0,
+            "max": 2
+          },
+          "XL": {
+            "min": 0,
+            "max": 2
+          }
+        },
+        "allowedCategories": {
+          "Cabinet": 5
+        },
+        "placementRules": {
+          "nearWall": true,
+          "nearDoor": false,
+          "nearWindow": false,
+          "centerRoom": false,
+          "cornerOnly": false,
+          "avoidCorners": false,
+          "allowOnPath": false,
+          "mainSubRoom": false,
+          "wallAlignment": "any"
+        },
+        "requiredLayer": "Furniture",
+        "requiredProperties": [
+          "isLow",
+          "hasSurface",
+          "hasCollision",
+          "isTableTop"
+        ],
+        "anchorRules": [],
+        "slotGroupId": "",
+        "slotGroupMode": "",
+        "groupWeight": 5,
+        "fallbackRules": [],
+        "blocksPlacement": true,
+        "softBlocks": false,
+        "cellRequiredProperties": [],
+        "blocksFrontCell": false,
+        "requiresSlot": "",
+        "colorGroupId": "",
+        "tileGroupId": "",
+        "requireTileGroupMatch": false,
+        "materialGroupId": "",
+        "rugSlot": null
       }
     ],
     "layoutVariants": [],
@@ -10882,6 +10908,22 @@
         "Green",
         "Brown",
         "Blue"
+      ],
+      "cabinet_colors": [
+        "Beige",
+        "Yellow",
+        "White",
+        "Violet",
+        "Red",
+        "Purple",
+        "Pink",
+        "Orange",
+        "Mixed",
+        "Grey",
+        "Green",
+        "Brown",
+        "Blue",
+        "Black"
       ]
     }
   }

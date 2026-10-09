@@ -69,7 +69,7 @@ public interface IFurnishingGeneratorService
 
 // ── Implementation ────────────────────────────────────────────────────────────
 
-public class FurnishingGeneratorService : IFurnishingGeneratorService
+public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 {
     private const int LayoutSearchNodeLimit = 20000;
 
@@ -262,6 +262,19 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{seededColorMap[groupId]}' ({valid.Count} choices)");
                 }
 
+                // Grid layouts are placed first, as fixed units; their occupancy/anchors/colour
+                // locks then seed both the composite solver and the greedy pass below.
+                var gridState = PlaceGrids(config, layoutVariant, roomSize, sel.FloorIndex, roomCells, cellWalls,
+                    doorCells, windowCells, pathCells, allTiles, seededColorMap, reservedZoneCells, rng, configKey,
+                    sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow, innerWallKeys, openingGroups, gapCells,
+                    stairCells.ends, log);
+                if (gridState is not null)
+                {
+                    placements.AddRange(gridState.Placements);
+                    foreach (var (groupId, color) in gridState.ColorMap)
+                        seededColorMap[groupId] = color;
+                }
+
                 if (layoutVariant is not null)
                 {
                     var layoutAttemptOrder = BuildLayoutAttemptOrder(config, layoutVariant, rng);
@@ -291,7 +304,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                             openingGroups,
                             reservedZoneCells,
                             gapCells,
-                            out var usedVariant))
+                            out var usedVariant,
+                            gridState is null ? null : SeedStateFromGrids(gridState)))
                     {
                         log.Add($"[ROOM] layout variant -> '{usedVariant!.Id}'");
                         continue;
@@ -342,6 +356,31 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         stairEndCells: stairCells.ends);
                 }
 
+                if (gridState is not null)
+                {
+                    occupied.UnionWith(gridState.Occupied);
+                    softOccupied.UnionWith(gridState.SoftOccupied);
+                    physicalOccupied.UnionWith(gridState.PhysicalOccupied);
+                    blockedFrontCells.UnionWith(gridState.BlockedFrontCells);
+                    frontExemptCells.UnionWith(gridState.FrontExemptCells);
+                    foreach (var p in gridState.Placements)
+                        if (p.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
+                            floorLayerOccupied.Add((p.Col, p.Row));
+                    foreach (var (cell, gate) in gridState.CellPropertyGates)
+                        cellPropertyGates[cell] = new HashSet<string>(gate, StringComparer.OrdinalIgnoreCase);
+                }
+
+                // Grid anchors / tile-group locks; re-applied after every countStep reset below.
+                void SeedGridAnchors()
+                {
+                    if (gridState is null) return;
+                    foreach (var (key, entry) in gridState.AnchorMap)
+                        anchorMap[key] = [entry];
+                    foreach (var (key, vg) in gridState.VariantMap)
+                        variantMap[key] = vg;
+                }
+                SeedGridAnchors();
+
                 // Snapshot pre-attempt state so a failed countStep attempt (missing required
                 // pool slots) can be rolled back before retrying with a smaller pool instead
                 // of stacking a second, overlapping placement pass on top of the first.
@@ -371,6 +410,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         colorMap.Clear();
                         foreach (var kv in seededColorMap) colorMap[kv.Key] = kv.Value;
                         variantMap.Clear();
+                        SeedGridAnchors();
                         placements.RemoveRange(placementsCountBefore, placements.Count - placementsCountBefore);
                     }
 
@@ -434,6 +474,16 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
     // =========================================================================
     // Slot selection
     // =========================================================================
+
+    /// <summary>
+    /// Reserved pseudo-category in AllowedCategories: weighted like any other category, but when
+    /// rolled for a slot instance that instance places nothing (see SelectSlots). Never a real tile Group.
+    /// </summary>
+    private const string EmptyCategory = "__empty__";
+
+    /// <summary>True if the slot restricts to at least one real category (ignoring EmptyCategory).</summary>
+    private static bool HasRealCategories(RoomTypeSlot slot) =>
+        slot.AllowedCategories.Keys.Any(k => k != EmptyCategory);
 
     private static List<(RoomTypeSlot slot, int count)> SelectSlots(
         RoomTypeConfig config, string roomSize, Random rng, List<string> log,
@@ -525,6 +575,22 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                     : (int)Math.Round(cnt.Min + density * (max - cnt.Min));
             }
 
+            // EmptyCategory: each instance above the guaranteed minimum rolls against the real
+            // categories' combined weight; an "empty" roll drops that instance entirely (replaces
+            // the old dummy-slot-in-one-of-group workaround for variation at 100% density).
+            if (count > 0 && slot.AllowedCategories.TryGetValue(EmptyCategory, out var emptyW) && emptyW > 0)
+            {
+                int realW = slot.AllowedCategories.Where(kv => kv.Key != EmptyCategory).Sum(kv => Math.Max(0, kv.Value));
+                if (realW <= 0) realW = 5;
+                int guaranteed = slot.Required ? Math.Max(cnt.Min, 1) : cnt.Min;
+                int rolled = 0, skipped = 0;
+                for (int i = guaranteed; i < count; i++, rolled++)
+                    if (rng.Next(emptyW + realW) < emptyW) skipped++;
+                if (rolled > 0)
+                    log.Add($"  [EMPTY] '{slot.Id}': {skipped} of {rolled} instance(s) rolled empty ({emptyW}/{emptyW + realW})");
+                count -= skipped;
+            }
+
             if (count <= 0) continue;
 
             result.Add((slot, count));
@@ -586,9 +652,12 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
 
         var active = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var missingCore = new List<string>();
+        // Grid ids may be listed alongside slot ids (see BuildLayoutGridFilter): not slots, not "missing".
+        var gridIds = config.Grids.Select(g => g.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         foreach (var slotId in variant.SlotIds)
         {
-            if (string.IsNullOrWhiteSpace(slotId)) continue;
+            if (string.IsNullOrWhiteSpace(slotId) || gridIds.Contains(slotId)) continue;
             if (knownSlots.Contains(slotId)) active.Add(slotId);
             else missingCore.Add(slotId);
         }
@@ -596,7 +665,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var missingCommon = new List<string>();
         foreach (var slotId in config.CommonSlotIds ?? [])
         {
-            if (string.IsNullOrWhiteSpace(slotId)) continue;
+            if (string.IsNullOrWhiteSpace(slotId) || gridIds.Contains(slotId)) continue;
             if (knownSlots.Contains(slotId)) active.Add(slotId);
             else missingCommon.Add(slotId);
         }
@@ -712,7 +781,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> reservedZoneCells,
         HashSet<(int, int)> gapCells,
-        out LayoutVariant? usedVariant)
+        out LayoutVariant? usedVariant,
+        LayoutPlacementState? seedState = null)
     {
         usedVariant = null;
         foreach (var variant in attemptOrder)
@@ -783,7 +853,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
                         gapCells,
                         out var layoutPlacements,
                         out var placementLog,
-                        out var visitedNodes))
+                        out var visitedNodes,
+                        seedState))
                 {
                     var stepNote = countStep < maxStep ? $", retrying with {countStep + 1} fewer pool slot(s)" : string.Empty;
                     log.Add($"  [LAYOUT] '{variant.Id}': full-fit attempt failed after {visitedNodes} search nodes{stepNote}");
@@ -837,10 +908,11 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> gapCells,
         out List<PlacedFurnitureItem> layoutPlacements,
         out List<string> placementLog,
-        out int visitedNodes)
+        out int visitedNodes,
+        LayoutPlacementState? seedState = null)
     {
         var orderedSlots = ExpandLayoutSlotSequence(slotsToPlace);
-        var initialState = new LayoutPlacementState(
+        var initialState = seedState?.Clone() ?? new LayoutPlacementState(
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
@@ -987,6 +1059,23 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             {
                 if (ResolveSlot(anchorTarget) is { } anchorParent)
                     depth = Math.Max(depth, ComputeDepth(anchorParent, visiting) + 1);
+            }
+
+            // A matchAnchorCluster rug's bounding box depends on EVERY sibling that also
+            // requires the same parent (e.g. all 4 of a table's chairs, not just the required
+            // ones) — RequiresSlot alone only orders it after the parent itself. Without this,
+            // two same-depth optional siblings (e.g. an optional head/foot chair placed after an
+            // optional rug slot, per plain JSON array order) can leave the rug computing its
+            // cluster bounds before that chair exists, silently under-sizing it.
+            if (slot.RugSlot?.Sizing.Mode.Equals("matchAnchorCluster", StringComparison.OrdinalIgnoreCase) == true
+                && !string.IsNullOrWhiteSpace(slot.RequiresSlot))
+            {
+                foreach (var sibling in indexed.Select(x => x.slot)
+                             .Where(s => !s.Id.Equals(slot.Id, StringComparison.OrdinalIgnoreCase)
+                                      && s.RequiresSlot.Equals(slot.RequiresSlot, StringComparison.OrdinalIgnoreCase)))
+                {
+                    depth = Math.Max(depth, ComputeDepth(sibling, visiting) + 1);
+                }
             }
 
             visiting.Remove(slot.Id);
@@ -1564,6 +1653,21 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (candidates.Count == 0)
             return ([], string.Empty);
 
+        return ApplyLayoutGroupFilters(candidates, slot, state, config);
+    }
+
+    /// <summary>
+    /// Colour / tile-group / material narrowing of an already footprint-filtered candidate list
+    /// against the locks recorded in <paramref name="state"/>. Split out of PrepareLayoutTilePool
+    /// so the grid placer can cache FilterTiles once per cell and re-apply only this cheap part
+    /// per candidate position.
+    /// </summary>
+    private static (List<TileDefinition> candidates, string effectiveColorGroup) ApplyLayoutGroupFilters(
+        List<TileDefinition> candidates,
+        RoomTypeSlot slot,
+        LayoutPlacementState state,
+        RoomTypeConfig config)
+    {
         var effectiveColorGroup = slot.ColorGroupId switch
         {
             "none"               => string.Empty,
@@ -1613,7 +1717,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (candidates.Count <= 1)
             return candidates.ToList();
 
-        if (slot.AllowedCategories.Count == 0)
+        if (!HasRealCategories(slot))
             return ShuffleCopy(candidates, rng);
 
         var result = new List<TileDefinition>();
@@ -2190,7 +2294,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (slot.RugSlot is not null
             && slot.RugSlot.Sizing.Mode.Equals("matchAnchorCluster", StringComparison.OrdinalIgnoreCase))
         {
-            rugClusterBounds = ComputeAnchorClusterBounds(slot.RequiresSlot, anchorMap, config.Slots, slot.Id);
+            rugClusterBounds = ComputeAnchorClusterBounds(slot.RequiresSlot, anchorMap, config.Slots, slot.Id,
+                extraMemberIds: GridClusterMemberIds(config, slot.RequiresSlot));
             if (rugClusterBounds is null)
             {
                 log.Add($"  [WARN] '{slot.Id}': matchAnchorCluster — parent '{slot.RequiresSlot}' not placed, skipping");
@@ -2205,7 +2310,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         if (candidates.Count == 0)
         {
             log.Add($"  [WARN] '{slot.Id}': no matching tiles " +
-                    $"(layer='{slot.RequiredLayer}', cats=[{string.Join(",", slot.AllowedCategories.Keys)}], " +
+                    $"(layer='{slot.RequiredLayer}', cats=[{string.Join(",", slot.AllowedCategories.Keys.Where(k => k != EmptyCategory))}], " +
                     $"props=[{string.Join(",", slot.RequiredProperties)}], roomType='{roomTypeName}', " +
                     $"fp={slot.Footprint.Width}×{slot.Footprint.Height}, canRotate={slot.Footprint.CanRotate})");
             return;
@@ -2774,7 +2879,7 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         var all = allTiles.Values
             .Where(t => string.IsNullOrEmpty(slot.RequiredLayer)
                      || t.Layer.Equals(slot.RequiredLayer, StringComparison.OrdinalIgnoreCase))
-            .Where(t => slot.AllowedCategories.Count == 0 || slot.AllowedCategories.ContainsKey(t.Group))
+            .Where(t => !HasRealCategories(slot) || slot.AllowedCategories.ContainsKey(t.Group))
             .Where(t => slot.RequiredProperties.All(p => GetBoolProperty(t, p)))
             .Where(t => t.RoomTypes.Count == 0
                      || string.IsNullOrEmpty(roomTypeName)
@@ -2974,7 +3079,8 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
         Dictionary<string, List<(int col, int row, int fpW, int fpH, string orient)>> anchorMap,
         List<RoomTypeSlot> allSlots,
         string excludeSlotId,
-        int parentInstanceIndex = 0)
+        int parentInstanceIndex = 0,
+        IEnumerable<string>? extraMemberIds = null)
     {
         if (!anchorMap.TryGetValue(parentSlotId, out var parentInstances)
             || parentInstanceIndex >= parentInstances.Count)
@@ -2996,13 +3102,24 @@ public class FurnishingGeneratorService : IFurnishingGeneratorService
             }
         }
 
+        // Grid parent (see GridClusterMemberIds): every placed cell of the grid is a member.
+        foreach (var memberId in extraMemberIds ?? [])
+        {
+            if (!anchorMap.TryGetValue(memberId, out var memberInstances)) continue;
+            foreach (var (cc, cr, cw, ch, _) in memberInstances)
+            {
+                minCol = Math.Min(minCol, cc); minRow = Math.Min(minRow, cr);
+                maxCol = Math.Max(maxCol, cc + cw - 1); maxRow = Math.Max(maxRow, cr + ch - 1);
+            }
+        }
+
         return (minCol, minRow, maxCol - minCol + 1, maxRow - minRow + 1, parentOrient);
     }
 
     private static TileDefinition? SelectTile(List<TileDefinition> candidates, RoomTypeSlot slot, Random rng)
     {
         if (candidates.Count == 0) return null;
-        if (slot.AllowedCategories.Count == 0) return candidates[rng.Next(candidates.Count)];
+        if (!HasRealCategories(slot)) return candidates[rng.Next(candidates.Count)];
 
         var available = slot.AllowedCategories.Where(kv => candidates.Any(t => t.Group == kv.Key)).ToList();
         if (available.Count == 0) return candidates[rng.Next(candidates.Count)];

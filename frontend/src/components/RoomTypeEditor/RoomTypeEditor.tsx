@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+﻿import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   SIZE_KEYS, ANCHOR_POSITIONS, ANCHOR_POSITION_TOOLTIPS, ANCHOR_ORIENT_TOOLTIPS,
   REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
   defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion, defaultReservedZone,
-  defaultRugSlotConfig,
+  defaultRugSlotConfig, EMPTY_CATEGORY, normalizeGridLayout,
 } from '../../types/roomTypes';
 import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
@@ -16,6 +16,8 @@ import { SHADES, shadeColor } from '../../types/tiles';
 /** A color is a "base" (shade-combinable) color unless it's already a "X Light"/"X Dark" compound. */
 const isBaseColor = (color: string): boolean => !SHADES.some(sh => color.endsWith(` ${sh}`));
 import { AnchorRulePreview } from './AnchorRulePreview';
+import { FurniturePickerModal } from './FurniturePickerModal';
+import { GridLayoutEditor, gridSaveErrors } from './GridLayoutEditor';
 import { Spinner } from '../Spinner/Spinner';
 import s from './RoomTypeEditor.module.css';
 
@@ -84,6 +86,8 @@ export function RoomTypeEditor() {
   const [status, setStatus]           = useState<string | null>(null);
   const [newRoomName, setNewRoomName] = useState('');
   const [infoOpen, setInfoOpen]       = useState(false);
+  /** Slot index the furniture picker is open for (null = closed) */
+  const [pickerSlotIdx, setPickerSlotIdx] = useState<number | null>(null);
   /** Indices der eingeklappten Slot-Karten */
   const [collapsedSlots, setCollapsedSlots] = useState<Set<number>>(new Set());
   /** Indices der eingeklappten Layout-Varianten */
@@ -123,6 +127,7 @@ export function RoomTypeEditor() {
           layoutVariants: configs[rt].layoutVariants ?? [],
           commonSlotIds: configs[rt].commonSlotIds ?? [],
           reservedZones: configs[rt].reservedZones ?? [],
+          grids: (configs[rt].grids ?? []).map(normalizeGridLayout),
           slots: configs[rt].slots.map(sl => {
             // Migration: alte anchorSlotId/anchorPosition → anchorRules
             const legacyAnchor = (sl as any).anchorSlotId as string | undefined;
@@ -625,6 +630,11 @@ export function RoomTypeEditor() {
         setCollapsedSlots(prev => { const next = new Set(prev); next.delete(missingLayer); return next; });
       return;
     }
+    const gridErrors = gridSaveErrors(draft.grids ?? [], draft.slots.map(sl => sl.id));
+    if (gridErrors.length > 0) {
+      setStatus(t('roomTypeEditor.grids.saveBlocked', { ids: gridErrors.map(e => e.gridId).join(', ') }));
+      return;
+    }
     setSaving(true); setStatus(null);
     try {
       const raw = await saveRoomType(draft);
@@ -636,6 +646,7 @@ export function RoomTypeEditor() {
         layoutVariants: raw.layoutVariants ?? [],
         commonSlotIds: raw.commonSlotIds ?? [],
         reservedZones: raw.reservedZones ?? [],
+        grids: (raw.grids ?? []).map(normalizeGridLayout),
         slots: raw.slots.map(sl => {
           const fp = sl.footprint ?? {};
           return {
@@ -1149,9 +1160,12 @@ export function RoomTypeEditor() {
                     <span className={s.slotGroupLabel}>
                       {t('roomTypeEditor.slotCard.allowedCategories')}{' '}
                       <span style={{ color: '#446', fontStyle: 'italic' }}>
-                        {Object.keys(slot.allowedCategories).length === 0
-                          ? t('roomTypeEditor.slotCard.allowedCategoriesAll')
-                          : t('roomTypeEditor.slotCard.allowedCategoriesSelected', { count: Object.keys(slot.allowedCategories).length })}
+                        {(() => {
+                          const realCount = Object.keys(slot.allowedCategories).filter(c => c !== EMPTY_CATEGORY).length;
+                          return realCount === 0
+                            ? t('roomTypeEditor.slotCard.allowedCategoriesAll')
+                            : t('roomTypeEditor.slotCard.allowedCategoriesSelected', { count: realCount });
+                        })()}
                       </span>
                     </span>
                   </div>
@@ -1160,10 +1174,13 @@ export function RoomTypeEditor() {
                     <div key={cat} className={s.slotRow} style={{ gap: 6, marginTop: 2 }}>
                       <span
                         className={`${s.chip} ${s.chipActive}`}
-                        title={t('roomTypeEditor.slotCard.removeCategory')}
+                        title={cat === EMPTY_CATEGORY
+                          ? `${t('roomTypeEditor.slotCard.emptyCategoryTitle')}\n\n${t('roomTypeEditor.slotCard.removeCategory')}`
+                          : t('roomTypeEditor.slotCard.removeCategory')}
+                        style={cat === EMPTY_CATEGORY ? { borderStyle: 'dashed', fontStyle: 'italic' } : undefined}
                         onClick={() => toggleGroup(idx, cat)}
                       >
-                        {cat} ✕
+                        {cat === EMPTY_CATEGORY ? t('roomTypeEditor.slotCard.emptyCategory') : cat} ✕
                       </span>
                       <input type="number" min={1} max={10} className={s.slotNumInput}
                         value={w}
@@ -1183,6 +1200,13 @@ export function RoomTypeEditor() {
                     {availGroups.filter(g => slot.allowedCategories[g] === undefined).map(g => (
                       <span key={g} className={s.chip} title={t('roomTypeEditor.slotCard.addCategory')} onClick={() => toggleGroup(idx, g)}>{g}</span>
                     ))}
+                    {slot.allowedCategories[EMPTY_CATEGORY] === undefined && (
+                      <span className={s.chip} style={{ borderStyle: 'dashed', fontStyle: 'italic' }}
+                        title={t('roomTypeEditor.slotCard.emptyCategoryTitle')}
+                        onClick={() => toggleGroup(idx, EMPTY_CATEGORY)}>
+                        {t('roomTypeEditor.slotCard.emptyCategory')}
+                      </span>
+                    )}
                   </div>
 
                   {/* ── Platzierungsregeln ── */}
@@ -1362,6 +1386,11 @@ export function RoomTypeEditor() {
                   </div>
                   <div className={s.slotRow} style={{ marginTop: 4 }}>
                     <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.requiredPropertiesLabel')}</span>
+                    <button className={s.fromFurnitureBtn}
+                      title={t('roomTypeEditor.furniturePicker.openTitle')}
+                      onClick={() => setPickerSlotIdx(idx)}>
+                      🔍 {t('roomTypeEditor.furniturePicker.open')}
+                    </button>
                   </div>
                   <div className={s.chipGroup}>
                     {REQUIRED_PROPERTIES.map(prop => (
@@ -1584,10 +1613,16 @@ export function RoomTypeEditor() {
                       <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugSizingMode')}</span>
                       <select className={s.slotSizeInput} style={{ flex: '0 0 auto' }}
                         value={slot.rugSlot.sizing.mode}
-                        onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, mode: e.target.value as 'fixed' | 'fill' } } })}>
+                        onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, mode: e.target.value as 'fixed' | 'fill' | 'matchAnchorCluster' } } })}>
                         <option value="fixed">{t('roomTypeEditor.slotCard.rugSizingFixed')}</option>
                         <option value="fill">{t('roomTypeEditor.slotCard.rugSizingFill')}</option>
+                        <option value="matchAnchorCluster">{t('roomTypeEditor.slotCard.rugSizingMatchAnchorCluster')}</option>
                       </select>
+                      {slot.rugSlot.sizing.mode === 'matchAnchorCluster' && !slot.requiresSlot && (
+                        <span className={s.slotHint} style={{ color: '#c8a020' }}>
+                          {t('roomTypeEditor.slotCard.rugSizingMatchAnchorClusterNeedsRequiresSlot')}
+                        </span>
+                      )}
                       {slot.rugSlot.sizing.mode === 'fill' && (<>
                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillShortAxis')}</span>
                         <input type="number" min={1} max={20} className={s.slotNumInput}
@@ -1664,6 +1699,14 @@ export function RoomTypeEditor() {
                     {uniqueGroupIds.map(gid => (
                       <option key={`grp_${gid}`} value={gid}>{t('roomTypeEditor.slotCard.groupOption', { group: gid })}</option>
                     ))}
+                    {(draft.grids ?? []).filter(g => g.id).flatMap(g => [
+                      <option key={`grid_${g.id}`} value={g.id}>{t('roomTypeEditor.grids.gridOption', { grid: g.label || g.id })}</option>,
+                      ...g.cells.map(c => (
+                        <option key={`grid_${g.id}_${c.id}`} value={`${g.id}_${c.id}`}>
+                          {t('roomTypeEditor.grids.gridCellOption', { grid: g.label || g.id, cell: c.label || c.id })}
+                        </option>
+                      )),
+                    ])}
                   </datalist>
 
                   {slot.anchorRules.length === 0 && (
@@ -1884,6 +1927,13 @@ export function RoomTypeEditor() {
               }); // end map
             })()} {/* end IIFE */}
 
+            {/* ── Grid-Layouts ── */}
+            <GridLayoutEditor
+              grids={draft.grids ?? []}
+              onChange={grids => { setDraft({ ...draft, grids }); setDirty(true); }}
+              availGroups={availGroups}
+              slotIds={draft.slots.map(sl => sl.id)} />
+
             {/* ── Layout-Varianten ── */}
             <div className={s.slotsHeader} style={{ marginTop: 12 }}>
               <span className={s.slotsLabel}>{t('roomTypeEditor.layoutVariants.header', { count: (draft.layoutVariants ?? []).length })}</span>
@@ -1937,7 +1987,7 @@ export function RoomTypeEditor() {
 
               <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>{t('roomTypeEditor.layoutVariants.availableSlots')}</div>
               <div className={s.chipGroup} style={{ gap: 3, maxHeight: 86, overflowY: 'auto' }}>
-                {draft.slots.map((slot, slotIdx) => {
+                {[...draft.slots, ...(draft.grids ?? []).map(g => ({ id: g.id, label: `▦ ${g.label || g.id}` }))].map((slot, slotIdx) => {
                   const isAdded = (draft.commonSlotIds ?? []).includes(slot.id);
                   return (
                     <span
@@ -2147,7 +2197,7 @@ export function RoomTypeEditor() {
                    <div style={{ marginTop: 6, width: '100%' }}>
                      <div style={{ fontSize: '0.68rem', color: '#778', marginBottom: 4 }}>{t('roomTypeEditor.layoutVariants.availableSlots')}</div>
                      <div className={s.chipGroup} style={{ gap: 3, maxHeight: 100, overflowY: 'auto' }}>
-                       {draft.slots.map(slot => {
+                       {[...draft.slots, ...(draft.grids ?? []).map(g => ({ id: g.id, label: `▦ ${g.label || g.id}` }))].map(slot => {
                          const isAdded = (variant.slotIds ?? []).includes(slot.id);
                          return (
                            <span
@@ -2573,6 +2623,17 @@ export function RoomTypeEditor() {
             <strong>{t('roomTypeEditor.refPanel.notes.emptyCategories')}</strong>{t('roomTypeEditor.refPanel.notes.emptyCategoriesDesc')}
           </p>
         </div>
+
+      {draft && pickerSlotIdx !== null && draft.slots[pickerSlotIdx] && (
+        <FurniturePickerModal
+          slot={draft.slots[pickerSlotIdx]}
+          onClose={() => setPickerSlotIdx(null)}
+          onApply={(patch, count) => {
+            updateSlot(pickerSlotIdx, patch);
+            setPickerSlotIdx(null);
+            setStatus(t('roomTypeEditor.furniturePicker.applied', { count }));
+          }} />
+      )}
     </div>
   );
 }

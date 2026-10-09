@@ -431,6 +431,94 @@ public class LayoutVariant
     public bool Disabled { get; set; } = false;
 }
 
+/// <summary>A grid-local cell coordinate (column X, row Y; row 0 = back edge of the grid).</summary>
+public class GridPoint
+{
+    public int X { get; set; }
+    public int Y { get; set; }
+}
+
+/// <summary>
+/// One piece of furniture inside a <see cref="GridLayout"/>. Position, footprint and orient are
+/// grid-local (unrotated): row 0 is the grid's back edge, Orient "S" faces away from the back
+/// edge (into the room), "N" faces the back edge. The generator rotates/mirrors the whole grid
+/// as one unit, so these values are never interpreted in world space directly.
+/// </summary>
+public class GridCell
+{
+    /// <summary>Unique within the grid. Placed as slot id "{grid.Id}_{cell.Id}".</summary>
+    public string Id    { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
+    public int X { get; set; }
+    public int Y { get; set; }
+    /// <summary>Grid-local footprint (CanRotate is ignored — rotation comes from the grid transform).</summary>
+    public SlotFootprint Footprint { get; set; } = new();
+    /// <summary>Grid-local facing: "N" | "E" | "S" | "W".</summary>
+    public string Orient { get; set; } = "S";
+    /// <summary>Exactly one cell per grid is the anchor. The anchor is always mandatory.</summary>
+    public bool IsAnchor { get; set; } = false;
+    /// <summary>Required cells must place for the grid to place; optional cells are dropped if blocked.</summary>
+    public bool Required { get; set; } = false;
+    public Dictionary<string, int> AllowedCategories { get; set; } = [];
+    public string RequiredLayer { get; set; } = string.Empty;
+    public List<string> RequiredProperties { get; set; } = [];
+    /// <summary>See RoomTypeSlot.ColorGroupId.</summary>
+    public string ColorGroupId { get; set; } = string.Empty;
+    /// <summary>See RoomTypeSlot.TileGroupId.</summary>
+    public string TileGroupId { get; set; } = string.Empty;
+    /// <summary>See RoomTypeSlot.RequireTileGroupMatch.</summary>
+    public bool RequireTileGroupMatch { get; set; } = false;
+    /// <summary>See RoomTypeSlot.MaterialGroupId.</summary>
+    public string MaterialGroupId { get; set; } = string.Empty;
+    /// <summary>
+    /// true = the piece only soft-blocks its cells (BlocksPlacement=false, SoftBlocks=true), so a
+    /// slot anchored to it (e.g. a lamp with AnchorTarget "{grid}_{cell}", position Center) can be
+    /// placed on top, while unrelated slots still keep off. Same as a normal nightstand slot.
+    /// </summary>
+    public bool AllowStacking { get; set; } = false;
+    /// <summary>Editor-only: tile-definition ids picked for this cell (sprite preview). Ignored by the generator.</summary>
+    public List<string> PreviewTileIds { get; set; } = [];
+}
+
+/// <summary>
+/// A fixed arrangement of furniture on a small W×H grid, placed as one unit before the room's
+/// normal slots. The generator tries the grid in all 4 rotations (back edge against N/E/S/W),
+/// optionally mirrored, at every origin in the room, and keeps the candidate where the anchor and
+/// all required cells fit and the most optional cells fit. Purely additive: a room type without
+/// Grids generates exactly as before.
+/// </summary>
+public class GridLayout
+{
+    /// <summary>Unique within the room type. Also registered as an anchor key (= the anchor cell),
+    /// so normal slots can use it as AnchorTarget/RequiresSlot (e.g. a matchAnchorCluster rug).</summary>
+    public string Id    { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
+    public int Width  { get; set; } = 4;
+    public int Height { get; set; } = 3;
+    /// <summary>
+    /// "wall"   = the grid's back edge (row 0) must sit against a wall.
+    /// "corner" = back edge AND left edge (col 0; right edge when mirrored) against walls.
+    /// "free"   = no wall constraint, prefers the room centre.
+    /// </summary>
+    public string Mode { get; set; } = "wall";
+    /// <summary>Also try the grid flipped left↔right.</summary>
+    public bool AllowMirror { get; set; } = true;
+    /// <summary>Required grids log a warning when they can't be placed.</summary>
+    public bool Required { get; set; } = false;
+    /// <summary>Placement order among grids (low = first). Required grids always go first.</summary>
+    public int Priority { get; set; } = 0;
+    /// <summary>Grids sharing a non-empty SlotGroupId are alternatives: exactly one is chosen by GroupWeight.</summary>
+    public string SlotGroupId { get; set; } = string.Empty;
+    public int GroupWeight { get; set; } = 5;
+    /// <summary>Room sizes (XS/S/M/L/XL) this grid is used in. Empty = all sizes.</summary>
+    public List<string> AllowedSizes { get; set; } = [];
+    /// <summary>Allow colliding grid pieces on precomputed walking-path cells (see PlacementRules.AllowOnPath).</summary>
+    public bool AllowOnPath { get; set; } = false;
+    public List<GridCell> Cells { get; set; } = [];
+    /// <summary>Empty grid cells that must stay walkable — no other furniture (except collision-free floor decor such as rugs) may be placed there.</summary>
+    public List<GridPoint> KeepClear { get; set; } = [];
+}
+
 /// <summary>
 /// Regel für eine automatisch erkannte rechteckige Sperrzone, ausgehend von einer breiten
 /// Wandöffnung (z.B. Garagentor). Breite der Zone ergibt sich aus der Breite der Öffnung
@@ -456,6 +544,11 @@ public class RoomTypeConfig
 {
     public string RoomType            { get; set; } = string.Empty;
     public List<RoomTypeSlot> Slots   { get; set; } = [];
+    /// <summary>
+    /// Grid layouts placed as fixed units before the slots (see GridLayout). Optional; a
+    /// LayoutVariant's SlotIds / CommonSlotIds may list grid ids to switch grids per variant.
+    /// </summary>
+    public List<GridLayout> Grids     { get; set; } = [];
     /// <summary>
     /// Alternative Layout-Varianten für zusammengesetzte Möbel-Setups.
     /// Der Generator wählt pro Raum eine Variante nach Gewicht und aktiviert nur deren Slots.

@@ -220,12 +220,15 @@ public class TbxParserService : ITbxParserService
             // via type="furniture" + FurnitureTiles index instead of type="door"/"window")
             // against the user's persisted classification store.
             ResolveWallFurniture(floor, building.Tbx.FurnitureBlocks, wallFurnitureClassifications, wallFurnitureCandidates);
+            ResolvePaintedWallTiles(floor, building.Tbx.UserTiles, wallFurnitureClassifications, wallFurnitureCandidates);
 
             // Compute WallEdges from explicit wall objects (type="wall").
             // dir=N: vertical wall (west face of cells), length extends south (y increases).
             // dir=W: horizontal wall (north face of cells), length extends east (x increases).
             // InteriorTile=0 → Opening (gap in room-boundary wall).
             // InteriorTile>0 → InnerWall (free-standing wall within a room).
+            // Exception: walls built from a commercial wall set (often whole-glass shop
+            // fronts) are listed for review and take their classified type instead.
             foreach (var wallObj in floor.Objects.Where(o => o.OriginalType.Equals("wall", StringComparison.OrdinalIgnoreCase)))
             {
                 int interiorTile = int.TryParse(
@@ -234,6 +237,12 @@ public class TbxParserService : ITbxParserService
                     wallObj.RawAttributes.GetValueOrDefault("length", "1"), out var wl) ? wl : 1;
 
                 var edgeType = interiorTile == 0 ? FloorObjectType.Opening : FloorObjectType.InnerWall;
+
+                var commercialTile = ResolveCommercialWallObject(
+                    wallObj, building.Tbx.TileEntries, wallFurnitureClassifications, wallFurnitureCandidates);
+                if (commercialTile is not null
+                    && ClassificationToEdgeType(wallFurnitureClassifications.GetValueOrDefault(commercialTile)) is { } classified)
+                    edgeType = classified;
 
                 for (int i = 0; i < length; i++)
                 {
@@ -391,13 +400,7 @@ public class TbxParserService : ITbxParserService
             bool offsetsAlongX = entryKey == "N";
             foreach (var tile in validTiles)
             {
-                var classification = classifications.GetValueOrDefault(tile.Name);
-                FloorObjectType? resolvedType = classification switch
-                {
-                    "WindowHigh" or "WindowHighLow" => FloorObjectType.Window,
-                    "Door"                           => FloorObjectType.Door,
-                    _                                => null, // Ignore / unclassified → stays Other, plain wall
-                };
+                var resolvedType = ClassificationToEdgeType(classifications.GetValueOrDefault(tile.Name));
                 if (resolvedType is null) continue;
 
                 int tileX = obj.X + (offsetsAlongX ? tile.X : 0);
@@ -418,6 +421,138 @@ public class TbxParserService : ITbxParserService
                 });
             }
         }
+    }
+
+    /// <summary>Maps a stored wall-furniture classification to the WallEdge type it produces.</summary>
+    private static FloorObjectType? ClassificationToEdgeType(string? classification) => classification switch
+    {
+        "WindowHigh" or "WindowHighLow" => FloorObjectType.Window,
+        "Door"                           => FloorObjectType.Door,
+        _                                => null, // Ignore / unclassified → stays a plain wall
+    };
+
+    /// <summary>
+    /// Commercial wall tiles (e.g. "walls_commercial_02_024", a wall section with a
+    /// built-in shop window) painted directly into a tile layer (typically WallTrim)
+    /// instead of being placed as a door/window object. Each distinct tile becomes
+    /// its own single-tile candidate in the wall-furniture review list; classified
+    /// placements synthesize a WallEdge just like type="furniture" entries do.
+    /// </summary>
+    private static void ResolvePaintedWallTiles(
+        Floor floor,
+        List<string> userTiles,
+        Dictionary<string, string> classifications,
+        Dictionary<string, WallFurnitureCandidate> candidates)
+    {
+        var existingEdges = floor.Edges.Select(e => e.EdgeKey).ToHashSet();
+
+        foreach (var grid in floor.TileLayers.Values)
+        {
+            for (int y = 0; y < grid.Length; y++)
+            for (int x = 0; x < grid[y].Length; x++)
+            {
+                // Layer values are 1-based indices into user_tiles (0 = empty).
+                int v = grid[y][x];
+                if (v <= 0 || v > userTiles.Count) continue;
+                var name = userTiles[v - 1];
+                if (!IsCommercialWallTile(name)) continue;
+
+                if (!candidates.TryGetValue(name, out var candidate))
+                {
+                    candidate = new WallFurnitureCandidate
+                    {
+                        Signature = name,
+                        Tiles = [new WallFurnitureTileCandidate
+                        {
+                            Name           = name,
+                            Classification = classifications.GetValueOrDefault(name),
+                        }],
+                    };
+                    candidates[name] = candidate;
+                }
+                candidate.Count++;
+
+                var resolvedType = ClassificationToEdgeType(classifications.GetValueOrDefault(name));
+                if (resolvedType is null) continue;
+
+                // PZ wall sheets alternate West/North faces: even index = West wall
+                // (west edge of the cell), odd index = North wall (north edge).
+                var orient = TileIndex(name) % 2 == 0 ? Direction.W : Direction.N;
+                var geom = ResolveEdgeGeometry(orient, x, y);
+                if (geom is null) continue;
+
+                var edgeKey = $"{(geom.Value.IsHorizontal ? "H" : "V")}:{geom.Value.EdgeCol},{geom.Value.EdgeRow}";
+                if (!existingEdges.Add(edgeKey)) continue; // stacked layers / real door object on same edge
+
+                floor.Edges.Add(new WallEdge
+                {
+                    EdgeKey      = edgeKey,
+                    Type         = resolvedType.Value,
+                    IsHorizontal = geom.Value.IsHorizontal,
+                    EdgeCol      = geom.Value.EdgeCol,
+                    EdgeRow      = geom.Value.EdgeRow,
+                    Cell1Col     = geom.Value.Cell1Col, Cell1Row = geom.Value.Cell1Row,
+                    Cell2Col     = geom.Value.Cell2Col, Cell2Row = geom.Value.Cell2Row,
+                });
+            }
+        }
+    }
+
+    /// <summary>
+    /// If a type="wall" object is built from a commercial wall set (its exterior
+    /// Tile entry, else its InteriorTile entry), registers the set as a review
+    /// candidate — one classifiable sub-tile per face (West / North) — and returns
+    /// the tile name actually shown by this wall's orientation. Null otherwise.
+    /// Tile / InteriorTile are 1-based indices into the tile_entry list (0 = none).
+    /// </summary>
+    private static string? ResolveCommercialWallObject(
+        FloorObject wallObj,
+        List<TbxTileEntryBlock> tileEntries,
+        Dictionary<string, string> classifications,
+        Dictionary<string, WallFurnitureCandidate> candidates)
+    {
+        TbxTileEntryBlock? EntryAt(string attr) =>
+            int.TryParse(attr == "Tile" ? wallObj.Tile : wallObj.RawAttributes.GetValueOrDefault(attr), out var i)
+            && i >= 1 && i <= tileEntries.Count ? tileEntries[i - 1] : null;
+
+        var entry = new[] { EntryAt("Tile"), EntryAt("InteriorTile") }
+            .FirstOrDefault(e => e is not null && e.Tiles.Any(t => IsCommercialWallTile(t.Tile)));
+        if (entry is null) return null;
+
+        string? TileFor(string enumName) =>
+            entry.Tiles.FirstOrDefault(t => t.Enum == enumName && !string.IsNullOrEmpty(t.Tile))?.Tile;
+        var faces = new[] { TileFor("West"), TileFor("North") }.OfType<string>().ToList();
+        if (faces.Count == 0) return null;
+
+        var signature = string.Join("|", faces.Distinct(StringComparer.Ordinal).OrderBy(n => n, StringComparer.Ordinal));
+        if (!candidates.TryGetValue(signature, out var candidate))
+        {
+            candidate = new WallFurnitureCandidate
+            {
+                Signature = signature,
+                Tiles = faces.Distinct(StringComparer.Ordinal).Select(n => new WallFurnitureTileCandidate
+                {
+                    Name           = n,
+                    Classification = classifications.GetValueOrDefault(n),
+                }).ToList(),
+            };
+            candidates[signature] = candidate;
+        }
+        candidate.Count++;
+
+        // dir=N is the vertical west-face wall (West tile), dir=W the horizontal north-face wall.
+        return wallObj.Dir == Direction.N ? TileFor("West") : TileFor("North");
+    }
+
+    /// <summary>True for any commercial wall tile, including prefixed sets like "melos_tiles_walls_commercial_05_024".</summary>
+    private static bool IsCommercialWallTile(string tileName) =>
+        tileName.Contains("walls_commercial_", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Trailing sprite index of a tile name ("walls_commercial_02_024" → 24), or 0 if none.</summary>
+    private static int TileIndex(string tileName)
+    {
+        int us = tileName.LastIndexOf('_');
+        return us >= 0 && int.TryParse(tileName[(us + 1)..], out var n) ? n : 0;
     }
 
     /// <summary>

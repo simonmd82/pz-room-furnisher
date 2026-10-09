@@ -6,5 +6,11 @@
   "fixtures_doors_frames_01_034": "Door",
   "fixtures_doors_frames_01_035": "Door",
   "fixtures_doors_01_117": "Door",
-  "fixtures_doors_01_113": "WindowHighLow"
+  "fixtures_doors_01_113": "WindowHighLow",
+  "trashcontainers_01_013": "Ignore",
+  "trashcontainers_01_012": "Ignore",
+  "walls_commercial_01_096": "WindowHigh",
+  "walls_commercial_01_097": "WindowHigh",
+  "melos_tiles_walls_commercial_05_016": "WindowHigh",
+  "melos_tiles_walls_commercial_05_017": "WindowHigh"
 }

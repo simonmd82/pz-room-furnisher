@@ -2768,7 +2768,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2805,7 +2805,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2842,7 +2842,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2881,7 +2881,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2917,7 +2917,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2953,7 +2953,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -2989,7 +2989,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3025,7 +3025,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3061,7 +3061,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "footrest_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3097,7 +3097,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "footrest_red_01",
+    "variantGroup": "sofa_red_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3136,7 +3136,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3173,7 +3173,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3210,7 +3210,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3249,7 +3249,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3285,7 +3285,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3321,7 +3321,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3357,7 +3357,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3393,7 +3393,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_01",
+    "variantGroup": "sofa_white_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3425,14 +3425,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3462,14 +3463,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3499,14 +3501,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3538,14 +3541,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3574,14 +3578,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3610,14 +3615,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3646,14 +3652,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3682,14 +3689,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_black_01",
+    "variantGroup": "sofa_black_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3728,7 +3736,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3765,7 +3773,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3802,7 +3810,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3841,7 +3849,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3877,7 +3885,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3913,7 +3921,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3949,7 +3957,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -3985,7 +3993,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_brown_01",
+    "variantGroup": "sofa_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4017,14 +4025,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4056,14 +4065,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4093,14 +4103,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4130,14 +4141,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4166,14 +4178,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4202,14 +4215,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4238,14 +4252,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4274,14 +4289,15 @@
     "isTableTop": false,
     "isLootContainer": false,
     "colors": [
-      "Green"
+      "Green",
+      "Brown"
     ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_green_01",
+    "variantGroup": "sofa_green_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4312,13 +4328,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4349,13 +4368,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4384,13 +4406,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4419,13 +4444,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4453,13 +4481,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4487,13 +4518,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4521,13 +4555,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4555,13 +4592,16 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
-    "colors": [],
+    "colors": [
+      "Pink",
+      "Brown"
+    ],
     "materials": [],
     "roomTypes": [
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_pink_01",
+    "variantGroup": "sofa_pink_brown_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4600,7 +4640,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4637,7 +4677,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4674,7 +4714,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4713,7 +4753,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4749,7 +4789,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4785,7 +4825,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4821,7 +4861,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4857,7 +4897,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_yellow_01",
+    "variantGroup": "sofa_yellow_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4896,7 +4936,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4933,7 +4973,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -4970,7 +5010,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5009,7 +5049,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5045,7 +5085,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5081,7 +5121,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5117,7 +5157,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5153,7 +5193,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_white_02",
+    "variantGroup": "sofa_grey_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5192,7 +5232,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5231,7 +5271,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5268,7 +5308,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5305,7 +5345,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_double_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5377,7 +5417,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5413,7 +5453,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -5449,7 +5489,7 @@
       "Bedroom",
       "LivingRoom"
     ],
-    "variantGroup": "sofa_single_blue_01",
+    "variantGroup": "sofa_blue_01",
     "styleTags": [],
     "allowedOrients": [],
     "windowBlockedEdge": "",
@@ -25726,7 +25766,7 @@
     "layer": "Furniture2",
     "notes": "",
     "isHigh": false,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
@@ -25763,7 +25803,7 @@
     "layer": "Furniture2",
     "notes": "",
     "isHigh": false,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
@@ -25800,7 +25840,7 @@
     "layer": "Furniture2",
     "notes": "",
     "isHigh": false,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
@@ -25837,7 +25877,7 @@
     "layer": "Furniture2",
     "notes": "",
     "isHigh": false,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": false,
     "hasSurface": false,
@@ -53222,6 +53262,2166 @@
       "E",
       "W"
     ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_144": {
+    "id": "furniture_seating_indoor_03_144",
+    "tileId": "furniture_seating_indoor_03_144",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_144"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_145": {
+    "id": "furniture_seating_indoor_03_145",
+    "tileId": "furniture_seating_indoor_03_145",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_145"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_146": {
+    "id": "furniture_seating_indoor_03_146",
+    "tileId": "furniture_seating_indoor_03_146",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_146"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_147": {
+    "id": "furniture_seating_indoor_03_147",
+    "tileId": "furniture_seating_indoor_03_147",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_147"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_brown_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_148": {
+    "id": "furniture_seating_indoor_03_148",
+    "tileId": "furniture_seating_indoor_03_148",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_148"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_black_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_151": {
+    "id": "furniture_seating_indoor_03_151",
+    "tileId": "furniture_seating_indoor_03_151",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_151"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_black_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_150": {
+    "id": "furniture_seating_indoor_03_150",
+    "tileId": "furniture_seating_indoor_03_150",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_150"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_black_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_149": {
+    "id": "furniture_seating_indoor_03_149",
+    "tileId": "furniture_seating_indoor_03_149",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_149"
+      ]
+    ],
+    "group": "Chair",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "rocking_chair_black_beige_01",
+    "styleTags": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_113#1x2": {
+    "id": "furniture_seating_indoor_03_113#1x2",
+    "tileId": "furniture_seating_indoor_03_113",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_113"
+      ],
+      [
+        "furniture_seating_indoor_03_112"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_114#2x1": {
+    "id": "furniture_seating_indoor_03_114#2x1",
+    "tileId": "furniture_seating_indoor_03_114",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_114",
+        "furniture_seating_indoor_03_115"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_119#1x2": {
+    "id": "furniture_seating_indoor_03_119#1x2",
+    "tileId": "furniture_seating_indoor_03_119",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_119"
+      ],
+      [
+        "furniture_seating_indoor_03_118"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_116#2x1": {
+    "id": "furniture_seating_indoor_03_116#2x1",
+    "tileId": "furniture_seating_indoor_03_116",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_116",
+        "furniture_seating_indoor_03_117"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_100": {
+    "id": "furniture_seating_indoor_03_100",
+    "tileId": "furniture_seating_indoor_03_100",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_100"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_103": {
+    "id": "furniture_seating_indoor_03_103",
+    "tileId": "furniture_seating_indoor_03_103",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_103"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_102": {
+    "id": "furniture_seating_indoor_03_102",
+    "tileId": "furniture_seating_indoor_03_102",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_102"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_101": {
+    "id": "furniture_seating_indoor_03_101",
+    "tileId": "furniture_seating_indoor_03_101",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_101"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_black_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_129#1x2": {
+    "id": "furniture_seating_indoor_03_129#1x2",
+    "tileId": "furniture_seating_indoor_03_129",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_129"
+      ],
+      [
+        "furniture_seating_indoor_03_128"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_130#2x1": {
+    "id": "furniture_seating_indoor_03_130#2x1",
+    "tileId": "furniture_seating_indoor_03_130",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_130",
+        "furniture_seating_indoor_03_131"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_135#1x2": {
+    "id": "furniture_seating_indoor_03_135#1x2",
+    "tileId": "furniture_seating_indoor_03_135",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_135"
+      ],
+      [
+        "furniture_seating_indoor_03_134"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_132#2x1": {
+    "id": "furniture_seating_indoor_03_132#2x1",
+    "tileId": "furniture_seating_indoor_03_132",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_132",
+        "furniture_seating_indoor_03_133"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_123": {
+    "id": "furniture_seating_indoor_03_123",
+    "tileId": "furniture_seating_indoor_03_123",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_123"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_120": {
+    "id": "furniture_seating_indoor_03_120",
+    "tileId": "furniture_seating_indoor_03_120",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_120"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_121": {
+    "id": "furniture_seating_indoor_03_121",
+    "tileId": "furniture_seating_indoor_03_121",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_121"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_122": {
+    "id": "furniture_seating_indoor_03_122",
+    "tileId": "furniture_seating_indoor_03_122",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_122"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_137#1x2": {
+    "id": "furniture_seating_indoor_03_137#1x2",
+    "tileId": "furniture_seating_indoor_03_137",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_137"
+      ],
+      [
+        "furniture_seating_indoor_03_136"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_138#2x1": {
+    "id": "furniture_seating_indoor_03_138#2x1",
+    "tileId": "furniture_seating_indoor_03_138",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_138",
+        "furniture_seating_indoor_03_139"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_143#1x2": {
+    "id": "furniture_seating_indoor_03_143#1x2",
+    "tileId": "furniture_seating_indoor_03_143",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_143"
+      ],
+      [
+        "furniture_seating_indoor_03_142"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_140#2x1": {
+    "id": "furniture_seating_indoor_03_140#2x1",
+    "tileId": "furniture_seating_indoor_03_140",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_140",
+        "furniture_seating_indoor_03_141"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_127": {
+    "id": "furniture_seating_indoor_03_127",
+    "tileId": "furniture_seating_indoor_03_127",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_127"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_124": {
+    "id": "furniture_seating_indoor_03_124",
+    "tileId": "furniture_seating_indoor_03_124",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_124"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_125": {
+    "id": "furniture_seating_indoor_03_125",
+    "tileId": "furniture_seating_indoor_03_125",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_125"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_126": {
+    "id": "furniture_seating_indoor_03_126",
+    "tileId": "furniture_seating_indoor_03_126",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_126"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_brown_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_105#1x2": {
+    "id": "furniture_seating_indoor_03_105#1x2",
+    "tileId": "furniture_seating_indoor_03_105",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_105"
+      ],
+      [
+        "furniture_seating_indoor_03_104"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_106#2x1": {
+    "id": "furniture_seating_indoor_03_106#2x1",
+    "tileId": "furniture_seating_indoor_03_106",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_106",
+        "furniture_seating_indoor_03_107"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_111#1x2": {
+    "id": "furniture_seating_indoor_03_111#1x2",
+    "tileId": "furniture_seating_indoor_03_111",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_111"
+      ],
+      [
+        "furniture_seating_indoor_03_110"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_108#2x1": {
+    "id": "furniture_seating_indoor_03_108#2x1",
+    "tileId": "furniture_seating_indoor_03_108",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_108",
+        "furniture_seating_indoor_03_109"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_096": {
+    "id": "furniture_seating_indoor_03_096",
+    "tileId": "furniture_seating_indoor_03_096",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_096"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_099": {
+    "id": "furniture_seating_indoor_03_099",
+    "tileId": "furniture_seating_indoor_03_099",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_099"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_098": {
+    "id": "furniture_seating_indoor_03_098",
+    "tileId": "furniture_seating_indoor_03_098",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_098"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_097": {
+    "id": "furniture_seating_indoor_03_097",
+    "tileId": "furniture_seating_indoor_03_097",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_097"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Blue",
+      "Brown"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_white_blue_brown_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_095#1x2": {
+    "id": "furniture_seating_indoor_03_095#1x2",
+    "tileId": "furniture_seating_indoor_03_095",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_095"
+      ],
+      [
+        "furniture_seating_indoor_03_094"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_089#1x2": {
+    "id": "furniture_seating_indoor_03_089#1x2",
+    "tileId": "furniture_seating_indoor_03_089",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_089"
+      ],
+      [
+        "furniture_seating_indoor_03_088"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_090#2x1": {
+    "id": "furniture_seating_indoor_03_090#2x1",
+    "tileId": "furniture_seating_indoor_03_090",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_090",
+        "furniture_seating_indoor_03_091"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_092#2x1": {
+    "id": "furniture_seating_indoor_03_092#2x1",
+    "tileId": "furniture_seating_indoor_03_092",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_092",
+        "furniture_seating_indoor_03_093"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_083": {
+    "id": "furniture_seating_indoor_03_083",
+    "tileId": "furniture_seating_indoor_03_083",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_083"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_080": {
+    "id": "furniture_seating_indoor_03_080",
+    "tileId": "furniture_seating_indoor_03_080",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_080"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_081": {
+    "id": "furniture_seating_indoor_03_081",
+    "tileId": "furniture_seating_indoor_03_081",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_081"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_082": {
+    "id": "furniture_seating_indoor_03_082",
+    "tileId": "furniture_seating_indoor_03_082",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_082"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_beige_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_079#1x2": {
+    "id": "furniture_seating_indoor_03_079#1x2",
+    "tileId": "furniture_seating_indoor_03_079",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_079"
+      ],
+      [
+        "furniture_seating_indoor_03_078"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_076#2x1": {
+    "id": "furniture_seating_indoor_03_076#2x1",
+    "tileId": "furniture_seating_indoor_03_076",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_076",
+        "furniture_seating_indoor_03_077"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_073#1x2": {
+    "id": "furniture_seating_indoor_03_073#1x2",
+    "tileId": "furniture_seating_indoor_03_073",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_073"
+      ],
+      [
+        "furniture_seating_indoor_03_072"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_074#2x1": {
+    "id": "furniture_seating_indoor_03_074#2x1",
+    "tileId": "furniture_seating_indoor_03_074",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_074",
+        "furniture_seating_indoor_03_075"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_084": {
+    "id": "furniture_seating_indoor_03_084",
+    "tileId": "furniture_seating_indoor_03_084",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_084"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_085": {
+    "id": "furniture_seating_indoor_03_085",
+    "tileId": "furniture_seating_indoor_03_085",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_085"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_086": {
+    "id": "furniture_seating_indoor_03_086",
+    "tileId": "furniture_seating_indoor_03_086",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_086"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_seating_indoor_03_087": {
+    "id": "furniture_seating_indoor_03_087",
+    "tileId": "furniture_seating_indoor_03_087",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_seating_indoor_03_087"
+      ]
+    ],
+    "group": "Sofa",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "sofa_red_white_01",
+    "styleTags": [
+      "Luxury"
+    ],
+    "allowedOrients": [],
     "windowBlockedEdge": "",
     "useFacingOrientation": false
   }

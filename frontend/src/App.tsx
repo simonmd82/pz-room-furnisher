@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useEffect, useRef } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileUpload } from './components/FileUpload';
 import { FloorSelector } from './components/FloorSelector';
@@ -198,29 +198,6 @@ function App() {
     if (tab === 'building') reloadSheets();
   };
 
-  // Dynamische cellSize: Grid an verfuegbaren Platz anpassen
-  const gridWrapperRef = useRef<HTMLDivElement>(null);
-  const [gridArea, setGridArea] = useState({ w: 0, h: 0 });
-  useEffect(() => {
-    const el = gridWrapperRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => {
-      setGridArea({ w: el.clientWidth, h: el.clientHeight });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  const gridCols = floor?.roomGrid[0]?.length ?? 1;
-  const gridRows = floor?.roomGrid.length ?? 1;
-  const GRID_RESERVED_H = 160;
-  const dynCellSize =
-    gridArea.w > 0 && gridArea.h > 0
-      ? Math.max(8, Math.floor(Math.min(
-          gridArea.w / gridCols,
-          (gridArea.h - GRID_RESERVED_H) / gridRows,
-        )))
-      : 40;
-
   return (
     <ActiveConfigSetProvider>
     <TileSettingsClipboardProvider>
@@ -353,7 +330,7 @@ function App() {
                 }}
               />
 
-              <div ref={gridWrapperRef} style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>
                 <FloorSelector
                   floors={building.floors}
                   selected={selectedFloor}
@@ -363,7 +340,6 @@ function App() {
                   ? <GridRenderer
                       floor={floor}
                       rooms={building.rooms}
-                      cellSize={dynCellSize}
                       building={building}
                       floorIndex={selectedFloor}
                       onFloorUpdated={handleFloorUpdated}

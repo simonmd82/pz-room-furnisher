@@ -140,6 +140,8 @@ export interface PlacementRules {
   nearWindow:  boolean;
   centerRoom:  boolean;
   cornerOnly:  boolean;
+  /** Excludes true room corners (cells touching two walls) — the opposite of cornerOnly. */
+  avoidCorners?: boolean;
   /**
    * Darf dieser Slot auf Pfad-Zellen (Laufwegen) platziert werden?
    * false (Standard): Möbel mit hasCollision werden von Pfadzellen ferngehalten.
@@ -165,6 +167,13 @@ export interface PlacementRules {
   mainSubRoom: boolean;
 }
 
+/**
+ * Reservierte Pseudo-Kategorie in RoomTypeSlot.allowedCategories. Wird wie jede Kategorie
+ * gewichtet; fällt der Wurf darauf, wird für diese Instanz nichts platziert (Garantie-Minimum
+ * bzw. required-Instanz ausgenommen). Ersetzt Dummy-Slots in one-of-Gruppen.
+ */
+export const EMPTY_CATEGORY = '__empty__';
+
 export interface SlotCount {
   min: number;
   /** -1 = unbegrenzt (nur durch freie Felder begrenzt) */
@@ -187,6 +196,7 @@ export interface RoomTypeSlot {
    * Erlaubte Möbelkategorien mit Auswahlgewichtung (Kategorie → 1–10).
    * Der Generator lost zuerst eine Kategorie und wählt daraus zufällig ein Möbel.
    * Leer = alle passenden Kategorien gleichwertig.
+   * Sonderschlüssel EMPTY_CATEGORY: gewichteter "nichts platzieren"-Wurf pro Instanz.
    */
   allowedCategories: Record<string, number>;
   /** Platzierungsregeln (an Wand, Ecke, Tür, Fenster …) */
@@ -262,6 +272,8 @@ export interface RoomTypeSlot {
     requiresSlot: string;
   /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
   tileGroupId: string;
+  /** true = no match in the locked VariantGroup skips the slot instead of falling back to the unfiltered pool. */
+  requireTileGroupMatch?: boolean;
   /**
    * Material-Filter für diesen Slot (AND-verknüpft mit Farbfilter).
    *   Leer   = kein Materialfilter.
@@ -283,8 +295,11 @@ export interface RugSizing {
    * (e.g. a dining rug anchored to the table).
    * "fill" = ignore footprint; target size is computed from room geometry at generation time
    * (e.g. a hallway runner sized to the room's long axis).
+   * "matchAnchorCluster" = ignore footprint and the slot's own anchor rules; target size AND
+   * position are the bounding box of requiresSlot's placed instance unioned with every other
+   * placed slot that also requires that same parent (e.g. a dining table's chairs).
    */
-  mode: 'fixed' | 'fill';
+  mode: 'fixed' | 'fill' | 'matchAnchorCluster';
   /** Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner. */
   fillShortAxis: number;
   /** Fill mode only: cells subtracted from each end of the long axis (door clearance etc.). */
@@ -331,6 +346,12 @@ export interface LayoutPoolCompanion {
   slotGroupId: string;
   /** Weight within the companion group (1–10). Only relevant when slotGroupId is set. */
   groupWeight: number;
+  /** See RoomTypeSlot.tileGroupId. */
+  tileGroupId?: string;
+  /** See RoomTypeSlot.requireTileGroupMatch. */
+  requireTileGroupMatch?: boolean;
+  /** true (default) = must place; false = best-effort, never triggers the pool fallback retry. */
+  required?: boolean;
 }
 
 /** A guaranteed-typed position within a pool segment (e.g. "exactly 1 stove"). */
@@ -350,6 +371,8 @@ export interface LayoutPoolRequiredSlot {
   /** See RoomTypeSlot.cellRequiredProperties. */
   cellRequiredProperties: string[];
   companions?: LayoutPoolCompanion[];
+  /** Alternative placement rules tried if this required category can't place under the pool's rules. */
+  fallbackRules?: PlacementRules[];
 }
 
 /** Min/max slot count range for a pool segment per room size. */
@@ -393,6 +416,8 @@ export interface LayoutPool {
   tileGroupId: string;
   /** Guaranteed-typed positions (e.g. 1 stove, 1 sink counter). */
   requiredSlots: LayoutPoolRequiredSlot[];
+  /** Companions spawned for the pool's default (non-required-category) filler positions. */
+  defaultCompanions?: LayoutPoolCompanion[];
 }
 
   /** Alternative Layout-Variante für zusammengesetzte Möbel/Shapes. */
@@ -428,9 +453,118 @@ export interface ReservedZoneRule {
   maxWidth?: number;
 }
 
+/** Grid-local cell coordinate (x = column, y = row; row 0 = back edge of the grid). */
+export interface GridPoint {
+  x: number;
+  y: number;
+}
+
+export const GRID_ORIENTS = ['N', 'E', 'S', 'W'] as const;
+export type GridOrient = typeof GRID_ORIENTS[number];
+
+/**
+ * One piece of furniture inside a GridLayout. Position/footprint/orient are grid-local:
+ * row 0 is the grid's back edge, orient "S" faces away from it (into the room).
+ * Placed by the generator under slot id "{grid.id}_{cell.id}". Mirrors backend GridCell.
+ */
+export interface GridCell {
+  id: string;
+  label: string;
+  x: number;
+  y: number;
+  footprint: SlotFootprint;
+  orient: GridOrient;
+  /** Exactly one per grid; always mandatory. */
+  isAnchor: boolean;
+  /** Required cells must fit for the grid to be placed; optional ones are dropped if blocked. */
+  required: boolean;
+  allowedCategories: Record<string, number>;
+  requiredLayer: string;
+  requiredProperties: string[];
+  colorGroupId: string;
+  tileGroupId: string;
+  requireTileGroupMatch: boolean;
+  materialGroupId: string;
+  /** Soft-block only, so a slot anchored to this piece (lamp on nightstand) can sit on top. */
+  allowStacking: boolean;
+  /** Editor-only: tile-definition ids picked for this cell, used for the sprite preview. */
+  previewTileIds: string[];
+}
+
+export type GridMode = 'wall' | 'corner' | 'free';
+
+/**
+ * A fixed furniture arrangement on a small W×H grid, placed as one unit (rotated to any wall,
+ * optionally mirrored) before the room's normal slots. Mirrors backend GridLayout.
+ */
+export interface GridLayout {
+  id: string;
+  label: string;
+  width: number;
+  height: number;
+  /** wall = back edge against a wall · corner = back + left edge against walls · free = anywhere, prefers centre */
+  mode: GridMode;
+  allowMirror: boolean;
+  required: boolean;
+  priority: number;
+  /** Grids sharing a non-empty slotGroupId are alternatives (one is chosen by groupWeight). */
+  slotGroupId: string;
+  groupWeight: number;
+  /** Room sizes this grid is used in. Empty = all. */
+  allowedSizes: SizeKey[];
+  allowOnPath: boolean;
+  cells: GridCell[];
+  /** Empty grid cells that must stay walkable. */
+  keepClear: GridPoint[];
+}
+
+export function defaultGridCell(id: string, x: number, y: number): GridCell {
+  return {
+    id, label: '', x, y,
+    footprint: { width: 1, height: 1, canRotate: false },
+    orient: 'S', isAnchor: false, required: false,
+    allowedCategories: {}, requiredLayer: '', requiredProperties: [],
+    colorGroupId: '', tileGroupId: '', requireTileGroupMatch: false, materialGroupId: '',
+    allowStacking: false, previewTileIds: [],
+  };
+}
+
+export function defaultGridLayout(id = ''): GridLayout {
+  return {
+    id, label: '', width: 4, height: 3, mode: 'wall', allowMirror: true,
+    required: false, priority: 0, slotGroupId: '', groupWeight: 5, allowedSizes: [],
+    allowOnPath: false, cells: [], keepClear: [],
+  };
+}
+
+/** Fills missing fields of a grid coming from the backend / older JSON. */
+export function normalizeGridLayout(g: Partial<GridLayout>): GridLayout {
+  const base = defaultGridLayout();
+  return {
+    ...base,
+    ...g,
+    allowedSizes: [...(g.allowedSizes ?? [])],
+    keepClear: (g.keepClear ?? []).map(p => ({ x: p.x, y: p.y })),
+    cells: (g.cells ?? []).map(c => {
+      const d = defaultGridCell(c.id ?? '', c.x ?? 0, c.y ?? 0);
+      const fp = c.footprint ?? d.footprint;
+      return {
+        ...d,
+        ...c,
+        footprint: { width: fp.width ?? 1, height: fp.height ?? 1, canRotate: false },
+        allowedCategories: { ...(c.allowedCategories ?? {}) },
+        requiredProperties: [...(c.requiredProperties ?? [])],
+        previewTileIds: [...(c.previewTileIds ?? [])],
+      };
+    }),
+  };
+}
+
 export interface RoomTypeConfig {
   roomType:      string;
   slots:         RoomTypeSlot[];
+  /** Grid layouts placed as fixed units before the slots. */
+  grids?: GridLayout[];
   /** Layout-Varianten für zusammengesetzte Möbel-Setups (Küche, Sofa, Theke …). */
   layoutVariants?: LayoutVariant[];
   /** Slots, die bei aktiver Layout-Variante zusätzlich zu den Core-Slots immer aktiv sind. */
@@ -555,7 +689,7 @@ export function defaultReservedZone(): ReservedZoneRule {
 }
 
 export function defaultRoomTypeConfig(roomType: string): RoomTypeConfig {
-  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [], layoutVariants: [], commonSlotIds: [], reservedZones: [] };
+  return { roomType, pathStyle: 'wall', colorGroupId: '', colorPalettes: {}, slots: [], grids: [], layoutVariants: [], commonSlotIds: [], reservedZones: [] };
 }
 
 
