@@ -14,6 +14,13 @@ public class TbxMetadata
     public Dictionary<string, string> RootAttributes { get; set; } = [];
 
     /// <summary>
+    /// The complete original file text. Export patches this document (adds furniture
+    /// tiles/layers) instead of rebuilding the XML, so every part the parser doesn't model
+    /// (properties, furniture blocks, painted layers, object attributes, …) survives as-is.
+    /// </summary>
+    public string SourceXml { get; set; } = string.Empty;
+
+    /// <summary>
     /// Geordnete Liste aller tile_entry-Blöcke. Eine Liste statt Dictionary,
     /// weil Kategorien wie "floors" mehrfach vorkommen und die Reihenfolge im
     /// Original erhalten bleiben soll.

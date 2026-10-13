@@ -60,18 +60,56 @@ public record FurnishResult(
     List<string>                Log,
     List<ReservedZonePlacement> ReservedZones);
 
+/// <summary>
+/// Optional per-room progress callbacks for <see cref="IFurnishingGeneratorService.Generate"/>.
+/// Called synchronously on the generating thread, once per room selection, in order.
+/// </summary>
+public interface IFurnishProgress
+{
+    void RoomStarted(int index, int total, RoomSelection sel, string roomName, string? roomType);
+    /// <summary>Everything this selection produced: its placements, reserved zones and log lines.</summary>
+    void RoomFinished(int index, int total, RoomSelection sel,
+                      List<PlacedFurnitureItem> placements, List<ReservedZonePlacement> zones,
+                      List<string> log, bool skipped);
+}
+
 // ── Interface ─────────────────────────────────────────────────────────────────
 
 public interface IFurnishingGeneratorService
 {
-    FurnishResult Generate(FurnishRequest request);
+    /// <summary>
+    /// <paramref name="ct"/> is checked between rooms (and room components); a cancelled run
+    /// throws <see cref="OperationCanceledException"/> after reporting the rooms finished so far.
+    /// <paramref name="inputs"/> replaces the on-disk room types / tiles / rugs for this call
+    /// only (repro-bundle replay); null = use the configured services.
+    /// </summary>
+    FurnishResult Generate(FurnishRequest request, IFurnishProgress? progress = null, CancellationToken ct = default,
+                           GeneratorInputs? inputs = null);
 }
+
+/// <summary>In-memory config snapshot a generation run can use instead of the config services.</summary>
+public record GeneratorInputs(
+    IReadOnlyDictionary<string, RoomTypeConfig> RoomTypes,
+    IReadOnlyDictionary<string, TileDefinition> Tiles,
+    IReadOnlyDictionary<string, RugDefinition>  Rugs);
 
 // ── Implementation ────────────────────────────────────────────────────────────
 
 public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 {
     private const int LayoutSearchNodeLimit = 20000;
+
+    // Cancellation for the current Generate call, so the deep composite-layout search (which
+    // can run for minutes on e.g. kitchens) can stop without threading a token through every
+    // signature. Generate runs synchronously on one thread, and the service is a singleton
+    // shared across requests, hence thread-static rather than a field.
+    [ThreadStatic] private static CancellationToken t_cancel;
+
+    // FilterTiles result per (slot instance, room type) for the current Generate call. The
+    // composite-layout search re-derives each slot's tile pool on every node, and FilterTiles
+    // scans the whole tile catalog — profiling a kitchen showed this was ~86% of its runtime.
+    // The result only depends on the slot, room type and catalog, all fixed during one call.
+    [ThreadStatic] private static Dictionary<(RoomTypeSlot, string), List<TileDefinition>>? t_layoutPoolCache;
 
     private readonly IRoomTypeConfigService _roomTypeSvc;
     private readonly ITileConfigService     _tileSvc;
@@ -90,15 +128,24 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     // Main entry point
     // =========================================================================
 
-    public FurnishResult Generate(FurnishRequest req)
+    public FurnishResult Generate(FurnishRequest req, IFurnishProgress? progress = null, CancellationToken ct = default,
+                                  GeneratorInputs? inputs = null)
+    {
+        t_cancel = ct;
+        t_layoutPoolCache = new(new SlotKeyComparer());
+        try { return GenerateCore(req, progress, ct, inputs); }
+        finally { t_cancel = default; t_layoutPoolCache = null; }
+    }
+
+    private FurnishResult GenerateCore(FurnishRequest req, IFurnishProgress? progress, CancellationToken ct, GeneratorInputs? inputs)
     {
         var rng            = new Random(req.Seed ?? Environment.TickCount);
         var placements     = new List<PlacedFurnitureItem>();
         var log            = new List<string>();
         var reservedZones  = new List<ReservedZonePlacement>();
-        var allTiles       = _tileSvc.GetAllEnabled();
-        var rugCatalog     = _rugSvc.GetAllEnabled();
-        var roomTypes      = _roomTypeSvc.GetAll();
+        var allTiles       = inputs?.Tiles     ?? _tileSvc.GetAllEnabled();
+        var rugCatalog     = inputs?.Rugs      ?? _rugSvc.GetAllEnabled();
+        var roomTypes      = inputs?.RoomTypes ?? _roomTypeSvc.GetAll();
 
         // Möblierungsdichte: zufälliger Wert aus [DensityMin, DensityMax].
         // DensityFixed=true:  ein einziger Wert wird erzwungen und für alle Räume verwendet – einheitliches Bild.
@@ -119,351 +166,406 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // multiple room selections can share a floor.
         var stairCellsPerFloor = new Dictionary<int, (HashSet<(int, int)> mid, HashSet<(int, int)> ends)>();
 
-        foreach (var sel in req.RoomSelections)
+        // 1-wide room cells per floor (room shape only — inner walls ignored, see
+        // NarrowAreaDetector); keyed by floor list index like the detector itself.
+        var narrowPerFloor = new Dictionary<int, Dictionary<int, List<int[]>>>();
+
+        int total = req.RoomSelections.Count;
+        for (int selIndex = 0; selIndex < total; selIndex++)
         {
-            var floor = req.Building.Floors.FirstOrDefault(f => f.Index == sel.FloorIndex);
-            if (floor is null) { log.Add($"[SKIP] Floor {sel.FloorIndex} not found."); continue; }
+            ct.ThrowIfCancellationRequested();
+            var sel = req.RoomSelections[selIndex];
 
-            if (sel.RoomIndex1Based < 1 || sel.RoomIndex1Based > req.Building.Rooms.Count)
-            { log.Add($"[SKIP] Room index {sel.RoomIndex1Based} out of range."); continue; }
-
-            var room = req.Building.Rooms[sel.RoomIndex1Based - 1];
-
-            // 1. Room-type matching via InternalName (case-insensitive)
-            var typeName  = !string.IsNullOrWhiteSpace(sel.RoomTypeOverride) ? sel.RoomTypeOverride : room.InternalName;
-            var configKey = roomTypes.Keys.FirstOrDefault(k => k.Equals(typeName, StringComparison.OrdinalIgnoreCase));
-            if (configKey is null)
-            { log.Add($"[SKIP] '{room.Name}' / InternalName='{room.InternalName}' (floor {sel.FloorIndex}): no RoomTypeConfig for '{typeName}'."); continue; }
-
-            var config = roomTypes[configKey];
-
-            // PathStyle: Pfad neu berechnen wenn er vom Standard "wall" abweicht.
-            // Beim Upload werden Pfade mit "wall" vorberechnet; für andere Stile
-            // (center, random) wird hier der passende Pfad für diesen Raum generiert.
-            if (!string.IsNullOrEmpty(config.PathStyle)
-                && !config.PathStyle.Equals("wall", StringComparison.OrdinalIgnoreCase))
+            // Everything this selection adds is reported as one slice in the finally below,
+            // which also runs for every `continue` / [SKIP] path.
+            int placementsBefore = placements.Count, zonesBefore = reservedZones.Count, logBefore = log.Count;
+            try
             {
-                _pathfinder.ComputeRoomPath(req.Building, sel.FloorIndex, sel.RoomIndex1Based, rng.Next(), config.PathStyle);
-            }
-
-            // 2. Room analysis – split disconnected room indices into separate components.
-            // When an explicit anchor is given, GetRoomCells already returns the single
-            // connected component containing that cell; no further splitting needed.
-            var allRoomCells = GetRoomCells(floor, sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow);
-
-            if (!stairCellsPerFloor.TryGetValue(sel.FloorIndex, out var stairCells))
-                stairCellsPerFloor[sel.FloorIndex] = stairCells = ComputeStairCells(floor, req.Building, sel.FloorIndex);
-            // Stair treads (middle 3 of the 5-cell span) aren't real floor — excluded before
-            // room-size classification/component-splitting, same as a wall would be. The 2
-            // end cells (landings) stay in the room; only non-floor-layer furniture is kept
-            // off them (see stairEndCells passed into PlaceSlot below).
-            allRoomCells.ExceptWith(stairCells.mid);
-
-            if (allRoomCells.Count == 0)
-            {
-                var anchorInfo = sel.AnchorCol.HasValue && sel.AnchorRow.HasValue
-                    ? $" anchor=({sel.AnchorCol.Value},{sel.AnchorRow.Value})"
-                    : string.Empty;
-                log.Add($"[SKIP] '{room.Name}' (floor {sel.FloorIndex}, roomIndex {sel.RoomIndex1Based}{anchorInfo}): no matching room cells found.");
-                continue;
-            }
-
-            var components = (!sel.AnchorCol.HasValue || !sel.AnchorRow.HasValue)
-                ? SplitIntoComponents(allRoomCells)
-                : new List<HashSet<(int, int)>> { allRoomCells };
-
-            if (components.Count > 1)
-                log.Add($"[SPLIT] '{room.Name}' (floor {sel.FloorIndex}, roomIndex {sel.RoomIndex1Based}): {allRoomCells.Count} cells → {components.Count} connected components, furnishing each separately");
-
-            foreach (var roomCells in components)
-            {
-                // Neuen Density-Wert pro Komponente ziehen wenn Range variabel oder Toggle aktiv.
-                if (perRoom)
-                    density = DrawDensity();
-
-                var layoutVariant = SelectLayoutVariant(config, rng, log);
-
-                var roomSize      = RoomSize.Classify(roomCells.Count);
-                var cellWalls     = ComputeWallDirections(roomCells, floor, stairCells.mid);
-                var doorCells     = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
-                var windowCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
-                // Scoped to edges touching THIS room's cells — edge keys are plain coordinate
-                // strings with no room identifier, so an unfiltered floor-wide set can spuriously
-                // "match" a different room's wall whose grid coordinates happen to sit adjacent
-                // to this room's cells (e.g. another room's wall one column over), corrupting
-                // gap-cell detection for a room it has nothing to do with.
-                var innerWallKeys = floor.Edges
-                    .Where(e => e.Type == FloorObjectType.InnerWall
-                        && (roomCells.Contains((e.Cell1Col, e.Cell1Row)) || roomCells.Contains((e.Cell2Col, e.Cell2Row))))
-                    .Select(e => e.EdgeKey)
-                    .ToHashSet();
-                // Gap cells are the only passages through inner walls. Unlike a real door/opening,
-                // blocking one doesn't necessarily seal off anything — the pocket behind it may
-                // still be reachable via another route. So they're NOT unconditionally protected
-                // like doorCells; FindFreeCell/EnumerateFreePlacementCandidates instead defer to
-                // RoomRemainsConnected to decide whether a specific candidate actually disconnects
-                // the room (see BlockedByGapCell).
-                var gapCells = innerWallKeys.Count > 0
-                    ? ComputeInnerWallGapCells(roomCells, innerWallKeys)
-                    : new HashSet<(int, int)>();
-                // Opening edges: group by external room → each room needs ≥1 free access cell.
-                // Size-1 groups → strict (like door); size ≥ 2 → soft (at least 1 must stay open).
-                // Cross-room awareness: cells whose opposing side was already blocked in another room
-                // are removed from the effective group (shrinks the soft-protect count accordingly).
-                var allOpeningGroups = ComputeOpeningGroups(floor, roomCells);
-                var openingGroups    = new List<HashSet<(int, int)>>();
-                crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crossRoomBlocked);
-                foreach (var g in allOpeningGroups)
+                var floor = req.Building.Floors.FirstOrDefault(f => f.Index == sel.FloorIndex);
+                if (floor is null)
                 {
-                    var effectiveGroup = crossRoomBlocked is { Count: > 0 }
-                        ? new HashSet<(int, int)>(g.Where(c => !crossRoomBlocked.Contains(c)))
-                        : g;
-                    if (effectiveGroup.Count == 0) continue;
-                    if (effectiveGroup.Count == 1) doorCells.UnionWith(effectiveGroup);
-                    else                           openingGroups.Add(effectiveGroup);
-                }
-                var mainSubRoomCells = ComputeMainSubRoom(roomCells, innerWallKeys,
-                    new HashSet<(int, int)>(doorCells.Concat(gapCells)));
-                var occupied            = new HashSet<(int, int)>();
-                var softOccupied        = new HashSet<(int, int)>();
-                var physicalOccupied    = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
-                var blockedFrontCells   = new HashSet<(int, int)>();
-                var frontExemptCells    = new HashSet<(int, int)>(); // FloorFurniture ohne Kollision, s. IsFloorFurnitureNoCollision
-                var floorLayerOccupied  = new HashSet<(int, int)>(); // alle FloorFurniture-Layer-Zellen, s. FitsFootprint
-                var cellPropertyGates   = new Dictionary<(int, int), HashSet<string>>();
-                var reservedZoneCells   = new HashSet<(int, int)>();
-
-                // Sperrzonen (z.B. "Car"-Stellplatz) berechnen. Blockieren die Platzierung nicht
-                // pauschal über `occupied` — Wandmöbel/Bodenauflagen ohne Kollision dürfen sie
-                // weiterhin nutzen (siehe BlockedByReservedZone).
-                if (config.ReservedZones.Count > 0)
-                {
-                    var (zoneCells, zonePlacements) = ComputeReservedZones(
-                        config.ReservedZones, sel.FloorIndex, sel.RoomIndex1Based, roomCells, openingGroups, log);
-                    reservedZoneCells.UnionWith(zoneCells);
-                    reservedZones.AddRange(zonePlacements);
+                    progress?.RoomStarted(selIndex, total, sel, $"#{sel.RoomIndex1Based}", null);
+                    log.Add($"[SKIP] Floor {sel.FloorIndex} not found."); continue;
                 }
 
-                // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
-                var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
-                    ? path.Select(p => (p[0], p[1])).ToHashSet()
-                    : new HashSet<(int, int)>();
-                pathCells.IntersectWith(roomCells);
-
-                log.Add(RoomSeparatorLine(sel.FloorIndex, room.Name));
-                log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, density {density:P0}");
-
-                var seededColorMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var (groupId, palette) in config.ColorPalettes)
+                if (sel.RoomIndex1Based < 1 || sel.RoomIndex1Based > req.Building.Rooms.Count)
                 {
-                    var valid = palette.Where(c => !string.IsNullOrEmpty(c)).ToList();
-                    if (valid.Count == 0) continue;
-                    seededColorMap[groupId] = valid[rng.Next(valid.Count)];
-                    log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{seededColorMap[groupId]}' ({valid.Count} choices)");
+                    progress?.RoomStarted(selIndex, total, sel, $"#{sel.RoomIndex1Based}", null);
+                    log.Add($"[SKIP] Room index {sel.RoomIndex1Based} out of range."); continue;
                 }
 
-                // Grid layouts are placed first, as fixed units; their occupancy/anchors/colour
-                // locks then seed both the composite solver and the greedy pass below.
-                var gridState = PlaceGrids(config, layoutVariant, roomSize, sel.FloorIndex, roomCells, cellWalls,
-                    doorCells, windowCells, pathCells, allTiles, seededColorMap, reservedZoneCells, rng, configKey,
-                    sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow, innerWallKeys, openingGroups, gapCells,
-                    stairCells.ends, log);
-                if (gridState is not null)
+                var room = req.Building.Rooms[sel.RoomIndex1Based - 1];
+
+                // 1. Room-type matching via InternalName (case-insensitive)
+                var typeName  = !string.IsNullOrWhiteSpace(sel.RoomTypeOverride) ? sel.RoomTypeOverride : room.InternalName;
+                var configKey = roomTypes.Keys.FirstOrDefault(k => k.Equals(typeName, StringComparison.OrdinalIgnoreCase));
+                progress?.RoomStarted(selIndex, total, sel, room.Name, configKey ?? typeName);
+                if (configKey is null)
+                { log.Add($"[SKIP] '{room.Name}' / InternalName='{room.InternalName}' (floor {sel.FloorIndex}): no RoomTypeConfig for '{typeName}'."); continue; }
+
+                var config = roomTypes[configKey];
+
+                // PathStyle: Pfad neu berechnen wenn er vom Standard "wall" abweicht.
+                // Beim Upload werden Pfade mit "wall" vorberechnet; für andere Stile
+                // (center, random) wird hier der passende Pfad für diesen Raum generiert.
+                if (!string.IsNullOrEmpty(config.PathStyle)
+                    && !config.PathStyle.Equals("wall", StringComparison.OrdinalIgnoreCase))
                 {
-                    placements.AddRange(gridState.Placements);
-                    foreach (var (groupId, color) in gridState.ColorMap)
-                        seededColorMap[groupId] = color;
+                    _pathfinder.ComputeRoomPath(req.Building, sel.FloorIndex, sel.RoomIndex1Based, rng.Next(), config.PathStyle);
                 }
 
-                if (layoutVariant is not null)
+                // 2. Room analysis – split disconnected room indices into separate components.
+                // When an explicit anchor is given, GetRoomCells already returns the single
+                // connected component containing that cell; no further splitting needed.
+                var allRoomCells = GetRoomCells(floor, sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow);
+
+                if (!stairCellsPerFloor.TryGetValue(sel.FloorIndex, out var stairCells))
+                    stairCellsPerFloor[sel.FloorIndex] = stairCells = ComputeStairCells(floor, req.Building, sel.FloorIndex);
+                // Stair treads (middle 3 of the 5-cell span) aren't real floor — excluded before
+                // room-size classification/component-splitting, same as a wall would be. The 2
+                // end cells (landings) stay in the room; only non-floor-layer furniture is kept
+                // off them (see stairEndCells passed into PlaceSlot below).
+                allRoomCells.ExceptWith(stairCells.mid);
+
+                if (allRoomCells.Count == 0)
                 {
-                    var layoutAttemptOrder = BuildLayoutAttemptOrder(config, layoutVariant, rng);
-                    if (TryPlaceCompositeLayout(
-                            config,
-                            layoutVariant,
-                            layoutAttemptOrder,
-                            roomSize,
-                            density,
-                            sel.FloorIndex,
-                            roomCells,
-                            cellWalls,
-                            doorCells,
-                            windowCells,
-                            pathCells,
-                            allTiles,
-                            seededColorMap,
-                            rng,
-                            configKey,
-                            sel.RoomIndex1Based,
-                            sel.AnchorCol,
-                            sel.AnchorRow,
-                            placements,
-                            log,
-                            innerWallKeys,
-                            mainSubRoomCells,
-                            openingGroups,
-                            reservedZoneCells,
-                            gapCells,
-                            out var usedVariant,
-                            gridState is null ? null : SeedStateFromGrids(gridState)))
+                    var anchorInfo = sel.AnchorCol.HasValue && sel.AnchorRow.HasValue
+                        ? $" anchor=({sel.AnchorCol.Value},{sel.AnchorRow.Value})"
+                        : string.Empty;
+                    log.Add($"[SKIP] '{room.Name}' (floor {sel.FloorIndex}, roomIndex {sel.RoomIndex1Based}{anchorInfo}): no matching room cells found.");
+                    continue;
+                }
+
+                var components = (!sel.AnchorCol.HasValue || !sel.AnchorRow.HasValue)
+                    ? SplitIntoComponents(allRoomCells)
+                    : new List<HashSet<(int, int)>> { allRoomCells };
+
+                if (components.Count > 1)
+                    log.Add($"[SPLIT] '{room.Name}' (floor {sel.FloorIndex}, roomIndex {sel.RoomIndex1Based}): {allRoomCells.Count} cells → {components.Count} connected components, furnishing each separately");
+
+                foreach (var roomCells in components)
+                {
+                    ct.ThrowIfCancellationRequested();
+
+                    // Neuen Density-Wert pro Komponente ziehen wenn Range variabel oder Toggle aktiv.
+                    if (perRoom)
+                        density = DrawDensity();
+
+                    var layoutVariant = SelectLayoutVariant(config, rng, log);
+
+                    var roomSize      = RoomSize.Classify(roomCells.Count);
+                    var cellWalls     = ComputeWallDirections(roomCells, floor, stairCells.mid);
+                    var doorCells     = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
+                    var windowCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
+                    // Scoped to edges touching THIS room's cells — edge keys are plain coordinate
+                    // strings with no room identifier, so an unfiltered floor-wide set can spuriously
+                    // "match" a different room's wall whose grid coordinates happen to sit adjacent
+                    // to this room's cells (e.g. another room's wall one column over), corrupting
+                    // gap-cell detection for a room it has nothing to do with.
+                    var innerWallKeys = floor.Edges
+                        .Where(e => e.Type == FloorObjectType.InnerWall
+                            && (roomCells.Contains((e.Cell1Col, e.Cell1Row)) || roomCells.Contains((e.Cell2Col, e.Cell2Row))))
+                        .Select(e => e.EdgeKey)
+                        .ToHashSet();
+                    // Gap cells are the only passages through inner walls. Unlike a real door/opening,
+                    // blocking one doesn't necessarily seal off anything — the pocket behind it may
+                    // still be reachable via another route. So they're NOT unconditionally protected
+                    // like doorCells; FindFreeCell/EnumerateFreePlacementCandidates instead defer to
+                    // RoomRemainsConnected to decide whether a specific candidate actually disconnects
+                    // the room (see BlockedByGapCell).
+                    var gapCells = innerWallKeys.Count > 0
+                        ? ComputeInnerWallGapCells(roomCells, innerWallKeys)
+                        : new HashSet<(int, int)>();
+                    // Opening edges: group by external room → each room needs ≥1 free access cell.
+                    // Size-1 groups → strict (like door); size ≥ 2 → soft (at least 1 must stay open).
+                    // Cross-room awareness: cells whose opposing side was already blocked in another room
+                    // are removed from the effective group (shrinks the soft-protect count accordingly).
+                    var allOpeningGroups = ComputeOpeningGroups(floor, roomCells);
+                    var openingGroups    = new List<HashSet<(int, int)>>();
+                    crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crossRoomBlocked);
+                    foreach (var g in allOpeningGroups)
                     {
-                        log.Add($"[ROOM] layout variant -> '{usedVariant!.Id}'");
-                        continue;
+                        var effectiveGroup = crossRoomBlocked is { Count: > 0 }
+                            ? new HashSet<(int, int)>(g.Where(c => !crossRoomBlocked.Contains(c)))
+                            : g;
+                        if (effectiveGroup.Count == 0) continue;
+                        if (effectiveGroup.Count == 1) doorCells.UnionWith(effectiveGroup);
+                        else                           openingGroups.Add(effectiveGroup);
                     }
-                }
+                    var mainSubRoomCells = ComputeMainSubRoom(roomCells, innerWallKeys,
+                        new HashSet<(int, int)>(doorCells.Concat(gapCells)));
+                    var occupied            = new HashSet<(int, int)>();
+                    var softOccupied        = new HashSet<(int, int)>();
+                    var physicalOccupied    = new HashSet<(int, int)>(); // nur Tiles mit HasCollision=true
+                    var blockedFrontCells   = new HashSet<(int, int)>();
+                    var frontExemptCells    = new HashSet<(int, int)>(); // FloorFurniture ohne Kollision, s. IsFloorFurnitureNoCollision
+                    var floorLayerOccupied  = new HashSet<(int, int)>(); // alle FloorFurniture-Layer-Zellen, s. FitsFootprint
+                    var cellPropertyGates   = new Dictionary<(int, int), HashSet<string>>();
+                    var reservedZoneCells   = new HashSet<(int, int)>();
 
-                // 3. Slot selection
-                var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
-                var slotsBase = SelectSlots(config, roomSize, rng, log, allTiles, configKey, density, activeLayoutSlotIds, rugCatalog, roomCells);
-
-                // Pool count-step ceiling for the fallback (non-backtracking) placement pass
-                // below — mirrors TryPlaceCompositeLayout's countStep loop so a room that
-                // reaches this fallback still gets a chance to shrink an over-full pool
-                // instead of only ever trying countStep=0 (max pool size) once.
-                int fallbackMaxStep = layoutVariant?.Pools is { Count: > 0 } fallbackPools
-                    ? fallbackPools
-                        .Select(p => p.TotalCountBySize.TryGetValue(roomSize, out var r) ? Math.Max(0, r.Max - r.Min) : 0)
-                        .DefaultIfEmpty(0).Max()
-                    : 0;
-
-                // 4. Place each slot
-                // List-valued: a slot with countBySize>1 places multiple instances under the
-                // same slot.Id — see AddAnchorEntry/the round-robin pick in PlaceSlot.
-                var anchorMap      = new Dictionary<string, List<(int col, int row, int fpW, int fpH, string orient)>>(StringComparer.OrdinalIgnoreCase);
-                var anchorUseCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-                var colorMap   = new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase);
-                var variantMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-                // Place slots in dependency order (requiresSlot / anchorRules-target chains
-                // resolved before their dependents), so a randomized tie-break among
-                // independent slots (see SelectSlots) can never sequence a dependent slot
-                // ahead of the slot/group it requires. Ordering among independent slots is
-                // preserved unchanged by ExpandLayoutSlotSequence's stable ThenBy(index) sort.
-                void PlaceOrderedSlot(RoomTypeSlot slot, HashSet<(int, int)>? decorPathCellsForSlot)
-                {
-                    // Abhängigkeitsprüfung: requiresSlot = Slot oder SlotGroupId muss zuvor
-                    // erfolgreich platziert worden sein (Eintrag in anchorMap).
-                    if (!string.IsNullOrEmpty(slot.RequiresSlot)
-                        && !anchorMap.ContainsKey(slot.RequiresSlot))
+                    // Sperrzonen (z.B. "Car"-Stellplatz) berechnen. Blockieren die Platzierung nicht
+                    // pauschal über `occupied` — Wandmöbel/Bodenauflagen ohne Kollision dürfen sie
+                    // weiterhin nutzen (siehe BlockedByReservedZone).
+                    if (config.ReservedZones.Count > 0)
                     {
-                        log.Add($"  [SKIP] '{slot.Id}': requiresSlot='{slot.RequiresSlot}' wurde nicht platziert");
-                        return;
-                    }
-                    PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                        pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, floorLayerOccupied, allTiles, rugCatalog, anchorMap, anchorUseCounts, colorMap, variantMap, config,
-                        sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
-                        placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCellsForSlot,
-                        stairEndCells: stairCells.ends);
-                }
-
-                if (gridState is not null)
-                {
-                    occupied.UnionWith(gridState.Occupied);
-                    softOccupied.UnionWith(gridState.SoftOccupied);
-                    physicalOccupied.UnionWith(gridState.PhysicalOccupied);
-                    blockedFrontCells.UnionWith(gridState.BlockedFrontCells);
-                    frontExemptCells.UnionWith(gridState.FrontExemptCells);
-                    foreach (var p in gridState.Placements)
-                        if (p.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
-                            floorLayerOccupied.Add((p.Col, p.Row));
-                    foreach (var (cell, gate) in gridState.CellPropertyGates)
-                        cellPropertyGates[cell] = new HashSet<string>(gate, StringComparer.OrdinalIgnoreCase);
-                }
-
-                // Grid anchors / tile-group locks; re-applied after every countStep reset below.
-                void SeedGridAnchors()
-                {
-                    if (gridState is null) return;
-                    foreach (var (key, entry) in gridState.AnchorMap)
-                        anchorMap[key] = [entry];
-                    foreach (var (key, vg) in gridState.VariantMap)
-                        variantMap[key] = vg;
-                }
-                SeedGridAnchors();
-
-                // Snapshot pre-attempt state so a failed countStep attempt (missing required
-                // pool slots) can be rolled back before retrying with a smaller pool instead
-                // of stacking a second, overlapping placement pass on top of the first.
-                var occupiedSnap          = new HashSet<(int, int)>(occupied);
-                var softOccupiedSnap      = new HashSet<(int, int)>(softOccupied);
-                var physicalOccupiedSnap  = new HashSet<(int, int)>(physicalOccupied);
-                var blockedFrontCellsSnap = new HashSet<(int, int)>(blockedFrontCells);
-                var frontExemptCellsSnap  = new HashSet<(int, int)>(frontExemptCells);
-                var floorLayerOccupiedSnap = new HashSet<(int, int)>(floorLayerOccupied);
-                var cellPropertyGatesSnap = cellPropertyGates.ToDictionary(kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase));
-                var placementsCountBefore = placements.Count;
-
-                for (int countStep = 0; countStep <= fallbackMaxStep; countStep++)
-                {
-                    if (countStep > 0)
-                    {
-                        occupied.Clear(); occupied.UnionWith(occupiedSnap);
-                        softOccupied.Clear(); softOccupied.UnionWith(softOccupiedSnap);
-                        physicalOccupied.Clear(); physicalOccupied.UnionWith(physicalOccupiedSnap);
-                        blockedFrontCells.Clear(); blockedFrontCells.UnionWith(blockedFrontCellsSnap);
-                        frontExemptCells.Clear(); frontExemptCells.UnionWith(frontExemptCellsSnap);
-                        floorLayerOccupied.Clear(); floorLayerOccupied.UnionWith(floorLayerOccupiedSnap);
-                        cellPropertyGates.Clear();
-                        foreach (var kv in cellPropertyGatesSnap) cellPropertyGates[kv.Key] = new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase);
-                        anchorMap.Clear();
-                        anchorUseCounts.Clear();
-                        colorMap.Clear();
-                        foreach (var kv in seededColorMap) colorMap[kv.Key] = kv.Value;
-                        variantMap.Clear();
-                        SeedGridAnchors();
-                        placements.RemoveRange(placementsCountBefore, placements.Count - placementsCountBefore);
+                        var (zoneCells, zonePlacements) = ComputeReservedZones(
+                            config.ReservedZones, sel.FloorIndex, sel.RoomIndex1Based, roomCells, openingGroups, log);
+                        reservedZoneCells.UnionWith(zoneCells);
+                        reservedZones.AddRange(zonePlacements);
                     }
 
-                    var poolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, countStep, rng, log, allTiles, configKey, density) : [];
-                    var slotsToPlace = poolSlots.Count > 0
-                        ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
-                        : slotsBase;
+                    // Pfad-Zellen des Raums (aus PathsByRoom, falls vorhanden)
+                    var pathCells = floor.PathsByRoom.TryGetValue(sel.RoomIndex1Based, out var path)
+                        ? path.Select(p => (p[0], p[1])).ToHashSet()
+                        : new HashSet<(int, int)>();
+                    pathCells.IntersectWith(roomCells);
 
-                    var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace);
-                    var structuralRoomSlots = orderedRoomSlots;
-                    var decorRoomSlots = new List<RoomTypeSlot>();
-                    if (config.UsePostPlacementPathAvoidance)
+                    // Narrow cells (1-wide necks/corridors/bottlenecks + their entry cells): only
+                    // wall-mounted and floor-layer tiles may go there (see FitsFootprint). A room
+                    // that is narrow everywhere (1x2 laundry etc.) gets no restriction.
+                    int floorListIndex = req.Building.Floors.IndexOf(floor);
+                    if (!narrowPerFloor.TryGetValue(floorListIndex, out var floorNarrow))
+                        narrowPerFloor[floorListIndex] = floorNarrow = NarrowAreaDetector.Compute(req.Building, floorListIndex, ignoreInnerWalls: true);
+                    var narrowCells = floorNarrow.TryGetValue(sel.RoomIndex1Based, out var narrowList)
+                        ? narrowList.Where(n => n[2] == 1).Select(n => (n[0], n[1])).ToHashSet()
+                        : new HashSet<(int, int)>();
+                    narrowCells.IntersectWith(roomCells);
+                    bool wholeRoomNarrow = narrowCells.Count > 0
+                        && roomCells.All(c => narrowCells.Contains(c) || stairCells.ends.Contains(c));
+
+                    log.Add(RoomSeparatorLine(sel.FloorIndex, room.Name));
+                    log.Add($"[ROOM] Floor {sel.FloorIndex} · '{room.Name}' → config '{configKey}', {roomCells.Count} cells, size {roomSize}, {pathCells.Count} path cells, {narrowCells.Count} narrow cells, density {density:P0}");
+                    if (wholeRoomNarrow)
                     {
-                        structuralRoomSlots = orderedRoomSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
-                        decorRoomSlots = orderedRoomSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                        log.Add("[NARROW] whole room narrow → no restriction");
+                        narrowCells.Clear();
                     }
 
-                    foreach (var slot in structuralRoomSlots)
-                        PlaceOrderedSlot(slot, null);
+                    var seededColorMap = SeedGroupColors(config, roomSize, allTiles, configKey, rng, log);
 
-                    if (decorRoomSlots.Count > 0)
+                    // Grid layouts are placed first, as fixed units; their occupancy/anchors/colour
+                    // locks then seed both the composite solver and the greedy pass below.
+                    var gridState = PlaceGrids(config, layoutVariant, roomSize, sel.FloorIndex, roomCells, cellWalls,
+                        doorCells, windowCells, pathCells, allTiles, seededColorMap, reservedZoneCells, rng, configKey,
+                        sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow, innerWallKeys, openingGroups, gapCells,
+                        stairCells.ends, mainSubRoomCells, narrowCells, log);
+                    if (gridState is not null)
                     {
-                        // Computed AFTER all structural (collision + anchor-coupled) furniture is
-                        // placed, so the path reflects the room as actually furnished — see
-                        // RoomTypeConfig.UsePostPlacementPathAvoidance.
-                        var decorPathCells = ComputePostPlacementPathCells(roomCells, doorCells, physicalOccupied);
-                        if (decorPathCells.Count > 0)
-                            log.Add($"  [PATH] post-placement path ({decorPathCells.Count} cells) applied to {decorRoomSlots.Count} freestanding decor slot(s)");
-                        foreach (var slot in decorRoomSlots)
-                            PlaceOrderedSlot(slot, decorPathCells.Count > 0 ? decorPathCells : null);
+                        placements.AddRange(gridState.Placements);
+                        foreach (var (groupId, color) in gridState.ColorMap)
+                            seededColorMap[groupId] = color;
                     }
 
-                    var missingRequired = poolSlots.Where(s => s.Required).Count(s => !anchorMap.ContainsKey(s.Id));
-                    if (missingRequired == 0)
+                    if (layoutVariant is not null)
+                    {
+                        var layoutAttemptOrder = BuildLayoutAttemptOrder(config, layoutVariant, rng);
+                        if (TryPlaceCompositeLayout(
+                                config,
+                                layoutVariant,
+                                layoutAttemptOrder,
+                                roomSize,
+                                density,
+                                sel.FloorIndex,
+                                roomCells,
+                                cellWalls,
+                                doorCells,
+                                windowCells,
+                                pathCells,
+                                allTiles,
+                                seededColorMap,
+                                rng,
+                                configKey,
+                                sel.RoomIndex1Based,
+                                sel.AnchorCol,
+                                sel.AnchorRow,
+                                placements,
+                                log,
+                                innerWallKeys,
+                                mainSubRoomCells,
+                                openingGroups,
+                                reservedZoneCells,
+                                gapCells,
+                                narrowCells,
+                                out var usedVariant,
+                                gridState is null ? null : SeedStateFromGrids(gridState)))
+                        {
+                            log.Add($"[ROOM] layout variant -> '{usedVariant!.Id}'");
+                            continue;
+                        }
+                    }
+
+                    // 3. Slot selection
+                    var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
+                    var slotsBase = SelectSlots(config, roomSize, rng, log, allTiles, configKey, density, activeLayoutSlotIds, rugCatalog, roomCells);
+
+                    // Pool count-step ceiling for the fallback (non-backtracking) placement pass
+                    // below — mirrors TryPlaceCompositeLayout's countStep loop so a room that
+                    // reaches this fallback still gets a chance to shrink an over-full pool
+                    // instead of only ever trying countStep=0 (max pool size) once.
+                    int fallbackMaxStep = layoutVariant?.Pools is { Count: > 0 } fallbackPools
+                        ? fallbackPools
+                            .Select(p => p.TotalCountBySize.TryGetValue(roomSize, out var r) ? Math.Max(0, r.Max - r.Min) : 0)
+                            .DefaultIfEmpty(0).Max()
+                        : 0;
+
+                    // 4. Place each slot
+                    // List-valued: a slot with countBySize>1 places multiple instances under the
+                    // same slot.Id — see AddAnchorEntry/the round-robin pick in PlaceSlot.
+                    var anchorMap      = new Dictionary<string, List<(int col, int row, int fpW, int fpH, string orient)>>(StringComparer.OrdinalIgnoreCase);
+                    var anchorUseCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    var colorMap   = new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase);
+                    var variantMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                    // Place slots in dependency order (requiresSlot / anchorRules-target chains
+                    // resolved before their dependents), so a randomized tie-break among
+                    // independent slots (see SelectSlots) can never sequence a dependent slot
+                    // ahead of the slot/group it requires. Ordering among independent slots is
+                    // preserved unchanged by ExpandLayoutSlotSequence's stable ThenBy(index) sort.
+                    void PlaceOrderedSlot(RoomTypeSlot slot, HashSet<(int, int)>? decorPathCellsForSlot)
+                    {
+                        // Abhängigkeitsprüfung: requiresSlot = Slot oder SlotGroupId muss zuvor
+                        // erfolgreich platziert worden sein (Eintrag in anchorMap).
+                        if (!string.IsNullOrEmpty(slot.RequiresSlot)
+                            && !anchorMap.ContainsKey(slot.RequiresSlot))
+                        {
+                            log.Add($"  [SKIP] '{slot.Id}': requiresSlot='{slot.RequiresSlot}' wurde nicht platziert");
+                            return;
+                        }
+                        if (HasUnresolvedDependentAnchor(slot, anchorMap.ContainsKey))
+                        {
+                            log.Add($"  [SKIP] '{slot.Id}': kein anchorTarget von requiresSlot='{slot.RequiresSlot}' wurde platziert");
+                            return;
+                        }
+                        PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
+                            pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, floorLayerOccupied, allTiles, rugCatalog, anchorMap, anchorUseCounts, colorMap, variantMap, config,
+                            sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
+                            placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCellsForSlot,
+                            stairEndCells: stairCells.ends, narrowCells: narrowCells);
+                    }
+
+                    if (gridState is not null)
+                    {
+                        occupied.UnionWith(gridState.Occupied);
+                        softOccupied.UnionWith(gridState.SoftOccupied);
+                        physicalOccupied.UnionWith(gridState.PhysicalOccupied);
+                        blockedFrontCells.UnionWith(gridState.BlockedFrontCells);
+                        frontExemptCells.UnionWith(gridState.FrontExemptCells);
+                        foreach (var p in gridState.Placements)
+                            if (p.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
+                                floorLayerOccupied.Add((p.Col, p.Row));
+                        foreach (var (cell, gate) in gridState.CellPropertyGates)
+                            cellPropertyGates[cell] = new HashSet<string>(gate, StringComparer.OrdinalIgnoreCase);
+                    }
+
+                    // Grid anchors / tile-group locks; re-applied after every countStep reset below.
+                    void SeedGridAnchors()
+                    {
+                        if (gridState is null) return;
+                        foreach (var (key, entry) in gridState.AnchorMap)
+                            anchorMap[key] = [entry];
+                        foreach (var (key, vg) in gridState.VariantMap)
+                            variantMap[key] = vg;
+                    }
+                    SeedGridAnchors();
+
+                    // Snapshot pre-attempt state so a failed countStep attempt (missing required
+                    // pool slots) can be rolled back before retrying with a smaller pool instead
+                    // of stacking a second, overlapping placement pass on top of the first.
+                    var occupiedSnap          = new HashSet<(int, int)>(occupied);
+                    var softOccupiedSnap      = new HashSet<(int, int)>(softOccupied);
+                    var physicalOccupiedSnap  = new HashSet<(int, int)>(physicalOccupied);
+                    var blockedFrontCellsSnap = new HashSet<(int, int)>(blockedFrontCells);
+                    var frontExemptCellsSnap  = new HashSet<(int, int)>(frontExemptCells);
+                    var floorLayerOccupiedSnap = new HashSet<(int, int)>(floorLayerOccupied);
+                    var cellPropertyGatesSnap = cellPropertyGates.ToDictionary(kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase));
+                    var placementsCountBefore = placements.Count;
+
+                    for (int countStep = 0; countStep <= fallbackMaxStep; countStep++)
                     {
                         if (countStep > 0)
-                            log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} placed all required pool slots");
-                        break;
-                    }
-                    if (countStep < fallbackMaxStep)
-                        log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} missing {missingRequired} required pool slot(s), retrying with fewer pool slot(s)");
-                }
+                        {
+                            occupied.Clear(); occupied.UnionWith(occupiedSnap);
+                            softOccupied.Clear(); softOccupied.UnionWith(softOccupiedSnap);
+                            physicalOccupied.Clear(); physicalOccupied.UnionWith(physicalOccupiedSnap);
+                            blockedFrontCells.Clear(); blockedFrontCells.UnionWith(blockedFrontCellsSnap);
+                            frontExemptCells.Clear(); frontExemptCells.UnionWith(frontExemptCellsSnap);
+                            floorLayerOccupied.Clear(); floorLayerOccupied.UnionWith(floorLayerOccupiedSnap);
+                            cellPropertyGates.Clear();
+                            foreach (var kv in cellPropertyGatesSnap) cellPropertyGates[kv.Key] = new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase);
+                            anchorMap.Clear();
+                            anchorUseCounts.Clear();
+                            colorMap.Clear();
+                            foreach (var kv in seededColorMap) colorMap[kv.Key] = kv.Value;
+                            variantMap.Clear();
+                            SeedGridAnchors();
+                            placements.RemoveRange(placementsCountBefore, placements.Count - placementsCountBefore);
+                        }
 
-                // After furnishing: record which opening-adjacent cells are now blocked so
-                // later rooms shrink their effective opening group on the opposing side.
-                if (!crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crb))
-                    crossRoomBlockedPerFloor[sel.FloorIndex] = crb = new HashSet<(int, int)>();
-                foreach (var edge in floor.Edges.Where(e => e.Type == FloorObjectType.Opening))
+                        var poolSlots = layoutVariant is not null ? ExpandPoolSlots(layoutVariant, roomSize, countStep, rng, log, allTiles, configKey, density) : [];
+                        var slotsToPlace = poolSlots.Count > 0
+                            ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
+                            : slotsBase;
+
+                        var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace);
+                        var structuralRoomSlots = orderedRoomSlots;
+                        var decorRoomSlots = new List<RoomTypeSlot>();
+                        if (config.UsePostPlacementPathAvoidance)
+                        {
+                            structuralRoomSlots = orderedRoomSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                            decorRoomSlots = orderedRoomSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                        }
+
+                        foreach (var slot in structuralRoomSlots)
+                            PlaceOrderedSlot(slot, null);
+
+                        if (decorRoomSlots.Count > 0)
+                        {
+                            // Computed AFTER all structural (collision + anchor-coupled) furniture is
+                            // placed, so the path reflects the room as actually furnished — see
+                            // RoomTypeConfig.UsePostPlacementPathAvoidance.
+                            var decorPathCells = ComputePostPlacementPathCells(roomCells, doorCells, physicalOccupied);
+                            if (decorPathCells.Count > 0)
+                                log.Add($"  [PATH] post-placement path ({decorPathCells.Count} cells) applied to {decorRoomSlots.Count} freestanding decor slot(s)");
+                            foreach (var slot in decorRoomSlots)
+                                PlaceOrderedSlot(slot, decorPathCells.Count > 0 ? decorPathCells : null);
+                        }
+
+                        var missingRequired = poolSlots.Where(s => s.Required).Count(s => !anchorMap.ContainsKey(s.Id));
+                        if (missingRequired == 0)
+                        {
+                            if (countStep > 0)
+                                log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} placed all required pool slots");
+                            break;
+                        }
+                        if (countStep < fallbackMaxStep)
+                            log.Add($"  [LAYOUT-FALLBACK] '{layoutVariant!.Id}': step {countStep} missing {missingRequired} required pool slot(s), retrying with fewer pool slot(s)");
+                    }
+
+                    // After furnishing: record which opening-adjacent cells are now blocked so
+                    // later rooms shrink their effective opening group on the opposing side.
+                    if (!crossRoomBlockedPerFloor.TryGetValue(sel.FloorIndex, out var crb))
+                        crossRoomBlockedPerFloor[sel.FloorIndex] = crb = new HashSet<(int, int)>();
+                    foreach (var edge in floor.Edges.Where(e => e.Type == FloorObjectType.Opening))
+                    {
+                        var c1 = (edge.Cell1Col, edge.Cell1Row);
+                        var c2 = (edge.Cell2Col, edge.Cell2Row);
+                        if (roomCells.Contains(c1) && occupied.Contains(c1)) crb.Add(c2);
+                        if (roomCells.Contains(c2) && occupied.Contains(c2)) crb.Add(c1);
+                    }
+                }
+            }
+            finally
+            {
+                // A cancelled room is incomplete — don't report it as finished.
+                if (progress is not null && !ct.IsCancellationRequested)
                 {
-                    var c1 = (edge.Cell1Col, edge.Cell1Row);
-                    var c2 = (edge.Cell2Col, edge.Cell2Row);
-                    if (roomCells.Contains(c1) && occupied.Contains(c1)) crb.Add(c2);
-                    if (roomCells.Contains(c2) && occupied.Contains(c2)) crb.Add(c1);
+                    var newPlacements = placements.GetRange(placementsBefore, placements.Count - placementsBefore);
+                    var newLog        = log.GetRange(logBefore, log.Count - logBefore);
+                    progress.RoomFinished(selIndex, total, sel,
+                        newPlacements,
+                        reservedZones.GetRange(zonesBefore, reservedZones.Count - zonesBefore),
+                        newLog,
+                        skipped: newPlacements.Count == 0 && newLog.Any(l => l.StartsWith("[SKIP]")));
                 }
             }
         }
@@ -484,6 +586,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     /// <summary>True if the slot restricts to at least one real category (ignoring EmptyCategory).</summary>
     private static bool HasRealCategories(RoomTypeSlot slot) =>
         slot.AllowedCategories.Keys.Any(k => k != EmptyCategory);
+
+    /// <summary>True if the slot can place at least one instance in a room of this size (Max -1 = unlimited).</summary>
+    private static bool AvailableForSize(RoomTypeSlot slot, string roomSize) =>
+        slot.CountBySize.TryGetValue(roomSize, out var cnt) && (cnt.Max == -1 || cnt.Max > 0);
 
     private static List<(RoomTypeSlot slot, int count)> SelectSlots(
         RoomTypeConfig config, string roomSize, Random rng, List<string> log,
@@ -512,6 +618,20 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             .GroupBy(s => s.SlotGroupId!, StringComparer.OrdinalIgnoreCase))
         {
             var allVariants = grp.ToList();
+            // Variants without a count for this room size would win the roll and then place
+            // nothing — drop them first so only size-eligible variants compete (as grids do).
+            var sizedVariants = allVariants.Where(s => AvailableForSize(s, roomSize)).ToList();
+            if (sizedVariants.Count == 0)
+            {
+                log.Add($"  [GROUP] '{grp.Key}': none of {allVariants.Count} variant(s) available for size '{roomSize}', skipping group");
+                continue;
+            }
+            if (sizedVariants.Count < allVariants.Count)
+            {
+                var excludedBySize = string.Join(", ", allVariants.Except(sizedVariants).Select(s => s.Id));
+                log.Add($"  [GROUP] '{grp.Key}': {allVariants.Count - sizedVariants.Count} of {allVariants.Count} variant(s) excluded for size '{roomSize}' ({excludedBySize})");
+                allVariants = sizedVariants;
+            }
             // Pre-filter to variants the active tile set can actually satisfy — FilterTiles is
             // pure/deterministic (no RNG), so this runs before the weighted roll instead of
             // rolling a winner blind and silently losing the whole group if it has no tiles.
@@ -699,6 +819,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         public Dictionary<(int, int), HashSet<string>> CellPropertyGates { get; }
         /// <summary>Read-only reserved-zone cells (e.g. "Car" spot) — see BlockedByReservedZone.</summary>
         public HashSet<(int, int)> ReservedZoneCells { get; }
+        /// <summary>Read-only 1-wide cells only wall/floor-layer tiles may use — see FitsFootprint.</summary>
+        public HashSet<(int, int)>? NarrowCells { get; init; }
         public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
         public Dictionary<string, string> ColorMap { get; }
         public Dictionary<string, string> VariantMap { get; }
@@ -745,7 +867,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             new Dictionary<string, string>(ColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(VariantMap, StringComparer.OrdinalIgnoreCase),
             new List<PlacedFurnitureItem>(Placements),
-            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>(SlotPlacements));
+            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>(SlotPlacements))
+        {
+            NarrowCells = NarrowCells, // read-only, shared reference is safe
+        };
     }
 
     private sealed record LayoutPlacementCandidate(
@@ -781,6 +906,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> reservedZoneCells,
         HashSet<(int, int)> gapCells,
+        HashSet<(int, int)>? narrowCells,
         out LayoutVariant? usedVariant,
         LayoutPlacementState? seedState = null)
     {
@@ -851,6 +977,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         openingGroups,
                         reservedZoneCells,
                         gapCells,
+                        narrowCells,
                         out var layoutPlacements,
                         out var placementLog,
                         out var visitedNodes,
@@ -906,6 +1033,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> reservedZoneCells,
         HashSet<(int, int)> gapCells,
+        HashSet<(int, int)>? narrowCells,
         out List<PlacedFurnitureItem> layoutPlacements,
         out List<string> placementLog,
         out int visitedNodes,
@@ -924,7 +1052,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             new List<PlacedFurnitureItem>(),
-            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>());
+            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>())
+        {
+            NarrowCells = narrowCells,
+        };
 
         // UsePostPlacementPathAvoidance: freestanding decor (no AnchorRules, no collision on any
         // candidate tile — e.g. plants/lamps/pictures, but NOT lamp→nightstand/mirror→counter,
@@ -1363,6 +1494,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         }
 
         visitedNodes++;
+        t_cancel.ThrowIfCancellationRequested();
         if (visitedNodes > LayoutSearchNodeLimit)
         {
             finalState = state;
@@ -1480,6 +1612,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         {
             return [];
         }
+        if (HasUnresolvedDependentAnchor(slot, state.AnchorMap.ContainsKey))
+            return [];
 
         var (tilePool, effectiveColorGroup) = PrepareLayoutTilePool(slot, allTiles, state, config, roomTypeName);
         if (tilePool.Count == 0)
@@ -1509,6 +1643,22 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         effectiveSoftOccupied.Remove((anchorInfo.col + c, anchorInfo.row + r));
             }
 
+            // Connectivity inputs for the anchored candidates below — fixed for this search node.
+            // Protected cells cost a flood fill, so only computed if a candidate gets that far
+            // (this runs on every node of the composite search).
+            var anchorEntryCells = openingGroups is { Count: > 0 }
+                ? new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)))
+                : doorCells;
+            // The anchor's own footprint is exempt (see PlaceSlot's anchored path for why).
+            var anchorProtectedCells = new Lazy<HashSet<(int, int)>>(() =>
+            {
+                var cells = ComputeProtectedCells(roomCells, state.PhysicalOccupied, anchorEntryCells, innerWallKeys);
+                for (int r = 0; r < anchorInfo.fpH; r++)
+                    for (int c = 0; c < anchorInfo.fpW; c++)
+                        cells.Remove((anchorInfo.col + c, anchorInfo.row + r));
+                return cells;
+            }, LazyThreadSafetyMode.None);
+
             // Mirrors the free-placement loop below: union candidates found under the primary
             // PlacementRules with any found under FallbackRules entries (e.g. a required pool
             // slot — stove/sink — that can't validly place under its normal rules gets a second
@@ -1526,7 +1676,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                         int fpH = finalTile.TileLayout.Count;
                         var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1556,7 +1706,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                                  roomCells,
                                  innerWallKeys))
                     {
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1572,7 +1722,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
 
                 var (col, row) = anchoredPos.Value;
-                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied))
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
                     result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
             }
 
@@ -1605,7 +1755,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 state.ReservedZoneCells,
                 state.FrontExemptCells,
                 gapCells,
-                decorPathCells);
+                decorPathCells,
+                state.NarrowCells);
             result.AddRange(candidates);
         }
 
@@ -1626,6 +1777,20 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         return result;
     }
 
+    /// <summary>
+    /// A RequiresSlot slot whose anchor rules all point at unplaced targets (e.g. a lamp anchored to
+    /// an optional grid bed table that got dropped while the grid itself placed) must be skipped —
+    /// otherwise it silently falls back to free placement anywhere in the room. Slots without
+    /// RequiresSlot keep that fallback. matchAnchorCluster rugs ignore AnchorRules by design.
+    /// </summary>
+    private static bool HasUnresolvedDependentAnchor(RoomTypeSlot slot, Func<string, bool> isPlaced)
+    {
+        if (string.IsNullOrEmpty(slot.RequiresSlot)) return false;
+        if (slot.RugSlot?.Sizing.Mode.Equals("matchAnchorCluster", StringComparison.OrdinalIgnoreCase) == true) return false;
+        var targets = slot.AnchorRules?.Where(r => !string.IsNullOrEmpty(r.AnchorTarget)).Select(r => r.AnchorTarget).ToList();
+        return targets is { Count: > 0 } && !targets.Any(isPlaced);
+    }
+
     private static AnchorRule? ResolveActiveAnchorRule(
         RoomTypeSlot slot,
         Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> anchorMap)
@@ -1642,6 +1807,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         return null;
     }
 
+    /// <summary>Slot by reference (instances are fixed within a search), room type case-insensitive.</summary>
+    private sealed class SlotKeyComparer : IEqualityComparer<(RoomTypeSlot Slot, string RoomType)>
+    {
+        public bool Equals((RoomTypeSlot Slot, string RoomType) a, (RoomTypeSlot Slot, string RoomType) b) =>
+            ReferenceEquals(a.Slot, b.Slot) && string.Equals(a.RoomType, b.RoomType, StringComparison.OrdinalIgnoreCase);
+        public int GetHashCode((RoomTypeSlot Slot, string RoomType) k) =>
+            HashCode.Combine(System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(k.Slot),
+                             StringComparer.OrdinalIgnoreCase.GetHashCode(k.RoomType));
+    }
+
     private static (List<TileDefinition> candidates, string effectiveColorGroup) PrepareLayoutTilePool(
         RoomTypeSlot slot,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
@@ -1649,11 +1824,108 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         RoomTypeConfig config,
         string roomTypeName)
     {
-        var candidates = FilterTiles(allTiles, slot, roomTypeName);
+        // Shared cached list — ApplyLayoutGroupFilters and the callers only read/copy it.
+        var cache = t_layoutPoolCache;
+        if (cache is null || !cache.TryGetValue((slot, roomTypeName), out var candidates))
+        {
+            candidates = FilterTiles(allTiles, slot, roomTypeName);
+            cache?.Add((slot, roomTypeName), candidates);
+        }
         if (candidates.Count == 0)
             return ([], string.Empty);
 
         return ApplyLayoutGroupFilters(candidates, slot, state, config);
+    }
+
+    /// <summary>Palette entry meaning "every colour the group's members can use".</summary>
+    private const string AllColorsToken = "*";
+
+    /// <summary>
+    /// Pre-seeds each colour group's lock before any placement, so every member (slot or grid
+    /// piece available for this room size) can match it:
+    /// • palette "*"   → random among the colours all members share (or all their colours if none are shared);
+    /// • palette list  → random among palette ∩ shared colours (whole palette if that's empty);
+    /// • no palette    → random among the shared colours when ≥2 coloured members exist.
+    /// Without this, the first piece placed locks its own colour, and a member with no tile in that
+    /// colour falls back to its unfiltered pool — so the group ends up mixed.
+    /// </summary>
+    private static Dictionary<string, string> SeedGroupColors(
+        RoomTypeConfig config, string roomSize,
+        IReadOnlyDictionary<string, TileDefinition> allTiles, string roomTypeName,
+        Random rng, List<string> log)
+    {
+        var seeded = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        string EffectiveGroup(string slotGroup) => slotGroup switch
+        {
+            "none"             => string.Empty,
+            { Length: > 0 } cg => cg,
+            _                  => config.ColorGroupId,
+        };
+
+        var members = config.Slots
+            .Where(s => s.RugSlot is null && AvailableForSize(s, roomSize))
+            .Concat(config.Grids
+                .Where(g => g.AllowedSizes.Count == 0 || g.AllowedSizes.Any(z => z.Equals(roomSize, StringComparison.OrdinalIgnoreCase)))
+                .SelectMany(g => g.Cells.Select(c => BuildGridCellSlot(g, c))))
+            .GroupBy(s => EffectiveGroup(s.ColorGroupId), StringComparer.OrdinalIgnoreCase)
+            .Where(g => !string.IsNullOrEmpty(g.Key))
+            .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
+
+        var groupIds = members.Keys.Concat(config.ColorPalettes.Keys).Distinct(StringComparer.OrdinalIgnoreCase);
+        foreach (var groupId in groupIds)
+        {
+            // Colour sets per member; members without coloured tiles never conflict and are skipped.
+            var memberColors = (members.GetValueOrDefault(groupId) ?? [])
+                .Select(slot => FilterTiles(allTiles, slot, roomTypeName)
+                    .SelectMany(t => t.Colors)
+                    .Where(c => !string.IsNullOrEmpty(c))
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase))
+                .Where(set => set.Count > 0)
+                .ToList();
+            var shared = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var union  = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (memberColors.Count > 0)
+            {
+                shared.UnionWith(memberColors[0]);
+                foreach (var set in memberColors.Skip(1)) shared.IntersectWith(set);
+                foreach (var set in memberColors) union.UnionWith(set);
+            }
+
+            var palette = (config.ColorPalettes.GetValueOrDefault(groupId) ?? [])
+                .Where(c => !string.IsNullOrEmpty(c)).ToList();
+            List<string> choices;
+            string source;
+            if (palette.Contains(AllColorsToken))
+            {
+                choices = (shared.Count > 0 ? shared : union).ToList();
+                source = shared.Count > 0 ? "all, shared by members" : "all, members share none";
+            }
+            else if (palette.Count > 0)
+            {
+                var fitting = palette.Where(shared.Contains).ToList();
+                choices = fitting.Count > 0 ? fitting : palette;
+                source = fitting.Count > 0 && fitting.Count < palette.Count ? "palette ∩ shared" : "palette";
+            }
+            else if (memberColors.Count >= 2)
+            {
+                if (shared.Count == 0)
+                {
+                    log.Add($"    [COLOR] group='{groupId}': members share no colour, first placed piece decides");
+                    continue;
+                }
+                choices = shared.ToList();
+                source = $"shared by {memberColors.Count} members";
+            }
+            else continue; // single coloured member: its first tile may lock freely
+
+            if (choices.Count == 0) continue;
+            choices.Sort(StringComparer.OrdinalIgnoreCase); // deterministic per seed
+            seeded[groupId] = choices[rng.Next(choices.Count)];
+            log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{seeded[groupId]}' ({source}: {string.Join(", ", choices)})");
+        }
+
+        return seeded;
     }
 
     /// <summary>
@@ -1788,7 +2060,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? reservedZoneCells = null,
         HashSet<(int, int)>? frontExemptCells = null,
         HashSet<(int, int)>? gapCells = null,
-        HashSet<(int, int)>? decorPathCells = null)
+        HashSet<(int, int)>? decorPathCells = null,
+        HashSet<(int, int)>? narrowCells = null)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
@@ -1842,9 +2115,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     ? ComputeWallAnchor(cell, wallDir, fpW, fpH)
                     : (cell.col, cell.row);
 
-                if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
+                if (rules.NearWall && (!FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir)
+                    || !FootprintFullyBacked(anchorCol, anchorRow, fpW, fpH, wallDir, resolvedTile, cellWalls, roomCells)))
                     continue;
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys, resolvedTile))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys, resolvedTile, narrowCells: narrowCells))
                     continue;
                 if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates))
                     continue;
@@ -1932,7 +2206,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         PlacementRules? rulesOverride = null,
         HashSet<(int, int)>? effectiveSoftOccupied = null,
         HashSet<(int, int)>? floorLayerOccupied = null,
-        HashSet<(int, int)>? stairEndCells = null)
+        HashSet<(int, int)>? stairEndCells = null,
+        HashSet<(int, int)>? entryCells = null,
+        Lazy<HashSet<(int, int)>>? protectedCells = null,
+        HashSet<(int, int)>? narrowCells = null)
     {
         // Defaults to slot.PlacementRules (unchanged behavior); callers that want to retry an
         // anchored placement under a FallbackRules entry (see EnumeratePlacementRuleChain) pass
@@ -1945,7 +2222,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // tile/floorLayerOccupied let a non-colliding FloorFurniture tile (e.g. a rug) correctly
         // overlap OTHER slots' occupied cells (chairs, a table) instead of being blocked by them —
         // see FitsFootprint's useFloorLayerOccupied branch, same as the plain-path anchored check.
-        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, blockedFrontCells, innerWallKeys, tile, floorLayerOccupied, stairEndCells))
+        if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, blockedFrontCells, innerWallKeys, tile, floorLayerOccupied, stairEndCells, narrowCells))
             return false;
         // Anchored orientation (e.g. "match" the anchor's facing) can land on an orientation
         // the tile itself doesn't support — ResolveFinalTileForOrient falls back to the
@@ -1969,6 +2246,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 return false;
         }
         if (rules.NearWall && !FootprintTouchesWall(col, row, fpW, fpH, cellWalls))
+            return false;
+        // Backed against the wall behind it → that whole back edge must be backed (no half of a
+        // 1×2 piece hanging past the wall's end). Touching a wall only sideways stays allowed.
+        if (rules.NearWall && BackWall(orient) is { } backDir
+            && FootprintTouchesWallDir(col, row, fpW, fpH, cellWalls, backDir)
+            && !FootprintFullyBacked(col, row, fpW, fpH, backDir, tile, cellWalls, roomCells))
             return false;
         if (rules.NearWall
             && !MatchesAnchoredWallAlignment(tile, col, row, fpW, fpH, cellWalls, rules.WallAlignment))
@@ -1995,6 +2278,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             return false;
         if (!rules.NearWindow && ViolatesWindowPlacement(col, row, fpW, fpH, tile, orient, windowCells))
             return false;
+        // Connectivity / loot reachability — same guards as free placement. Only when the caller
+        // supplies entryCells (the grid placer validates its whole layout separately instead).
+        if (entryCells is not null)
+        {
+            if (tile.IsLootContainer && !LootContainerReachable(col, row, fpW, fpH, roomCells, physicalOccupied))
+                return false;
+            if (tile.HasCollision
+                && !RoomRemainsConnected(col, row, fpW, fpH, roomCells, physicalOccupied, entryCells, innerWallKeys, protectedCells?.Value))
+                return false;
+        }
         return true;
     }
 
@@ -2284,7 +2577,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? frontExemptCells = null,
         HashSet<(int, int)>? gapCells = null,
         HashSet<(int, int)>? decorPathCells = null,
-        HashSet<(int, int)>? stairEndCells = null)
+        HashSet<(int, int)>? stairEndCells = null,
+        HashSet<(int, int)>? narrowCells = null)
     {
         // matchAnchorCluster rugs (e.g. a dining rug sized to table+chairs) resolve their target
         // size/position from the anchor parent's placed cluster instead of slot.Footprint/anchorRules
@@ -2294,8 +2588,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         if (slot.RugSlot is not null
             && slot.RugSlot.Sizing.Mode.Equals("matchAnchorCluster", StringComparison.OrdinalIgnoreCase))
         {
+            var gridMembers = GridClusterMemberIds(config, slot.RequiresSlot, anchorMap);
+            bool gridPiecesOnly = slot.RugSlot.Sizing.ClusterGridPiecesOnly && gridMembers.Count > 0;
+            if (slot.RugSlot.Sizing.ClusterGridPiecesOnly && gridMembers.Count == 0)
+                log.Add($"  [INFO] '{slot.Id}': clusterGridPiecesOnly ignored — '{slot.RequiresSlot}' is no placed grid");
             rugClusterBounds = ComputeAnchorClusterBounds(slot.RequiresSlot, anchorMap, config.Slots, slot.Id,
-                extraMemberIds: GridClusterMemberIds(config, slot.RequiresSlot));
+                extraMemberIds: gridMembers, includeRequiringSlots: !gridPiecesOnly);
             if (rugClusterBounds is null)
             {
                 log.Add($"  [WARN] '{slot.Id}': matchAnchorCluster — parent '{slot.RequiresSlot}' not placed, skipping");
@@ -2435,7 +2733,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             bool clusterValid = IsValidAnchoredPlacement(slot, cb.col, cb.row, cfpW, cfpH, cb.orient, tile,
                 roomCells, cellWalls, doorCells, windowCells, pathCells, occupied, physicalOccupied,
                 blockedFrontCells, innerWallKeys, openingGroups, cellPropertyGates, reservedZoneCells,
-                frontExemptCells, gapCells, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells);
+                frontExemptCells, gapCells, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells);
             if (clusterValid)
             {
                 result = (cb.col, cb.row, cb.orient, tile, 0, 0, 0, 0, 0);
@@ -2546,6 +2844,24 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         effectiveSoftOccupied.Remove((aCol + c, aRow + r));
             }
 
+            // Connectivity inputs for anchored placements — same as the free-placement path
+            // (FindFreeCell). Invariant while this slot is being placed: physicalOccupied only
+            // changes once a position is committed.
+            var anchorEntryCells = openingGroups is { Count: > 0 }
+                ? new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)))
+                : doorCells;
+            var anchorProtectedCells = ComputeProtectedCells(roomCells, physicalOccupied, anchorEntryCells, innerWallKeys);
+            // The piece is meant to attach to its anchor (counter run, chairs around a table), so
+            // the anchor itself doesn't need to keep a free neighbour — door/pocket isolation and
+            // every other already-placed piece still do.
+            if (anchorInfo.HasValue)
+            {
+                var (pCol, pRow, pFpW, pFpH, _) = anchorInfo.Value;
+                for (int r = 0; r < pFpH; r++)
+                    for (int c = 0; c < pFpW; c++)
+                        anchorProtectedCells.Remove((pCol + c, pRow + r));
+            }
+
             var anchorRuleChain = EnumeratePlacementRuleChain(slot).ToList();
             for (int ruleIdx = 0; ruleIdx < anchorRuleChain.Count && result is null; ruleIdx++)
             {
@@ -2557,7 +2873,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     // requiresSlot-Slots dürfen bewusst auf dem Ankermöbel (z.B. Nachttisch mit
                     // softBlocks=true) platziert werden — effectiveSoftOccupied hat dessen Zellen
                     // bereits ausgenommen, respektiert aber softOccupied-Zellen anderer Slots.
-                    bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, innerWallKeys: innerWallKeys, tile: finalTile, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells)
+                    bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, innerWallKeys: innerWallKeys, tile: finalTile, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells)
                                   && SatisfiesCellPropertyGates(ac, ar, fpW, fpH, finalTile, cellPropertyGates)
                                   && !BlockedByReservedZone(ac, ar, fpW, fpH, finalTile, reservedZoneCells);
                     // Anchored orientation (e.g. "match" the anchor's facing) can land on an
@@ -2593,7 +2909,26 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                                   || !FootprintTouchesWallDir(anchorInfo.Value.col, anchorInfo.Value.row,
                                          anchorInfo.Value.fpW, anchorInfo.Value.fpH, cellWalls,
                                          Enum.Parse<Direction>(sc.ToString()));
-                    bool anchorValid = fitOk && doorOk && gapOk && pathOk && winOk && sideOk && orientOk;
+                    // Backed against the wall behind it → the whole back edge must be backed (same
+                    // rule as IsValidAnchoredPlacement), e.g. a TV table at the opposite wall must
+                    // not stick out past the wall's end.
+                    bool wallOk = !rules.NearWall
+                                  || BackWall(anchoredOrient) is not { } backDir
+                                  || !FootprintTouchesWallDir(ac, ar, fpW, fpH, cellWalls, backDir)
+                                  || FootprintFullyBacked(ac, ar, fpW, fpH, backDir, finalTile, cellWalls, roomCells);
+                    bool baseValid = fitOk && doorOk && gapOk && pathOk && winOk && sideOk && orientOk && wallOk;
+                    // Same guards as free placement (see FindFreeCell): a colliding anchored piece —
+                    // e.g. a dining chair around its table, a coffee table in front of a sofa — must
+                    // not seal off a door cell or a pocket of the room, nor cut off an already-placed
+                    // piece; loot containers must stay reachable. Flood fills, so only evaluated once
+                    // the cheap checks pass.
+                    bool lootOk = !baseValid
+                                  || !finalTile.IsLootContainer
+                                  || LootContainerReachable(ac, ar, fpW, fpH, roomCells, physicalOccupied);
+                    bool connOk = !baseValid
+                                  || !finalTile.HasCollision
+                                  || RoomRemainsConnected(ac, ar, fpW, fpH, roomCells, physicalOccupied, anchorEntryCells, innerWallKeys, anchorProtectedCells);
+                    bool anchorValid = baseValid && lootOk && connOk;
 
                     if (anchorValid)
                     {
@@ -2603,7 +2938,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 
                     var sideSuffix = chosenOpenSide.HasValue ? $" side='{chosenOpenSide.Value}'" : string.Empty;
                     var ruleSuffix = ruleIdx > 0 ? $" rule#{ruleIdx}" : string.Empty;
-                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}'{ruleSuffix} tile='{tile.TileId}': pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} gap={gapOk} path={pathOk} window={winOk} side={sideOk} orient={orientOk}");
+                    log.Add($"    [ANCHOR-FAIL] '{slot.Id}'{ruleSuffix} tile='{tile.TileId}': pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} gap={gapOk} path={pathOk} window={winOk} side={sideOk} orient={orientOk} loot={lootOk} conn={connOk}");
                     return false;
                 }
 
@@ -2712,7 +3047,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                 pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, slot.PlacementRules, rng, log,
-                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial);
+                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
             totalPath = primaryRej.noPath; totalLoot = primaryRej.noLoot;
@@ -2727,7 +3062,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                         pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, fbRules, rng, log,
-                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial);
+                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
                     totalPath += fbRej.noPath; totalLoot += fbRej.noLoot;
@@ -3080,7 +3415,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         List<RoomTypeSlot> allSlots,
         string excludeSlotId,
         int parentInstanceIndex = 0,
-        IEnumerable<string>? extraMemberIds = null)
+        IEnumerable<string>? extraMemberIds = null,
+        bool includeRequiringSlots = true)
     {
         if (!anchorMap.TryGetValue(parentSlotId, out var parentInstances)
             || parentInstanceIndex >= parentInstances.Count)
@@ -3089,7 +3425,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         var (pc, pr, pw, ph, parentOrient) = parentInstances[parentInstanceIndex];
         int minCol = pc, minRow = pr, maxCol = pc + pw - 1, maxRow = pr + ph - 1;
 
-        foreach (var child in allSlots)
+        foreach (var child in includeRequiringSlots ? allSlots : [])
         {
             if (child.Id == excludeSlotId || !child.RequiresSlot.Equals(parentSlotId, StringComparison.OrdinalIgnoreCase))
                 continue;
@@ -3178,7 +3514,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? floorLayerOccupied = null,
         HashSet<(int, int)>? stairEndCells = null,
         string? requiredColor = null,
-        string? requiredMaterial = null)
+        string? requiredMaterial = null,
+        HashSet<(int, int)>? narrowCells = null)
     {
         bool traceBathtub = slot.Id.Equals("slot_bathtub", StringComparison.OrdinalIgnoreCase);
         IEnumerable<(int col, int row)> pool = roomCells;
@@ -3262,10 +3599,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 // Wichtig: Prüfung gegen die KONKRETE wallDir, nicht nur irgendeine Wand –
                 // verhindert z.B. dass ein 2×1-Schrank bei einer Interior-Zelle nahe der S-Wand
                 // durch die E-Wand fälschlicherweise validated wird (Bug: Schrank in Raummitte).
-                if (rules.NearWall && !FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir))
+                if (rules.NearWall && (!FootprintTouchesWallDir(anchorCol, anchorRow, fpW, fpH, cellWalls, wallDir)
+                    || !FootprintFullyBacked(anchorCol, anchorRow, fpW, fpH, wallDir, resolvedTile, cellWalls, roomCells)))
                 { rejNoWallDir++; continue; }
 
-                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys, resolvedTile, floorLayerOccupied, stairEndCells))
+                if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys, resolvedTile, floorLayerOccupied, stairEndCells, narrowCells))
                 {
                     rejFits++;
                     if (traceBathtub && debugLog is not null)
@@ -3686,7 +4024,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<string>? innerWallKeys = null,
         TileDefinition? tile = null,
         HashSet<(int, int)>? floorLayerOccupied = null,
-        HashSet<(int, int)>? stairEndCells = null)
+        HashSet<(int, int)>? stairEndCells = null,
+        HashSet<(int, int)>? narrowCells = null)
     {
         // FloorFurniture-Deko ohne Kollision (z.B. Teppich) darf trotzdem in der "Zelle vor
         // dem Möbel muss frei bleiben"-Zone eines anderen Slots liegen (siehe IsFloorFurnitureNoCollision).
@@ -3707,6 +4046,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // liegt. floorLayerOccupied != null aktiviert diese engere, layer-genaue Prüfung
         // anstelle des pauschalen `occupied`-Sets.
         bool useFloorLayerOccupied = exemptFromFrontBlock && floorLayerOccupied is not null;
+
+        // 1-wide necks/corridors (see NarrowAreaDetector): only wall-mounted or floor-layer
+        // tiles may go there, regardless of collision — anything else would block the passage.
+        bool narrowExempt = tile is not null && IsNarrowExempt(tile);
 
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
@@ -3730,6 +4073,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 }
                 if (!exemptFromFrontBlock && blockedFrontCells?.Contains(cell) == true) return false;
                 if (!isFloorLayerTile && stairEndCells?.Contains(cell) == true) return false;
+                if (!narrowExempt && narrowCells?.Contains(cell) == true) return false;
             }
         // Reject if any inner wall edge runs through the interior of the footprint
         if (innerWallKeys is { Count: > 0 })
@@ -3772,6 +4116,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         !tile.HasCollision &&
         (tile.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase) ||
          tile.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Tiles allowed on narrow cells: any Wall* layer, FloorFurniture or FloorOverlay.</summary>
+    private static bool IsNarrowExempt(TileDefinition tile) =>
+        tile.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase) ||
+        tile.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase) ||
+        tile.Layer.Equals("FloorOverlay", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// FloorFurniture-Deko ohne Kollision (z.B. Teppich) darf trotzdem in der "Zelle vor
@@ -4044,6 +4394,38 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (cellWalls.TryGetValue((col + c, row + r), out var dirs) && dirs.Contains(wallDir))
                     return true;
         return false;
+    }
+
+    /// <summary>
+    /// Every footprint cell on the back edge (the side facing <paramref name="wallDir"/>) must be
+    /// backed — FootprintTouchesWallDir only needs ONE, so a 1×2 piece could stick out past the
+    /// end of a wall with its second half "in mid air". Backed = a real wall face, or, for pieces
+    /// that aren't wall-mounted, an open boundary into another room (archway / Opening edge):
+    /// the neighbour beyond is not part of this room. A neighbour inside this room (wall ends,
+    /// inner-wall gap) is never backed. Floor-layer decor (rugs) is exempt.
+    /// </summary>
+    private static bool FootprintFullyBacked(int col, int row, int fpW, int fpH, Direction wallDir,
+        TileDefinition tile, Dictionary<(int, int), HashSet<Direction>> cellWalls, HashSet<(int, int)> roomCells)
+    {
+        if (tile.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase)
+            || tile.Layer.Equals("FloorOverlay", StringComparison.OrdinalIgnoreCase))
+            return true;
+        bool wallMounted = tile.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase);
+
+        var (edge, dc, dr) = wallDir switch
+        {
+            Direction.N => (Enumerable.Range(col, fpW).Select(c => (c, row)), 0, -1),
+            Direction.S => (Enumerable.Range(col, fpW).Select(c => (c, row + fpH - 1)), 0, 1),
+            Direction.W => (Enumerable.Range(row, fpH).Select(r => (col, r)), -1, 0),
+            Direction.E => (Enumerable.Range(row, fpH).Select(r => (col + fpW - 1, r)), 1, 0),
+            _           => (Enumerable.Empty<(int, int)>(), 0, 0),
+        };
+        foreach (var (c, r) in edge)
+        {
+            if (cellWalls.TryGetValue((c, r), out var dirs) && dirs.Contains(wallDir)) continue;
+            if (wallMounted || roomCells.Contains((c + dc, r + dr))) return false;
+        }
+        return true;
     }
 
     /// <summary>

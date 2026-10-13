@@ -1,5 +1,5 @@
 import type { GridCell, GridLayout, GridOrient, GridPoint } from '../types/roomTypes';
-import { GRID_ORIENTS } from '../types/roomTypes';
+import { EMPTY_CATEGORY, GRID_ORIENTS } from '../types/roomTypes';
 
 /**
  * TS port of the grid transform in backend/Services/FurnishingGeneratorService.Grid.cs
@@ -77,7 +77,7 @@ export function validateGrid(g: GridLayout, otherIds: Set<string>): GridIssue[] 
     if (r.x < 0 || r.y < 0 || r.x + r.w > g.width || r.y + r.h > g.height) issues.push({ kind: 'outOfBounds', cellId: c.id });
     for (let j = i + 1; j < g.cells.length; j++)
       if (rectsOverlap(r, cellRect(g.cells[j]))) issues.push({ kind: 'overlap', a: c.id, b: g.cells[j].id });
-    if (Object.keys(c.allowedCategories).length === 0) issues.push({ kind: 'noCategories', cellId: c.id });
+    if (!Object.keys(c.allowedCategories).some(k => k !== EMPTY_CATEGORY)) issues.push({ kind: 'noCategories', cellId: c.id });
   });
 
   for (const p of g.keepClear)

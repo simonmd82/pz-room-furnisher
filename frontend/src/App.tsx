@@ -12,7 +12,10 @@ import FurnishPanel from './components/FurnishPanel/FurnishPanel';
 import { WallFurniturePanel } from './components/WallFurniturePanel/WallFurniturePanel';
 import { ActiveConfigSetProvider } from './context/ActiveConfigSetContext';
 import { TileSettingsClipboardProvider } from './context/TileSettingsClipboardContext';
-import type { Building, Floor, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
+import { ReproImport } from './components/ReproImport';
+import type { Building, Floor, FurnishResult, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
+import type { ReproBundle, RoomSelection } from './api/furnishApi';
+import { compareReproResult } from './utils/reproCompare';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
 import { uploadTbx } from './api/buildingApi';
@@ -108,6 +111,15 @@ function App() {
   const [densityMax, setDensityMax]     = useState(100);
   const [densityFixed, setDensityFixed] = useState(false);
   const [lastFile, setLastFile]         = useState<File | null>(null);
+  const [reproToolsEnabled, setReproToolsEnabled] = useState<boolean>(
+    () => localStorage.getItem('pzrf.reproToolsEnabled') === 'true'
+  );
+  /** Bumped on every building load so FurnishPanel remounts with fresh internal state. */
+  const [loadId, setLoadId]             = useState(0);
+
+  useEffect(() => {
+    localStorage.setItem('pzrf.reproToolsEnabled', String(reproToolsEnabled));
+  }, [reproToolsEnabled]);
 
   useEffect(() => {
     localStorage.setItem('pzrf.showGeneratorLog', String(showGeneratorLog));
@@ -137,6 +149,29 @@ function App() {
     setLogOpen(false);
     setSelected(new Set());
     setOverrides({});
+    setLoadId(n => n + 1);
+  };
+
+  /** A repro bundle was replayed: restore its building, selection and settings, show the replay. */
+  const handleReproReplayed = (bundle: ReproBundle, result: FurnishResult, localVersion: string) => {
+    const req = bundle.request;
+    const sels = req.roomSelections;
+    const key = (r: RoomSelection) => `${r.floorIndex}:${r.roomIndex1Based}:${r.anchorCol}:${r.anchorRow}`;
+    setBuilding(req.building);
+    setFileName(bundle.fileName || 'building');
+    setLastFile(null); // no .tbx to re-parse; the bundle's building is authoritative
+    setSelectedFloor(sels[0]?.floorIndex ?? req.building.floors[0]?.index ?? 0);
+    setPlacements(result.placements.map(p => ({ ...p, id: crypto.randomUUID() })));
+    setReservedZones(result.reservedZones);
+    setSelected(new Set(sels.map(key)));
+    setOverrides(Object.fromEntries(sels.filter(r => r.roomTypeOverride).map(r => [key(r), r.roomTypeOverride])));
+    if (req.seed != null) setSeed(req.seed);
+    setDensityMin(Math.round(req.densityMin * 100));
+    setDensityMax(Math.round(req.densityMax * 100));
+    setDensityFixed(req.densityFixed);
+    setGeneratorLog([...compareReproResult(bundle.expected, result, bundle.appVersion, localVersion), ...result.log]);
+    setLogOpen(true);
+    setLoadId(n => n + 1);
   };
 
   /**
@@ -273,11 +308,12 @@ function App() {
       ) : activeTab === 'rugs' ? (
         <div className="tab-full"><RugEditor /></div>
       ) : activeTab === 'settings' ? (
-        <div className="tab-full"><SettingsEditor showGeneratorLog={showGeneratorLog} onShowGeneratorLogChange={setShowGeneratorLog} furnishingConfigEnabled={furnishingConfigEnabled} onFurnishingConfigEnabledChange={setFurnishingConfigEnabled} /></div>
+        <div className="tab-full"><SettingsEditor showGeneratorLog={showGeneratorLog} onShowGeneratorLogChange={setShowGeneratorLog} furnishingConfigEnabled={furnishingConfigEnabled} onFurnishingConfigEnabledChange={setFurnishingConfigEnabled} reproToolsEnabled={reproToolsEnabled} onReproToolsEnabledChange={setReproToolsEnabled} /></div>
       ) : (
       <main className="app-main">
         <section className="upload-section">
           <FileUpload onBuildingLoaded={handleBuildingLoaded} />
+          {reproToolsEnabled && <ReproImport onReplayed={handleReproReplayed} />}
         </section>
 
         {building && (
@@ -304,6 +340,7 @@ function App() {
 
             <section className="floor-section">
               <FurnishPanel
+                key={loadId}
                 building={building}
                 fileName={fileName}
                 placements={placements}
@@ -328,6 +365,8 @@ function App() {
                   setDensityMax(max);
                   setDensityFixed(fixed);
                 }}
+                reproToolsEnabled={reproToolsEnabled}
+                initialReservedZones={reservedZones}
               />
 
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, minHeight: 0 }}>

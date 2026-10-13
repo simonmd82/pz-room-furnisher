@@ -45,6 +45,7 @@ public class BuildingController : ControllerBase
                     var style = ResolvePathStyle(building, ri);
                     _pathfinder.ComputeRoomPath(building, fi, ri, null, style);
                 }
+                building.Floors[fi].NarrowCellsByRoom = NarrowAreaDetector.Compute(building, fi);
             }
             return Ok(building);
         }

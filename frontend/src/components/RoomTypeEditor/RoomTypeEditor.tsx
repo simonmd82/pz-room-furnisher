@@ -71,6 +71,74 @@ const WALL_ALIGNMENT_KEYS: { value: PlacementRules['wallAlignment'] }[] = [
  *   FootRight = rechts vom Fußende  (Ost-Seite unten)
  */
 
+/** Palette entry meaning "all colours" — the generator picks among colours every group member can match. */
+const ALL_COLORS = '*';
+
+/** Colour palette multi-select (chips + shades) with an "All" toggle, plus a summary line. */
+function ColorPaletteChips({ palette, availColors, onChange, short = false }: {
+  palette: string[];
+  availColors: string[];
+  onChange: (next: string[]) => void;
+  short?: boolean;
+}) {
+  const { t } = useTranslation();
+  const all = palette.includes(ALL_COLORS);
+  // While "All" is on, picking a colour switches to an explicit palette with just that colour.
+  const toggle = (val: string) => onChange(all
+    ? [val]
+    : palette.includes(val) ? palette.filter(c => c !== val) : [...palette, val]);
+
+  return (
+    <>
+      <div className={s.chipGroup}>
+        {availColors.length === 0 && (
+          <span className={s.slotHint} style={{ fontStyle: 'italic' }}>{t('roomTypeEditor.colorPalette.noColors')}</span>
+        )}
+        {availColors.length > 0 && (
+          <span className={`${s.chip} ${all ? s.chipActive : ''}`} style={{ fontWeight: 600 }}
+            title={t('roomTypeEditor.colorPalette.allTitle')}
+            onClick={() => onChange(all ? [] : [ALL_COLORS])}>
+            {t('roomTypeEditor.colorPalette.all')}
+          </span>
+        )}
+        {availColors.map(color => {
+          const active = !all && palette.includes(color);
+          const showShades = !all && isBaseColor(color) && (active || SHADES.some(sh => palette.includes(shadeColor(color, sh))));
+          return (
+            <span key={color} className={s.colorSwatch} style={all ? { opacity: 0.45 } : undefined}>
+              <span
+                className={`${s.chip} ${active ? s.chipActive : ''}`}
+                title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
+                onClick={() => toggle(color)}>
+                {color}
+              </span>
+              {showShades && SHADES.map(sh => {
+                const val = shadeColor(color, sh);
+                const shActive = palette.includes(val);
+                return (
+                  <span key={sh}
+                    className={`${s.chip} ${s.chipShade} ${shActive ? s.chipActive : ''}`}
+                    title={shActive ? t('roomTypeEditor.colorPalette.removeColor', { color: val }) : t('roomTypeEditor.colorPalette.addColor', { color: val })}
+                    onClick={() => toggle(val)}>
+                    {t(`common.shade${sh}`)}
+                  </span>
+                );
+              })}
+            </span>
+          );
+        })}
+      </div>
+      {all
+        ? <div className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.colorPalette.allSelected')}</div>
+        : palette.length === 0
+          ? <div className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.colorPalette.noneSelected')}</div>
+          : <div className={s.slotHint} style={{ color: '#8c8' }}>
+              {t(short ? 'roomTypeEditor.colorPalette.selectedCountShort' : 'roomTypeEditor.colorPalette.selectedCount', { count: palette.length })}
+            </div>}
+    </>
+  );
+}
+
 export function RoomTypeEditor() {
   const { t } = useTranslation();
   const [configs, setConfigs]         = useState<RoomTypeConfigMap>({});
@@ -815,57 +883,8 @@ export function RoomTypeEditor() {
                   title={t('roomTypeEditor.colorPalette.title', { group: draft.colorGroupId })}>
                   {t('roomTypeEditor.colorPalette.labelRoom', { group: draft.colorGroupId })}
                 </label>
-                <div className={s.chipGroup}>
-                  {availColors.length === 0 && (
-                    <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
-                      {t('roomTypeEditor.colorPalette.noColors')}
-                    </span>
-                  )}
-                  {availColors.map(color => {
-                    const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
-                    const active  = palette.includes(color);
-                    const toggle = (val: string) => {
-                      const current = draft.colorPalettes?.[draft.colorGroupId] ?? [];
-                      const next    = current.includes(val)
-                        ? current.filter(c => c !== val)
-                        : [...current, val];
-                      setDraft({
-                        ...draft,
-                        colorPalettes: { ...(draft.colorPalettes ?? {}), [draft.colorGroupId]: next },
-                      });
-                      setDirty(true);
-                    };
-                    const showShades = isBaseColor(color) && (active || SHADES.some(sh => palette.includes(shadeColor(color, sh))));
-                    return (
-                      <span key={color} className={s.colorSwatch}>
-                        <span
-                          className={`${s.chip} ${active ? s.chipActive : ''}`}
-                          title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
-                          onClick={() => toggle(color)}>
-                          {color}
-                        </span>
-                        {showShades && SHADES.map(sh => {
-                          const val = shadeColor(color, sh);
-                          const shActive = palette.includes(val);
-                          return (
-                            <span key={sh}
-                              className={`${s.chip} ${s.chipShade} ${shActive ? s.chipActive : ''}`}
-                              title={shActive ? t('roomTypeEditor.colorPalette.removeColor', { color: val }) : t('roomTypeEditor.colorPalette.addColor', { color: val })}
-                              onClick={() => toggle(val)}>
-                              {t(`common.shade${sh}`)}
-                            </span>
-                          );
-                        })}
-                      </span>
-                    );
-                  })}
-                </div>
-                {(() => {
-                  const palette = draft.colorPalettes?.[draft.colorGroupId] ?? [];
-                  if (palette.length === 0)
-                    return <div className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.colorPalette.noneSelected')}</div>;
-                  return <div className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.colorPalette.selectedCount', { count: palette.length })}</div>;
-                })()}
+                <ColorPaletteChips palette={draft.colorPalettes?.[draft.colorGroupId] ?? []} availColors={availColors}
+                  onChange={next => { setDraft({ ...draft, colorPalettes: { ...(draft.colorPalettes ?? {}), [draft.colorGroupId]: next } }); setDirty(true); }} />
               </div>
             )}
 
@@ -1494,53 +1513,8 @@ export function RoomTypeEditor() {
                           title={t('roomTypeEditor.colorPalette.title', { group: slotGroup })}>
                           {t('roomTypeEditor.colorPalette.labelSlot', { group: slotGroup })}
                         </label>
-                        <div className={s.chipGroup}>
-                          {availColors.length === 0 && (
-                            <span className={s.slotHint} style={{ fontStyle: 'italic' }}>
-                              {t('roomTypeEditor.colorPalette.noColors')}
-                            </span>
-                          )}
-                          {availColors.map(color => {
-                            const active = palette.includes(color);
-                            const toggle = (val: string) => {
-                              const next = palette.includes(val)
-                                ? palette.filter(c => c !== val)
-                                : [...palette, val];
-                              setDraft({
-                                ...draft,
-                                colorPalettes: { ...(draft.colorPalettes ?? {}), [slotGroup]: next },
-                              });
-                              setDirty(true);
-                            };
-                            const showShades = isBaseColor(color) && (active || SHADES.some(sh => palette.includes(shadeColor(color, sh))));
-                            return (
-                              <span key={color} className={s.colorSwatch}>
-                                <span
-                                  className={`${s.chip} ${active ? s.chipActive : ''}`}
-                                  title={active ? t('roomTypeEditor.colorPalette.removeColor', { color }) : t('roomTypeEditor.colorPalette.addColor', { color })}
-                                  onClick={() => toggle(color)}>
-                                  {color}
-                                </span>
-                                {showShades && SHADES.map(sh => {
-                                  const val = shadeColor(color, sh);
-                                  const shActive = palette.includes(val);
-                                  return (
-                                    <span key={sh}
-                                      className={`${s.chip} ${s.chipShade} ${shActive ? s.chipActive : ''}`}
-                                      title={shActive ? t('roomTypeEditor.colorPalette.removeColor', { color: val }) : t('roomTypeEditor.colorPalette.addColor', { color: val })}
-                                      onClick={() => toggle(val)}>
-                                      {t(`common.shade${sh}`)}
-                                    </span>
-                                  );
-                                })}
-                              </span>
-                            );
-                          })}
-                        </div>
-                        {palette.length === 0
-                          ? <div className={s.slotHint} style={{ color: '#888' }}>{t('roomTypeEditor.colorPalette.noneSelected')}</div>
-                          : <div className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.colorPalette.selectedCountShort', { count: palette.length })}</div>
-                        }
+                        <ColorPaletteChips palette={palette} availColors={availColors} short
+                          onChange={next => { setDraft({ ...draft, colorPalettes: { ...(draft.colorPalettes ?? {}), [slotGroup]: next } }); setDirty(true); }} />
                       </div>
                     );
                   })()}
@@ -1623,6 +1597,13 @@ export function RoomTypeEditor() {
                           {t('roomTypeEditor.slotCard.rugSizingMatchAnchorClusterNeedsRequiresSlot')}
                         </span>
                       )}
+                      {slot.rugSlot.sizing.mode === 'matchAnchorCluster' && (
+                        <label className={s.slotCheck} title={t('roomTypeEditor.slotCard.rugClusterGridOnlyHint')}>
+                          <input type="checkbox" checked={!!slot.rugSlot.sizing.clusterGridPiecesOnly}
+                            onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, clusterGridPiecesOnly: e.target.checked } } })} />
+                          {t('roomTypeEditor.slotCard.rugClusterGridOnly')}
+                        </label>
+                      )}
                       {slot.rugSlot.sizing.mode === 'fill' && (<>
                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillShortAxis')}</span>
                         <input type="number" min={1} max={20} className={s.slotNumInput}
@@ -1699,6 +1680,11 @@ export function RoomTypeEditor() {
                     {uniqueGroupIds.map(gid => (
                       <option key={`grp_${gid}`} value={gid}>{t('roomTypeEditor.slotCard.groupOption', { group: gid })}</option>
                     ))}
+                    {Array.from(new Set((draft.grids ?? []).map(g => g.slotGroupId).filter(Boolean)))
+                      .filter(gid => !uniqueGroupIds.includes(gid))
+                      .map(gid => (
+                        <option key={`gridgrp_${gid}`} value={gid}>{t('roomTypeEditor.grids.gridGroupOption', { group: gid })}</option>
+                      ))}
                     {(draft.grids ?? []).filter(g => g.id).flatMap(g => [
                       <option key={`grid_${g.id}`} value={g.id}>{t('roomTypeEditor.grids.gridOption', { grid: g.label || g.id })}</option>,
                       ...g.cells.map(c => (

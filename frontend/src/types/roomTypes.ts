@@ -300,6 +300,11 @@ export interface RugSizing {
    * placed slot that also requires that same parent (e.g. a dining table's chairs).
    */
   mode: 'fixed' | 'fill' | 'matchAnchorCluster';
+  /**
+   * matchAnchorCluster only: when requiresSlot names a grid (grid id or grid group name), only the
+   * grid's placed pieces form the box — other slots requiring the grid don't enlarge it.
+   */
+  clusterGridPiecesOnly?: boolean;
   /** Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner. */
   fillShortAxis: number;
   /** Fill mode only: cells subtracted from each end of the long axis (door clearance etc.). */
@@ -318,7 +323,7 @@ export interface RugSlotConfig {
 }
 
 export function defaultRugSizing(): RugSizing {
-  return { mode: 'fixed', fillShortAxis: 2, fillMarginEachEnd: 1, fillMaxLongAxis: null };
+  return { mode: 'fixed', clusterGridPiecesOnly: false, fillShortAxis: 2, fillMarginEachEnd: 1, fillMaxLongAxis: null };
 }
 
 export function defaultRugSlotConfig(): RugSlotConfig {
@@ -513,6 +518,8 @@ export interface GridLayout {
   /** Room sizes this grid is used in. Empty = all. */
   allowedSizes: SizeKey[];
   allowOnPath: boolean;
+  /** Pieces only in the room's main sub-room (largest area); no effect without inner walls. */
+  mainSubRoom: boolean;
   cells: GridCell[];
   /** Empty grid cells that must stay walkable. */
   keepClear: GridPoint[];
@@ -533,7 +540,7 @@ export function defaultGridLayout(id = ''): GridLayout {
   return {
     id, label: '', width: 4, height: 3, mode: 'wall', allowMirror: true,
     required: false, priority: 0, slotGroupId: '', groupWeight: 5, allowedSizes: [],
-    allowOnPath: false, cells: [], keepClear: [],
+    allowOnPath: false, mainSubRoom: false, cells: [], keepClear: [],
   };
 }
 

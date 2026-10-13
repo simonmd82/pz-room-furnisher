@@ -12,7 +12,7 @@ echo Verwende npm: %NPM%
 :: Laufwerk mappen falls nicht vorhanden
 if not exist "Y:\" net use Y: "\\Simonas\home" /persistent:no
 
-cd /d "Y:\Project Zomboid\VSCode\pz-room-furnisher\PZ-Room-Furnisher\frontend"
+cd /d "Y:\Project Zomboid\VSCode\pz-room-furnisher\frontend"
 echo Starte Frontend auf http://localhost:5173 ...
 "%NPM%" run dev
 pause

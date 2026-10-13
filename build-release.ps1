@@ -10,12 +10,17 @@
 .PARAMETER Rids
   Runtime identifiers to build. Defaults to win-x64 and linux-x64.
 
+.PARAMETER Version
+  App version stamped into the backend (shown in repro bundles). Defaults to the csproj <Version>.
+
 .EXAMPLE
   ./build-release.ps1
   ./build-release.ps1 -Rids win-x64
+  ./build-release.ps1 -Version 0.2.0
 #>
 param(
-    [string[]]$Rids = @('win-x64', 'linux-x64')
+    [string[]]$Rids = @('win-x64', 'linux-x64'),
+    [string]$Version = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -49,11 +54,13 @@ foreach ($rid in $Rids) {
     Write-Host "==> Publishing backend for $rid"
     $publishDir = Join-Path $distDir $rid
 
+    $versionArgs = if ($Version) { @("-p:Version=$Version") } else { @() }
     dotnet publish $backendProj `
         -c Release `
         -r $rid `
         --self-contained true `
         -p:PublishSingleFile=false `
+        @versionArgs `
         -o $publishDir
 
     $zipPath = Join-Path $distDir "PzRoomFurnisher-$rid.zip"

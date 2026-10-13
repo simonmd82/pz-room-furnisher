@@ -404,6 +404,8 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
 
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [showPaths, setShowPaths] = useState(false);
+  /** Narrow-area overlay: off, or show cells up to this width (1 = 1-wide only, 2 = ≤2-wide). */
+  const [narrowMode, setNarrowMode] = useState<0 | 1 | 2>(0);
   const [recomputingRoom, setRecomputingRoom] = useState<number | null>(null);
   const [hiddenLayers, setHiddenLayers] = useState<Set<string>>(new Set());
   const [showDebug, setShowDebug] = useState(false);
@@ -670,6 +672,14 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
     for (const s of pathSets.values()) s.forEach(k => anyPathSet.add(k));
   }
 
+  // Narrow cells (backend NarrowAreaDetector) → width, filtered by the selected mode
+  const narrowCells = new Map<string, number>();
+  if (narrowMode > 0) {
+    for (const cells of Object.values(floor.narrowCellsByRoom ?? {}))
+      for (const [c, r, w] of cells)
+        if (w <= narrowMode) narrowCells.set(`${c},${r}`, w);
+  }
+
   return (
     <div className={styles.wrapper}>
 
@@ -761,6 +771,20 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
               <span>{t('gridRenderer.pathLegend')}</span>
             </div>
           )}
+          {narrowMode > 0 && (
+            <>
+              <div className={styles.legendItem}>
+                <span className={`${styles.legendSwatch} ${styles.cellNarrow1}`} />
+                <span>{t('gridRenderer.narrowLegend1')}</span>
+              </div>
+              {narrowMode === 2 && (
+                <div className={styles.legendItem}>
+                  <span className={`${styles.legendSwatch} ${styles.cellNarrow2}`} />
+                  <span>{t('gridRenderer.narrowLegend2')}</span>
+                </div>
+              )}
+            </>
+          )}
 
           <div className={styles.legendDivider} />
 
@@ -770,6 +794,28 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
           >
             {showPaths ? t('gridRenderer.hidePaths', { count: pathRoomCount }) : t('gridRenderer.showPaths')}
           </button>
+
+          <button
+            className={`${styles.pathToggleBtn} ${narrowMode > 0 ? styles.pathToggleActive : ''}`}
+            style={{ marginTop: 4 }}
+            onClick={() => setNarrowMode(m => (m > 0 ? 0 : 1))}
+            title={t('gridRenderer.narrowHint')}
+          >
+            {narrowMode > 0 ? t('gridRenderer.hideNarrow') : t('gridRenderer.showNarrow')}
+          </button>
+          {narrowMode > 0 && (
+            <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+              {([1, 2] as const).map(m => (
+                <button
+                  key={m}
+                  className={`${styles.pathToggleBtn} ${narrowMode === m ? styles.pathToggleActive : ''}`}
+                  onClick={() => setNarrowMode(m)}
+                >
+                  {t(m === 1 ? 'gridRenderer.narrowMode1' : 'gridRenderer.narrowMode2')}
+                </button>
+              ))}
+            </div>
+          )}
 
           {floorPlacements.length > 0 && (
             <button
@@ -902,6 +948,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
                 const subRoomLabel = subRoomLabels.get(key);
                 const cellEdges          = cellEdgeMap.get(key) ?? [];
                 const isPath    = showPaths && anyPathSet.has(key);
+                const narrowW   = narrowCells.get(key);
 
                 const edgeLines = cellEdges.map(
                   ({ edge, dir }) => `  ${t(`object.${edge.type}`)} (${t(DIR_LABEL_KEY[dir])})`,
@@ -910,6 +957,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
                   `[${colIdx},${rowIdx}] ${room ? room.name : t('cell.outside')}`,
                   isStair ? ` ${t('cell.stairs')}` : '',
                   isPath  ? t('gridRenderer.pathSuffix') : '',
+                  narrowW ? t('gridRenderer.narrowSuffix', { width: narrowW }) : '',
                   ...edgeLines,
                 ].filter(Boolean).join('\n');
 
@@ -938,6 +986,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
                       room || isStair ? '' : styles.outside,
                       isSelectedRoom ? styles.cellHighlighted : '',
                       isPath ? styles.cellPath : '',
+                      narrowW === 1 ? styles.cellNarrow1 : narrowW === 2 ? styles.cellNarrow2 : '',
                       previewHere ? (previewHere && dragPreview?.valid ? styles.cellDropValid : styles.cellDropInvalid) : '',
                     ].join(' ')}
                     style={{ width: cellSize, height: cellSize, background: bg }}

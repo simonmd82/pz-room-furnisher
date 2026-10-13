@@ -41,4 +41,9 @@ public class Floor
     public List<StairWaypoint> StairWaypoints { get; set; } = [];
     /// <summary>Wall-hugging traversal paths per room. Key = 1-based room index.</summary>
     public Dictionary<int, List<int[]>> PathsByRoom { get; set; } = [];
+    /// <summary>
+    /// Narrow room cells per room (see NarrowAreaDetector). Key = 1-based room index, value =
+    /// [col, row, width] with width 1 (1-wide strip/neck) or 2 (2-wide). Wider cells are omitted.
+    /// </summary>
+    public Dictionary<int, List<int[]>> NarrowCellsByRoom { get; set; } = [];
 }

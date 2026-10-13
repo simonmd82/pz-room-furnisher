@@ -290,6 +290,12 @@ public class RugSizing
     /// See ComputeAnchorClusterBounds/PlaceSlot.
     /// </summary>
     public string Mode { get; set; } = "fixed";
+    /// <summary>
+    /// matchAnchorCluster only: when RequiresSlot names a grid (grid id or grid group name), the
+    /// box is the grid's placed pieces alone — other slots that merely require the grid (e.g. a
+    /// TV table on the opposite wall) don't enlarge it. No effect for a non-grid parent.
+    /// </summary>
+    public bool ClusterGridPiecesOnly { get; set; } = false;
     /// <summary>Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner.</summary>
     public int FillShortAxis { get; set; } = 2;
     /// <summary>Fill mode only: cells subtracted from each end of the long axis (door clearance etc.).</summary>
@@ -514,6 +520,9 @@ public class GridLayout
     public List<string> AllowedSizes { get; set; } = [];
     /// <summary>Allow colliding grid pieces on precomputed walking-path cells (see PlacementRules.AllowOnPath).</summary>
     public bool AllowOnPath { get; set; } = false;
+    /// <summary>All pieces and keep-clear cells must lie in the main sub-room (see PlacementRules.MainSubRoom).
+    /// No effect when the room has no inner walls.</summary>
+    public bool MainSubRoom { get; set; } = false;
     public List<GridCell> Cells { get; set; } = [];
     /// <summary>Empty grid cells that must stay walkable — no other furniture (except collision-free floor decor such as rugs) may be placed there.</summary>
     public List<GridPoint> KeepClear { get; set; } = [];

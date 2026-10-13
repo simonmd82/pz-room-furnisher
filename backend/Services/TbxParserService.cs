@@ -19,7 +19,10 @@ public class TbxParserService : ITbxParserService
 
     public Building Parse(Stream stream)
     {
-        var doc = XDocument.Load(stream);
+        string sourceXml;
+        using (var reader = new StreamReader(stream))
+            sourceXml = reader.ReadToEnd();
+        var doc = XDocument.Parse(sourceXml);
         var root = doc.Root ?? throw new InvalidDataException("Invalid TBX file: no root element.");
 
         var building = new Building
@@ -29,6 +32,8 @@ public class TbxParserService : ITbxParserService
         };
 
         // ── TBX Roundtrip-Metadaten ───────────────────────────────────────────
+
+        building.Tbx.SourceXml = sourceXml;
 
         // Root-Attribute außer width/height in TbxMetadata übernehmen
         foreach (var attr in root.Attributes())

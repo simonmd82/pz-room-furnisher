@@ -1,13 +1,19 @@
 ﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Building, PlacedFurnitureItem, ReservedZonePlacement } from '../../types/building';
-import { generateFurnishing, exportTbx } from '../../api/furnishApi';
-import type { RoomSelection } from '../../api/furnishApi';
+import { generateFurnishingStream, exportTbx, exportReproBundle } from '../../api/furnishApi';
+import type { RoomSelection, FurnishRequestSnapshot, ReproExpected } from '../../api/furnishApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
+import type { RoomTypeConfigMap } from '../../types/roomTypes';
 import { getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
 import type { TileConfigSetInfo } from '../../types/tiles';
 import { Spinner } from '../Spinner/Spinner';
+import { FurnishProgressDialog } from './FurnishProgressDialog';
+import type { FurnishProgress } from './FurnishProgressDialog';
 import s from './FurnishPanel.module.css';
+
+/** How many recent generator log lines the progress dialog shows. */
+const PROGRESS_LOG_LINES = 40;
 
 interface Props {
   building: Building;
@@ -26,6 +32,10 @@ interface Props {
   densityMax: number;
   densityFixed: boolean;
   onDensityChange: (min: number, max: number, fixed: boolean) => void;
+  /** Settings → "Repro tools": show the repro-bundle export after a completed run. */
+  reproToolsEnabled?: boolean;
+  /** Reserved zones already on the grid when the panel mounts (e.g. from a replayed repro bundle). */
+  initialReservedZones?: ReservedZonePlacement[];
 }
 
 interface RoomEntry {
@@ -136,20 +146,26 @@ function tbxColorToCss(color: string | undefined): string {
 export default function FurnishPanel({
   building, fileName, placements, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
   selected, onSelectedChange, overrides, onOverridesChange,
-  seed, onSeedChange, densityMin, densityMax, densityFixed, onDensityChange,
+  seed, onSeedChange, densityMin, densityMax, densityFixed, onDensityChange, reproToolsEnabled = false,
+  initialReservedZones,
 }: Props) {
   const { t } = useTranslation();
-  const [knownTypes, setKnownTypes]     = useState<string[]>([]);
+  const [roomTypes, setRoomTypes]       = useState<RoomTypeConfigMap>({});
   const [running, setRunning]           = useState(false);
+  const [progress, setProgress]         = useState<FurnishProgress | null>(null);
+  const abortRef                        = useRef<AbortController | null>(null);
   const [exporting, setExporting]       = useState(false);
   const [status, setStatus]             = useState<{ msg: string; ok: boolean } | null>(null);
-  const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>([]);
+  const [reservedZones, setReservedZones] = useState<ReservedZonePlacement[]>(() => initialReservedZones ?? []);
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
   const [configSets, setConfigSets]     = useState<TileConfigSetInfo[]>([]);
   const [collapsedFloors, setCollapsedFloors] = useState<Set<number>>(new Set());
+  /** Last fully completed run: the request exactly as sent + only what that run produced. */
+  const [lastRun, setLastRun] = useState<{ request: FurnishRequestSnapshot; expected: ReproExpected } | null>(null);
+  const [exportingRepro, setExportingRepro] = useState(false);
 
   useEffect(() => {
-    getRoomTypes().then(cfgs => setKnownTypes(Object.keys(cfgs))).catch(console.error);
+    getRoomTypes().then(setRoomTypes).catch(console.error);
     getTileConfigSets().then(setConfigSets).catch(console.error);
   }, []);
 
@@ -174,6 +190,31 @@ export default function FurnishPanel({
 
   const selKey = (entry: RoomEntry) => `${entry.floorIndex}:${entry.roomIndex1Based}:${entry.anchorCol}:${entry.anchorRow}`;
 
+  const knownTypes = useMemo(() => Object.keys(roomTypes), [roomTypes]);
+
+  /** Room type the generator will use for this room: the override, else the room's InternalName. */
+  const effectiveType = (entry: RoomEntry) =>
+    overrides[selKey(entry)] || building.rooms[entry.roomIndex1Based - 1]?.internalName || '';
+
+  /** Matching room-type config (case-insensitive, like the backend), or undefined. */
+  const configFor = (typeName: string) => {
+    const k = knownTypes.find(k => k.toLowerCase() === typeName.toLowerCase());
+    return k ? roomTypes[k] : undefined;
+  };
+
+  /** A config that can actually place something — at least one slot or grid layout. */
+  const configHasFurniture = (cfg: RoomTypeConfigMap[string]) =>
+    cfg.slots.length > 0 || (cfg.grids?.length ?? 0) > 0;
+
+  /**
+   * Bulk selectors (all / floor / type) only pick rooms with a working room definition;
+   * individual checkboxes can still select any room.
+   */
+  const isEligible = (entry: RoomEntry) => {
+    const cfg = configFor(effectiveType(entry));
+    return cfg !== undefined && configHasFurniture(cfg);
+  };
+
   /** Unique internalNames across all rooms, sorted */
   const uniqueTypes = useMemo(() => {
     const types = new Set<string>();
@@ -190,48 +231,39 @@ export default function FurnishPanel({
     onSelectedChange(next);
   };
 
-  const toggleFloor = (floorIndex: number) => {
-    const keys = (roomsByFloor.get(floorIndex) ?? []).map(selKey);
-    const allSel = keys.every(k => selected.has(k));
+  /**
+   * Shared bulk toggle over a group of rooms: if every eligible room of the group is already
+   * selected, the whole group is deselected (eligible or not); otherwise its eligible rooms
+   * are added.
+   */
+  const toggleGroup = (entries: RoomEntry[]) => {
+    const eligibleKeys = entries.filter(isEligible).map(selKey);
+    const allSel = eligibleKeys.length > 0 && eligibleKeys.every(k => selected.has(k));
     const next = new Set(selected);
-    if (allSel) keys.forEach(k => next.delete(k));
-    else keys.forEach(k => next.add(k));
+    if (allSel) entries.forEach(e => next.delete(selKey(e)));
+    else eligibleKeys.forEach(k => next.add(k));
     onSelectedChange(next);
   };
 
-  const toggleByType = (typeName: string) => {
-    const keys = allRoomsFlat
-      .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
-      .map(selKey);
-    const allSel = keys.every(k => selected.has(k));
-    const next = new Set(selected);
-    if (allSel) keys.forEach(k => next.delete(k));
-    else keys.forEach(k => next.add(k));
-    onSelectedChange(next);
-  };
+  const roomsOfType = (typeName: string) =>
+    allRoomsFlat.filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName);
 
-  const toggleAll = () => {
-    const allKeys = allRoomsFlat.map(selKey);
-    const allSel  = allKeys.every(k => selected.has(k));
-    onSelectedChange(allSel ? new Set() : new Set(allKeys));
-  };
+  const toggleFloor  = (floorIndex: number) => toggleGroup(roomsByFloor.get(floorIndex) ?? []);
+  const toggleByType = (typeName: string)   => toggleGroup(roomsOfType(typeName));
+  const toggleAll    = ()                   => toggleGroup(allRoomsFlat);
 
-  const floorCheckState = (floorIndex: number): 'all' | 'some' | 'none' => {
-    const keys = (roomsByFloor.get(floorIndex) ?? []).map(selKey);
-    const n = keys.filter(k => selected.has(k)).length;
+  /** 'all' = every eligible room selected. */
+  const groupCheckState = (entries: RoomEntry[]): 'all' | 'some' | 'none' => {
+    const n = entries.filter(e => selected.has(selKey(e))).length;
     if (n === 0) return 'none';
-    if (n === keys.length) return 'all';
+    const eligible = entries.filter(isEligible);
+    if (eligible.length > 0 && eligible.every(e => selected.has(selKey(e)))) return 'all';
     return 'some';
   };
 
-  const typeIsActive = (typeName: string) => {
-    const keys = allRoomsFlat
-      .filter(e => (building.rooms[e.roomIndex1Based - 1]?.internalName ?? '') === typeName)
-      .map(selKey);
-    return keys.length > 0 && keys.every(k => selected.has(k));
-  };
-
-  const allSel = allRoomsFlat.length > 0 && allRoomsFlat.every(e => selected.has(selKey(e)));
+  const floorCheckState = (floorIndex: number) => groupCheckState(roomsByFloor.get(floorIndex) ?? []);
+  const typeIsActive    = (typeName: string) => groupCheckState(roomsOfType(typeName)) === 'all';
+  const allSel          = groupCheckState(allRoomsFlat) === 'all';
 
   const floorLabel = (floorIndex: number) =>
     floorIndex === 0 ? t('floor.ground') : t('floor.upper', { n: floorIndex });
@@ -259,29 +291,86 @@ export default function FurnishPanel({
     }
     if (selections.length === 0) { setStatus({ msg: t('furnishPanel.noRoomSelected'), ok: false }); return; }
 
+    // Each finished room replaces only its own furniture, so the grid fills in room by room
+    // and a stopped run keeps every room completed so far (unprocessed rooms stay untouched).
+    let livePlacements = placements;
+    let liveZones      = reservedZones;
+    const clearedZoneRooms = new Set<string>(); // zones are keyed per room index, not per instance
+    const fullLog: string[] = [];
+    let roomsDone = 0, tilesPlaced = 0;
+    const request: FurnishRequestSnapshot = {
+      building, roomSelections: selections, seed,
+      densityMin: densityMin / 100, densityMax: densityMax / 100, densityFixed,
+    };
+    const runPlacements: PlacedFurnitureItem[] = [];
+    const runZones: ReservedZonePlacement[] = [];
+
+    const abort = new AbortController();
+    abortRef.current = abort;
     setRunning(true); setStatus(null);
+    setProgress({ total: selections.length, done: 0, furnished: 0, skipped: 0, tiles: 0, current: null, logTail: [], stopping: false });
+
     try {
-      const result = await generateFurnishing(building, selections, seed, densityMin / 100, densityMax / 100, densityFixed);
-      const idPlacements = result.placements.map(p => ({ ...p, id: crypto.randomUUID() }));
-      const preserved = placements.filter(p =>
-        !selected.has(`${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}`)
-      );
-      const merged = [...preserved, ...idPlacements];
-      onPlacementsChanged(merged);
+      await generateFurnishingStream(building, selections, ev => {
+        switch (ev.type) {
+          case 'room':
+            setProgress(p => p && { ...p, current: { floorIndex: ev.floorIndex, roomName: ev.roomName, roomType: ev.roomType } });
+            break;
+          case 'roomDone': {
+            const key = `${ev.floorIndex}:${ev.roomIndex1Based}:${ev.anchorCol}:${ev.anchorRow}`;
+            livePlacements = [
+              ...livePlacements.filter(p => `${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}` !== key),
+              ...ev.placements.map(p => ({ ...p, id: crypto.randomUUID() })),
+            ];
+            onPlacementsChanged(livePlacements);
 
-      const selectedRoomKeys = new Set([...selected].map(k => k.split(':').slice(0, 2).join(':')));
-      const preservedZones = reservedZones.filter(z => !selectedRoomKeys.has(`${z.floorIndex}:${z.roomIndex1Based}`));
-      const mergedZones = [...preservedZones, ...result.reservedZones];
-      setReservedZones(mergedZones);
-      onReservedZonesChanged?.(mergedZones);
+            const roomKey = `${ev.floorIndex}:${ev.roomIndex1Based}`;
+            if (!clearedZoneRooms.has(roomKey)) {
+              clearedZoneRooms.add(roomKey);
+              liveZones = liveZones.filter(z => `${z.floorIndex}:${z.roomIndex1Based}` !== roomKey);
+            }
+            liveZones = [...liveZones, ...ev.reservedZones];
+            setReservedZones(liveZones);
+            onReservedZonesChanged?.(liveZones);
 
-      onLogChanged?.(result.log);
-      setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: result.placements.length, rooms: selections.length }), ok: true });
+            fullLog.push(...ev.log);
+            runPlacements.push(...ev.placements);
+            runZones.push(...ev.reservedZones);
+            roomsDone++;
+            tilesPlaced += ev.placements.length;
+            setProgress(p => p && {
+              ...p,
+              done:      p.done + 1,
+              furnished: p.furnished + (ev.skipped ? 0 : 1),
+              skipped:   p.skipped + (ev.skipped ? 1 : 0),
+              tiles:     p.tiles + ev.placements.length,
+              logTail:   [...p.logTail, ...ev.log].slice(-PROGRESS_LOG_LINES),
+            });
+            break;
+          }
+          case 'error':
+            throw new Error(ev.message);
+        }
+      }, abort.signal, request.seed ?? undefined, request.densityMin, request.densityMax, request.densityFixed);
+
+      setLastRun({ request, expected: { placements: runPlacements, reservedZones: runZones, log: fullLog } });
+      setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: tilesPlaced, rooms: selections.length }), ok: true });
     } catch (e) {
-      setStatus({ msg: t('furnishPanel.genericError', { error: String(e) }), ok: false });
+      if (abort.signal.aborted)
+        setStatus({ msg: t('furnishPanel.progress.stoppedStatus', { done: roomsDone, total: selections.length, tiles: tilesPlaced }), ok: true });
+      else
+        setStatus({ msg: t('furnishPanel.genericError', { error: String(e) }), ok: false });
     } finally {
+      onLogChanged?.(fullLog);
+      abortRef.current = null;
+      setProgress(null);
       setRunning(false);
     }
+  };
+
+  const handleStop = () => {
+    setProgress(p => p && { ...p, stopping: true });
+    abortRef.current?.abort();
   };
 
   const handleClearFurniture = (key: string) => {
@@ -317,6 +406,19 @@ export default function FurnishPanel({
       setStatus({ msg: t('furnishPanel.exportError', { error: String(e) }), ok: false });
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleExportRepro = async () => {
+    if (!lastRun) return;
+    setExportingRepro(true);
+    try {
+      await exportReproBundle(lastRun.request, fileName, lastRun.expected);
+      setStatus({ msg: `✓ ${t('furnishPanel.reproExportOk')}`, ok: true });
+    } catch (e) {
+      setStatus({ msg: t('furnishPanel.exportError', { error: String(e) }), ok: false });
+    } finally {
+      setExportingRepro(false);
     }
   };
 
@@ -377,7 +479,12 @@ export default function FurnishPanel({
               <div className={s.floorHeaderMain} onClick={() => toggleFloor(floorIndex)}>
                 <FloorCheckbox state={floorCheckState(floorIndex)} />
                 <span className={s.floorLabel}>{floorLabel(floorIndex)}</span>
-                <span className={s.floorRoomCount}>{rooms.length}</span>
+                <span className={s.floorRoomCount} title={t('furnishPanel.eligibleCountTitle')}>
+                  {(() => {
+                    const eligible = rooms.filter(isEligible).length;
+                    return eligible === rooms.length ? rooms.length : `${eligible}/${rooms.length}`;
+                  })()}
+                </span>
               </div>
             </div>
 
@@ -392,7 +499,9 @@ export default function FurnishPanel({
               const typeName    = overrides[key] || room?.internalName || '';
               const baseName    = room?.name || t('furnishPanel.defaultRoomName', { n: roomIndex1Based });
               const displayName = instanceTotal > 1 ? `${baseName} #${instanceNo}` : baseName;
-              const hasMatch    = knownTypes.some(k => k.toLowerCase() === typeName.toLowerCase());
+              const matchedCfg  = configFor(typeName);
+              const hasMatch    = matchedCfg !== undefined;
+              const isEmptyType = matchedCfg !== undefined && !configHasFurniture(matchedCfg);
               const isSel       = selected.has(key);
               const colorCss    = tbxColorToCss(room?.color);
               const hasFurniture = placements.some(p =>
@@ -428,6 +537,9 @@ export default function FurnishPanel({
                     <span className={s.roomRowBadge} title={t('furnishPanel.cellsTitle', { count: cellCount })}>{SIZE_LABELS[sizeKey]}</span>
                     {!hasMatch && typeName && (
                       <span className={s.roomRowNoMatch} title={t('furnishPanel.noMatchTitle', { type: typeName })}>⚠</span>
+                    )}
+                    {isEmptyType && (
+                      <span className={s.roomRowNoMatch} title={t('furnishPanel.emptyTypeTitle', { type: typeName })}>⚠</span>
                     )}
                     <div
                       className={s.menuAnchor}
@@ -577,6 +689,15 @@ export default function FurnishPanel({
           </button>
         </>
       )}
+      {reproToolsEnabled && lastRun && (
+        <button
+          className={s.exportBtn}
+          disabled={exportingRepro || running}
+          onClick={handleExportRepro}
+          title={t('furnishPanel.exportReproHint')}>
+          {exportingRepro ? <><Spinner /> {t('furnishPanel.exporting')}</> : t('furnishPanel.exportRepro')}
+        </button>
+      )}
 
       {/* ── Status ── */}
       {status && (
@@ -585,6 +706,8 @@ export default function FurnishPanel({
         </div>
       )}
     </div>
+
+    {progress && <FurnishProgressDialog progress={progress} onStop={handleStop} />}
     </div>
   );
 }

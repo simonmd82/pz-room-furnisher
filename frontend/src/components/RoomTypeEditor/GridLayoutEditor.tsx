@@ -2,7 +2,7 @@
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { GridCell, GridLayout, GridMode, GridOrient, GridPoint, RoomTypeSlot } from '../../types/roomTypes';
-import { defaultGridCell, defaultGridLayout, defaultSlot, FURNITURE_LAYERS, GRID_ORIENTS, SIZE_KEYS } from '../../types/roomTypes';
+import { defaultGridCell, defaultGridLayout, defaultSlot, EMPTY_CATEGORY, FURNITURE_LAYERS, GRID_ORIENTS, SIZE_KEYS } from '../../types/roomTypes';
 import type { TileDefinition } from '../../types/tiles';
 import { layoutCols, layoutRows } from '../../types/tiles';
 import {
@@ -20,6 +20,7 @@ const CELL = 52;
 const MINI_CELL = 11;
 const MAX_GRID = 10;
 const DEFAULT_WEIGHT = 5;
+const EMPTY_CHIP_STYLE: CSSProperties = { borderStyle: 'dashed', fontStyle: 'italic' };
 
 interface Props {
   grids: GridLayout[];
@@ -336,6 +337,10 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
               <input type="checkbox" checked={grid.allowOnPath} onChange={e => onChange({ ...grid, allowOnPath: e.target.checked })} />
               {t('roomTypeEditor.grids.allowOnPathLabel')}
             </label>
+            <label className={rs.slotCheck} title={t('roomTypeEditor.grids.mainSubRoomHint')}>
+              <input type="checkbox" checked={!!grid.mainSubRoom} onChange={e => onChange({ ...grid, mainSubRoom: e.target.checked })} />
+              {t('roomTypeEditor.grids.mainSubRoomLabel')}
+            </label>
             <label className={s.field}>
               <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.priorityLabel')}</span>
               <input type="number" className={rs.slotNumInput} value={grid.priority}
@@ -515,7 +520,7 @@ function Piece({ cell, catalog, selected, dragging, onSelect, onDragStart, onDra
   const def = previewDef(cell, catalog);
   const zoom = CELL / SPRITE_W;
   const kind = cell.isAnchor ? s.pieceAnchor : cell.required ? s.pieceRequired : s.pieceOptional;
-  const cats = Object.keys(cell.allowedCategories);
+  const cats = Object.keys(cell.allowedCategories).filter(c => c !== EMPTY_CATEGORY);
 
   /** Grid cell under the pointer, from an event on the piece. */
   const cellFromEvent = (e: React.DragEvent | React.MouseEvent): GridPoint => {
@@ -575,6 +580,13 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
   const [idDraft, setIdDraft] = useState(cell.id);
   const idTaken = idDraft !== cell.id && takenIds.has(idDraft);
   const [showAllCats, setShowAllCats] = useState(false);
+  const [catFilter, setCatFilter] = useState('');
+  const filterText = catFilter.trim().toLowerCase();
+  const addableCats = availGroups.filter(g => cell.allowedCategories[g] === undefined
+    && (!filterText || g.toLowerCase().includes(filterText)));
+  const emptyLabel = t('roomTypeEditor.slotCard.emptyCategory');
+  const showEmptyChip = cell.allowedCategories[EMPTY_CATEGORY] === undefined
+    && (!filterText || emptyLabel.toLowerCase().includes(filterText) || 'empty'.includes(filterText));
 
   const commitId = () => {
     const id = idDraft.trim().replace(/\s+/g, '_');
@@ -648,7 +660,11 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
         <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.categoriesLabel')}</span>
         {Object.entries(cell.allowedCategories).map(([cat, w]) => (
           <div key={cat} className={rs.slotRow} style={{ gap: 6 }}>
-            <span className={`${rs.chip} ${rs.chipActive}`} onClick={() => toggleCat(cat)}>{cat} ✕</span>
+            <span className={`${rs.chip} ${rs.chipActive}`} onClick={() => toggleCat(cat)}
+              title={cat === EMPTY_CATEGORY ? t('roomTypeEditor.grids.emptyCategoryHint') : undefined}
+              style={cat === EMPTY_CATEGORY ? EMPTY_CHIP_STYLE : undefined}>
+              {cat === EMPTY_CATEGORY ? t('roomTypeEditor.slotCard.emptyCategory') : cat} ✕
+            </span>
             <input type="number" min={1} max={10} className={rs.slotNumInput} value={w}
               onChange={e => onChange({ allowedCategories: { ...cell.allowedCategories, [cat]: Math.max(1, Math.min(10, +e.target.value || 1)) } })} />
           </div>
@@ -657,11 +673,30 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
           {showAllCats ? t('roomTypeEditor.grids.hideCategories') : t('roomTypeEditor.grids.addCategory')}
         </span>
         {showAllCats && (
-          <div className={rs.chipGroup} style={{ gap: 3, maxHeight: 90, overflowY: 'auto' }}>
-            {availGroups.filter(g => cell.allowedCategories[g] === undefined).map(g => (
-              <span key={g} className={rs.chip} onClick={() => toggleCat(g)}>{g}</span>
-            ))}
-          </div>
+          <>
+            <input className={`${rs.slotSizeInput} ${s.catFilter}`} autoFocus value={catFilter}
+              placeholder={t('roomTypeEditor.grids.filterCategories')}
+              onChange={e => setCatFilter(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Escape') setCatFilter('');
+                // Enter adds the only remaining match.
+                if (e.key === 'Enter' && addableCats.length === 1) { toggleCat(addableCats[0]); setCatFilter(''); }
+              }} />
+            <div className={rs.chipGroup} style={{ gap: 3, maxHeight: 140, overflowY: 'auto' }}>
+              {showEmptyChip && (
+                <span className={rs.chip} style={EMPTY_CHIP_STYLE} title={t('roomTypeEditor.grids.emptyCategoryHint')}
+                  onClick={() => toggleCat(EMPTY_CATEGORY)}>
+                  {t('roomTypeEditor.slotCard.emptyCategory')}
+                </span>
+              )}
+              {addableCats.map(g => (
+                <span key={g} className={rs.chip} onClick={() => toggleCat(g)}>{g}</span>
+              ))}
+              {addableCats.length === 0 && !showEmptyChip && (
+                <span className={rs.slotHint}>{t('roomTypeEditor.grids.noCategoryMatch')}</span>
+              )}
+            </div>
+          </>
         )}
       </div>
 

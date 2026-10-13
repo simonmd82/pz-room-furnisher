@@ -3,5 +3,5 @@ if (-not (Test-Path "Y:\")) {
     net use Y: "\\Simonas\home" /persistent:no | Out-Null
 }
 
-$frontendDir = "Y:\Project Zomboid\VSCode\pz-room-furnisher\PZ-Room-Furnisher\frontend"
+$frontendDir = "Y:\Project Zomboid\VSCode\pz-room-furnisher\frontend"
 npm --prefix $frontendDir run dev

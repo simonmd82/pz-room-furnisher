@@ -13,7 +13,7 @@ echo Verwende dotnet: %DOTNET%
 :: Laufwerk mappen falls nicht vorhanden
 if not exist "Y:\" net use Y: "\\Simonas\home" /persistent:no
 
-cd /d "Y:\Project Zomboid\VSCode\pz-room-furnisher\PZ-Room-Furnisher\backend"
+cd /d "Y:\Project Zomboid\VSCode\pz-room-furnisher\backend"
 echo Starte Backend auf http://localhost:5000 ...
 "%DOTNET%" watch run
 pause

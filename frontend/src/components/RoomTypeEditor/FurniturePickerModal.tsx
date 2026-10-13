@@ -98,7 +98,10 @@ export function FurniturePickerModal({ slot, onApply, onClose }: Props) {
     if (!data) return [];
     const map = new Map<string, TileDefinition[]>();
     for (const d of data.defs) {
-      const key = d.variantGroup ? `vg:${d.variantGroup}` : `id:${d.id}`;
+      // A variantGroup can bundle differently sized pieces of one set (2-seat sofa + armchair):
+      // split by shape (rotations count as equal) so each card is one physical object.
+      const shape = [layoutCols(d), layoutRows(d)].sort((a, b) => a - b).join('x');
+      const key = d.variantGroup ? `vg:${d.variantGroup}:${shape}` : `id:${d.id}`;
       const list = map.get(key);
       if (list) list.push(d); else map.set(key, [d]);
     }

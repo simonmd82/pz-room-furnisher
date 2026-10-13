@@ -210,6 +210,7 @@
 .orientBtnActive { border-color: #8866cc; background: #2a1a4a; color: #fff; }
 .linkBtn { color: #88a; font-size: 0.68rem; cursor: pointer; text-decoration: underline dotted; }
 .linkBtn:hover { color: #bbd; }
+.catFilter { width: 100%; box-sizing: border-box; }
 
 /* ── Rotation preview ── */
 .previewStrip {

@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 using backend.Models;
 
 namespace backend.Services;
@@ -6,9 +8,9 @@ namespace backend.Services;
 public interface ITbxExportService
 {
     /// <summary>
-    /// Reconstructs a TBX XML string from a Building + new furniture placements.
-    /// Original structure (tile_entries, rooms, doors/windows/stairs, attributes) is
-    /// preserved via TbxMetadata; furniture is written as user_tiles + layer matrices.
+    /// Writes a TBX with the furniture placements added. When the original file text is
+    /// available (TbxMetadata.SourceXml) that document is patched in place; otherwise the XML
+    /// is reconstructed from the parsed model (lossy — kept only as a fallback).
     /// </summary>
     string Export(Building building, List<PlacedFurnitureItem> placements);
 }
@@ -19,7 +21,163 @@ public class TbxExportService : ITbxExportService
     private static readonly string[] KnownLayerOrder =
         ["FloorFurniture", "Furniture", "Furniture2", "WallFurniture"];
 
-    public string Export(Building building, List<PlacedFurnitureItem> placements)
+    // TileZed's per-floor tile layer names; used to normalise casing ("Wallfurniture" → "WallFurniture").
+    private static readonly string[] TileZedLayers =
+    [
+        "Floor", "FloorOverlay", "FloorOverlay2", "FloorOverlay3", "FloorOverlay4",
+        "Vegetation", "FloorFurniture", "Furniture", "Furniture2", "Furniture3", "Furniture4",
+        "Walls", "WallTrim", "Walls2", "WallTrim2", "RoofCap", "RoofCap2",
+        "WallOverlay", "WallOverlay2", "WallFurniture", "WallFurniture2",
+        "Frames", "Doors", "Curtains", "Curtains2", "Curtains3", "Curtains4",
+    ];
+
+    // When a cell of a layer is already taken (painted in the original, or another placement),
+    // the tile moves on to the next layer of the same family instead of overwriting it.
+    private static readonly string[][] LayerFamilies =
+    [
+        ["Furniture", "Furniture2", "Furniture3", "Furniture4"],
+        ["WallFurniture", "WallFurniture2"],
+        ["WallOverlay", "WallOverlay2"],
+        ["Curtains", "Curtains2", "Curtains3", "Curtains4"],
+    ];
+
+    public string Export(Building building, List<PlacedFurnitureItem> placements) =>
+        string.IsNullOrEmpty(building.Tbx.SourceXml)
+            ? ExportReconstructed(building, placements)
+            : ExportPatched(building, placements);
+
+    private static string CanonicalLayer(string layer)
+    {
+        if (string.IsNullOrEmpty(layer)) return "Furniture";
+        return TileZedLayers.FirstOrDefault(l => l.Equals(layer, StringComparison.OrdinalIgnoreCase)) ?? layer;
+    }
+
+    private static IEnumerable<string> LayerCandidates(string layer)
+    {
+        var family = LayerFamilies.FirstOrDefault(f => f.Contains(layer));
+        return family is null ? [layer] : family.SkipWhile(l => l != layer);
+    }
+
+    /// <summary>
+    /// Patches the original document: appends new tile names to user_tiles (existing indices,
+    /// which the painted layers refer to, stay valid) and merges the placements into each
+    /// floor's tile layers, creating a layer only if the floor doesn't have it yet.
+    /// </summary>
+    private static string ExportPatched(Building building, List<PlacedFurnitureItem> placements)
+    {
+        var doc  = XDocument.Parse(building.Tbx.SourceXml, LoadOptions.PreserveWhitespace);
+        var root = doc.Root!;
+        int layerRows = building.Height + 1, layerCols = building.Width + 1;
+
+        // ── user_tiles: keep the original list, append what's new ──
+        var userTilesEl = root.Element("user_tiles");
+        if (userTilesEl is null)
+        {
+            userTilesEl = new XElement("user_tiles");
+            var anchor = root.Element("used_tiles") ?? root.Element("used_furniture");
+            if (anchor is not null) anchor.AddBeforeSelf(userTilesEl, new XText("\n "));
+            else root.Add(new XText(" "), userTilesEl, new XText("\n"));
+        }
+        var tileIndex = new Dictionary<string, int>(StringComparer.Ordinal);
+        int nextIndex = 1;
+        foreach (var t in userTilesEl.Elements("tile"))
+            tileIndex.TryAdd(t.Attribute("tile")?.Value ?? string.Empty, nextIndex++);
+        var newTiles = new List<string>();
+        int IndexOf(string tileId)
+        {
+            if (!tileIndex.TryGetValue(tileId, out var idx))
+            {
+                tileIndex[tileId] = idx = nextIndex++;
+                newTiles.Add(tileId);
+            }
+            return idx;
+        }
+
+        // ── per floor: merge placements into its layer matrices ──
+        var floorEls = root.Elements("floor").ToList();
+        foreach (var group in placements.GroupBy(p => p.FloorIndex))
+        {
+            if (group.Key < 0 || group.Key >= floorEls.Count) continue;
+            var floorEl = floorEls[group.Key];
+
+            var layers = new Dictionary<string, (XElement El, int[][] Grid)>(StringComparer.OrdinalIgnoreCase);
+            foreach (var tilesEl in floorEl.Elements("tiles"))
+            {
+                var name = tilesEl.Attribute("layer")?.Value;
+                if (!string.IsNullOrEmpty(name))
+                    layers[name] = (tilesEl, ParseMatrix(tilesEl.Value, layerRows, layerCols));
+            }
+            var touched = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            (XElement El, int[][] Grid) LayerFor(string name)
+            {
+                if (layers.TryGetValue(name, out var l)) return l;
+                var el = new XElement("tiles", new XAttribute("layer", name));
+                var after = floorEl.Elements("tiles").LastOrDefault() ?? floorEl.Elements("attributes").LastOrDefault();
+                if (after is not null) after.AddAfterSelf(new XText("\n  "), el);
+                else floorEl.Add(new XText("  "), el, new XText("\n "));
+                l = (el, Enumerable.Range(0, layerRows).Select(_ => new int[layerCols]).ToArray());
+                layers[name] = l;
+                return l;
+            }
+
+            foreach (var p in group)
+            {
+                if (p.Row < 0 || p.Row >= layerRows || p.Col < 0 || p.Col >= layerCols) continue;
+                int idx = IndexOf(p.TileId);
+                var candidates = LayerCandidates(CanonicalLayer(p.Layer)).ToList();
+
+                // Same tile already there (e.g. re-exporting a furnished file) → nothing to do.
+                if (candidates.Any(n => layers.TryGetValue(n, out var l) && l.Grid[p.Row][p.Col] == idx))
+                    continue;
+
+                var target = candidates.FirstOrDefault(n => !layers.TryGetValue(n, out var l) || l.Grid[p.Row][p.Col] == 0)
+                             ?? candidates[^1]; // whole family occupied → last layer, overwriting
+                LayerFor(target).Grid[p.Row][p.Col] = idx;
+                touched.Add(target);
+            }
+
+            foreach (var name in touched)
+            {
+                var (el, grid) = layers[name];
+                el.Value = "\n" + string.Join("\n", grid.Select((row, i) => FormatMatrixRow(row, i < grid.Length - 1))) + "\n";
+            }
+        }
+
+        foreach (var t in newTiles)
+        {
+            var last = userTilesEl.Elements("tile").LastOrDefault();
+            var el = new XElement("tile", new XAttribute("tile", t));
+            if (last is not null) last.AddAfterSelf(new XText("\n  "), el);
+            else userTilesEl.Add(new XText("\n  "), el, new XText("\n "));
+        }
+
+        var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(false), Indent = false, NewLineHandling = NewLineHandling.None };
+        using var ms = new MemoryStream();
+        using (var writer = XmlWriter.Create(ms, settings))
+            doc.Save(writer);
+
+        // Match TileZed's own output style so untouched lines stay byte-identical to the original.
+        return Encoding.UTF8.GetString(ms.ToArray())
+            .Replace("<?xml version=\"1.0\" encoding=\"utf-8\"?>", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+            .Replace("\" />", "\"/>");
+    }
+
+    private static int[][] ParseMatrix(string text, int rows, int cols)
+    {
+        var grid = Enumerable.Range(0, rows).Select(_ => new int[cols]).ToArray();
+        var lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        for (int r = 0; r < Math.Min(rows, lines.Length); r++)
+        {
+            var vals = lines[r].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            for (int c = 0; c < Math.Min(cols, vals.Length); c++)
+                grid[r][c] = int.TryParse(vals[c], out var v) ? v : 0;
+        }
+        return grid;
+    }
+
+    /// <summary>Legacy path for buildings without SourceXml: rebuilds the XML from the parsed model.</summary>
+    private string ExportReconstructed(Building building, List<PlacedFurnitureItem> placements)
     {
         // ── 1. user_tiles-Liste aufbauen (1-basiert, Reihenfolge des Auftretens) ──
         var userTiles   = new List<string>();

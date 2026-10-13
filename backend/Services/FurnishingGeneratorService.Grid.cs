@@ -93,7 +93,12 @@ public partial class FurnishingGeneratorService
         return active.Count > 0 ? active : null;
     }
 
-    private static List<GridLayout> SelectActiveGrids(
+    /// <summary>
+    /// Active grids as placement entries: an ungrouped grid is a one-element entry; a one-of group
+    /// (shared SlotGroupId) is one entry holding all its members in weighted-random order — the
+    /// first is the rolled winner, the rest are fallbacks tried in order if it finds no spot.
+    /// </summary>
+    private static List<List<GridLayout>> SelectActiveGrids(
         RoomTypeConfig config, LayoutVariant? variant, string roomSize, Random rng, List<string> log)
     {
         var filter = BuildLayoutGridFilter(config, variant);
@@ -103,30 +108,38 @@ public partial class FurnishingGeneratorService
             .Where(g => filter is null || filter.Contains(g.Id))
             .ToList();
 
-        // One-of groups: keep exactly one member per non-empty SlotGroupId, weighted.
-        var result = new List<GridLayout>();
+        var result = new List<List<GridLayout>>();
         foreach (var group in eligible.GroupBy(g => g.SlotGroupId, StringComparer.OrdinalIgnoreCase))
         {
-            if (string.IsNullOrEmpty(group.Key)) { result.AddRange(group); continue; }
-            var members = group.ToList();
-            int total = members.Sum(g => Math.Max(1, g.GroupWeight));
-            int roll = rng.Next(total), acc = 0;
-            var chosen = members[0];
-            foreach (var g in members)
+            if (string.IsNullOrEmpty(group.Key)) { result.AddRange(group.Select(g => new List<GridLayout> { g })); continue; }
+
+            // Weighted order without replacement: roll among the remaining members repeatedly.
+            var remaining = group.ToList();
+            var ordered = new List<GridLayout>(remaining.Count);
+            while (remaining.Count > 0)
             {
-                acc += Math.Max(1, g.GroupWeight);
-                if (roll < acc) { chosen = g; break; }
+                int total = remaining.Sum(g => Math.Max(1, g.GroupWeight));
+                int roll = rng.Next(total), acc = 0, pick = 0;
+                for (int i = 0; i < remaining.Count; i++)
+                {
+                    acc += Math.Max(1, remaining[i].GroupWeight);
+                    if (roll < acc) { pick = i; break; }
+                }
+                ordered.Add(remaining[pick]);
+                remaining.RemoveAt(pick);
             }
-            log.Add($"  [GRID] group '{group.Key}': chose '{chosen.Id}' of {members.Count}");
-            result.Add(chosen);
+            log.Add($"  [GRID] group '{group.Key}': chose '{ordered[0].Id}' of {ordered.Count}" +
+                    (ordered.Count > 1 ? $" (fallback order: {string.Join(", ", ordered.Skip(1).Select(g => g.Id))})" : ""));
+            result.Add(ordered);
         }
 
+        // An entry sorts by its rolled winner; Required if any member is required.
         return result
-            .Select((g, i) => (g, i))
-            .OrderByDescending(e => e.g.Required)
-            .ThenBy(e => e.g.Priority)
-            .ThenBy(e => e.i)
-            .Select(e => e.g)
+            .Select((e, i) => (e, i))
+            .OrderByDescending(x => x.e.Any(g => g.Required))
+            .ThenBy(x => x.e[0].Priority)
+            .ThenBy(x => x.i)
+            .Select(x => x.e)
             .ToList();
     }
 
@@ -157,6 +170,8 @@ public partial class FurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> gapCells,
         HashSet<(int, int)>? stairEndCells,
+        HashSet<(int, int)>? mainSubRoomCells,
+        HashSet<(int, int)>? narrowCells,
         List<string> log)
     {
         if (config.Grids is not { Count: > 0 }) return null;
@@ -175,14 +190,24 @@ public partial class FurnishingGeneratorService
             new Dictionary<string, string>(seededColorMap, StringComparer.OrdinalIgnoreCase),
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
             new List<PlacedFurnitureItem>(),
-            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>());
-
-        foreach (var grid in grids)
+            new List<(string SlotId, string TileId, string Orient, int Col, int Row)>())
         {
-            var placed = TryPlaceGrid(grid, state, floorIndex, roomCells, cellWalls, doorCells, windowCells, pathCells,
-                allTiles, config, rng, roomTypeName, roomIndex1Based, selectionAnchorCol, selectionAnchorRow,
-                innerWallKeys, openingGroups, gapCells, stairEndCells, log);
-            if (placed is not null) state = placed;
+            NarrowCells = narrowCells,
+        };
+
+        foreach (var entry in grids)
+        {
+            for (int i = 0; i < entry.Count; i++)
+            {
+                var grid = entry[i];
+                if (i > 0) log.Add($"  [GRID] group '{grid.SlotGroupId}': '{entry[i - 1].Id}' did not fit, trying fallback '{grid.Id}'");
+                var placed = TryPlaceGrid(grid, state, floorIndex, roomCells, cellWalls, doorCells, windowCells, pathCells,
+                    allTiles, config, rng, roomTypeName, roomIndex1Based, selectionAnchorCol, selectionAnchorRow,
+                    innerWallKeys, openingGroups, gapCells, stairEndCells, mainSubRoomCells, log);
+                if (placed is null) continue;
+                state = placed;
+                break;
+            }
         }
 
         return state;
@@ -221,6 +246,7 @@ public partial class FurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> gapCells,
         HashSet<(int, int)>? stairEndCells,
+        HashSet<(int, int)>? mainSubRoomCells,
         List<string> log)
     {
         string Fail(string reason)
@@ -238,6 +264,7 @@ public partial class FurnishingGeneratorService
         // by an optional one. Tile pools are footprint/category-filtered once per cell here; only
         // the cheap colour/variant/material narrowing runs per candidate.
         var plans = grid.Cells
+            .Where(c => !RollGridCellEmpty(grid, c, rng, log))
             .Select(c => { var slot = BuildGridCellSlot(grid, c); return new GridCellPlan(c, slot, FilterTiles(allTiles, slot, roomTypeName), c.IsAnchor || c.Required); })
             .OrderByDescending(p => p.Cell.IsAnchor)
             .ThenByDescending(p => p.Mandatory)
@@ -246,9 +273,13 @@ public partial class FurnishingGeneratorService
         var noTiles = plans.FirstOrDefault(p => p.Mandatory && p.BasePool.Count == 0);
         if (noTiles is not null) { Fail($"no matching tiles for mandatory cell '{noTiles.Cell.Id}'"); return null; }
 
+        // MainSubRoom: pieces and keep-clear cells may only use the main sub-room's cells; walls,
+        // validation and the connectivity check still see the whole room.
+        var placeCells = grid.MainSubRoom && mainSubRoomCells is { Count: > 0 } ? mainSubRoomCells : roomCells;
+
         int optionalTotal = plans.Count(p => !p.Mandatory);
-        var bounds = ComputeRoomBounds(roomCells);
-        double centreCol = roomCells.Average(c => c.Item1), centreRow = roomCells.Average(c => c.Item2);
+        var bounds = ComputeRoomBounds(placeCells);
+        double centreCol = placeCells.Average(c => c.Item1), centreRow = placeCells.Average(c => c.Item2);
         bool isFree = grid.Mode.Equals("free", StringComparison.OrdinalIgnoreCase);
         bool isCorner = grid.Mode.Equals("corner", StringComparison.OrdinalIgnoreCase);
 
@@ -278,14 +309,14 @@ public partial class FurnishingGeneratorService
             var a = anchorPlan.Cell;
             var (ax, ay, aw, ah) = TransformGridRect(a.X, a.Y, a.Footprint.Width, a.Footprint.Height, grid.Width, grid.Height, rot, mirror);
             if (!FitsFootprintLoose(ox + ax, oy + ay, aw, ah, baseState.Occupied)
-                || !RectInRoom(ox + ax, oy + ay, aw, ah, roomCells))
+                || !RectInRoom(ox + ax, oy + ay, aw, ah, placeCells))
                 continue;
             if (!isFree && !SatisfiesGridWallMode(grid, plans, rot, mirror, ox, oy, isCorner, roomCells, cellWalls))
                 continue;
 
             if (++evaluated > GridSearchCandidateLimit) break;
 
-            var result = EvaluateGridCandidate(grid, plans, rot, mirror, ox, oy, baseState, floorIndex, roomCells, cellWalls,
+            var result = EvaluateGridCandidate(grid, plans, rot, mirror, ox, oy, baseState, floorIndex, roomCells, placeCells, cellWalls,
                 doorCells, windowCells, pathCells, allTiles, config, rng, roomIndex1Based, selectionAnchorCol,
                 selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells);
             if (result is null) continue;
@@ -309,6 +340,22 @@ public partial class FurnishingGeneratorService
         foreach (var p in best.SlotPlacements.Skip(baseState.SlotPlacements.Count))
             log.Add($"  [PLACED] '{p.SlotId}': '{p.TileId}' orient '{p.Orient}' at ({p.Col},{p.Row})");
         return best;
+    }
+
+    /// <summary>
+    /// EmptyCategory on an optional grid piece: rolled once per grid placement against the real
+    /// categories' combined weight (same odds as SelectSlots); an "empty" roll drops the piece.
+    /// The anchor and required pieces never roll.
+    /// </summary>
+    private static bool RollGridCellEmpty(GridLayout grid, GridCell cell, Random rng, List<string> log)
+    {
+        if (cell.IsAnchor || cell.Required) return false;
+        if (!cell.AllowedCategories.TryGetValue(EmptyCategory, out var emptyW) || emptyW <= 0) return false;
+        int realW = cell.AllowedCategories.Where(kv => kv.Key != EmptyCategory).Sum(kv => Math.Max(0, kv.Value));
+        if (realW <= 0) realW = 5;
+        if (rng.Next(emptyW + realW) >= emptyW) return false;
+        log.Add($"  [EMPTY] grid '{grid.Id}' piece '{cell.Id}' rolled empty ({emptyW}/{emptyW + realW})");
+        return true;
     }
 
     private static bool RectInRoom(int col, int row, int w, int h, HashSet<(int, int)> roomCells)
@@ -366,6 +413,7 @@ public partial class FurnishingGeneratorService
         LayoutPlacementState baseState,
         int floorIndex,
         HashSet<(int, int)> roomCells,
+        HashSet<(int, int)> placeCells,
         Dictionary<(int, int), HashSet<Direction>> cellWalls,
         HashSet<(int, int)> doorCells,
         HashSet<(int, int)> windowCells,
@@ -389,7 +437,7 @@ public partial class FurnishingGeneratorService
             var c = plan.Cell;
             var (lx, ly, w, h) = TransformGridRect(c.X, c.Y, c.Footprint.Width, c.Footprint.Height, grid.Width, grid.Height, rot, mirror);
             var orient = TransformGridOrient(c.Orient, rot, mirror);
-            var candidate = TryResolveGridCell(plan, ox + lx, oy + ly, w, h, orient, state, baseState, roomCells, cellWalls,
+            var candidate = TryResolveGridCell(plan, ox + lx, oy + ly, w, h, orient, state, baseState, roomCells, placeCells, cellWalls,
                 doorCells, windowCells, pathCells, allTiles, config, rng, innerWallKeys, openingGroups, gapCells, stairEndCells);
             if (candidate is null)
             {
@@ -408,7 +456,7 @@ public partial class FurnishingGeneratorService
             if (kc.X < 0 || kc.Y < 0 || kc.X >= grid.Width || kc.Y >= grid.Height) continue;
             var (x, y, _, _) = TransformGridRect(kc.X, kc.Y, 1, 1, grid.Width, grid.Height, rot, mirror);
             var cell = (ox + x, oy + y);
-            if (!roomCells.Contains(cell) || state.Occupied.Contains(cell) || state.PhysicalOccupied.Contains(cell))
+            if (!placeCells.Contains(cell) || state.Occupied.Contains(cell) || state.PhysicalOccupied.Contains(cell))
                 return null;
             state.BlockedFrontCells.Add(cell);
         }
@@ -432,6 +480,7 @@ public partial class FurnishingGeneratorService
         LayoutPlacementState state,
         LayoutPlacementState baseState,
         HashSet<(int, int)> roomCells,
+        HashSet<(int, int)> placeCells,
         Dictionary<(int, int), HashSet<Direction>> cellWalls,
         HashSet<(int, int)> doorCells,
         HashSet<(int, int)> windowCells,
@@ -444,7 +493,7 @@ public partial class FurnishingGeneratorService
         HashSet<(int, int)> gapCells,
         HashSet<(int, int)>? stairEndCells)
     {
-        if (plan.BasePool.Count == 0 || !RectInRoom(col, row, fpW, fpH, roomCells))
+        if (plan.BasePool.Count == 0 || !RectInRoom(col, row, fpW, fpH, placeCells))
             return null;
         if (plan.CanPrecheckOccupancy && !FitsFootprintLoose(col, row, fpW, fpH, state.Occupied))
             return null;
@@ -474,7 +523,7 @@ public partial class FurnishingGeneratorService
             if (IsValidAnchoredPlacement(plan.Slot, col, row, fpW, fpH, orient, tile, roomCells, cellWalls, doorCells,
                     windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys,
                     openingGroups, state.CellPropertyGates, state.ReservedZoneCells, state.FrontExemptCells, gapCells,
-                    effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells))
+                    effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells, narrowCells: state.NarrowCells))
                 return new LayoutPlacementCandidate(col, row, orient, tile, colorGroup);
         }
 
@@ -495,8 +544,19 @@ public partial class FurnishingGeneratorService
     }
 
     /// <summary>Anchor-map member ids of a grid (all of its cells), for matchAnchorCluster rugs that require the grid.</summary>
-    private static IEnumerable<string> GridClusterMemberIds(RoomTypeConfig config, string gridId) =>
-        config.Grids.FirstOrDefault(g => g.Id.Equals(gridId, StringComparison.OrdinalIgnoreCase)) is { } grid
-            ? grid.Cells.Select(c => GridCellSlotId(grid, c))
-            : [];
+    /// <summary>
+    /// Anchor keys of every piece of the grid that `key` names: a grid id, or a grid group name —
+    /// then the group member actually placed in this room (its anchor is registered under its id).
+    /// Empty if `key` is no grid.
+    /// </summary>
+    private static List<string> GridClusterMemberIds(
+        RoomTypeConfig config, string key,
+        Dictionary<string, List<(int col, int row, int fpW, int fpH, string orient)>> anchorMap)
+    {
+        var grid = config.Grids.FirstOrDefault(g => g.Id.Equals(key, StringComparison.OrdinalIgnoreCase))
+            ?? config.Grids.FirstOrDefault(g => !string.IsNullOrEmpty(g.SlotGroupId)
+                && g.SlotGroupId.Equals(key, StringComparison.OrdinalIgnoreCase)
+                && anchorMap.ContainsKey(g.Id));
+        return grid is null ? [] : grid.Cells.Select(c => GridCellSlotId(grid, c)).ToList();
+    }
 }

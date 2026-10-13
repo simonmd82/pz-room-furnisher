@@ -61,7 +61,7 @@ public class PathfinderService : IPathfinderService
     /// All stair cells (full span) on this floor – from own stairs and stairs from floor below.
     /// These are blocked for path routing; only the entry/exit waypoint is re-added as passable.
     /// </summary>
-    private static HashSet<(int col, int row)> BuildStairBlockedCells(
+    internal static HashSet<(int col, int row)> BuildStairBlockedCells(
         Floor floor, Building building, int floorIndex)
     {
         var blocked = new HashSet<(int, int)>();
@@ -167,8 +167,6 @@ public class PathfinderService : IPathfinderService
             roomCells.Add(wp); // only this X-cell of the staircase is passable
         }
 
-        var waypoints = waypointSet.ToList();
-
         // pathStyle "doorOnly": Nur Tür-/Waypoint-Zellen reservieren,
         // kein A*-Pfad zwischen den Punkten.
         if (pathStyle.Equals("doorOnly", StringComparison.OrdinalIgnoreCase))
@@ -179,20 +177,19 @@ public class PathfinderService : IPathfinderService
                 .ToList();
         }
 
-        // Fewer than 2 waypoints → extend with farthest room cell
-        if (waypoints.Count < 2)
+        // Archways (Opening edges) are entrances too — a room reached only through one would
+        // otherwise get no waypoint there. One waypoint per contiguous archway (its middle cell).
+        var openingCells = new HashSet<(int, int)>();
+        foreach (var edge in floor.Edges)
         {
-            var anchor   = waypoints.Count > 0 ? waypoints[0] : roomCells.First();
-            int ac = anchor.Item1, ar = anchor.Item2;
-            var farthest = roomCells
-                .Where(c => c != anchor)
-                .OrderByDescending(c => Math.Abs(c.col - ac) + Math.Abs(c.row - ar))
-                .Select(c => (c.col, c.row))
-                .Cast<(int, int)?>()
-                .FirstOrDefault();
-            if (farthest is null) return [];
-            if (waypoints.Count == 0) waypoints.Add(anchor);
-            waypoints.Add(farthest.Value);
+            if (edge.Type != FloorObjectType.Opening) continue;
+            foreach (var cell in new[] { (edge.Cell1Col, edge.Cell1Row), (edge.Cell2Col, edge.Cell2Row) })
+                if (roomCells.Contains(cell)) openingCells.Add(cell);
+        }
+        foreach (var run in ConnectedComponents(openingCells))
+        {
+            var sorted = run.OrderBy(c => c.Item1).ThenBy(c => c.Item2).ToList();
+            waypointSet.Add(sorted[sorted.Count / 2]);
         }
 
         // Jitter for path variation
@@ -201,15 +198,59 @@ public class PathfinderService : IPathfinderService
         foreach (var cell in roomCells)
             jitter[cell] = (float)(rng.NextDouble() * jitterMax);
 
-        // Chain: [0→1], [1→2], …
+        // One room index can be painted as several disconnected areas (e.g. the same "Living
+        // Room" in every apartment of a block). Route each area on its own — chaining waypoints
+        // across areas made A* fail between them, leaving some areas with no path at all.
         var pathSet = new HashSet<(int, int)>();
-        for (int i = 0; i < waypoints.Count - 1; i++)
+        foreach (var area in ConnectedComponents(roomCells))
         {
-            var segment = AStar(waypoints[i], waypoints[i + 1], roomCells, costMap, jitter, innerWallKeys);
-            foreach (var cell in segment) pathSet.Add(cell);
+            var waypoints = waypointSet.Where(area.Contains).ToList();
+
+            // Fewer than 2 waypoints → extend with farthest cell of this area
+            if (waypoints.Count < 2)
+            {
+                var anchor = waypoints.Count > 0 ? waypoints[0] : area.First();
+                int ac = anchor.Item1, ar = anchor.Item2;
+                var farthest = area
+                    .Where(c => c != anchor)
+                    .OrderByDescending(c => Math.Abs(c.Item1 - ac) + Math.Abs(c.Item2 - ar))
+                    .Cast<(int, int)?>()
+                    .FirstOrDefault();
+                if (farthest is null) { pathSet.Add(anchor); continue; }
+                if (waypoints.Count == 0) waypoints.Add(anchor);
+                waypoints.Add(farthest.Value);
+            }
+
+            // Chain: [0→1], [1→2], …
+            for (int i = 0; i < waypoints.Count - 1; i++)
+            {
+                var segment = AStar(waypoints[i], waypoints[i + 1], area, costMap, jitter, innerWallKeys);
+                foreach (var cell in segment) pathSet.Add(cell);
+            }
         }
 
         return pathSet.Select(c => new int[] { c.Item1, c.Item2 }).ToList();
+    }
+
+    /// <summary>4-neighbour connected components of <paramref name="cells"/>, in discovery order.</summary>
+    private static List<HashSet<(int, int)>> ConnectedComponents(HashSet<(int col, int row)> cells)
+    {
+        var result    = new List<HashSet<(int, int)>>();
+        var remaining = new HashSet<(int, int)>(cells);
+        foreach (var start in cells)
+        {
+            if (!remaining.Remove(start)) continue;
+            var component = new HashSet<(int, int)> { start };
+            var queue     = new Queue<(int, int)>([start]);
+            while (queue.Count > 0)
+            {
+                var (c, r) = queue.Dequeue();
+                foreach (var nb in new[] { (c + 1, r), (c - 1, r), (c, r + 1), (c, r - 1) })
+                    if (remaining.Remove(nb)) { component.Add(nb); queue.Enqueue(nb); }
+            }
+            result.Add(component);
+        }
+        return result;
     }
 
     private static Dictionary<(int, int), float> BuildCostMap(HashSet<(int col, int row)> roomCells, string pathStyle = "wall")

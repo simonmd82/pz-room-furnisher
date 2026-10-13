@@ -372,6 +372,14 @@
   background-color: rgba(80,160,255,0.25) !important;
 }
 
+.cellNarrow1 {
+  background-image: repeating-linear-gradient(45deg, rgba(255,70,70,0.75) 0 3px, transparent 3px 7px) !important;
+}
+
+.cellNarrow2 {
+  background-image: repeating-linear-gradient(45deg, rgba(255,170,60,0.6) 0 2px, transparent 2px 7px) !important;
+}
+
 .outside {
   background: #0c0c16 !important;
   border-color: #1e1e2e !important;

@@ -294,9 +294,11 @@ interface SettingsEditorProps {
   onShowGeneratorLogChange: (v: boolean) => void;
   furnishingConfigEnabled: boolean;
   onFurnishingConfigEnabledChange: (v: boolean) => void;
+  reproToolsEnabled: boolean;
+  onReproToolsEnabledChange: (v: boolean) => void;
 }
 
-export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, furnishingConfigEnabled, onFurnishingConfigEnabledChange }: SettingsEditorProps) {
+export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, furnishingConfigEnabled, onFurnishingConfigEnabledChange, reproToolsEnabled, onReproToolsEnabledChange }: SettingsEditorProps) {
   const { t } = useTranslation();
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -402,6 +404,15 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
               />
               <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.furnishingConfig.label')}</span>
               <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.furnishingConfig.description')}</span>
+            </label>
+            <label className={s.prefRow}>
+              <input
+                type="checkbox"
+                checked={reproToolsEnabled}
+                onChange={e => onReproToolsEnabledChange(e.target.checked)}
+              />
+              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.reproTools.label')}</span>
+              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.reproTools.description')}</span>
             </label>
           </div>
         </div>

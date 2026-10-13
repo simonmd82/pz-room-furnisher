@@ -5,6 +5,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>PzRoomFurnisher</AssemblyName>
+        <!-- Dev default; release builds pass -p:Version=<tag> (release.yml / build-release.ps1). -->
+        <Version>0.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup>

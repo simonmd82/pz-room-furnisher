@@ -118,6 +118,8 @@ export interface Floor {
    * Key = 1-based room index.
    */
   pathsByRoom: Record<number, [number, number][]>;
+  /** Narrow cells per room: [col, row, width], width 1 (1-wide neck/strip) or 2 (2-wide). */
+  narrowCellsByRoom?: Record<number, [number, number, number][]>;
 }
 
 /** Classification values for a wall-mounted "furniture" placement. */
