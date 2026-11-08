@@ -322,7 +322,7 @@ function App() {
       <main className="app-main">
         <section className="upload-section">
           <FileUpload onBuildingLoaded={handleBuildingLoaded} />
-          {reproToolsEnabled && <ReproImport onReplayed={handleReproReplayed} />}
+          {furnishingConfigEnabled && reproToolsEnabled && <ReproImport onReplayed={handleReproReplayed} />}
         </section>
 
         {building && (
@@ -374,7 +374,7 @@ function App() {
                   setDensityMax(max);
                   setDensityFixed(fixed);
                 }}
-                reproToolsEnabled={reproToolsEnabled}
+                reproToolsEnabled={furnishingConfigEnabled && reproToolsEnabled}
                 initialReservedZones={reservedZones}
               />
 
@@ -402,7 +402,7 @@ function App() {
               </div>
 
               {/* Log-Panel rechts neben Grid */}
-              {showGeneratorLog && generatorLog.length > 0 && (
+              {furnishingConfigEnabled && showGeneratorLog && generatorLog.length > 0 && (
                 <div className="log-panel">
                   <div className="log-panel-header">
                     <button className={s.logToggle} onClick={() => setLogOpen(v => !v)}>

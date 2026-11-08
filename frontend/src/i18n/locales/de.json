@@ -885,6 +885,10 @@
       "neutral": "Neutral",
       "hue": "Farbton"
     },
+    "developer": {
+      "title":       "🛠 Entwickler",
+      "description": "Zum Konfigurieren von Möbeln und Raumtypen. Zum Möblieren von Gebäuden nicht nötig."
+    },
     "uiPreferences": {
       "title":       "🖥 UI-Einstellungen",
       "description": "Lokale Anzeigeoptionen. Werden im Browser gespeichert.",
@@ -893,9 +897,9 @@
         "description": "Log-Panel nach dem Generieren einblenden."
       },
       "furnishingConfig": {
-        "label":         "Einrichtungs-Konfiguration",
-        "description":   "Tile-Browser, Möbel-Vorlagen und Raumtypen-Tabs aktivieren.",
-        "confirmEnable": "Das Aktivieren der Einrichtungs-Konfiguration erfordert, dass du weißt, was du tust. Änderungen auf eigene Gefahr!"
+        "label":         "Entwickler-Einstellungen",
+        "description":   "Zeigt die Tabs Tile-Browser, Möbel-Vorlagen, Raumtypen, Teppiche und Tile-Nutzung sowie die weiteren Einstellungen auf dieser Seite.",
+        "confirmEnable": "Das Aktivieren der Entwickler-Einstellungen erfordert, dass du weißt, was du tust. Änderungen auf eigene Gefahr!"
       },
       "reproTools": {
         "label":       "Repro-Werkzeuge",

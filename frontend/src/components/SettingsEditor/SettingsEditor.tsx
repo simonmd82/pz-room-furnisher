@@ -371,6 +371,32 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
       <div className={s.columns}>
         <FilePathsSection />
 
+        <div className={s.section}>
+          <div className={s.sectionHeader}>
+            <span className={s.sectionTitle}>{t('settingsEditor.developer.title')}</span>
+            <span className={s.sectionDesc}>{t('settingsEditor.developer.description')}</span>
+          </div>
+          <div className={s.prefsList}>
+            <label className={s.prefRow}>
+              <input
+                type="checkbox"
+                checked={furnishingConfigEnabled}
+                onChange={e => {
+                  if (e.target.checked) {
+                    if (window.confirm(t('settingsEditor.uiPreferences.furnishingConfig.confirmEnable'))) {
+                      onFurnishingConfigEnabledChange(true);
+                    }
+                  } else {
+                    onFurnishingConfigEnabledChange(false);
+                  }
+                }}
+              />
+              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.furnishingConfig.label')}</span>
+              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.furnishingConfig.description')}</span>
+            </label>
+          </div>
+        </div>
+
         {furnishingConfigEnabled && (
           <>
             <EditableList
@@ -452,54 +478,37 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
                   }} />
               )}
             />
+
+            <div className={s.section}>
+              <div className={s.sectionHeader}>
+                <span className={s.sectionTitle}>{t('settingsEditor.uiPreferences.title')}</span>
+                <span className={s.sectionDesc}>{t('settingsEditor.uiPreferences.description')}</span>
+              </div>
+              <div className={s.prefsList}>
+                <label className={s.prefRow}>
+                  <input
+                    type="checkbox"
+                    checked={showGeneratorLog}
+                    onChange={e => onShowGeneratorLogChange(e.target.checked)}
+                  />
+                  <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.showGeneratorLog.label')}</span>
+                  <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.showGeneratorLog.description')}</span>
+                </label>
+                <label className={s.prefRow}>
+                  <input
+                    type="checkbox"
+                    checked={reproToolsEnabled}
+                    onChange={e => onReproToolsEnabledChange(e.target.checked)}
+                  />
+                  <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.reproTools.label')}</span>
+                  <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.reproTools.description')}</span>
+                </label>
+              </div>
+            </div>
+
+            <ConfigManagementSection />
           </>
         )}
-
-        <div className={s.section}>
-          <div className={s.sectionHeader}>
-            <span className={s.sectionTitle}>{t('settingsEditor.uiPreferences.title')}</span>
-            <span className={s.sectionDesc}>{t('settingsEditor.uiPreferences.description')}</span>
-          </div>
-          <div className={s.prefsList}>
-            <label className={s.prefRow}>
-              <input
-                type="checkbox"
-                checked={showGeneratorLog}
-                onChange={e => onShowGeneratorLogChange(e.target.checked)}
-              />
-              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.showGeneratorLog.label')}</span>
-              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.showGeneratorLog.description')}</span>
-            </label>
-            <label className={s.prefRow}>
-              <input
-                type="checkbox"
-                checked={furnishingConfigEnabled}
-                onChange={e => {
-                  if (e.target.checked) {
-                    if (window.confirm(t('settingsEditor.uiPreferences.furnishingConfig.confirmEnable'))) {
-                      onFurnishingConfigEnabledChange(true);
-                    }
-                  } else {
-                    onFurnishingConfigEnabledChange(false);
-                  }
-                }}
-              />
-              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.furnishingConfig.label')}</span>
-              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.furnishingConfig.description')}</span>
-            </label>
-            <label className={s.prefRow}>
-              <input
-                type="checkbox"
-                checked={reproToolsEnabled}
-                onChange={e => onReproToolsEnabledChange(e.target.checked)}
-              />
-              <span className={s.prefLabel}>{t('settingsEditor.uiPreferences.reproTools.label')}</span>
-              <span className={s.prefDesc}>{t('settingsEditor.uiPreferences.reproTools.description')}</span>
-            </label>
-          </div>
-        </div>
-
-        <ConfigManagementSection />
       </div>
     </div>
   );

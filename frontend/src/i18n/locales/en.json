@@ -885,6 +885,10 @@
       "neutral": "Neutral",
       "hue": "Hue"
     },
+    "developer": {
+      "title":       "🛠 Developer",
+      "description": "For configuring furniture and room types. Not needed for furnishing buildings."
+    },
     "uiPreferences": {
       "title":       "🖥 UI Preferences",
       "description": "Local display options. Saved in the browser.",
@@ -893,9 +897,9 @@
         "description": "Display the furnishing log panel after generating."
       },
       "furnishingConfig": {
-        "label":         "Furnishing Configuration",
-        "description":   "Enable the Tile Browser, Furniture Templates and Room Types tabs.",
-        "confirmEnable": "Enabling the furnishing configuration requires you know what you are doing. Change the configuration at your own risk!"
+        "label":         "Developer settings",
+        "description":   "Show the Tile Browser, Furniture Templates, Room Types, Rugs and Tile Usage tabs, plus the further settings on this page.",
+        "confirmEnable": "Enabling the developer settings requires you know what you are doing. Change the configuration at your own risk!"
       },
       "reproTools": {
         "label":       "Repro tools",

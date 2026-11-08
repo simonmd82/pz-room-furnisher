@@ -438,7 +438,7 @@ public partial class FurnishingGeneratorService
             var a = plans[0].Cell;
             var (ax, ay, aw, ah) = TransformGridRect(a.X, a.Y, a.Footprint.Width, a.Footprint.Height, grid.Width, grid.Height, bRot, bMirror);
             best.BlockedFrontCells.UnionWith(SightLane(oppositeTarget.col, oppositeTarget.row, oppositeTarget.fpW, oppositeTarget.fpH,
-                oppositeTarget.orient, bOx + ax, bOy + ay, aw, ah));
+                oppositeTarget.orient!, bOx + ax, bOy + ay, aw, ah)); // set: the rule returned early if the target was missing
         }
         log.Add($"  [GRID] '{grid.Id}' placed {grid.Width}x{grid.Height} mode={grid.Mode} back={GridRotationNames[bRot]}{(bMirror ? " mirrored" : "")} " +
                 $"origin=({bOx},{bOy}), optional {bestScore}/{optionalTotal} ({evaluated} candidates checked)");
