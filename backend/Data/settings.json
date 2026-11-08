@@ -4,6 +4,7 @@
     "Bathtub",
     "Beds",
     "Bedtable",
+    "Billard",
     "Cabinet",
     "Chair",
     "Clock",
@@ -19,6 +20,7 @@
     "Lamp Tabletop",
     "Microwave",
     "Mirror",
+    "Music",
     "Newspaper",
     "Office Wall Deco",
     "Phone",
@@ -26,6 +28,7 @@
     "Plant",
     "Plant Tabletop",
     "Poster",
+    "Recreation",
     "Rug",
     "Shelf",
     "Shower",
@@ -38,7 +41,8 @@
     "Television",
     "Toilet",
     "Trashcan",
-    "Walldecoration"
+    "Walldecoration",
+    "Wardrobe"
   ],
   "knownRoomTypes": [
     "Bar",
@@ -80,5 +84,38 @@
     "Violet",
     "White",
     "Yellow"
-  ]
+  ],
+  "knownThemes": [
+    "Animals",
+    "Art",
+    "Cars",
+    "Food",
+    "Games",
+    "Landscape",
+    "Movies",
+    "Music",
+    "Sports"
+  ],
+  "themedCategories": [
+    "Picture",
+    "Poster"
+  ],
+  "colorHues": {
+    "Red": 0,
+    "Orange": 30,
+    "Yellow": 55,
+    "Green": 120,
+    "Blue": 220,
+    "Violet": 270,
+    "Purple": 285,
+    "Pink": 330,
+    "Beige": null,
+    "Black": null,
+    "Brown": null,
+    "Grey": null,
+    "Metal": null,
+    "Mixed": null,
+    "White": null,
+    "Wood": null
+  }
 }

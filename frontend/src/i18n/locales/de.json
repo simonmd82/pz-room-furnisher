@@ -72,6 +72,10 @@
     "windowBlockedEdge": "Fenster-Sperrkante",
     "windowBlockedEdgeInfo": "Nur diese Kante darf kein Fenster beruehren",
     "noneDefaultRule": "Keine (Standardregel)",
+    "themes": "Themen",
+    "noThemesConfigured": "Keine Themen in den Einstellungen definiert.",
+    "allowedThemes": "Themen",
+    "allowedThemesHint": "Betrifft nur Tiles thematisierter Kategorien (z.B. Picture/Poster); Tiles ohne Thema fallen raus, sobald ein Thema gewählt ist. Keins gewählt = alle.",
     "styleTags": "Style-Tags",
     "styleTagsSavedNotActive": "(gespeichert, noch nicht aktiv)",
     "any": "Beliebig (keine)",
@@ -100,7 +104,8 @@
     "furniture": "Möbel-Vorlagen",
     "roomTypes": "Raumtypen",
     "rugs": "Teppiche",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "tileUsage": "Tile-Nutzung"
   },
   "generatorLog": {
     "toggle": "Log ({{count}})",
@@ -136,6 +141,14 @@
     "zoomIn": "Vergrößern",
     "zoomFit": "Einpassen",
     "zoomFitTitle": "Ganze Etage in den Bereich einpassen",
+    "viewGrid": "Raster",
+    "viewIso": "ISO",
+    "viewIsoTitle": "Isometrische Ansicht wie in Project Zomboid (nur Ansicht)",
+    "wallsCut": "Wände: niedrig",
+    "wallsFull": "Wände: voll",
+    "wallsTitle": "Wände, Türen und Fenster zwischen voller Höhe und niedrigen Stümpfen umschalten",
+    "isoTopDownOnly": "Nur in der Rasteransicht verfügbar",
+    "isoMissingTiles": "{{count}} Tiles im Tiles-Ordner nicht gefunden",
     "zoomHint": "Zoom relativ zu Einpassen – Strg + Mausrad zoomt an der Cursorposition"
   },
   "roomTypeEditor": {
@@ -172,6 +185,11 @@
       "label": "🎨 Farbgruppe (Raum-Default)",
       "title": "Standard-Farbgruppen-ID für alle Slots dieses Raumtyps. Slots mit leerer colorGroupId erben diesen Wert. Leer = kein Farbfilter als Standard.",
       "placeholder": "z.B. bedroom_main (leer = kein Default)"
+    },
+    "colorHarmony": {
+      "label": "🌈 Farbharmonie",
+      "title": "Bevorzugt Farben, die auf dem Farbkreis zur Referenzfarbe des Raums passen: Nachbarfarben (±60°) oder die Gegenseite (180° ±30°). Neutrale Farben passen immer. Greift nur, solange die eigene Farbgruppe keine Sperre hat; ohne Treffer werden alle Tiles verwendet.",
+      "roomTitle": "Hauptschalter für Farbharmonie in diesem Raumtyp. Referenzfarbe = Farbe der Raum-Farbgruppe, sonst das erste farbige Pflicht-Möbel. Aus = keine Harmonie für Slots, Grids und Pools."
     },
     "colorPalette": {
       "allSelected": "✓ Alle Farben → zufällig pro Raum, aus den gemeinsamen Farben aller Mitglieder",
@@ -243,6 +261,8 @@
       "min": "Min",
       "max": "Max",
       "maxUnlimitedHint": "Max -1 = unbegrenzt",
+      "sameTileForAllInstances": "Gleiches Tile für alle Instanzen",
+      "sameTileForAllInstancesHint": "Aus (Standard): jede Instanz wählt ihr eigenes Tile und meidet bereits von diesem Slot genutzte, solange es Alternativen gibt. An: alle Instanzen nutzen das Tile der ersten Instanz (bzw. eine Orientierungsvariante davon).",
       "allowedCategories": "Erlaubte Kategorien",
       "allowedCategoriesAll": "(alle passenden)",
       "allowedCategoriesSelected_one": "({{count}} gewählt)",
@@ -273,6 +293,10 @@
       "cellRequiredPropertiesTitle": "Nur relevant wenn „Blockiert Zelle\" deaktiviert ist. Sind Eigenschaften ausgewählt, darf ein anderer Slot diese Zelle nur teilen, wenn sein Tile ALLE davon erfüllt (z.B. isLow + isWallMounted). Kombinierbar mit Soft-Block – beide Regeln gelten dann gleichzeitig.\n\nLeer = keine zusätzliche Einschränkung (Standard).",
       "blocksFrontCell": "🚶 Zelle davor freihalten",
       "blocksFrontCellTitle": "Wenn aktiv: Die Zelle direkt vor dem platzierten Tile (in dessen Blickrichtung) wird reserviert – andere Slots können dort kein Möbel platzieren, der Spieler kann aber weiterhin hineinlaufen.\n\nTypischer Einsatz: Herd, Kühlschrank – Zelle davor soll frei bleiben.",
+      "placeLast": "⏬ Zuletzt platzieren",
+      "placeLastTitle": "Wenn aktiv: Dieser Slot wird nach allen anderen Slots des Raums platziert, auch nach Pflicht-Slots, und nimmt nur den Platz, den die Möbel übrig lassen.\n\nTypischer Einsatz: Bilder, Poster.",
+      "clearanceLabel": "↔ Freiraum rundum",
+      "clearanceTitle": "Zellen Freiraum rund um das Möbel, Diagonalen eingeschlossen (0 = aus). Diese Zellen müssen freie Raumzellen sein – das Möbel berührt also weder Wand noch andere Möbel – und bleiben für spätere Möbel frei (Teppiche ausgenommen). Slots mit Freiraum werden nach den übrigen Slots des Raums platziert. Typisch: Billardtisch.",
       "wallAlignmentLabel": "Wandausrichtung",
       "wallAlignmentInfoTitle": "Bestimmt, wie das Möbelstück relativ zur Wand ausgerichtet wird.\n\n• Automatisch: Generator wählt die beste passende Tile-Variante.\n• Senkrecht (⊥): Rücken an der Wand, Vorderseite zeigt in den Raum.\n  Für Möbel die in den Raum ragen (Bett, Schreibtisch, WC).\n  Bevorzugt Tile-Variante mit langer Achse senkrecht zur Wand.\n• Parallel (∥): Längsseite entlang der Wand.\n  Für Möbel die entlang der Wand stehen (Sofa, Regal, Kommode).\n  Bevorzugt Tile-Variante mit langer Achse parallel zur Wand.\n\nHinweis: Benötigt Tile-Varianten in der VariantGroup mit korrekten TileLayout-Dimensionen.",
       "layerLabel": "Layer",
@@ -364,6 +388,10 @@
       "distanceMaxTitle": "Maximale Distanz (leer = ohne Limit)",
       "distanceTo": "bis",
       "distanceHint": "min..max (leer = bis zur Wand)",
+      "allowInsideLabel": "auch im Raum",
+      "allowInsideTitle": "Nicht nur an der gegenüberliegenden Wand: jede Stelle zwischen Min- und Max-Distanz, die weiteste zuerst. Liegt die Wand im Bereich, steht das Möbel an der Wand; in langen Räumen steht es auf Max-Distanz im Raum. Braucht eine Max-Distanz; die 'Nahe Wand'-Regel des Slots gilt für diese Plätze nicht.",
+      "keepSightClearLabel": "Sicht freihalten",
+      "keepSightClearTitle": "Die Zellen zwischen Anker und diesem Möbel (z.B. Sofa → TV) dürfen kein Möbel mit Kollision enthalten, außer den Grid-Teilen des Ankers (Couchtisch). Danach bleiben sie für spätere Möbel frei; Teppiche sind weiter erlaubt.",
       "anchorSummary": "📎 „{{target}}\" → {{positions}}",
       "previewWallLabel": "Wand simulieren:",
       "previewSelectPosition": "Position für Vorschau auswählen",
@@ -416,6 +444,9 @@
       "allowOnPathHint": "Grid-Möbel mit Kollision dürfen auf vorberechneten Laufweg-Zellen stehen.",
       "mainSubRoomLabel": "Hauptbereich",
       "mainSubRoomHint": "Das ganze Grid nur im größten zusammenhängenden Bereich des Raums platzieren (der Sub-Room mit den meisten Türen). Hat keine Wirkung, wenn keine Innenwände vorhanden sind.",
+      "oppositeAnchorLabel": "Gegenüber",
+      "oppositeAnchorHint": "Das ganze Grid gegenüber einem anderen Grid platzieren, mit der Vorderseite zu ihm (TV-Gruppe gegenüber der Sitzgruppe). Das Grid wird nach Grids ohne diese Regel platziert; wurde das Ziel nicht platziert, entfällt es.",
+      "oppositeAnchorNone": "— aus —",
       "priorityLabel": "Priorität",
       "groupLabel": "Gruppe",
       "groupHint": "Grids mit gleicher Gruppe sind Alternativen: genau eines wird (gewichtet) verwendet.",
@@ -445,12 +476,29 @@
         "W": "Schaut nach links"
       },
       "rotateHint": "90° im Uhrzeigersinn drehen (Blickrichtung + Breite/Höhe tauschen)",
+      "cornerLabel": "Ecke",
+      "cornerHint": "Eckstück: Der Generator setzt die Eck-Variante (Ausrichtung NW/NE/SE/SW) der gewählten Möbel und braucht Wände an beiden Seiten der Ecke, mit dem Grid gedreht. Optionale Teile ohne passende Ecke entfallen, ein Pflichtteil verwirft die Position. Mit Grid-Modus \"In der Ecke\" nutzen und das Teil in die passende Grid-Ecke setzen.",
+      "cornerNone": "Gerades Teil (keine Ecke)",
+      "corner": {
+        "NW": "Ecke hinten links",
+        "NE": "Ecke hinten rechts",
+        "SE": "Ecke vorne rechts",
+        "SW": "Ecke vorne links"
+      },
       "footprintLabel": "Footprint",
       "anchorLabel": "Anker",
       "anchorHint": "Der Anker ist das Möbelstück, um das herum das Grid gebaut wird. Genau eines pro Grid; immer Pflicht.",
       "cellRequiredLabel": "Pflicht",
       "allowStackingLabel": "Stapeln erlauben",
-      "allowStackingHint": "Belegt die Zellen nur weich: ein an dieses Möbel verankerter Slot (z.B. Lampe, Position Center) darf darauf stehen; andere Slots bleiben fern.",
+      "allowStackingHint": "Belegt die Zellen nur weich: ein an dieses Möbel verankerter Slot (z.B. Lampe, Position Center) darf darauf stehen; andere Slots bleiben fern. Andere Teile dieses Grids dürfen es überlappen (ausgewähltes Möbel erneut anklicken, um eins hinzuzufügen; ein ausgewähltes Teil darauf erneut anklicken, um dieses darunter auszuwählen): ein Teil auf anderem Layer (z.B. PC) muss auf seinen Tiles stehen, ein Teil auf gleichem Layer (z.B. Stuhl) in seinen leeren Layout-Zellen (z.B. Innenecke eines L-Tischs). Teile auf einem Wall-Layer (Hängeschrank, Dunstabzug) belegen immer nur weich und blockieren die Zelle darunter nie.",
+      "edgePieceLabel": "▏Kantenteil",
+      "edgePieceHint": "Das Teil sitzt auf einer Zellkante, z.B. Duschglas. Seine Ausrichtung benennt die Kante und dreht sich mit dem Grid. Eine Kante, die auf O oder S landet, wird als W- bzw. N-Kante der Nachbarzelle gezeichnet und bleibt so in jeder Ecke auf der richtigen Seite. Verläuft dort schon eine Wand, entfällt ein optionales Teil und ein Pflichtteil verwirft die Position.",
+      "againstWallLabel": "🧱 An der Wand",
+      "againstWallHint": "Die Rückseite des Teils (gegenüber seiner Blickrichtung) muss an einer Wand stehen. Optionale Teile ohne Wand dahinter entfallen – so passt sich ein langes Raster mit optionalen Endstücken an kürzere Wände an. Ein Pflichtteil verwirft stattdessen die Position.",
+      "duplicateGrid": "Raster duplizieren",
+      "copyGrid": "Raster in die Zwischenablage kopieren (auch in eine andere Raumkonfiguration einfügbar)",
+      "pasteTitle": "Raster \"{{name}}\" am Ende einfügen",
+      "copyLabel": "{{label}} (Kopie)",
       "cellRequiredHint": "Pflicht-Möbel müssen passen, sonst probiert das Grid eine andere Stelle. Optionale fallen weg, wenn blockiert.",
       "categoriesLabel": "Kategorien",
       "addCategory": "+ Kategorie hinzufügen",
@@ -465,6 +513,10 @@
       "strictMatch": "strikt",
       "strictMatchHint": "Kein Treffer in der gesperrten Varianten-Gruppe → Möbel weglassen statt andere Variante zu nehmen.",
       "materialLabel": "Material",
+      "sizeWeightLabel": "Gewicht je Größe",
+      "sizeWeightHint": "Gruppen-Gewicht nur für diese Raumgröße (1–10). Leer = normales Gruppen-Gewicht des Grids. Gewichte konkurrieren nur mit den anderen Grids der Gruppe, die für dieselbe Größe erlaubt sind.",
+      "anchorGroupLabel": "Anker-Gruppe",
+      "anchorGroupHint": "Gemeinsamer Anker-Schlüssel, z.B. \"counters\". Jedes platzierte Teil mit derselben Anker-Gruppe (über alle Grids) wird darunter registriert. Ein Slot mit diesem Schlüssel als Anker steht auf / neben einem davon, zufällig gewählt; mehrere Slots oder Instanzen mit diesem Anker werden auf verschiedene Teile verteilt, bereits belegte werden übersprungen. \"Stapeln erlauben\" an den Teilen aktivieren, damit Gegenstände darauf stehen können.",
       "repick": "Möbel wählen",
       "deletePiece": "Möbel löschen",
       "previewTitle": "So kann der Generator es platzieren (Rückkante an jeder Wand):",
@@ -473,6 +525,7 @@
       "gridOption": "Grid: {{grid}} (Anker)",
       "gridCellOption": "Grid: {{grid}} → {{cell}}",
       "gridGroupOption": "Grid-Gruppe: {{group}} (Anker des platzierten Grids)",
+      "anchorGroupOption": "Grid-Anker-Gruppe: {{group}} (zufälliges Teil)",
       "saveBlocked": "Vor dem Speichern Grid-Fehler beheben: {{ids}}",
       "issues": {
         "anchorCount": "Genau ein Anker nötig (vorhanden: {{count}}).",
@@ -810,7 +863,14 @@
     "categories": {
       "title":       "📦 Möbel-Kategorien",
       "description": "Werden in den Slot-Konfigurationen als wählbare Kategorien für Möbel angeboten.",
-      "placeholder": "z.B. Carpet"
+      "placeholder": "z.B. Carpet",
+      "themed":      "🖼️ Themen",
+      "themedTitle": "Thematisierte Kategorie: ihre Tiles bekommen Themen-Tags (Tile-/Möbel-Browser), und Slots mit dieser Kategorie können nach Thema filtern."
+    },
+    "themes": {
+      "title":       "🖼️ Themen",
+      "description": "Motiv-Themen für Tiles thematisierter Kategorien (\"🖼️ Themen\" in der Kategorienliste ankreuzen, z.B. Picture/Poster). Werden im Tile-/Möbel-Browser vergeben; Slots, Grid-Zellen und Layout-Pools können diese Tiles auf ausgewählte Themen beschränken.",
+      "placeholder": "z.B. Autos"
     },
     "materials": {
       "title":       "🪵 Materialien",
@@ -820,7 +880,10 @@
     "colors": {
       "title":       "🎨 Farben",
       "description": "Werden im Tile-Browser und Möbel-Browser als Farb-Tags angeboten.",
-      "placeholder": "z.B. Lila"
+      "placeholder": "z.B. Lila",
+      "huesTitle": "Position auf dem Farbkreis für die Farbharmonie: Farbton in Grad (0 = Rot, 120 = Grün, 240 = Blau) oder Neutral (passt zu jeder Farbe).",
+      "neutral": "Neutral",
+      "hue": "Farbton"
     },
     "uiPreferences": {
       "title":       "🖥 UI-Einstellungen",
@@ -940,6 +1003,52 @@
     "useDirectly":   "Direkt setzen",
     "useDirectlyHint": "Diesen Pfad direkt verwenden",
     "selectFolder":  "Diesen Ordner wählen"
+  },
+  "tileUsage": {
+    "searchPlaceholder": "Id, Label, Variantengruppe suchen…",
+    "allGroups": "Alle Gruppen",
+    "allLayers": "Alle Layer",
+    "allRoomTypes": "Genutzt in: beliebiger Raumtyp",
+    "allSets": "Alle Sets",
+    "none": "(keine)",
+    "reload": "Neu laden",
+    "resultCount": "{{count}} Tiles",
+    "loading": "Lade…",
+    "noResults": "Keine Tiles passen zu den Filtern.",
+    "anyRoom": "alle",
+    "setDisabled": "deaktiviert",
+    "unused": "ungenutzt",
+    "viaOnly": "nur Variantengruppe",
+    "viaVariantGroup": "über Variantengruppe",
+    "showMore": "Mehr anzeigen ({{shown}} von {{total}})",
+    "filter": {
+      "unused": "Ungenutzt",
+      "unusedHint": "Kein Slot, Grid-Feld, Pool oder Companion eines Raumtyps kann dieses Tile wählen",
+      "via": "Nur Variantengruppe",
+      "viaHint": "Nur als Orientierungs-/Eck-Geschwister eines direkt passenden Tiles derselben Variantengruppe erreichbar",
+      "used": "Genutzt",
+      "usedHint": "Von mindestens einem Raumtyp-Slot direkt gewählt",
+      "all": "Alle",
+      "allHint": "Alle Tile-Definitionen"
+    },
+    "col": {
+      "id": "Tile",
+      "group": "Gruppe",
+      "layer": "Layer",
+      "shape": "Größe",
+      "properties": "Eigenschaften",
+      "roomTypes": "Tile-Raumtypen",
+      "variantGroup": "Variantengruppe",
+      "set": "Set",
+      "usage": "Genutzt in"
+    },
+    "source": {
+      "slot": "Slot",
+      "pool": "Pool",
+      "poolRequired": "Pool-Pflicht",
+      "companion": "Companion",
+      "grid": "Grid"
+    }
   }
 }
 

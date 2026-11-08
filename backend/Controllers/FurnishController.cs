@@ -21,15 +21,18 @@ public class FurnishController : ControllerBase
     private readonly IRoomTypeConfigService      _roomTypes;
     private readonly ITileConfigService          _tiles;
     private readonly IRugCatalogService          _rugs;
+    private readonly ISettingsService            _settings;
 
     public FurnishController(IFurnishingGeneratorService generator, ITbxExportService exporter, IOptions<JsonOptions> jsonOptions,
-                             IRoomTypeConfigService roomTypes, ITileConfigService tiles, IRugCatalogService rugs)
+                             IRoomTypeConfigService roomTypes, ITileConfigService tiles, IRugCatalogService rugs,
+                             ISettingsService settings)
     {
         _generator = generator;
         _exporter  = exporter;
         _roomTypes = roomTypes;
         _tiles     = tiles;
         _rugs      = rugs;
+        _settings  = settings;
         _json      = jsonOptions.Value.JsonSerializerOptions; // same casing/enum handling as normal responses
     }
 
@@ -146,7 +149,9 @@ public class FurnishController : ControllerBase
             new Dictionary<string, RoomTypeConfig>(_roomTypes.GetAll()),
             _tiles.GetAllEnabled().Values.ToList(),
             _rugs.GetAllEnabled().Values.ToList(),
-            req.Expected);
+            req.Expected,
+            _settings.GetColorHues(),
+            _settings.GetThemedCategories());
         var baseName = Path.GetFileNameWithoutExtension(string.IsNullOrWhiteSpace(req.FileName) ? "building" : req.FileName);
         var fileName = $"{baseName}_{req.Request.Seed}.pzrf-repro.json";
         return File(JsonSerializer.SerializeToUtf8Bytes(bundle, _json), "application/json", fileName);
@@ -166,7 +171,9 @@ public class FurnishController : ControllerBase
             var inputs = new GeneratorInputs(
                 bundle.RoomTypes,
                 ToOrderedDict(bundle.Tiles, t => t.Id),
-                ToOrderedDict(bundle.Rugs, r => r.Id));
+                ToOrderedDict(bundle.Rugs, r => r.Id),
+                bundle.ColorHues,
+                bundle.ThemedCategories);
             var result = _generator.Generate(bundle.Request, inputs: inputs);
             return Ok(new ReproReplayResult(result, AppInfo.Version));
         }

@@ -2,10 +2,10 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getBfPath, getBfGroups, getBfGroupDetail } from '../../api/bfApi';
 import { getTileConfig, saveTileDefinition, sheetImageUrl, getSheets, getGroups } from '../../api/tilesApi';
-import { getRoomTypeNames, getCategories, getMaterials, getColorNames } from '../../api/settingsApi';
+import { getRoomTypeNames, getCategories, getMaterials, getColorNames, getThemes, getThemedCategories } from '../../api/settingsApi';
 import type { BfGroupSummary, BfGroupDetail, BfEntryDto } from '../../types/bf';
 import type { TileDefinition, TileConfigMap, TileProperty } from '../../types/tiles';
-import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES } from '../../types/tiles';
+import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRows, SHADES, shadeColor, STYLE_TAGS, TILE_PROPERTIES, isThemedCategory } from '../../types/tiles';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
@@ -111,6 +111,8 @@ export function FurnitureBrowser() {
   // ── known materials / colors (from settings) ───────────────────────────────
   const [materialList, setMaterialList] = useState<string[]>([]);
   const [colorList,    setColorList]    = useState<string[]>([]);
+  const [themeList,    setThemeList]    = useState<string[]>([]);
+  const [themedCats,   setThemedCats]   = useState<string[]>([]);
 
   // ── collapsible sections ──────────────────────────────────────────────────
   const [notesOpen, setNotesOpen]     = useState(false);
@@ -204,6 +206,8 @@ export function FurnitureBrowser() {
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
     getColorNames().then(setColorList).catch(console.error);
+    getThemes().then(setThemeList).catch(console.error);
+    getThemedCategories().then(setThemedCats).catch(console.error);
     getGroups().then(setGlobalGroups).catch(console.error);
   }, []);
 
@@ -294,11 +298,11 @@ export function FurnitureBrowser() {
   };
 
   const toggleArrayField = (field: keyof TileDefinition, val: string) => {
-    const allHave = selDefs.every(d => (d[field] as string[]).includes(val));
+    const allHave = selDefs.every(d => ((d[field] as string[] | undefined) ?? []).includes(val));
     setViewDefs(prev => {
       const next = { ...prev };
       selDefs.forEach(def => {
-        const cur     = def[field] as string[];
+        const cur     = (def[field] as string[] | undefined) ?? [];
         const updated = allHave ? cur.filter(x => x !== val) : cur.includes(val) ? cur : [...cur, val];
         next[def.id] = { ...next[def.id], [field]: updated };
       });
@@ -740,6 +744,22 @@ export function FurnitureBrowser() {
                 </div>
               );
             })()}
+
+            {/* Themes — only for themed categories (settings, e.g. Picture/Poster) */}
+            {selDefs.some(d => isThemedCategory(d.group, themedCats)) && (
+              <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+                <span className={s.fieldLabel}>{t('common.themes')}</span>
+                <div className={s.chipGroup}>
+                  {themeList.map(th => { const st = arrState(d => d.themes ?? [], th); return (
+                    <span key={th} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                      onClick={() => toggleArrayField('themes', th)}>{th}</span>
+                  ); })}
+                </div>
+                {themeList.length === 0 && (
+                  <span style={{ fontSize: '0.75rem', color: '#888' }}>{t('common.noThemesConfigured')}</span>
+                )}
+              </div>
+            )}
 
             {/* Orientierung */}
             {(() => {

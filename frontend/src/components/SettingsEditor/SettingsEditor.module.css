@@ -164,6 +164,48 @@
 .removeBtn:hover:not(:disabled) { border-color: #5a2a2a; color: #f88; background: #2a1010; }
 .removeBtn:disabled { cursor: not-allowed; opacity: 0.3; }
 
+/* ── Themed-category toggle (categories list) ── */
+.themedToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #889;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ── Colour hue (colour harmony) ── */
+.hueControl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #889;
+}
+.hueSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #334;
+  flex-shrink: 0;
+}
+.hueNeutral {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}
+.hueInput {
+  width: 52px;
+  padding: 1px 4px;
+  background: #0d0d18;
+  border: 1px solid #2a2a3e;
+  border-radius: 3px;
+  color: #ccd;
+  font-size: 0.75rem;
+}
+
 /* ── UI Preferences ── */
 .prefsList {
   padding: 10px 12px;

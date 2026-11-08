@@ -236,7 +236,8 @@
   transition: background 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
-.pathToggleBtn:hover {
+.pathToggleBtn:disabled { opacity: 0.4; cursor: default; }
+.pathToggleBtn:hover:not(:disabled) {
   background: #1e3a52;
   border-color: #66aadd;
   color: #cceeff;
@@ -489,3 +490,49 @@
   background-color: rgba(220,70,70,0.22) !important;
 }
 
+
+/* ── ISO view ── */
+/* Sized to the whole scene so the scroll area scrolls it; the canvas only covers the
+   visible window and follows the scroll position. overflow: hidden keeps the tooltip
+   from growing the scrollable area. */
+.isoContent {
+  position: relative;
+  overflow: hidden;
+}
+.isoCanvas {
+  position: absolute;
+  display: block;
+}
+.isoTooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 260px;
+  padding: 4px 8px;
+  background: #0e0e18ee;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #ccd;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.isoNotice {
+  position: absolute;
+  z-index: 5;
+  padding: 3px 8px;
+  background: #3a2a0aee;
+  border: 1px solid #aa7a2a;
+  border-radius: 4px;
+  color: #ffd9a0;
+  font-size: 0.72rem;
+  pointer-events: none;
+}
+.zoomSep {
+  width: 1px;
+  height: 16px;
+  background: #3a3a5a;
+  margin: 0 2px;
+}

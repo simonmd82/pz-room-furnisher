@@ -10,11 +10,13 @@ public class TileLibraryController : ControllerBase
 {
     private readonly ITileLibraryService _lib;
     private readonly ITileConfigService  _cfg;
+    private readonly ITileUsageService   _usage;
 
-    public TileLibraryController(ITileLibraryService lib, ITileConfigService cfg)
+    public TileLibraryController(ITileLibraryService lib, ITileConfigService cfg, ITileUsageService usage)
     {
-        _lib = lib;
-        _cfg = cfg;
+        _lib   = lib;
+        _cfg   = cfg;
+        _usage = usage;
     }
 
     // ── Path ─────────────────────────────────────────────────────────────
@@ -180,6 +182,10 @@ public class TileLibraryController : ControllerBase
         _cfg.Delete(id, setId);
         return NoContent();
     }
+
+    /// <summary>Every tile definition of every set, with the room-type slots that can pick it.</summary>
+    [HttpGet("usage")]
+    public IActionResult GetUsage() => Ok(_usage.GetUsage());
 
     [HttpGet("config/export")]
     public IActionResult Export([FromQuery] string setId = "vanilla")

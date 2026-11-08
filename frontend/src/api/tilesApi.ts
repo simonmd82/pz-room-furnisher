@@ -1,4 +1,4 @@
-﻿import type { TileDefinition, TileConfigMap, TileSheetInfo, TileConfigSetInfo } from '../types/tiles';
+﻿import type { TileDefinition, TileConfigMap, TileSheetInfo, TileConfigSetInfo, TileUsageEntry } from '../types/tiles';
 
 const BASE = '/api/tiles';
 
@@ -46,6 +46,13 @@ export function sheetImageUrl(name: string): string {
 export async function getTileConfig(setId?: string): Promise<TileConfigMap> {
   const url = setId ? `${BASE}/config?setId=${encodeURIComponent(setId)}` : `${BASE}/config`;
   return (await fetch(url)).json();
+}
+
+/** Every tile definition of every set, with the room-type slots that can pick it. */
+export async function getTileUsage(): Promise<TileUsageEntry[]> {
+  const r = await fetch(`${BASE}/usage`);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
 }
 
 export async function saveTileDefinition(def: TileDefinition, setId = 'vanilla'): Promise<TileDefinition> {

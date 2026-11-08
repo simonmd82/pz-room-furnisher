@@ -23,7 +23,12 @@ public record ReproBundle(
     Dictionary<string, RoomTypeConfig> RoomTypes,
     List<TileDefinition>               Tiles,
     List<RugDefinition>                Rugs,
-    ReproExpected                      Expected);
+    ReproExpected                      Expected,
+    // Colour → hue map for colour harmony; null in bundles made before it existed (replay
+    // then uses the local settings).
+    Dictionary<string, int?>?          ColorHues = null,
+    // Theme-filtered categories; null in older bundles (replay then uses the local settings).
+    List<string>?                      ThemedCategories = null);
 
 public record ReproExportRequest(
     FurnishRequest Request,

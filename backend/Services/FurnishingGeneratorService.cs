@@ -91,7 +91,9 @@ public interface IFurnishingGeneratorService
 public record GeneratorInputs(
     IReadOnlyDictionary<string, RoomTypeConfig> RoomTypes,
     IReadOnlyDictionary<string, TileDefinition> Tiles,
-    IReadOnlyDictionary<string, RugDefinition>  Rugs);
+    IReadOnlyDictionary<string, RugDefinition>  Rugs,
+    IReadOnlyDictionary<string, int?>?          ColorHues = null,
+    IReadOnlyCollection<string>?                ThemedCategories = null);
 
 // ── Implementation ────────────────────────────────────────────────────────────
 
@@ -111,17 +113,28 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     // The result only depends on the slot, room type and catalog, all fixed during one call.
     [ThreadStatic] private static Dictionary<(RoomTypeSlot, string), List<TileDefinition>>? t_layoutPoolCache;
 
+    // Colour → hue map (see ColorHarmony) for the current Generate call; same thread-static
+    // reasoning as above, so the static placement helpers can reach it without new params.
+    [ThreadStatic] private static IReadOnlyDictionary<string, int?>? t_colorHues;
+
+    // Categories whose tiles are theme-filtered (settings "themedCategories") for the current
+    // Generate call; same thread-static reasoning. Read by MatchTiles via MatchesThemes.
+    [ThreadStatic] private static HashSet<string>? t_themedCategories;
+
     private readonly IRoomTypeConfigService _roomTypeSvc;
     private readonly ITileConfigService     _tileSvc;
     private readonly IPathfinderService     _pathfinder;
     private readonly IRugCatalogService     _rugSvc;
+    private readonly ISettingsService       _settings;
 
-    public FurnishingGeneratorService(IRoomTypeConfigService roomTypeSvc, ITileConfigService tileSvc, IPathfinderService pathfinder, IRugCatalogService rugSvc)
+    public FurnishingGeneratorService(IRoomTypeConfigService roomTypeSvc, ITileConfigService tileSvc, IPathfinderService pathfinder, IRugCatalogService rugSvc,
+                                      ISettingsService settings)
     {
         _roomTypeSvc = roomTypeSvc;
         _tileSvc     = tileSvc;
         _pathfinder  = pathfinder;
         _rugSvc      = rugSvc;
+        _settings    = settings;
     }
 
     // =========================================================================
@@ -133,8 +146,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     {
         t_cancel = ct;
         t_layoutPoolCache = new(new SlotKeyComparer());
+        t_colorHues = new Dictionary<string, int?>(inputs?.ColorHues ?? _settings.GetColorHues(), StringComparer.OrdinalIgnoreCase);
+        t_themedCategories = new HashSet<string>(inputs?.ThemedCategories ?? _settings.GetThemedCategories(), StringComparer.OrdinalIgnoreCase);
         try { return GenerateCore(req, progress, ct, inputs); }
-        finally { t_cancel = default; t_layoutPoolCache = null; }
+        finally { t_cancel = default; t_layoutPoolCache = null; t_colorHues = null; t_themedCategories = null; }
     }
 
     private FurnishResult GenerateCore(FurnishRequest req, IFurnishProgress? progress, CancellationToken ct, GeneratorInputs? inputs)
@@ -143,7 +158,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         var placements     = new List<PlacedFurnitureItem>();
         var log            = new List<string>();
         var reservedZones  = new List<ReservedZonePlacement>();
-        var allTiles       = inputs?.Tiles     ?? _tileSvc.GetAllEnabled();
+        var enabledTiles   = inputs?.Tiles     ?? _tileSvc.GetAllEnabled();
+        var roomTilesCache = new Dictionary<string, IReadOnlyDictionary<string, TileDefinition>>(StringComparer.OrdinalIgnoreCase);
         var rugCatalog     = inputs?.Rugs      ?? _rugSvc.GetAllEnabled();
         var roomTypes      = inputs?.RoomTypes ?? _roomTypeSvc.GetAll();
 
@@ -204,6 +220,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 { log.Add($"[SKIP] '{room.Name}' / InternalName='{room.InternalName}' (floor {sel.FloorIndex}): no RoomTypeConfig for '{typeName}'."); continue; }
 
                 var config = roomTypes[configKey];
+
+                // Only tiles allowed in this room type (RoomTypes empty = everywhere). FilterTiles
+                // already checks this for a slot's base pool, but orientation/corner/tile-group
+                // lookups search the VariantGroup's siblings in this set — a group whose corner
+                // pieces are untagged must not swap in a straight piece tagged for another room.
+                if (!roomTilesCache.TryGetValue(configKey, out var allTiles))
+                    roomTilesCache[configKey] = allTiles = enabledTiles
+                        .Where(kv => kv.Value.RoomTypes.Count == 0
+                                  || kv.Value.RoomTypes.Any(rt => rt.Equals(configKey, StringComparison.OrdinalIgnoreCase)))
+                        .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
                 // PathStyle: Pfad neu berechnen wenn er vom Standard "wall" abweicht.
                 // Beim Upload werden Pfade mit "wall" vorberechnet; für andere Stile
@@ -300,6 +326,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     var blockedFrontCells   = new HashSet<(int, int)>();
                     var frontExemptCells    = new HashSet<(int, int)>(); // FloorFurniture ohne Kollision, s. IsFloorFurnitureNoCollision
                     var floorLayerOccupied  = new HashSet<(int, int)>(); // alle FloorFurniture-Layer-Zellen, s. FitsFootprint
+                    var highOccupied        = new HashSet<(int, int)>(); // alle Zellen mit IsHigh-Tile, s. HighCellTaken
                     var cellPropertyGates   = new Dictionary<(int, int), HashSet<string>>();
                     var reservedZoneCells   = new HashSet<(int, int)>();
 
@@ -396,7 +423,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 
                     // 3. Slot selection
                     var activeLayoutSlotIds = BuildLayoutSlotFilter(config, layoutVariant, log);
-                    var slotsBase = SelectSlots(config, roomSize, rng, log, allTiles, configKey, density, activeLayoutSlotIds, rugCatalog, roomCells);
+                    var groupAlternates = new Dictionary<string, List<RoomTypeSlot>>(StringComparer.OrdinalIgnoreCase);
+                    var slotsBase = SelectSlots(config, roomSize, rng, log, allTiles, configKey, density, activeLayoutSlotIds, rugCatalog, roomCells, groupAlternates);
 
                     // Pool count-step ceiling for the fallback (non-backtracking) placement pass
                     // below — mirrors TryPlaceCompositeLayout's countStep loop so a room that
@@ -421,7 +449,15 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     // independent slots (see SelectSlots) can never sequence a dependent slot
                     // ahead of the slot/group it requires. Ordering among independent slots is
                     // preserved unchanged by ExpandLayoutSlotSequence's stable ThenBy(index) sort.
-                    void PlaceOrderedSlot(RoomTypeSlot slot, HashSet<(int, int)>? decorPathCellsForSlot)
+                    // Slot instances skipped because their requiresSlot/anchor target wasn't placed —
+                    // retried when a group fallback places that target later (see PlaceWithGroupFallback).
+                    var skippedForDependency = new List<(RoomTypeSlot slot, HashSet<(int, int)>? pathCells)>();
+                    bool DependencyMissing(RoomTypeSlot slot) =>
+                        (!string.IsNullOrEmpty(slot.RequiresSlot) && !anchorMap.ContainsKey(slot.RequiresSlot))
+                        || HasUnresolvedDependentAnchor(slot, anchorMap.ContainsKey);
+
+                    // Returns false if the slot was skipped because a dependency isn't placed.
+                    bool PlaceOrderedSlot(RoomTypeSlot slot, HashSet<(int, int)>? decorPathCellsForSlot)
                     {
                         // Abhängigkeitsprüfung: requiresSlot = Slot oder SlotGroupId muss zuvor
                         // erfolgreich platziert worden sein (Eintrag in anchorMap).
@@ -429,18 +465,58 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             && !anchorMap.ContainsKey(slot.RequiresSlot))
                         {
                             log.Add($"  [SKIP] '{slot.Id}': requiresSlot='{slot.RequiresSlot}' wurde nicht platziert");
-                            return;
+                            skippedForDependency.Add((slot, decorPathCellsForSlot));
+                            return false;
                         }
                         if (HasUnresolvedDependentAnchor(slot, anchorMap.ContainsKey))
                         {
                             log.Add($"  [SKIP] '{slot.Id}': kein anchorTarget von requiresSlot='{slot.RequiresSlot}' wurde platziert");
-                            return;
+                            skippedForDependency.Add((slot, decorPathCellsForSlot));
+                            return false;
                         }
                         PlaceSlot(slot, sel.FloorIndex, roomCells, cellWalls, doorCells, windowCells,
-                            pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, floorLayerOccupied, allTiles, rugCatalog, anchorMap, anchorUseCounts, colorMap, variantMap, config,
+                            pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, floorLayerOccupied, highOccupied, allTiles, rugCatalog, anchorMap, anchorUseCounts, colorMap, variantMap, config,
                             sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow,
                             placements, log, rng, configKey, innerWallKeys, mainSubRoomCells, openingGroups, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCellsForSlot,
                             stairEndCells: stairCells.ends, narrowCells: narrowCells);
+                        return true;
+                    }
+
+                    // Places a slot list in order. When the last instance of a one-of group winner
+                    // is done and none of its instances placed, the group's other variants are tried
+                    // in its place (e.g. a shower when the bathtub doesn't fit), then any slot that
+                    // was skipped because it depended on the now-placed variant is retried.
+                    void PlaceWithGroupFallback(List<RoomTypeSlot> slots, HashSet<(int, int)>? decorPathCellsForSlots)
+                    {
+                        var lastIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                        for (int i = 0; i < slots.Count; i++) lastIndex[slots[i].Id] = i;
+
+                        for (int i = 0; i < slots.Count; i++)
+                        {
+                            var slot = slots[i];
+                            if (!PlaceOrderedSlot(slot, decorPathCellsForSlots)) continue;
+                            if (lastIndex[slot.Id] != i || anchorMap.ContainsKey(slot.Id)
+                                || !groupAlternates.TryGetValue(slot.Id, out var alternates))
+                                continue;
+
+                            foreach (var alt in alternates)
+                            {
+                                if (!alt.CountBySize.TryGetValue(roomSize, out var cnt)) continue;
+                                int count = Math.Max(cnt.Min, 1);
+                                log.Add($"  [GROUP-FALLBACK] '{slot.SlotGroupId}': '{slot.Id}' placed nothing, trying '{alt.Id}' ({count}×)");
+                                for (int n = 0; n < count; n++)
+                                    PlaceOrderedSlot(alt, decorPathCellsForSlots);
+                                if (anchorMap.ContainsKey(alt.Id)) break;
+                            }
+
+                            var retry = skippedForDependency.Where(x => !DependencyMissing(x.slot)).ToList();
+                            foreach (var x in retry)
+                            {
+                                skippedForDependency.Remove(x);
+                                log.Add($"  [GROUP-FALLBACK] retrying '{x.slot.Id}' (dependency now placed)");
+                                PlaceOrderedSlot(x.slot, x.pathCells);
+                            }
+                        }
                     }
 
                     if (gridState is not null)
@@ -450,6 +526,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         physicalOccupied.UnionWith(gridState.PhysicalOccupied);
                         blockedFrontCells.UnionWith(gridState.BlockedFrontCells);
                         frontExemptCells.UnionWith(gridState.FrontExemptCells);
+                        highOccupied.UnionWith(gridState.HighCells);
                         foreach (var p in gridState.Placements)
                             if (p.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
                                 floorLayerOccupied.Add((p.Col, p.Row));
@@ -458,11 +535,15 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     }
 
                     // Grid anchors / tile-group locks; re-applied after every countStep reset below.
+                    // Anchor-group order is rolled once, so every countStep retry sees the same order.
+                    var gridAnchorGroups = gridState is null ? null : GridAnchorGroupMembers(config, gridState, rng);
                     void SeedGridAnchors()
                     {
                         if (gridState is null) return;
                         foreach (var (key, entry) in gridState.AnchorMap)
                             anchorMap[key] = [entry];
+                        foreach (var (key, members) in gridAnchorGroups!)
+                            anchorMap[key] = [.. members];
                         foreach (var (key, vg) in gridState.VariantMap)
                             variantMap[key] = vg;
                     }
@@ -477,6 +558,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     var blockedFrontCellsSnap = new HashSet<(int, int)>(blockedFrontCells);
                     var frontExemptCellsSnap  = new HashSet<(int, int)>(frontExemptCells);
                     var floorLayerOccupiedSnap = new HashSet<(int, int)>(floorLayerOccupied);
+                    var highOccupiedSnap      = new HashSet<(int, int)>(highOccupied);
                     var cellPropertyGatesSnap = cellPropertyGates.ToDictionary(kv => kv.Key, kv => new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase));
                     var placementsCountBefore = placements.Count;
 
@@ -490,6 +572,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             blockedFrontCells.Clear(); blockedFrontCells.UnionWith(blockedFrontCellsSnap);
                             frontExemptCells.Clear(); frontExemptCells.UnionWith(frontExemptCellsSnap);
                             floorLayerOccupied.Clear(); floorLayerOccupied.UnionWith(floorLayerOccupiedSnap);
+                            highOccupied.Clear(); highOccupied.UnionWith(highOccupiedSnap);
                             cellPropertyGates.Clear();
                             foreach (var kv in cellPropertyGatesSnap) cellPropertyGates[kv.Key] = new HashSet<string>(kv.Value, StringComparer.OrdinalIgnoreCase);
                             anchorMap.Clear();
@@ -506,17 +589,17 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             ? [..slotsBase, ..poolSlots.Select(s => (s, 1))]
                             : slotsBase;
 
-                        var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace);
+                        var orderedRoomSlots = ExpandLayoutSlotSequence(slotsToPlace, out var placeLastRoomSlotIds);
                         var structuralRoomSlots = orderedRoomSlots;
                         var decorRoomSlots = new List<RoomTypeSlot>();
                         if (config.UsePostPlacementPathAvoidance)
                         {
-                            structuralRoomSlots = orderedRoomSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
-                            decorRoomSlots = orderedRoomSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                            structuralRoomSlots = orderedRoomSlots.Where(s => !placeLastRoomSlotIds.Contains(s.Id) && !IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
+                            decorRoomSlots = orderedRoomSlots.Where(s => placeLastRoomSlotIds.Contains(s.Id) || IsFreestandingDecorSlot(s, allTiles, configKey)).ToList();
                         }
 
-                        foreach (var slot in structuralRoomSlots)
-                            PlaceOrderedSlot(slot, null);
+                        skippedForDependency.Clear();
+                        PlaceWithGroupFallback(structuralRoomSlots, null);
 
                         if (decorRoomSlots.Count > 0)
                         {
@@ -526,8 +609,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             var decorPathCells = ComputePostPlacementPathCells(roomCells, doorCells, physicalOccupied);
                             if (decorPathCells.Count > 0)
                                 log.Add($"  [PATH] post-placement path ({decorPathCells.Count} cells) applied to {decorRoomSlots.Count} freestanding decor slot(s)");
-                            foreach (var slot in decorRoomSlots)
-                                PlaceOrderedSlot(slot, decorPathCells.Count > 0 ? decorPathCells : null);
+                            PlaceWithGroupFallback(decorRoomSlots, decorPathCells.Count > 0 ? decorPathCells : null);
                         }
 
                         var missingRequired = poolSlots.Where(s => s.Required).Count(s => !anchorMap.ContainsKey(s.Id));
@@ -596,7 +678,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         IReadOnlyDictionary<string, TileDefinition> allTiles, string roomTypeName,
         double density = 1.0, IReadOnlyCollection<string>? allowedSlotIds = null,
         IReadOnlyDictionary<string, RugDefinition>? rugCatalog = null,
-        HashSet<(int, int)>? roomCells = null)
+        HashSet<(int, int)>? roomCells = null,
+        Dictionary<string, List<RoomTypeSlot>>? groupAlternates = null)
     {
         var result       = new List<(RoomTypeSlot, int)>();
         var groupWinners = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -653,6 +736,17 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             foreach (var v in variants) { acc += v.GroupWeight; if (roll < acc) { winner = v; break; } }
             groupWinners.Add(winner.Id);
             log.Add($"  [GROUP] '{grp.Key}': chose '{winner.Id}' ({winner.GroupWeight}/{totalW})");
+
+            // Losing variants, tried in place of the winner if it can't be placed (see
+            // PlaceWithGroupFallback). Deterministic order (weight desc, then config order) —
+            // no extra RNG draws, so seeds reproduce unless the fallback actually triggers.
+            if (groupAlternates is not null)
+                groupAlternates[winner.Id] = variants
+                    .Where(v => v != winner)
+                    .Select((v, i) => (v, i))
+                    .OrderByDescending(t => t.v.GroupWeight).ThenBy(t => t.i)
+                    .Select(t => t.v)
+                    .ToList();
         }
 
         // Eligible = ungrouped + group winners; required first, then by priority.
@@ -821,6 +915,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         public HashSet<(int, int)> ReservedZoneCells { get; }
         /// <summary>Read-only 1-wide cells only wall/floor-layer tiles may use — see FitsFootprint.</summary>
         public HashSet<(int, int)>? NarrowCells { get; init; }
+        /// <summary>Wall-layer cells already hung on (cell + layer) — see WallFaceTaken.</summary>
+        public HashSet<(int, int, string)> WallFaces { get; init; } = [];
+        /// <summary>Cells already holding an IsHigh tile — see HighCellTaken.</summary>
+        public HashSet<(int, int)> HighCells { get; init; } = [];
+        /// <summary>Read-only cells holding this room's grid pieces — exempt from KeepSightClear (see SightLaneClear).</summary>
+        public HashSet<(int, int)> GridCells { get; init; } = [];
         public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
         public Dictionary<string, string> ColorMap { get; }
         public Dictionary<string, string> VariantMap { get; }
@@ -870,7 +970,137 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             new List<(string SlotId, string TileId, string Orient, int Col, int Row)>(SlotPlacements))
         {
             NarrowCells = NarrowCells, // read-only, shared reference is safe
+            WallFaces = new HashSet<(int, int, string)>(WallFaces),
+            HighCells = new HashSet<(int, int)>(HighCells),
+            GridCells = GridCells, // read-only after seeding, shared reference is safe
         };
+    }
+
+    /// <summary>
+    /// Key of a wall-layer piece's cell occupancy: its layer. Pictures, wall shelves and hanging
+    /// cabinets on the same layer can't share a cell, even when the slot doesn't block placement
+    /// (it then never enters occupied) — and that includes both walls of a corner cell, since a
+    /// cell holds one tile per layer. A piece on another wall layer stays allowed.
+    /// </summary>
+    private static string? WallFaceKey(TileDefinition tile) =>
+        tile.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase)
+            ? tile.Layer.ToLowerInvariant()
+            : null;
+
+    private static bool WallFaceTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
+        HashSet<(int, int, string)>? wallFaces)
+    {
+        if (wallFaces is not { Count: > 0 } || WallFaceKey(tile) is not { } key) return false;
+        for (int r = 0; r < fpH; r++)
+            for (int c = 0; c < fpW; c++)
+                if (wallFaces.Contains((col + c, row + r, key))) return true;
+        return false;
+    }
+
+    /// <summary>
+    /// A cell's high band holds one piece: an IsHigh tile can't share a cell with another IsHigh
+    /// tile on any layer, even when the first one's slot doesn't block placement (a picture never
+    /// enters occupied). Tiles without IsHigh are unaffected.
+    /// </summary>
+    private static bool HighCellTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
+        HashSet<(int, int)>? highOccupied)
+    {
+        if (!tile.IsHigh || highOccupied is not { Count: > 0 }) return false;
+        for (int r = 0; r < fpH; r++)
+            for (int c = 0; c < fpW; c++)
+                if (highOccupied.Contains((col + c, row + r))) return true;
+        return false;
+    }
+
+    /// <summary>The high cells an anchored piece must avoid: all but its own anchor's (shower wall on its shower).</summary>
+    private static HashSet<(int, int)> HighCellsExceptAnchor(HashSet<(int, int)> highOccupied, int col, int row, int fpW, int fpH)
+    {
+        if (highOccupied.Count == 0) return highOccupied;
+        var cells = new HashSet<(int, int)>(highOccupied);
+        for (int r = 0; r < fpH; r++)
+            for (int c = 0; c < fpW; c++)
+                cells.Remove((col + c, row + r));
+        return cells;
+    }
+
+    /// <summary>Cells within n of the footprint (diagonals included), the footprint itself excluded.</summary>
+    private static IEnumerable<(int, int)> ClearanceRing(int col, int row, int fpW, int fpH, int n)
+    {
+        for (int r = row - n; r < row + fpH + n; r++)
+            for (int c = col - n; c < col + fpW + n; c++)
+                if (c < col || c >= col + fpW || r < row || r >= row + fpH)
+                    yield return (c, r);
+    }
+
+    /// <summary>
+    /// slot.Clearance: every ring cell is a free room cell and no inner wall runs through the
+    /// footprint + ring — the piece stands free with walkable space all around.
+    /// </summary>
+    private static bool ClearanceRingOk(int col, int row, int fpW, int fpH, int n,
+        HashSet<(int, int)> roomCells, HashSet<(int, int)> occupied, HashSet<(int, int)>? softOccupied,
+        HashSet<(int, int)> physicalOccupied, HashSet<string>? innerWallKeys)
+    {
+        if (n <= 0) return true;
+        foreach (var cell in ClearanceRing(col, row, fpW, fpH, n))
+            if (!roomCells.Contains(cell) || occupied.Contains(cell) || physicalOccupied.Contains(cell)
+                || softOccupied?.Contains(cell) == true)
+                return false;
+        if (innerWallKeys is { Count: > 0 })
+        {
+            int c0 = col - n, r0 = row - n, w = fpW + 2 * n, h = fpH + 2 * n;
+            for (int r = 0; r < h; r++)
+                for (int c = 1; c < w; c++)
+                    if (innerWallKeys.Contains($"V:{c0 + c},{r0 + r}")) return false;
+            for (int r = 1; r < h; r++)
+                for (int c = 0; c < w; c++)
+                    if (innerWallKeys.Contains($"H:{c0 + c},{r0 + r}")) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Cells between an anchor's front edge and the piece placed opposite it (oppositeWall),
+    /// across the piece's width — e.g. the view from the sofa to the TV.
+    /// </summary>
+    private static List<(int, int)> SightLane(int ac, int ar, int aw, int ah, string anchorOrient,
+        int dc, int dr, int dw, int dh)
+    {
+        var lane = new List<(int, int)>();
+        switch (anchorOrient)
+        {
+            case "N": for (int r = dr + dh; r < ar; r++) for (int c = dc; c < dc + dw; c++) lane.Add((c, r)); break;
+            case "S": for (int r = ar + ah; r < dr; r++) for (int c = dc; c < dc + dw; c++) lane.Add((c, r)); break;
+            case "W": for (int c = dc + dw; c < ac; c++) for (int r = dr; r < dr + dh; r++) lane.Add((c, r)); break;
+            case "E": for (int c = ac + aw; c < dc; c++) for (int r = dr; r < dr + dh; r++) lane.Add((c, r)); break;
+        }
+        return lane;
+    }
+
+    /// <summary>KeepSightClear: no colliding piece in the lane except the anchor's own grid pieces (coffee table).</summary>
+    private static bool SightLaneClear(List<(int, int)> lane, HashSet<(int, int)> physicalOccupied, HashSet<(int, int)>? gridCells) =>
+        lane.All(c => !physicalOccupied.Contains(c) || gridCells?.Contains(c) == true);
+
+    /// <summary>Cells holding a grid piece in this room (grid ids prefix their pieces' slot ids).</summary>
+    private static HashSet<(int, int)> CollectGridCells(IEnumerable<PlacedFurnitureItem> placements, RoomTypeConfig config, int floorIndex, int roomIndex1Based)
+    {
+        var cells = new HashSet<(int, int)>();
+        if (config.Grids.Count == 0) return cells;
+        foreach (var p in placements)
+            if (p.FloorIndex == floorIndex && p.RoomIndex1Based == roomIndex1Based
+                && config.Grids.Any(g => p.SlotId.StartsWith(g.Id + "_", StringComparison.OrdinalIgnoreCase)))
+                cells.Add((p.Col, p.Row));
+        return cells;
+    }
+
+    /// <summary>Wall-layer cells of this room's placements so far (greedy pass, which has no state object).</summary>
+    private static HashSet<(int, int, string)> CollectWallFaces(List<PlacedFurnitureItem> placements, int floorIndex, int roomIndex1Based)
+    {
+        var faces = new HashSet<(int, int, string)>();
+        foreach (var p in placements)
+            if (p.FloorIndex == floorIndex && p.RoomIndex1Based == roomIndex1Based
+                && p.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase))
+                faces.Add((p.Col, p.Row, p.Layer.ToLowerInvariant()));
+        return faces;
     }
 
     private sealed record LayoutPlacementCandidate(
@@ -878,7 +1108,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         int Row,
         string Orient,
         TileDefinition Tile,
-        string EffectiveColorGroup);
+        string EffectiveColorGroup,
+        IReadOnlyList<(int, int)>? KeepClearCells = null); // e.g. a KeepSightClear lane, kept clear on commit
 
     private static bool TryPlaceCompositeLayout(
         RoomTypeConfig config,
@@ -1039,7 +1270,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         out int visitedNodes,
         LayoutPlacementState? seedState = null)
     {
-        var orderedSlots = ExpandLayoutSlotSequence(slotsToPlace);
+        var orderedSlots = ExpandLayoutSlotSequence(slotsToPlace, out var placeLastSlotIds);
         var initialState = seedState?.Clone() ?? new LayoutPlacementState(
             new HashSet<(int, int)>(),
             new HashSet<(int, int)>(),
@@ -1067,8 +1298,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         var decorSlots = new List<RoomTypeSlot>();
         if (config.UsePostPlacementPathAvoidance)
         {
-            structuralSlots = orderedSlots.Where(s => !IsFreestandingDecorSlot(s, allTiles, roomTypeName)).ToList();
-            decorSlots = orderedSlots.Where(s => IsFreestandingDecorSlot(s, allTiles, roomTypeName)).ToList();
+            structuralSlots = orderedSlots.Where(s => !placeLastSlotIds.Contains(s.Id) && !IsFreestandingDecorSlot(s, allTiles, roomTypeName)).ToList();
+            decorSlots = orderedSlots.Where(s => placeLastSlotIds.Contains(s.Id) || IsFreestandingDecorSlot(s, allTiles, roomTypeName)).ToList();
         }
 
         visitedNodes = 0;
@@ -1145,7 +1376,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         return true;
     }
 
-    private static List<RoomTypeSlot> ExpandLayoutSlotSequence(List<(RoomTypeSlot slot, int count)> slotsToPlace)
+    private static List<RoomTypeSlot> ExpandLayoutSlotSequence(List<(RoomTypeSlot slot, int count)> slotsToPlace, out HashSet<string> placeLastSlotIds)
     {
         var indexed = slotsToPlace
             .Select((entry, index) => new { entry.slot, entry.count, index })
@@ -1214,12 +1445,44 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             return depth;
         }
 
+        // Clearance slots (billiard) and everything hanging off them go last within their
+        // bucket, so anchored pieces (TV + its kept-clear sight lane) reserve their space first.
+        var lateCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        bool IsLate(RoomTypeSlot slot, HashSet<string> visiting) =>
+            OwnOrInherited(slot, s => s.Clearance > 0, lateCache, visiting);
+
+        // PlaceLast slots (pictures, posters) and everything hanging off them go after all other
+        // slots, required ones included.
+        var placeLastCache = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        bool IsPlacedLast(RoomTypeSlot slot, HashSet<string> visiting) =>
+            OwnOrInherited(slot, s => s.PlaceLast, placeLastCache, visiting);
+
+        bool OwnOrInherited(RoomTypeSlot slot, Func<RoomTypeSlot, bool> own, Dictionary<string, bool> cache, HashSet<string> visiting)
+        {
+            if (own(slot)) return true;
+            if (string.IsNullOrWhiteSpace(slot.Id)) return false;
+            if (cache.TryGetValue(slot.Id, out var cached)) return cached;
+            if (!visiting.Add(slot.Id)) return false;
+            bool inherited = slot.AnchorRules.Select(r => r.AnchorTarget).Append(slot.RequiresSlot)
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .Any(t => ResolveSlot(t) is { } parent && OwnOrInherited(parent, own, cache, visiting));
+            visiting.Remove(slot.Id);
+            return cache[slot.Id] = inherited;
+        }
+
+        placeLastSlotIds = indexed
+            .Where(x => IsPlacedLast(x.slot, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
+            .Select(x => x.slot.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         // Required slots always go before optional ones, full stop — depth/priority/index only
         // break ties within each bucket. Without this, a required slot with a dependency (e.g.
         // an anchored corner counter, depth>0) could sort after an unrelated optional slot
         // (depth 0), letting the optional slot grab a cell the required one geometrically needs.
         return indexed
-            .OrderByDescending(x => x.slot.Required)
+            .OrderBy(x => IsPlacedLast(x.slot, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
+            .ThenByDescending(x => x.slot.Required)
+            .ThenBy(x => IsLate(x.slot, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
             .ThenBy(x => ComputeDepth(x.slot, new HashSet<string>(StringComparer.OrdinalIgnoreCase)))
             .ThenBy(x => x.index)
             .SelectMany(x => Enumerable.Range(0, x.count).Select(_ => x.slot))
@@ -1310,6 +1573,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     AllowedCategories  = rs is not null
                         ? new Dictionary<string, int> { [rs.Category] = rs.Weight }
                         : new Dictionary<string, int>(pool.DefaultCategories),
+                    AllowedThemes      = [..pool.AllowedThemes],
                     PlacementRules     = pool.PlacementRules,
                     RequiredLayer      = layer,
                     RequiredProperties = rs is not null ? [..rs.RequiredProperties] : [..pool.RequiredProperties],
@@ -1320,6 +1584,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     SoftBlocks         = rs?.SoftBlocks ?? pool.SoftBlocks,
                     CellRequiredProperties = rs is not null ? [..rs.CellRequiredProperties] : [..pool.CellRequiredProperties],
                     ColorGroupId       = pool.ColorGroupId,
+                    UseColorHarmony    = pool.UseColorHarmony,
                     MaterialGroupId    = pool.MaterialGroupId,
                     TileGroupId        = pool.TileGroupId,
                     SlotGroupId        = string.Empty,
@@ -1347,6 +1612,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         Label             = c.Label,
                         Footprint         = new SlotFootprint { Width = 1, Height = 1, CanRotate = false },
                         AllowedCategories = c.AllowedCategories,
+                        AllowedThemes     = c.AllowedThemes,
                         RequiredLayer     = c.RequiredLayer,
                         RequiredProperties = c.RequiredProperties,
                     }, roomTypeName).Count > 0;
@@ -1400,6 +1666,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             Priority           = 0,
                             CountBySize        = [],
                             AllowedCategories  = new Dictionary<string, int>(c.AllowedCategories),
+                            AllowedThemes      = [..c.AllowedThemes],
                             PlacementRules     = pool.PlacementRules,
                             RequiredLayer      = c.RequiredLayer,
                             RequiredProperties = [..c.RequiredProperties],
@@ -1410,6 +1677,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                             SoftBlocks         = c.SoftBlocks,
                             CellRequiredProperties = [..c.CellRequiredProperties],
                             ColorGroupId       = string.Empty,
+                            UseColorHarmony    = pool.UseColorHarmony,
                             MaterialGroupId    = string.Empty,
                             TileGroupId        = c.TileGroupId,
                             RequireTileGroupMatch = c.RequireTileGroupMatch,
@@ -1619,6 +1887,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         if (tilePool.Count == 0)
             return [];
 
+        tilePool = ApplyInstanceVariety(tilePool, slot,
+            state.SlotPlacements.Where(sp => sp.SlotId.Equals(slot.Id, StringComparison.OrdinalIgnoreCase)).Select(sp => sp.TileId),
+            tilePool, log: null);
         var orderedTiles = OrderTileCandidatesForLayout(tilePool, slot, rng);
         var result = new List<LayoutPlacementCandidate>();
 
@@ -1642,6 +1913,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     for (int c = 0; c < anchorInfo.fpW; c++)
                         effectiveSoftOccupied.Remove((anchorInfo.col + c, anchorInfo.row + r));
             }
+            var effectiveHighCells = HighCellsExceptAnchor(state.HighCells, anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH);
 
             // Connectivity inputs for the anchored candidates below — fixed for this search node.
             // Protected cells cost a flood fill, so only computed if a candidate gets that far
@@ -1676,7 +1948,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         int fpW = finalTile.TileLayout.Count > 0 ? (finalTile.TileLayout[0]?.Count ?? 1) : 1;
                         int fpH = finalTile.TileLayout.Count;
                         var pos = ComputeOpenSidePosition(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, fpW, fpH, side);
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: effectiveHighCells))
                             result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
                     }
 
@@ -1693,6 +1965,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     int maxDist = anchorRule.MaxOppositeWallDistance is int maxCfg && maxCfg > 0
                         ? Math.Max(minDist, maxCfg)
                         : int.MaxValue;
+                    // Inside spots don't touch a wall — NearWall would veto them (the greedy
+                    // anchored path never requires a wall touch, so this keeps both paths alike).
+                    var oppositeRules = anchorRule.OppositeWallAllowInside && rules.NearWall
+                        ? new PlacementRules
+                        {
+                            NearWall = false, NearDoor = rules.NearDoor, NearWindow = rules.NearWindow,
+                            CenterRoom = rules.CenterRoom, CornerOnly = rules.CornerOnly, AvoidCorners = rules.AvoidCorners,
+                            AllowOnPath = rules.AllowOnPath, MainSubRoom = rules.MainSubRoom, WallAlignment = rules.WallAlignment,
+                        }
+                        : rules;
                     foreach (var pos in ComputeOppositeWallCandidates(
                                  anchorInfo.col,
                                  anchorInfo.row,
@@ -1704,10 +1986,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                                  minDist,
                                  maxDist,
                                  roomCells,
-                                 innerWallKeys))
+                                 innerWallKeys,
+                                 anchorRule.OppositeWallAllowInside))
                     {
-                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
-                            result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup));
+                        var lane = anchorRule.KeepSightClear
+                            ? SightLane(anchorInfo.col, anchorInfo.row, anchorInfo.fpW, anchorInfo.fpH, anchorInfo.orient, pos.col, pos.row, fpW, fpH)
+                            : null;
+                        if (lane is not null && !SightLaneClear(lane, state.PhysicalOccupied, state.GridCells))
+                            continue;
+                        if (IsValidAnchoredPlacement(slot, pos.col, pos.row, fpW, fpH, orient, finalTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: oppositeRules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: effectiveHighCells))
+                            result.Add(new LayoutPlacementCandidate(pos.col, pos.row, orient, finalTile, effectiveColorGroup, lane));
                     }
 
                     continue;
@@ -1722,7 +2010,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
 
                 var (col, row) = anchoredPos.Value;
-                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells))
+                if (IsValidAnchoredPlacement(slot, col, row, depW, depH, anchoredOrient, anchoredTile, roomCells, cellWalls, doorCells, windowCells, pathCells, state.Occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys, cellPropertyGates: state.CellPropertyGates, reservedZoneCells: state.ReservedZoneCells, frontExemptCells: state.FrontExemptCells, gapCells: gapCells, rulesOverride: rules, effectiveSoftOccupied: effectiveSoftOccupied, entryCells: anchorEntryCells, protectedCells: anchorProtectedCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: effectiveHighCells))
                     result.Add(new LayoutPlacementCandidate(col, row, anchoredOrient, anchoredTile, effectiveColorGroup));
             }
 
@@ -1756,7 +2044,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 state.FrontExemptCells,
                 gapCells,
                 decorPathCells,
-                state.NarrowCells);
+                state.NarrowCells,
+                state.WallFaces,
+                state.HighCells);
             result.AddRange(candidates);
         }
 
@@ -1840,6 +2130,58 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     /// <summary>Palette entry meaning "every colour the group's members can use".</summary>
     private const string AllColorsToken = "*";
 
+    // ── Colour harmony ───────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Reserved colour-map key holding the fallback harmony reference colour: the first chromatic
+    /// colour placed by a Required piece. Not a group id ("~" never appears in configured ids);
+    /// it rides along the colour map through seeding → grids → composite → greedy pass.
+    /// </summary>
+    private const string HarmonyRefKey = "~harmony";
+
+    /// <summary>
+    /// The room's harmony reference colour: the room default group's lock when chromatic,
+    /// otherwise the first chromatic colour of a placed Required piece. Null = no harmony yet.
+    /// </summary>
+    private static (string color, int hue)? ResolveHarmonyReference(RoomTypeConfig config, IReadOnlyDictionary<string, string> colorMap)
+    {
+        if (!config.UseColorHarmony || t_colorHues is not { } hues) return null;
+        if (!string.IsNullOrEmpty(config.ColorGroupId)
+            && colorMap.TryGetValue(config.ColorGroupId, out var main)
+            && ColorHarmony.Hue(main, hues) is { } mainHue)
+            return (main, mainHue);
+        if (colorMap.TryGetValue(HarmonyRefKey, out var fallback) && ColorHarmony.Hue(fallback, hues) is { } fbHue)
+            return (fallback, fbHue);
+        return null;
+    }
+
+    /// <summary>Records the first chromatic colour of a placed Required, harmony-enabled piece as fallback reference.</summary>
+    private static void TrySetHarmonyReference(RoomTypeSlot slot, TileDefinition tile, Dictionary<string, string> colorMap, List<string>? log)
+    {
+        if (!slot.Required || !slot.UseColorHarmony || t_colorHues is not { } hues || colorMap.ContainsKey(HarmonyRefKey)) return;
+        var color = tile.Colors.FirstOrDefault(c => ColorHarmony.Hue(c, hues).HasValue);
+        if (color is null) return;
+        colorMap[HarmonyRefKey] = color;
+        log?.Add($"    [HARMONY] '{slot.Id}': reference colour '{color}' (first chromatic required piece)");
+    }
+
+    /// <summary>
+    /// Narrows <paramref name="candidates"/> to tiles matching the room's harmony reference
+    /// (see ColorHarmony); unchanged when disabled, no reference exists or nothing matches.
+    /// </summary>
+    private static List<TileDefinition> ApplyColorHarmony(List<TileDefinition> candidates, RoomTypeSlot slot,
+        RoomTypeConfig config, IReadOnlyDictionary<string, string> colorMap, List<string>? log)
+    {
+        if (!slot.UseColorHarmony || candidates.Count == 0) return candidates;
+        if (ResolveHarmonyReference(config, colorMap) is not { } reference) return candidates;
+        var filtered = ColorHarmony.Filter(candidates, reference.hue, t_colorHues!, out bool applied);
+        if (filtered.Count != candidates.Count || !applied)
+            log?.Add(applied
+                ? $"    [HARMONY] '{slot.Id}': {filtered.Count}/{candidates.Count} tiles match '{reference.color}'"
+                : $"    [HARMONY] '{slot.Id}': no tile matches '{reference.color}' → full pool");
+        return filtered;
+    }
+
     /// <summary>
     /// Pre-seeds each colour group's lock before any placement, so every member (slot or grid
     /// piece available for this room size) can match it:
@@ -1872,7 +2214,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             .Where(g => !string.IsNullOrEmpty(g.Key))
             .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.OrdinalIgnoreCase);
 
-        var groupIds = members.Keys.Concat(config.ColorPalettes.Keys).Distinct(StringComparer.OrdinalIgnoreCase);
+        // Harmony reference order: room default group first, then groups with a required member
+        // (bed, sofa…) — the first chromatic seed among them becomes the reference the rest match.
+        var groupIds = members.Keys.Concat(config.ColorPalettes.Keys).Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(g => g.Equals(config.ColorGroupId, StringComparison.OrdinalIgnoreCase) ? 0
+                        : (members.GetValueOrDefault(g) ?? []).Any(m => m.Required) ? 1 : 2);
         foreach (var groupId in groupIds)
         {
             // Colour sets per member; members without coloured tiles never conflict and are skipped.
@@ -1920,9 +2266,34 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             else continue; // single coloured member: its first tile may lock freely
 
             if (choices.Count == 0) continue;
+
+            // Secondary groups (all members opted in): keep only colours matching the reference.
+            if (!groupId.Equals(config.ColorGroupId, StringComparison.OrdinalIgnoreCase)
+                && (members.GetValueOrDefault(groupId) ?? []).All(m => m.UseColorHarmony)
+                && ResolveHarmonyReference(config, seeded) is { } reference)
+            {
+                var harmonious = choices
+                    .Where(c => ColorHarmony.Hue(c, t_colorHues!) is not { } h || ColorHarmony.Matches(reference.hue, h))
+                    .ToList();
+                if (harmonious.Count > 0 && harmonious.Count < choices.Count)
+                {
+                    log.Add($"    [HARMONY] group='{groupId}': {harmonious.Count}/{choices.Count} colours match '{reference.color}'");
+                    choices = harmonious;
+                }
+            }
+
             choices.Sort(StringComparer.OrdinalIgnoreCase); // deterministic per seed
             seeded[groupId] = choices[rng.Next(choices.Count)];
             log.Add($"    [COLOR] group='{groupId}' pre-seeded to '{seeded[groupId]}' ({source}: {string.Join(", ", choices)})");
+
+            if (config.UseColorHarmony
+                && ResolveHarmonyReference(config, seeded) is null
+                && (members.GetValueOrDefault(groupId) ?? []).All(m => m.UseColorHarmony)
+                && ColorHarmony.Hue(seeded[groupId], t_colorHues!) is not null)
+            {
+                seeded[HarmonyRefKey] = seeded[groupId];
+                log.Add($"    [HARMONY] reference colour '{seeded[groupId]}' (group '{groupId}')");
+            }
         }
 
         return seeded;
@@ -1956,7 +2327,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 .ToList();
             if (colored.Count > 0)
                 candidates = colored;
+            else
+                candidates = ApplyColorHarmony(candidates, slot, config, state.ColorMap, null);
         }
+        else
+            candidates = ApplyColorHarmony(candidates, slot, config, state.ColorMap, null);
 
         if (!string.IsNullOrEmpty(slot.TileGroupId)
             && state.VariantMap.TryGetValue(slot.TileGroupId, out var requiredVariantGroup)
@@ -2061,7 +2436,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? frontExemptCells = null,
         HashSet<(int, int)>? gapCells = null,
         HashSet<(int, int)>? decorPathCells = null,
-        HashSet<(int, int)>? narrowCells = null)
+        HashSet<(int, int)>? narrowCells = null,
+        HashSet<(int, int, string)>? wallFaces = null,
+        HashSet<(int, int)>? highOccupied = null)
     {
         IEnumerable<(int col, int row)> pool = roomCells;
 
@@ -2119,6 +2496,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     || !FootprintFullyBacked(anchorCol, anchorRow, fpW, fpH, wallDir, resolvedTile, cellWalls, roomCells)))
                     continue;
                 if (!FitsFootprint(anchorCol, anchorRow, fpW, fpH, roomCells, occupied, softOccupied, blockedFrontCells, innerWallKeys, resolvedTile, narrowCells: narrowCells))
+                    continue;
+                if (WallFaceTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, wallFaces))
+                    continue;
+                if (HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied))
+                    continue;
+                if (!ClearanceRingOk(anchorCol, anchorRow, fpW, fpH, slot.Clearance, roomCells, occupied, softOccupied, physicalOccupied, innerWallKeys))
                     continue;
                 if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates))
                     continue;
@@ -2209,7 +2592,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? stairEndCells = null,
         HashSet<(int, int)>? entryCells = null,
         Lazy<HashSet<(int, int)>>? protectedCells = null,
-        HashSet<(int, int)>? narrowCells = null)
+        HashSet<(int, int)>? narrowCells = null,
+        HashSet<(int, int, string)>? wallFaces = null,
+        HashSet<(int, int)>? highOccupied = null)
     {
         // Defaults to slot.PlacementRules (unchanged behavior); callers that want to retry an
         // anchored placement under a FallbackRules entry (see EnumeratePlacementRuleChain) pass
@@ -2223,6 +2608,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // overlap OTHER slots' occupied cells (chairs, a table) instead of being blocked by them —
         // see FitsFootprint's useFloorLayerOccupied branch, same as the plain-path anchored check.
         if (!FitsFootprint(col, row, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, blockedFrontCells, innerWallKeys, tile, floorLayerOccupied, stairEndCells, narrowCells))
+            return false;
+        if (WallFaceTaken(col, row, fpW, fpH, tile, wallFaces))
+            return false;
+        if (HighCellTaken(col, row, fpW, fpH, tile, highOccupied))
+            return false;
+        if (!ClearanceRingOk(col, row, fpW, fpH, slot.Clearance, roomCells, occupied, effectiveSoftOccupied, physicalOccupied, innerWallKeys))
             return false;
         // Anchored orientation (e.g. "match" the anchor's facing) can land on an orientation
         // the tile itself doesn't support — ResolveFinalTileForOrient falls back to the
@@ -2413,6 +2804,18 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         };
     }
 
+    /// <summary>
+    /// <paramref name="t"/> is an orientation/corner variant of <paramref name="baseTile"/>: same
+    /// VariantGroup, Layer and category (Group). A VariantGroup can legitimately span layers (a
+    /// hanging counter shares its floor counter's group so tileGroupId can lock their colours) and
+    /// categories (a sofa set with its footrest, a cabinet/shelf/footrest furniture set) — the base
+    /// tile already passed the slot's layer/category filter, so its variants must match it.
+    /// </summary>
+    private static bool IsOrientSibling(TileDefinition t, TileDefinition baseTile) =>
+        t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
+        t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
+        t.Group.Equals(baseTile.Group, StringComparison.OrdinalIgnoreCase);
+
     private static TileDefinition ResolveFinalTileForOrient(
         TileDefinition baseTile,
         string desiredOrient,
@@ -2420,19 +2823,15 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     {
         if (string.IsNullOrEmpty(baseTile.VariantGroup)) return baseTile;
 
-        // Same VariantGroup can legitimately be shared across layers (e.g. a hanging counter's
-        // Wallfurniture tile shares its floor counter's VariantGroup so tileGroupId can lock them
-        // to matching colors) — Layer must also match, or this can silently swap in a tile from a
-        // completely different layer just because the orientation happened to fit.
+        // Only true siblings (IsOrientSibling), or this can silently swap in a tile from another
+        // layer or category just because the orientation happened to fit.
         var exact = allTiles.Values.FirstOrDefault(t =>
-            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
-            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
+            IsOrientSibling(t, baseTile) &&
             OrientMatches(t, desiredOrient));
         if (exact is not null) return exact;
 
         var byAllowedOrient = allTiles.Values.FirstOrDefault(t =>
-            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
-            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
+            IsOrientSibling(t, baseTile) &&
             AllowedOrientsMatch(t, desiredOrient));
         if (byAllowedOrient is not null) return byAllowedOrient;
 
@@ -2442,8 +2841,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                                          || o.Equals("W", StringComparison.OrdinalIgnoreCase);
 
         var axisFallback = allTiles.Values.FirstOrDefault(t =>
-            t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
-            t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase) &&
+            IsOrientSibling(t, baseTile) &&
             ((IsNorthSouth(desiredOrient) && IsNorthSouth(t.Orientation)) ||
              (IsEastWest(desiredOrient) && IsEastWest(t.Orientation))));
 
@@ -2489,6 +2887,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     state.PhysicalOccupied.Add((candidate.Col + c, candidate.Row + r));
                 else if (IsFloorFurnitureNoCollision(candidate.Tile))
                     state.FrontExemptCells.Add((candidate.Col + c, candidate.Row + r));
+                if (WallFaceKey(candidate.Tile) is { } faceKey)
+                    state.WallFaces.Add((candidate.Col + c, candidate.Row + r, faceKey));
+                if (candidate.Tile.IsHigh)
+                    state.HighCells.Add((candidate.Col + c, candidate.Row + r));
                 if (!slot.BlocksPlacement && slot.CellRequiredProperties.Count > 0)
                 {
                     var cell = (candidate.Col + c, candidate.Row + r);
@@ -2502,6 +2904,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         if (slot.BlocksFrontCell)
             foreach (var fc in FrontCells(candidate.Col, candidate.Row, fpW, fpH, candidate.Orient))
                 state.BlockedFrontCells.Add(fc);
+        if (slot.Clearance > 0)
+            state.BlockedFrontCells.UnionWith(ClearanceRing(candidate.Col, candidate.Row, fpW, fpH, slot.Clearance));
+        if (candidate.KeepClearCells is { } keepClear)
+            state.BlockedFrontCells.UnionWith(keepClear);
 
         if (candidate.Tile.IsLootContainer)
             foreach (var fc in FrontCells(candidate.Col, candidate.Row, fpW, fpH, candidate.Orient))
@@ -2519,6 +2925,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             if (!string.IsNullOrEmpty(firstColor))
                 state.ColorMap[candidate.EffectiveColorGroup] = firstColor;
         }
+        TrySetHarmonyReference(slot, candidate.Tile, state.ColorMap, null);
 
         if (!string.IsNullOrEmpty(slot.TileGroupId) &&
             !state.VariantMap.ContainsKey(slot.TileGroupId) &&
@@ -2557,6 +2964,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> physicalOccupied,
         HashSet<(int, int)> blockedFrontCells,
         HashSet<(int, int)> floorLayerOccupied,
+        HashSet<(int, int)> highOccupied,
         IReadOnlyDictionary<string, TileDefinition> allTiles,
         IReadOnlyDictionary<string, RugDefinition> rugCatalog,
         Dictionary<string, List<(int col, int row, int fpW, int fpH, string orient)>> anchorMap,
@@ -2580,6 +2988,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? stairEndCells = null,
         HashSet<(int, int)>? narrowCells = null)
     {
+        var wallFaces = CollectWallFaces(placements, floorIndex, roomIndex1Based);
+
         // matchAnchorCluster rugs (e.g. a dining rug sized to table+chairs) resolve their target
         // size/position from the anchor parent's placed cluster instead of slot.Footprint/anchorRules
         // — computed up front so it can override BuildRugCandidates' sizing below, and reused again
@@ -2626,6 +3036,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // orientation variant re-search (ResolveVariantForCell) needs to keep respecting this
         // same color lock, not just the initial candidate filter (see requiredColor param there).
         string? requiredColor = null;
+        bool colorLockApplied = false;
         if (!string.IsNullOrEmpty(effectiveColorGroup)
             && colorMap.TryGetValue(effectiveColorGroup, out var lockedColor)
             && !string.IsNullOrEmpty(lockedColor))
@@ -2636,11 +3047,17 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 .ToList();
             if (colored.Count > 0)
             {
+                log.Add($"    [COLOR] '{slot.Id}': group='{effectiveColorGroup}' → filter '{requiredColor}' ({colored.Count}/{candidates.Count} tiles)");
                 candidates = colored;
-                log.Add($"    [COLOR] '{slot.Id}': group='{effectiveColorGroup}' → filter '{requiredColor}' ({colored.Count}/{candidates.Count + colored.Count - colored.Count} tiles)");
+                colorLockApplied = true;
             }
             // else: kein Match → ungefilterten Pool behalten (Slot wird nicht verworfen)
         }
+
+        // ── Farbharmonie ───────────────────────────────────────────────────────
+        // Without an effective group lock, prefer colours matching the room's reference colour.
+        if (!colorLockApplied)
+            candidates = ApplyColorHarmony(candidates, slot, config, colorMap, log);
 
         // ── TileGroup-Filter ───────────────────────────────────────────────────
         // Erzwingt gleichen VariantGroup-Wert für alle Slots mit derselben TileGroupId.
@@ -2683,6 +3100,13 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             // else: kein Match → ungefilterten Pool behalten (Slot wird nicht verworfen)
         }
 
+        // ── Instanz-Vielfalt ───────────────────────────────────────────────────
+        candidates = ApplyInstanceVariety(candidates, slot,
+            placements.Where(p => p.FloorIndex == floorIndex && p.RoomIndex1Based == roomIndex1Based
+                               && p.SlotId.Equals(slot.Id, StringComparison.OrdinalIgnoreCase))
+                      .Select(p => p.TileId),
+            allTiles.Values, log);
+
         // Resolve anchor rule
         (int col, int row, int fpW, int fpH, string orient)? anchorInfo = null;
         string?      anchorPos        = null;
@@ -2691,6 +3115,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         int     anchorOffset     = 0;      // offsetAlongAnchor für LongSide/ShortSide
         int?    anchorMinOppositeWallDistance = null;
         int?    anchorMaxOppositeWallDistance = null;
+        bool    anchorOppositeWallAllowInside = false;
+        bool    anchorKeepSightClear = false;
+        List<(int, int)>? sightLaneToKeep = null;  // KeepSightClear lane of the chosen spot, kept clear on commit
+        HashSet<(int, int)>? gridCells = null;     // lazily: this room's grid-piece cells (SightLaneClear)
         // Kumulative Ablehnungszähler für [WARN]-Log (nur im else-Zweig gefüllt, sonst 0)
         int totalNoVariant = 0, totalNoFit = 0, totalNoWallDir = 0, totalFits = 0, totalPath = 0, totalLoot = 0;
         int totalDoor = 0, totalWindow = 0, totalConnectivity = 0;
@@ -2705,6 +3133,18 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     // whichever cabinet instance was placed last. Wraps if this dependent slot's
                     // own count exceeds the target's instance count.
                     int useIdx = anchorUseCounts.GetValueOrDefault(rule.AnchorTarget, 0) % instances.Count;
+                    // Skip instances whose footprint is already fully hard-occupied (e.g. a grid
+                    // anchor group's counter that already carries a microwave), if another is free.
+                    for (int k = 0; k < instances.Count; k++)
+                    {
+                        int idx = (useIdx + k) % instances.Count;
+                        var (iCol, iRow, iW, iH, _) = instances[idx];
+                        bool covered = true;
+                        for (int r = 0; r < iH && covered; r++)
+                            for (int c = 0; c < iW && covered; c++)
+                                if (!occupied.Contains((iCol + c, iRow + r))) covered = false;
+                        if (!covered) { useIdx = idx; break; }
+                    }
                     anchorUseCounts[rule.AnchorTarget] = useIdx + 1;
 
                     anchorInfo       = instances[useIdx];
@@ -2714,6 +3154,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     anchorOffset     = rule.OffsetAlongAnchor;
                     anchorMinOppositeWallDistance = rule.MinOppositeWallDistance;
                     anchorMaxOppositeWallDistance = rule.MaxOppositeWallDistance;
+                    anchorOppositeWallAllowInside = rule.OppositeWallAllowInside;
+                    anchorKeepSightClear = rule.KeepSightClear;
                     break;
                 }
         }
@@ -2733,7 +3175,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             bool clusterValid = IsValidAnchoredPlacement(slot, cb.col, cb.row, cfpW, cfpH, cb.orient, tile,
                 roomCells, cellWalls, doorCells, windowCells, pathCells, occupied, physicalOccupied,
                 blockedFrontCells, innerWallKeys, openingGroups, cellPropertyGates, reservedZoneCells,
-                frontExemptCells, gapCells, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells);
+                frontExemptCells, gapCells, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells, wallFaces: wallFaces, highOccupied: highOccupied);
             if (clusterValid)
             {
                 result = (cb.col, cb.row, cb.orient, tile, 0, 0, 0, 0, 0);
@@ -2782,8 +3224,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 TileDefinition? FindMatch(Func<TileDefinition, bool> orientPredicate)
                 {
                     var pool = allTiles.Values.Where(t =>
-                        t.VariantGroup.Equals(tile.VariantGroup, StringComparison.OrdinalIgnoreCase) &&
-                        t.Layer.Equals(tile.Layer, StringComparison.OrdinalIgnoreCase) &&
+                        IsOrientSibling(t, tile) &&
                         orientPredicate(t)).ToList();
                     if (pool.Count == 0) return null;
 
@@ -2843,6 +3284,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     for (int c = 0; c < aFpW; c++)
                         effectiveSoftOccupied.Remove((aCol + c, aRow + r));
             }
+            var effectiveHighOccupied = anchorInfo is { } highAnchor
+                ? HighCellsExceptAnchor(highOccupied, highAnchor.col, highAnchor.row, highAnchor.fpW, highAnchor.fpH)
+                : highOccupied;
 
             // Connectivity inputs for anchored placements — same as the free-placement path
             // (FindFreeCell). Invariant while this slot is being placed: physicalOccupied only
@@ -2874,6 +3318,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     // softBlocks=true) platziert werden — effectiveSoftOccupied hat dessen Zellen
                     // bereits ausgenommen, respektiert aber softOccupied-Zellen anderer Slots.
                     bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, innerWallKeys: innerWallKeys, tile: finalTile, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells)
+                                  && !WallFaceTaken(ac, ar, fpW, fpH, finalTile, wallFaces)
+                                  && !HighCellTaken(ac, ar, fpW, fpH, finalTile, effectiveHighOccupied)
+                                  && ClearanceRingOk(ac, ar, fpW, fpH, slot.Clearance, roomCells, occupied, effectiveSoftOccupied, physicalOccupied, innerWallKeys)
                                   && SatisfiesCellPropertyGates(ac, ar, fpW, fpH, finalTile, cellPropertyGates)
                                   && !BlockedByReservedZone(ac, ar, fpW, fpH, finalTile, reservedZoneCells);
                     // Anchored orientation (e.g. "match" the anchor's facing) can land on an
@@ -2973,7 +3420,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     ? int.MaxValue
                     : Math.Max(minDist, maxCfg);
 
-                log.Add($"    [ANCHOR] '{slot.Id}' tile='{tile.TileId}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='oppositeWall' minDist={minDist} maxDist={(maxDist == int.MaxValue ? "inf" : maxDist.ToString())} -> anchoredOrient='{anchoredOrient}'");
+                log.Add($"    [ANCHOR] '{slot.Id}' tile='{tile.TileId}': anchorOrientRule='{anchorOrientRule ?? "null"}' anchorPos='oppositeWall' minDist={minDist} maxDist={(maxDist == int.MaxValue ? "inf" : maxDist.ToString())}{(anchorOppositeWallAllowInside ? " allowInside" : "")} -> anchoredOrient='{anchoredOrient}'");
                 foreach (var candidate in ComputeOppositeWallCandidates(
                              anchorInfo.Value.col, anchorInfo.Value.row,
                              anchorInfo.Value.fpW, anchorInfo.Value.fpH,
@@ -2981,10 +3428,26 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                              fpW, fpH,
                              minDist, maxDist,
                              roomCells,
-                             innerWallKeys))
+                             innerWallKeys,
+                             anchorOppositeWallAllowInside))
                 {
+                    List<(int, int)>? lane = null;
+                    if (anchorKeepSightClear)
+                    {
+                        lane = SightLane(anchorInfo.Value.col, anchorInfo.Value.row, anchorInfo.Value.fpW, anchorInfo.Value.fpH,
+                            anchorInfo.Value.orient, candidate.col, candidate.row, fpW, fpH);
+                        gridCells ??= CollectGridCells(placements, config, floorIndex, roomIndex1Based);
+                        if (!SightLaneClear(lane, physicalOccupied, gridCells))
+                        {
+                            log.Add($"    [ANCHOR-FAIL] '{slot.Id}': pos=({candidate.col},{candidate.row}) sight lane blocked");
+                            continue;
+                        }
+                    }
                     if (TryAnchorPosition(candidate.col, candidate.row, anchoredOrient, finalTile, fpW, fpH))
+                    {
+                        sightLaneToKeep = lane;
                         break;
+                    }
                 }
 
                 if (result is null && ruleIdx == anchorRuleChain.Count - 1)
@@ -3047,7 +3510,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             // Primary placement attempt
             result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                 pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, slot.PlacementRules, rng, log,
-                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells);
+                innerWallKeys, mainSubRoomCells, openingGroups, out var primaryRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells, wallFaces, highOccupied);
             totalNoVariant = primaryRej.noVariant;
             totalNoWallDir = primaryRej.noWallDir; totalFits = primaryRej.noFits;
             totalPath = primaryRej.noPath; totalLoot = primaryRej.noLoot;
@@ -3062,7 +3525,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     var fbRules = slot.FallbackRules[fb];
                     result = FindFreeCell(slot, roomCells, cellWalls, doorCells, windowCells,
                         pathCells, occupied, softOccupied, physicalOccupied, blockedFrontCells, tile, allTiles, fbRules, rng, log,
-                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells);
+                        innerWallKeys, mainSubRoomCells, openingGroups, out var fbRej, cellPropertyGates, reservedZoneCells, frontExemptCells, gapCells, decorPathCells, floorLayerOccupied, stairEndCells, requiredColor, requiredMaterial, narrowCells, wallFaces, highOccupied);
                     totalNoVariant += fbRej.noVariant;
                     totalNoWallDir += fbRej.noWallDir; totalFits += fbRej.noFits;
                     totalPath += fbRej.noPath; totalLoot += fbRej.noLoot;
@@ -3125,6 +3588,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 // stapelt, selbst wenn dieser Slot selbst nicht blockt (siehe FitsFootprint).
                 if (placedTile.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
                     floorLayerOccupied.Add((col + c, row + r));
+                if (placedTile.IsHigh)
+                    highOccupied.Add((col + c, row + r));
                 // Physikalische Belegung: unabhängig von BlocksPlacement, nur nach HasCollision
                 if (placedTile.HasCollision)
                     physicalOccupied.Add((col + c, row + r));
@@ -3143,6 +3608,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         if (slot.BlocksFrontCell)
             foreach (var fc in FrontCells(col, row, finalFpW, finalFpH, orient))
                 blockedFrontCells.Add(fc);
+        if (slot.Clearance > 0)
+            blockedFrontCells.UnionWith(ClearanceRing(col, row, finalFpW, finalFpH, slot.Clearance));
+        if (sightLaneToKeep is not null)
+            blockedFrontCells.UnionWith(sightLaneToKeep);
 
         if (placedTile.IsLootContainer)
             foreach (var fc in FrontCells(col, row, finalFpW, finalFpH, orient))
@@ -3173,6 +3642,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 log.Add($"    [COLOR] '{slot.Id}': group='{effectiveColorGroup}' locked to '{firstColor}'");
             }
         }
+        TrySetHarmonyReference(slot, placedTile, colorMap, log);
 
         // VariantGroup der TileGroup beim ersten Slot einfrieren
         if (!string.IsNullOrEmpty(slot.TileGroupId) && !variantMap.ContainsKey(slot.TileGroupId))
@@ -3195,6 +3665,28 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         IReadOnlyDictionary<string, TileDefinition> allTiles, RoomTypeSlot slot,
         string roomTypeName = "")
     {
+        // Deduplizierung: Pro VariantGroup nur einen Vertreter behalten.
+        var seen   = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var result = new List<TileDefinition>();
+        foreach (var t in MatchTiles(allTiles, slot, roomTypeName))
+        {
+            if (string.IsNullOrEmpty(t.VariantGroup))
+                result.Add(t);
+            else if (seen.Add(t.VariantGroup))
+                result.Add(t);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Every tile a slot accepts (layer, category, properties, room type, footprint), without
+    /// FilterTiles' one-per-VariantGroup dedup. Also used by TileUsageService.
+    /// </summary>
+    internal static IEnumerable<TileDefinition> MatchTiles(
+        IReadOnlyDictionary<string, TileDefinition> allTiles, RoomTypeSlot slot,
+        string roomTypeName = "", IReadOnlySet<string>? themedCategories = null)
+    {
+        themedCategories ??= t_themedCategories;
         int fpW = slot.Footprint.Width;
         int fpH = slot.Footprint.Height;
 
@@ -3211,10 +3703,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 validGroups.Add(t.VariantGroup);
         }
 
-        var all = allTiles.Values
+        return allTiles.Values
             .Where(t => string.IsNullOrEmpty(slot.RequiredLayer)
                      || t.Layer.Equals(slot.RequiredLayer, StringComparison.OrdinalIgnoreCase))
             .Where(t => !HasRealCategories(slot) || slot.AllowedCategories.ContainsKey(t.Group))
+            .Where(t => MatchesThemes(t, slot, themedCategories))
             .Where(t => slot.RequiredProperties.All(p => GetBoolProperty(t, p)))
             .Where(t => t.RoomTypes.Count == 0
                      || string.IsNullOrEmpty(roomTypeName)
@@ -3231,18 +3724,6 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 bool groupFits = !string.IsNullOrEmpty(t.VariantGroup) && validGroups.Contains(t.VariantGroup);
                 return exact || rotated || groupFits;
             });
-
-        // Deduplizierung: Pro VariantGroup nur einen Vertreter behalten.
-        var seen   = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        var result = new List<TileDefinition>();
-        foreach (var t in all)
-        {
-            if (string.IsNullOrEmpty(t.VariantGroup))
-                result.Add(t);
-            else if (seen.Add(t.VariantGroup))
-                result.Add(t);
-        }
-        return result;
     }
 
     // =========================================================================
@@ -3452,6 +3933,46 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         return (minCol, minRow, maxCol - minCol + 1, maxRow - minRow + 1, parentOrient);
     }
 
+    /// <summary>
+    /// Theme filter: with AllowedThemes set, tiles of a themed category (settings
+    /// "themedCategories", e.g. Picture/Poster) need at least one listed theme — untagged ones
+    /// drop out. Other categories are never filtered; no themed categories = filter off.
+    /// </summary>
+    private static bool MatchesThemes(TileDefinition t, RoomTypeSlot slot, IReadOnlySet<string>? themedCategories) =>
+        slot.AllowedThemes.Count == 0
+        || themedCategories is null
+        || !themedCategories.Contains(t.Group)
+        || t.Themes.Any(th => slot.AllowedThemes.Contains(th, StringComparer.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Tile variety across the instances of one slot (countBySize &gt; 1). A tile counts as used
+    /// when an earlier instance placed it or an orientation sibling of it (same VariantGroup).
+    /// Default: later instances drop used tiles, so each picks its own. SameTileForAllInstances:
+    /// later instances keep only used tiles (uniform look). Either way the unfiltered pool is
+    /// kept if the filter would empty it. `groupLookup` resolves used TileIds to VariantGroups.
+    /// </summary>
+    private static List<TileDefinition> ApplyInstanceVariety(
+        List<TileDefinition> candidates, RoomTypeSlot slot, IEnumerable<string> usedTileIds,
+        IEnumerable<TileDefinition> groupLookup, List<string>? log)
+    {
+        if (candidates.Count <= 1) return candidates;
+        var used = new HashSet<string>(usedTileIds, StringComparer.OrdinalIgnoreCase);
+        if (used.Count == 0) return candidates;
+
+        var usedGroups = groupLookup
+            .Where(t => !string.IsNullOrEmpty(t.VariantGroup) && used.Contains(t.TileId))
+            .Select(t => t.VariantGroup)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        bool IsUsed(TileDefinition t) => string.IsNullOrEmpty(t.VariantGroup)
+            ? used.Contains(t.TileId)
+            : usedGroups.Contains(t.VariantGroup);
+
+        var filtered = candidates.Where(t => IsUsed(t) == slot.SameTileForAllInstances).ToList();
+        if (filtered.Count == 0 || filtered.Count == candidates.Count) return candidates;
+        log?.Add($"    [VARIETY] '{slot.Id}': {(slot.SameTileForAllInstances ? "same tile as earlier instance" : "excluding tiles of earlier instances")} ({filtered.Count}/{candidates.Count} tiles)");
+        return filtered;
+    }
+
     private static TileDefinition? SelectTile(List<TileDefinition> candidates, RoomTypeSlot slot, Random rng)
     {
         if (candidates.Count == 0) return null;
@@ -3515,7 +4036,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)>? stairEndCells = null,
         string? requiredColor = null,
         string? requiredMaterial = null,
-        HashSet<(int, int)>? narrowCells = null)
+        HashSet<(int, int)>? narrowCells = null,
+        HashSet<(int, int, string)>? wallFaces = null,
+        HashSet<(int, int)>? highOccupied = null)
     {
         bool traceBathtub = slot.Id.Equals("slot_bathtub", StringComparison.OrdinalIgnoreCase);
         IEnumerable<(int col, int row)> pool = roomCells;
@@ -3611,7 +4134,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
                 }
 
-                if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates))
+                if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates)
+                    || WallFaceTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, wallFaces)
+                    || HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied)
+                    || !ClearanceRingOk(anchorCol, anchorRow, fpW, fpH, slot.Clearance, roomCells, occupied, softOccupied, physicalOccupied, innerWallKeys))
                 {
                     rejFits++;
                     continue;
@@ -3794,7 +4320,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         if (!string.IsNullOrEmpty(baseTile.VariantGroup))
         {
             var variants = allTiles.Values
-                .Where(t => t.VariantGroup == baseTile.VariantGroup
+                .Where(t => IsOrientSibling(t, baseTile)
                          && OrientMatches(t, neededOrient))
                 .ToList();
 
@@ -3862,8 +4388,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             // tileGroupId can lock them to matching colors), and without this guard a floor
             // slot's own variant search could pick up a Wallfurniture tile of the same group.
             var groupVariants = allTiles.Values
-                .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase)
-                         && t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase))
+                .Where(t => IsOrientSibling(t, baseTile))
                 .ToList();
 
             // Same color/material lock as ResolveVariantForCell's single-result path above —
@@ -3949,8 +4474,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             return [(baseTile, CanonicalOrient(baseTile), Direction.N)];
 
         var variants = allTiles.Values
-            .Where(t => t.VariantGroup.Equals(baseTile.VariantGroup, StringComparison.OrdinalIgnoreCase)
-                     && t.Layer.Equals(baseTile.Layer, StringComparison.OrdinalIgnoreCase))
+            .Where(t => IsOrientSibling(t, baseTile))
             .Where(t => t.AllowedOrients.Count == 0
                      || t.AllowedOrients.Any(o => o.Equals(t.Orientation, StringComparison.OrdinalIgnoreCase)))
             .OrderBy(t => OrientMatches(t, CanonicalOrient(baseTile)) ? 0 : 1)
@@ -4767,7 +5291,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         int depW, int depH,
         int minDist, int maxDist,
         HashSet<(int col, int row)> roomCells,
-        HashSet<string>? innerWallKeys = null)
+        HashSet<string>? innerWallKeys = null,
+        bool allowInside = false)
     {
         Direction? facingDir = anchorOrient switch
         {
@@ -4785,9 +5310,15 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             int c = lane.startCol;
             int r = lane.startRow;
             int dist = 1;
+            // allowInside: every in-range cell of the lane is a spot (far edge of the piece);
+            // yielded farthest first so the wall still wins when it lies within the range.
+            var inside = allowInside ? new List<(int, int)>() : null;
 
             while (roomCells.Contains((c, r)))
             {
+                if (inside is not null && dist >= minDist)
+                    inside.Add(ComputeWallAnchor((c, r), facingDir.Value, depW, depH));
+
                 var next = facingDir.Value switch
                 {
                     Direction.N => (c, r - 1),
@@ -4810,7 +5341,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 if (!roomCells.Contains(next) || hitInnerWall)
                 {
-                    if (dist >= minDist && dist <= maxDist)
+                    if (inside is null && dist >= minDist && dist <= maxDist)
                     {
                         var anchor = ComputeWallAnchor((c, r), facingDir.Value, depW, depH);
                         if (seen.Add(anchor))
@@ -4824,6 +5355,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 dist++;
                 if (dist > maxDist) break;
             }
+
+            if (inside is not null)
+                for (int i = inside.Count - 1; i >= 0; i--)
+                    if (seen.Add(inside[i]))
+                        yield return inside[i];
         }
     }
 

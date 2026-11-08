@@ -28,6 +28,29 @@ export interface TbxMetadata {
   usedTiles: number[];
   /** Raw content of used_furniture. */
   usedFurnitureRaw: string;
+  /** Root-level furniture blocks; FurnitureTiles="N" on a type="furniture" object is a 0-based index into this list. */
+  furnitureBlocks?: TbxFurnitureBlock[];
+}
+
+/** One tile of a furniture entry, offset (x,y) from the placing object. */
+export interface TbxFurnitureTile {
+  x: number;
+  y: number;
+  name: string;
+}
+
+/** One orientation (W/N/NW/…) of a furniture block. */
+export interface TbxFurnitureEntry {
+  orient: string;
+  grime: boolean;
+  tiles: TbxFurnitureTile[];
+}
+
+/** A root-level <furniture> block (e.g. layer="Walls" for wall-mounted doors/windows). */
+export interface TbxFurnitureBlock {
+  layer: string;
+  corners: boolean;
+  entries: TbxFurnitureEntry[];
 }
 
 // ── Building model ────────────────────────────────────────────────────────────

@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   getRoomTypeNames, saveRoomTypeNames,
   getCategories,    saveCategories,
   getMaterials,     saveMaterials,
+  getThemes,        saveThemes,
+  getThemedCategories, saveThemedCategories,
   getColorNames,    saveColorNames,
+  getColorHues,     saveColorHues,
+  type ColorHues,
 } from '../../api/settingsApi';
 import {
   getRoomTypesStatus, restoreRoomTypesDefault,
@@ -15,18 +19,21 @@ import { getTilesPath, setTilesPath } from '../../api/tilesApi';
 import { getBfPath, setBfPath } from '../../api/bfApi';
 import { DirPicker } from '../TileBrowser/DirPicker';
 import { Spinner } from '../Spinner/Spinner';
+import { invalidateThemeSettings } from '../RoomTypeEditor/ThemeSelector';
 import s from './SettingsEditor.module.css';
 
 // ── Wiederverwendbare editierbare Liste ──────────────────────────────────────
 
 function EditableList({
-  title, description, items, placeholder, onSave,
+  title, description, items, placeholder, onSave, renderItemExtra,
 }: {
   title:       string;
   description: string;
   items:       string[];
   placeholder: string;
   onSave:      (updated: string[]) => Promise<void>;
+  /** Extra controls shown in an item's row, before its remove button. */
+  renderItemExtra?: (item: string) => ReactNode;
 }) {
   const { t } = useTranslation();
   const [newValue, setNewValue] = useState('');
@@ -76,6 +83,7 @@ function EditableList({
         {items.map(item => (
           <div key={item} className={s.item}>
             <span className={s.itemLabel}>{item}</span>
+            {renderItemExtra?.(item)}
             <button className={s.removeBtn} onClick={() => remove(item)} disabled={saving}>✕</button>
           </div>
         ))}
@@ -83,6 +91,41 @@ function EditableList({
 
       <div className={s.sectionFooter}>{t('settingsEditor.itemCount', { count: items.length })}</div>
     </div>
+  );
+}
+
+// ── Colour-wheel position of one colour (for colour harmony) ─────────────────
+
+function ColorHueControl({ hue, onChange }: { hue: number | null; onChange: (hue: number | null) => void }) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState(hue === null ? '' : String(hue));
+  useEffect(() => setDraft(hue === null ? '' : String(hue)), [hue]);
+
+  const commit = () => {
+    const n = parseInt(draft, 10);
+    if (Number.isNaN(n)) { setDraft(hue === null ? '' : String(hue)); return; }
+    const norm = ((n % 360) + 360) % 360;
+    if (norm !== hue) onChange(norm);
+    else setDraft(String(norm));
+  };
+
+  return (
+    <span className={s.hueControl} title={t('settingsEditor.colors.huesTitle')}>
+      <span className={s.hueSwatch}
+        style={{ background: hue === null ? 'linear-gradient(135deg, #eee 0 50%, #333 50% 100%)' : `hsl(${hue} 70% 50%)` }} />
+      <label className={s.hueNeutral}>
+        <input type="checkbox" checked={hue === null}
+          onChange={e => onChange(e.target.checked ? null : 0)} />
+        {t('settingsEditor.colors.neutral')}
+      </label>
+      {hue !== null && (
+        <input type="number" min={0} max={359} className={s.hueInput} aria-label={t('settingsEditor.colors.hue')}
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={e => e.key === 'Enter' && commit()} />
+      )}
+    </span>
   );
 }
 
@@ -303,12 +346,15 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
   const [roomTypes,  setRoomTypes]  = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [materials,  setMaterials]  = useState<string[]>([]);
+  const [themes,     setThemes]     = useState<string[]>([]);
+  const [themedCats, setThemedCats] = useState<string[]>([]);
   const [colors,     setColors]     = useState<string[]>([]);
+  const [colorHues,  setColorHues]  = useState<ColorHues>({});
   const [loading,    setLoading]    = useState(true);
 
   useEffect(() => {
-    Promise.all([getRoomTypeNames(), getCategories(), getMaterials(), getColorNames()])
-      .then(([rt, cats, mats, cols]) => { setRoomTypes(rt); setCategories(cats); setMaterials(mats); setColors(cols); })
+    Promise.all([getRoomTypeNames(), getCategories(), getMaterials(), getColorNames(), getColorHues(), getThemes(), getThemedCategories()])
+      .then(([rt, cats, mats, cols, hues, ths, themed]) => { setRoomTypes(rt); setCategories(cats); setMaterials(mats); setColors(cols); setColorHues(hues); setThemes(ths); setThemedCats(themed); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -347,6 +393,22 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
                 const saved = await saveCategories(updated);
                 setCategories(saved);
               }}
+              renderItemExtra={cat => {
+                const themed = themedCats.some(c => c.toLowerCase() === cat.toLowerCase());
+                return (
+                  <label className={s.themedToggle} title={t('settingsEditor.categories.themedTitle')}>
+                    <input type="checkbox" checked={themed}
+                      onChange={async () => {
+                        const next = themed
+                          ? themedCats.filter(c => c.toLowerCase() !== cat.toLowerCase())
+                          : [...themedCats, cat];
+                        setThemedCats(next);
+                        try { setThemedCats(await saveThemedCategories(next)); invalidateThemeSettings(); } catch (e) { console.error(e); }
+                      }} />
+                    {t('settingsEditor.categories.themed')}
+                  </label>
+                );
+              }}
             />
 
             <EditableList
@@ -361,6 +423,18 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
             />
 
             <EditableList
+              title={t('settingsEditor.themes.title')}
+              description={t('settingsEditor.themes.description')}
+              items={themes}
+              placeholder={t('settingsEditor.themes.placeholder')}
+              onSave={async updated => {
+                const saved = await saveThemes(updated);
+                setThemes(saved);
+                invalidateThemeSettings();
+              }}
+            />
+
+            <EditableList
               title={t('settingsEditor.colors.title')}
               description={t('settingsEditor.colors.description')}
               items={colors}
@@ -369,6 +443,14 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
                 const saved = await saveColorNames(updated);
                 setColors(saved);
               }}
+              renderItemExtra={color => (
+                <ColorHueControl hue={colorHues[color] ?? null}
+                  onChange={async hue => {
+                    const next = { ...colorHues, [color]: hue };
+                    setColorHues(next);
+                    try { setColorHues(await saveColorHues(next)); } catch (e) { console.error(e); }
+                  }} />
+              )}
             />
           </>
         )}

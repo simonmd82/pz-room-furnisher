@@ -1,5 +1,5 @@
-import type { GridCell, GridLayout, GridOrient, GridPoint } from '../types/roomTypes';
-import { EMPTY_CATEGORY, GRID_ORIENTS } from '../types/roomTypes';
+import type { GridCell, GridCorner, GridLayout, GridOrient, GridPoint } from '../types/roomTypes';
+import { EMPTY_CATEGORY, GRID_CORNERS, GRID_ORIENTS } from '../types/roomTypes';
 
 /**
  * TS port of the grid transform in backend/Services/FurnishingGeneratorService.Grid.cs
@@ -27,6 +27,19 @@ export function transformGridOrient(o: GridOrient, rot: number, mirror: boolean)
   return GRID_ORIENTS[(idx + rot) & 3];
 }
 
+/**
+ * Grid-local corner → world corner (TransformGridCorner in the backend): both wall sides are
+ * transformed separately and recombined N/S-first.
+ */
+export function transformGridCorner(c: GridCorner | '', rot: number, mirror: boolean): GridCorner | '' {
+  if (!c) return '';
+  const sides = new Set([c[0], c[1]].map(d => transformGridOrient(d as GridOrient, rot, mirror)));
+  const ns = sides.has('N') ? 'N' : 'S';
+  const ew = sides.has('E') ? 'E' : 'W';
+  const r = `${ns}${ew}` as GridCorner;
+  return GRID_CORNERS.includes(r) ? r : '';
+}
+
 /** Grid dimensions after rotation. */
 export function transformedGridSize(g: GridLayout, rot: number): { w: number; h: number } {
   return rot % 2 === 0 ? { w: g.width, h: g.height } : { w: g.height, h: g.width };
@@ -42,10 +55,21 @@ export function rectsOverlap(a: GridRect, b: GridRect): boolean {
   return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 }
 
+/**
+ * Two pieces may overlap when exactly one of them allows stacking (the host, e.g. an L-desk):
+ * the other piece then sits on the host's tiles (PC on a desk arm) or in its empty layout cells
+ * (chair in the L's inner corner) — the generator checks which, against the real tile shape.
+ */
+export const canOverlap = (a: GridCell, b: GridCell): boolean => a.allowStacking !== b.allowStacking;
+
 /** Turn a facing 90° clockwise. */
 export const rotateOrientCw = (o: GridOrient): GridOrient => GRID_ORIENTS[(GRID_ORIENTS.indexOf(o) + 1) & 3];
 
 export const ORIENT_ARROW: Record<GridOrient, string> = { N: '↑', E: '→', S: '↓', W: '←' };
+export const CORNER_ARROW: Record<GridCorner, string> = { NW: '↖', NE: '↗', SE: '↘', SW: '↙' };
+
+/** Badge arrow for a piece: its corner if it is a corner piece, else its facing. */
+export const pieceArrow = (orient: GridOrient, corner: GridCorner | '') => corner ? CORNER_ARROW[corner] : ORIENT_ARROW[orient];
 
 export type GridIssue =
   | { kind: 'anchorCount'; count: number }
@@ -76,7 +100,7 @@ export function validateGrid(g: GridLayout, otherIds: Set<string>): GridIssue[] 
     const r = cellRect(c);
     if (r.x < 0 || r.y < 0 || r.x + r.w > g.width || r.y + r.h > g.height) issues.push({ kind: 'outOfBounds', cellId: c.id });
     for (let j = i + 1; j < g.cells.length; j++)
-      if (rectsOverlap(r, cellRect(g.cells[j]))) issues.push({ kind: 'overlap', a: c.id, b: g.cells[j].id });
+      if (rectsOverlap(r, cellRect(g.cells[j])) && !canOverlap(c, g.cells[j])) issues.push({ kind: 'overlap', a: c.id, b: g.cells[j].id });
     if (!Object.keys(c.allowedCategories).some(k => k !== EMPTY_CATEGORY)) issues.push({ kind: 'noCategories', cellId: c.id });
   });
 

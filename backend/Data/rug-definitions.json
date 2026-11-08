@@ -2623,6 +2623,22 @@
             "melos_tiles_rugs_01_001"
           ]
         ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_097",
+            "melos_tiles_rugs_01_099",
+            "melos_tiles_rugs_01_101"
+          ],
+          [
+            "melos_tiles_rugs_01_096",
+            "melos_tiles_rugs_01_098",
+            "melos_tiles_rugs_01_100"
+          ]
+        ]
       }
     ]
   },
@@ -2660,6 +2676,3073 @@
           [
             "melos_tiles_rugs_01_014",
             "melos_tiles_rugs_01_015"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-45": {
+    "id": "melos-rugs-45",
+    "label": "Melos Rugs 45",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_019"
+          ],
+          [
+            "melos_tiles_rugs_06_018"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_016",
+            "melos_tiles_rugs_06_017"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-43": {
+    "id": "melos-rugs-43",
+    "label": "Melos Rugs 43",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_015"
+          ],
+          [
+            "melos_tiles_rugs_06_014"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_012",
+            "melos_tiles_rugs_06_013"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-5": {
+    "id": "melos-rugs-5",
+    "label": "Melos Rugs 5",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_013",
+            "melos_tiles_rugs_01_012"
+          ],
+          [
+            "melos_tiles_rugs_01_011",
+            "melos_tiles_rugs_01_010"
+          ],
+          [
+            "melos_tiles_rugs_01_008",
+            "melos_tiles_rugs_01_009"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_088",
+            "melos_tiles_rugs_01_090",
+            "melos_tiles_rugs_01_093"
+          ],
+          [
+            "melos_tiles_rugs_01_089",
+            "melos_tiles_rugs_01_091",
+            "melos_tiles_rugs_01_092"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-6": {
+    "id": "melos-rugs-6",
+    "label": "Melos Rugs 6",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_021",
+            "melos_tiles_rugs_01_020"
+          ],
+          [
+            "melos_tiles_rugs_01_019",
+            "melos_tiles_rugs_01_018"
+          ],
+          [
+            "melos_tiles_rugs_01_016",
+            "melos_tiles_rugs_01_017"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_080",
+            "melos_tiles_rugs_01_082",
+            "melos_tiles_rugs_01_085"
+          ],
+          [
+            "melos_tiles_rugs_01_081",
+            "melos_tiles_rugs_01_083",
+            "melos_tiles_rugs_01_084"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-7": {
+    "id": "melos-rugs-7",
+    "label": "Melos Rugs 7",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Mixed"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_023"
+          ],
+          [
+            "melos_tiles_rugs_01_022"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_030",
+            "melos_tiles_rugs_01_031"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-41": {
+    "id": "melos-rugs-41",
+    "label": "Melos Rugs 41",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_011"
+          ],
+          [
+            "melos_tiles_rugs_06_010"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_008",
+            "melos_tiles_rugs_06_009"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-9": {
+    "id": "melos-rugs-9",
+    "label": "Melos Rugs 9",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Orange",
+      "Red"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_029",
+            "melos_tiles_rugs_01_028"
+          ],
+          [
+            "melos_tiles_rugs_01_027",
+            "melos_tiles_rugs_01_026"
+          ],
+          [
+            "melos_tiles_rugs_01_024",
+            "melos_tiles_rugs_01_025"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_072",
+            "melos_tiles_rugs_01_074",
+            "melos_tiles_rugs_01_077"
+          ],
+          [
+            "melos_tiles_rugs_01_073",
+            "melos_tiles_rugs_01_075",
+            "melos_tiles_rugs_01_076"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-10": {
+    "id": "melos-rugs-10",
+    "label": "Melos Rugs 10",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_041",
+            "melos_tiles_rugs_01_042",
+            "melos_tiles_rugs_01_050"
+          ],
+          [
+            "melos_tiles_rugs_01_040",
+            "melos_tiles_rugs_01_049",
+            "melos_tiles_rugs_01_058"
+          ],
+          [
+            "melos_tiles_rugs_01_048",
+            "melos_tiles_rugs_01_056",
+            "melos_tiles_rugs_01_057"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-11": {
+    "id": "melos-rugs-11",
+    "label": "Melos Rugs 11",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_044",
+            "melos_tiles_rugs_01_045",
+            "melos_tiles_rugs_01_053"
+          ],
+          [
+            "melos_tiles_rugs_01_043",
+            "melos_tiles_rugs_01_052",
+            "melos_tiles_rugs_01_061"
+          ],
+          [
+            "melos_tiles_rugs_01_051",
+            "melos_tiles_rugs_01_059",
+            "melos_tiles_rugs_01_060"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-12": {
+    "id": "melos-rugs-12",
+    "label": "Melos Rugs 12",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_062",
+            "melos_tiles_rugs_01_063"
+          ],
+          [
+            "melos_tiles_rugs_01_054",
+            "melos_tiles_rugs_01_055"
+          ],
+          [
+            "melos_tiles_rugs_01_046",
+            "melos_tiles_rugs_01_047"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_01_079",
+            "melos_tiles_rugs_01_087",
+            "melos_tiles_rugs_01_095"
+          ],
+          [
+            "melos_tiles_rugs_01_078",
+            "melos_tiles_rugs_01_086",
+            "melos_tiles_rugs_01_094"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-39": {
+    "id": "melos-rugs-39",
+    "label": "Melos Rugs 39",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Purple"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_007"
+          ],
+          [
+            "melos_tiles_rugs_06_006"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_004",
+            "melos_tiles_rugs_06_005"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-37": {
+    "id": "melos-rugs-37",
+    "label": "Melos Rugs 37",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_003"
+          ],
+          [
+            "melos_tiles_rugs_06_002"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_000",
+            "melos_tiles_rugs_06_001"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-35": {
+    "id": "melos-rugs-35",
+    "label": "Melos Rugs 35",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "Grey"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_116",
+            "melos_tiles_rugs_05_117"
+          ],
+          [
+            "melos_tiles_rugs_05_114",
+            "melos_tiles_rugs_05_115"
+          ],
+          [
+            "melos_tiles_rugs_05_112",
+            "melos_tiles_rugs_05_113"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_121",
+            "melos_tiles_rugs_05_123",
+            "melos_tiles_rugs_05_125"
+          ],
+          [
+            "melos_tiles_rugs_05_120",
+            "melos_tiles_rugs_05_122",
+            "melos_tiles_rugs_05_124"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-33": {
+    "id": "melos-rugs-33",
+    "label": "Melos Rugs 33",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Black",
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_100",
+            "melos_tiles_rugs_05_101"
+          ],
+          [
+            "melos_tiles_rugs_05_098",
+            "melos_tiles_rugs_05_099"
+          ],
+          [
+            "melos_tiles_rugs_05_096",
+            "melos_tiles_rugs_05_097"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_105",
+            "melos_tiles_rugs_05_107",
+            "melos_tiles_rugs_05_109"
+          ],
+          [
+            "melos_tiles_rugs_05_104",
+            "melos_tiles_rugs_05_106",
+            "melos_tiles_rugs_05_108"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-31": {
+    "id": "melos-rugs-31",
+    "label": "Melos Rugs 31",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue",
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_084",
+            "melos_tiles_rugs_05_085"
+          ],
+          [
+            "melos_tiles_rugs_05_082",
+            "melos_tiles_rugs_05_083"
+          ],
+          [
+            "melos_tiles_rugs_05_080",
+            "melos_tiles_rugs_05_081"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_089",
+            "melos_tiles_rugs_05_091",
+            "melos_tiles_rugs_05_093"
+          ],
+          [
+            "melos_tiles_rugs_05_088",
+            "melos_tiles_rugs_05_090",
+            "melos_tiles_rugs_05_092"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-18": {
+    "id": "melos-rugs-18",
+    "label": "Melos Rugs 18",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Red"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_004",
+            "melos_tiles_rugs_02_005"
+          ],
+          [
+            "melos_tiles_rugs_02_002",
+            "melos_tiles_rugs_02_003"
+          ],
+          [
+            "melos_tiles_rugs_02_000",
+            "melos_tiles_rugs_02_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_009",
+            "melos_tiles_rugs_02_011",
+            "melos_tiles_rugs_02_013"
+          ],
+          [
+            "melos_tiles_rugs_02_008",
+            "melos_tiles_rugs_02_010",
+            "melos_tiles_rugs_02_012"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-29": {
+    "id": "melos-rugs-29",
+    "label": "Melos Rugs 29",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red",
+      "Black",
+      "Beige"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_068",
+            "melos_tiles_rugs_05_069"
+          ],
+          [
+            "melos_tiles_rugs_05_066",
+            "melos_tiles_rugs_05_067"
+          ],
+          [
+            "melos_tiles_rugs_05_064",
+            "melos_tiles_rugs_05_065"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_073",
+            "melos_tiles_rugs_05_075",
+            "melos_tiles_rugs_05_077"
+          ],
+          [
+            "melos_tiles_rugs_05_072",
+            "melos_tiles_rugs_05_074",
+            "melos_tiles_rugs_05_076"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-20": {
+    "id": "melos-rugs-20",
+    "label": "Melos Rugs 20",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_022",
+            "melos_tiles_rugs_02_023"
+          ],
+          [
+            "melos_tiles_rugs_02_014",
+            "melos_tiles_rugs_02_015"
+          ],
+          [
+            "melos_tiles_rugs_02_006",
+            "melos_tiles_rugs_02_007"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_031",
+            "melos_tiles_rugs_02_039",
+            "melos_tiles_rugs_02_047"
+          ],
+          [
+            "melos_tiles_rugs_02_030",
+            "melos_tiles_rugs_02_038",
+            "melos_tiles_rugs_02_046"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-27": {
+    "id": "melos-rugs-27",
+    "label": "Melos Rugs 27",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Black",
+      "Orange"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_052",
+            "melos_tiles_rugs_05_053"
+          ],
+          [
+            "melos_tiles_rugs_05_050",
+            "melos_tiles_rugs_05_051"
+          ],
+          [
+            "melos_tiles_rugs_05_048",
+            "melos_tiles_rugs_05_049"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_057",
+            "melos_tiles_rugs_05_059",
+            "melos_tiles_rugs_05_061"
+          ],
+          [
+            "melos_tiles_rugs_05_056",
+            "melos_tiles_rugs_05_058",
+            "melos_tiles_rugs_05_060"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-22": {
+    "id": "melos-rugs-22",
+    "label": "Melos Rugs 22",
+    "mode": "preassembled",
+    "tileSetId": "vanilla",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_020",
+            "melos_tiles_rugs_02_021"
+          ],
+          [
+            "melos_tiles_rugs_02_018",
+            "melos_tiles_rugs_02_019"
+          ],
+          [
+            "melos_tiles_rugs_02_016",
+            "melos_tiles_rugs_02_017"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_025",
+            "melos_tiles_rugs_02_027",
+            "melos_tiles_rugs_02_029"
+          ],
+          [
+            "melos_tiles_rugs_02_024",
+            "melos_tiles_rugs_02_026",
+            "melos_tiles_rugs_02_028"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-25": {
+    "id": "melos-rugs-25",
+    "label": "Melos Rugs 25",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Black",
+      "Brown"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_036",
+            "melos_tiles_rugs_05_037"
+          ],
+          [
+            "melos_tiles_rugs_05_034",
+            "melos_tiles_rugs_05_035"
+          ],
+          [
+            "melos_tiles_rugs_05_032",
+            "melos_tiles_rugs_05_033"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_041",
+            "melos_tiles_rugs_05_043",
+            "melos_tiles_rugs_05_045"
+          ],
+          [
+            "melos_tiles_rugs_05_040",
+            "melos_tiles_rugs_05_042",
+            "melos_tiles_rugs_05_044"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-24": {
+    "id": "melos-rugs-24",
+    "label": "Melos Rugs 24",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Mixed"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_036",
+            "melos_tiles_rugs_02_037"
+          ],
+          [
+            "melos_tiles_rugs_02_034",
+            "melos_tiles_rugs_02_035"
+          ],
+          [
+            "melos_tiles_rugs_02_032",
+            "melos_tiles_rugs_02_033"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_041",
+            "melos_tiles_rugs_02_043",
+            "melos_tiles_rugs_02_045"
+          ],
+          [
+            "melos_tiles_rugs_02_040",
+            "melos_tiles_rugs_02_042",
+            "melos_tiles_rugs_02_044"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-23": {
+    "id": "melos-rugs-23",
+    "label": "Melos Rugs 23",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Brown",
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_020",
+            "melos_tiles_rugs_05_021"
+          ],
+          [
+            "melos_tiles_rugs_05_018",
+            "melos_tiles_rugs_05_019"
+          ],
+          [
+            "melos_tiles_rugs_05_016",
+            "melos_tiles_rugs_05_017"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_025",
+            "melos_tiles_rugs_05_027",
+            "melos_tiles_rugs_05_029"
+          ],
+          [
+            "melos_tiles_rugs_05_024",
+            "melos_tiles_rugs_05_026",
+            "melos_tiles_rugs_05_028"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-26": {
+    "id": "melos-rugs-26",
+    "label": "Melos Rugs 26",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "White",
+      "Orange"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_052",
+            "melos_tiles_rugs_02_053"
+          ],
+          [
+            "melos_tiles_rugs_02_050",
+            "melos_tiles_rugs_02_051"
+          ],
+          [
+            "melos_tiles_rugs_02_048",
+            "melos_tiles_rugs_02_049"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_057",
+            "melos_tiles_rugs_02_059",
+            "melos_tiles_rugs_02_061"
+          ],
+          [
+            "melos_tiles_rugs_02_056",
+            "melos_tiles_rugs_02_058",
+            "melos_tiles_rugs_02_060"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-21": {
+    "id": "melos-rugs-21",
+    "label": "Melos Rugs 21",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Brown",
+      "Beige"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_004",
+            "melos_tiles_rugs_05_005"
+          ],
+          [
+            "melos_tiles_rugs_05_002",
+            "melos_tiles_rugs_05_003"
+          ],
+          [
+            "melos_tiles_rugs_05_000",
+            "melos_tiles_rugs_05_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_05_009",
+            "melos_tiles_rugs_05_011",
+            "melos_tiles_rugs_05_013"
+          ],
+          [
+            "melos_tiles_rugs_05_008",
+            "melos_tiles_rugs_05_010",
+            "melos_tiles_rugs_05_012"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-28": {
+    "id": "melos-rugs-28",
+    "label": "Melos Rugs 28",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Violet",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_070",
+            "melos_tiles_rugs_02_071"
+          ],
+          [
+            "melos_tiles_rugs_02_062",
+            "melos_tiles_rugs_02_063"
+          ],
+          [
+            "melos_tiles_rugs_02_054",
+            "melos_tiles_rugs_02_055"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_079",
+            "melos_tiles_rugs_02_087",
+            "melos_tiles_rugs_02_095"
+          ],
+          [
+            "melos_tiles_rugs_02_078",
+            "melos_tiles_rugs_02_086",
+            "melos_tiles_rugs_02_094"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-19": {
+    "id": "melos-rugs-19",
+    "label": "Melos Rugs 19",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_084",
+            "melos_tiles_rugs_04_085"
+          ],
+          [
+            "melos_tiles_rugs_04_082",
+            "melos_tiles_rugs_04_083"
+          ],
+          [
+            "melos_tiles_rugs_04_080",
+            "melos_tiles_rugs_04_081"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_089",
+            "melos_tiles_rugs_04_091",
+            "melos_tiles_rugs_04_093"
+          ],
+          [
+            "melos_tiles_rugs_04_088",
+            "melos_tiles_rugs_04_090",
+            "melos_tiles_rugs_04_092"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-30": {
+    "id": "melos-rugs-30",
+    "label": "Melos Rugs 30",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Black",
+      "Brown"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_068",
+            "melos_tiles_rugs_02_069"
+          ],
+          [
+            "melos_tiles_rugs_02_066",
+            "melos_tiles_rugs_02_067"
+          ],
+          [
+            "melos_tiles_rugs_02_064",
+            "melos_tiles_rugs_02_065"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_073",
+            "melos_tiles_rugs_02_075",
+            "melos_tiles_rugs_02_077"
+          ],
+          [
+            "melos_tiles_rugs_02_072",
+            "melos_tiles_rugs_02_074",
+            "melos_tiles_rugs_02_076"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-17": {
+    "id": "melos-rugs-17",
+    "label": "Melos Rugs 17",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Brown"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_068",
+            "melos_tiles_rugs_04_069"
+          ],
+          [
+            "melos_tiles_rugs_04_066",
+            "melos_tiles_rugs_04_067"
+          ],
+          [
+            "melos_tiles_rugs_04_064",
+            "melos_tiles_rugs_04_065"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_073",
+            "melos_tiles_rugs_04_075",
+            "melos_tiles_rugs_04_077"
+          ],
+          [
+            "melos_tiles_rugs_04_072",
+            "melos_tiles_rugs_04_074",
+            "melos_tiles_rugs_04_076"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-32": {
+    "id": "melos-rugs-32",
+    "label": "Melos Rugs 32",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_084",
+            "melos_tiles_rugs_02_085"
+          ],
+          [
+            "melos_tiles_rugs_02_082",
+            "melos_tiles_rugs_02_083"
+          ],
+          [
+            "melos_tiles_rugs_02_080",
+            "melos_tiles_rugs_02_081"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_089",
+            "melos_tiles_rugs_02_091",
+            "melos_tiles_rugs_02_093"
+          ],
+          [
+            "melos_tiles_rugs_02_088",
+            "melos_tiles_rugs_02_090",
+            "melos_tiles_rugs_02_092"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-16": {
+    "id": "melos-rugs-16",
+    "label": "Melos Rugs 16",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_052",
+            "melos_tiles_rugs_04_053"
+          ],
+          [
+            "melos_tiles_rugs_04_050",
+            "melos_tiles_rugs_04_051"
+          ],
+          [
+            "melos_tiles_rugs_04_048",
+            "melos_tiles_rugs_04_049"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_057",
+            "melos_tiles_rugs_04_059",
+            "melos_tiles_rugs_04_061"
+          ],
+          [
+            "melos_tiles_rugs_04_056",
+            "melos_tiles_rugs_04_058",
+            "melos_tiles_rugs_04_060"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-34": {
+    "id": "melos-rugs-34",
+    "label": "Melos Rugs 34",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Yellow",
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_100",
+            "melos_tiles_rugs_02_101"
+          ],
+          [
+            "melos_tiles_rugs_02_098",
+            "melos_tiles_rugs_02_099"
+          ],
+          [
+            "melos_tiles_rugs_02_096",
+            "melos_tiles_rugs_02_097"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_02_105",
+            "melos_tiles_rugs_02_107",
+            "melos_tiles_rugs_02_109"
+          ],
+          [
+            "melos_tiles_rugs_02_104",
+            "melos_tiles_rugs_02_106",
+            "melos_tiles_rugs_02_108"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-15": {
+    "id": "melos-rugs-15",
+    "label": "Melos Rugs 15",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_036",
+            "melos_tiles_rugs_04_037"
+          ],
+          [
+            "melos_tiles_rugs_04_034",
+            "melos_tiles_rugs_04_035"
+          ],
+          [
+            "melos_tiles_rugs_04_032",
+            "melos_tiles_rugs_04_033"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_041",
+            "melos_tiles_rugs_04_043",
+            "melos_tiles_rugs_04_045"
+          ],
+          [
+            "melos_tiles_rugs_04_040",
+            "melos_tiles_rugs_04_042",
+            "melos_tiles_rugs_04_044"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-36": {
+    "id": "melos-rugs-36",
+    "label": "Melos Rugs 36",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Brown",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_004",
+            "melos_tiles_rugs_03_005"
+          ],
+          [
+            "melos_tiles_rugs_03_002",
+            "melos_tiles_rugs_03_003"
+          ],
+          [
+            "melos_tiles_rugs_03_000",
+            "melos_tiles_rugs_03_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_009",
+            "melos_tiles_rugs_03_011",
+            "melos_tiles_rugs_03_013"
+          ],
+          [
+            "melos_tiles_rugs_03_008",
+            "melos_tiles_rugs_03_010",
+            "melos_tiles_rugs_03_012"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-14": {
+    "id": "melos-rugs-14",
+    "label": "Melos Rugs 14",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey",
+      "Beige"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_006",
+            "melos_tiles_rugs_04_007"
+          ],
+          [
+            "melos_tiles_rugs_04_014",
+            "melos_tiles_rugs_04_015"
+          ],
+          [
+            "melos_tiles_rugs_04_022",
+            "melos_tiles_rugs_04_023"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_031",
+            "melos_tiles_rugs_04_039",
+            "melos_tiles_rugs_04_047"
+          ],
+          [
+            "melos_tiles_rugs_04_030",
+            "melos_tiles_rugs_04_038",
+            "melos_tiles_rugs_04_046"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-38": {
+    "id": "melos-rugs-38",
+    "label": "Melos Rugs 38",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_006",
+            "melos_tiles_rugs_03_007"
+          ],
+          [
+            "melos_tiles_rugs_03_014",
+            "melos_tiles_rugs_03_015"
+          ],
+          [
+            "melos_tiles_rugs_03_022",
+            "melos_tiles_rugs_03_023"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_031",
+            "melos_tiles_rugs_03_039",
+            "melos_tiles_rugs_03_047"
+          ],
+          [
+            "melos_tiles_rugs_03_030",
+            "melos_tiles_rugs_03_038",
+            "melos_tiles_rugs_03_046"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-13": {
+    "id": "melos-rugs-13",
+    "label": "Melos Rugs 13",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Red",
+      "Black",
+      "Blue",
+      "Orange"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_020",
+            "melos_tiles_rugs_04_021"
+          ],
+          [
+            "melos_tiles_rugs_04_018",
+            "melos_tiles_rugs_04_019"
+          ],
+          [
+            "melos_tiles_rugs_04_016",
+            "melos_tiles_rugs_04_017"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_025",
+            "melos_tiles_rugs_04_027",
+            "melos_tiles_rugs_04_029"
+          ],
+          [
+            "melos_tiles_rugs_04_024",
+            "melos_tiles_rugs_04_026",
+            "melos_tiles_rugs_04_028"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-40": {
+    "id": "melos-rugs-40",
+    "label": "Melos Rugs 40",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Black"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_036",
+            "melos_tiles_rugs_03_037"
+          ],
+          [
+            "melos_tiles_rugs_03_034",
+            "melos_tiles_rugs_03_035"
+          ],
+          [
+            "melos_tiles_rugs_03_032",
+            "melos_tiles_rugs_03_033"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_041",
+            "melos_tiles_rugs_03_043",
+            "melos_tiles_rugs_03_045"
+          ],
+          [
+            "melos_tiles_rugs_03_040",
+            "melos_tiles_rugs_03_042",
+            "melos_tiles_rugs_03_044"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-8": {
+    "id": "melos-rugs-8",
+    "label": "Melos Rugs 8",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "Yellow",
+      "Orange"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_004",
+            "melos_tiles_rugs_04_005"
+          ],
+          [
+            "melos_tiles_rugs_04_002",
+            "melos_tiles_rugs_04_003"
+          ],
+          [
+            "melos_tiles_rugs_04_000",
+            "melos_tiles_rugs_04_001"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_04_009",
+            "melos_tiles_rugs_04_011",
+            "melos_tiles_rugs_04_013"
+          ],
+          [
+            "melos_tiles_rugs_04_008",
+            "melos_tiles_rugs_04_010",
+            "melos_tiles_rugs_04_012"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-42": {
+    "id": "melos-rugs-42",
+    "label": "Melos Rugs 42",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "White",
+      "Red"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_052",
+            "melos_tiles_rugs_03_053"
+          ],
+          [
+            "melos_tiles_rugs_03_050",
+            "melos_tiles_rugs_03_051"
+          ],
+          [
+            "melos_tiles_rugs_03_048",
+            "melos_tiles_rugs_03_049"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_057",
+            "melos_tiles_rugs_03_059",
+            "melos_tiles_rugs_03_061"
+          ],
+          [
+            "melos_tiles_rugs_03_056",
+            "melos_tiles_rugs_03_058",
+            "melos_tiles_rugs_03_060"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-4": {
+    "id": "melos-rugs-4",
+    "label": "Melos Rugs 4",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Orange",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_116",
+            "melos_tiles_rugs_03_117"
+          ],
+          [
+            "melos_tiles_rugs_03_114",
+            "melos_tiles_rugs_03_115"
+          ],
+          [
+            "melos_tiles_rugs_03_112",
+            "melos_tiles_rugs_03_113"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_121",
+            "melos_tiles_rugs_03_123",
+            "melos_tiles_rugs_03_125"
+          ],
+          [
+            "melos_tiles_rugs_03_120",
+            "melos_tiles_rugs_03_122",
+            "melos_tiles_rugs_03_124"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-44": {
+    "id": "melos-rugs-44",
+    "label": "Melos Rugs 44",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Beige",
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_054",
+            "melos_tiles_rugs_03_055"
+          ],
+          [
+            "melos_tiles_rugs_03_062",
+            "melos_tiles_rugs_03_063"
+          ],
+          [
+            "melos_tiles_rugs_03_070",
+            "melos_tiles_rugs_03_071"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_079",
+            "melos_tiles_rugs_03_087",
+            "melos_tiles_rugs_03_095"
+          ],
+          [
+            "melos_tiles_rugs_03_078",
+            "melos_tiles_rugs_03_086",
+            "melos_tiles_rugs_03_094"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-3": {
+    "id": "melos-rugs-3",
+    "label": "Melos Rugs 3",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue",
+      "Beige",
+      "Brown",
+      "Yellow"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_100",
+            "melos_tiles_rugs_03_101"
+          ],
+          [
+            "melos_tiles_rugs_03_098",
+            "melos_tiles_rugs_03_099"
+          ],
+          [
+            "melos_tiles_rugs_03_096",
+            "melos_tiles_rugs_03_097"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_105",
+            "melos_tiles_rugs_03_107",
+            "melos_tiles_rugs_03_109"
+          ],
+          [
+            "melos_tiles_rugs_03_104",
+            "melos_tiles_rugs_03_106",
+            "melos_tiles_rugs_03_108"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-46": {
+    "id": "melos-rugs-46",
+    "label": "Melos Rugs 46",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Mixed"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_084",
+            "melos_tiles_rugs_03_085"
+          ],
+          [
+            "melos_tiles_rugs_03_082",
+            "melos_tiles_rugs_03_083"
+          ],
+          [
+            "melos_tiles_rugs_03_080",
+            "melos_tiles_rugs_03_081"
+          ]
+        ]
+      },
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_03_089",
+            "melos_tiles_rugs_03_091",
+            "melos_tiles_rugs_03_093"
+          ],
+          [
+            "melos_tiles_rugs_03_088",
+            "melos_tiles_rugs_03_090",
+            "melos_tiles_rugs_03_092"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-47": {
+    "id": "melos-rugs-47",
+    "label": "Melos Rugs 47",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_023"
+          ],
+          [
+            "melos_tiles_rugs_06_022"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_020",
+            "melos_tiles_rugs_06_021"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-48": {
+    "id": "melos-rugs-48",
+    "label": "Melos Rugs 48",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Grey"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_035"
+          ],
+          [
+            "melos_tiles_rugs_06_034"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_032",
+            "melos_tiles_rugs_06_033"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-49": {
+    "id": "melos-rugs-49",
+    "label": "Melos Rugs 49",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bathroom",
+      "Bedroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_039"
+          ],
+          [
+            "melos_tiles_rugs_06_038"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_036",
+            "melos_tiles_rugs_06_037"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-50": {
+    "id": "melos-rugs-50",
+    "label": "Melos Rugs 50",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_043"
+          ],
+          [
+            "melos_tiles_rugs_06_042"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_040",
+            "melos_tiles_rugs_06_041"
+          ]
+        ]
+      }
+    ]
+  },
+  "melos-rugs-51": {
+    "id": "melos-rugs-51",
+    "label": "Melos Rugs 51",
+    "mode": "preassembled",
+    "tileSetId": "melos",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "melos_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 1,
+        "height": 2,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_047"
+          ],
+          [
+            "melos_tiles_rugs_06_046"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 1,
+        "tileLayout": [
+          [
+            "melos_tiles_rugs_06_044",
+            "melos_tiles_rugs_06_045"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-1": {
+    "id": "simon-rugs-1",
+    "label": "Simon Rugs 1",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "LivingRoom",
+      "Hall",
+      "Diningroom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Blue"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_008",
+            "rugs_Simon_MD_005",
+            "rugs_Simon_MD_002"
+          ],
+          [
+            "rugs_Simon_MD_007",
+            "rugs_Simon_MD_004",
+            "rugs_Simon_MD_001"
+          ],
+          [
+            "rugs_Simon_MD_006",
+            "rugs_Simon_MD_003",
+            "rugs_Simon_MD_000"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-2": {
+    "id": "simon-rugs-2",
+    "label": "Simon Rugs 2",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "Diningroom",
+      "LivingRoom",
+      "Office",
+      "Hall",
+      "Bedroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Yellow",
+      "Orange",
+      "Green"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_023",
+            "rugs_Simon_MD_020",
+            "rugs_Simon_MD_017"
+          ],
+          [
+            "rugs_Simon_MD_022",
+            "rugs_Simon_MD_019",
+            "rugs_Simon_MD_016"
+          ],
+          [
+            "rugs_Simon_MD_021",
+            "rugs_Simon_MD_018",
+            "rugs_Simon_MD_015"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-3": {
+    "id": "simon-rugs-3",
+    "label": "Simon Rugs 3",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Bedroom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_032",
+            "rugs_Simon_MD_029",
+            "rugs_Simon_MD_026"
+          ],
+          [
+            "rugs_Simon_MD_031",
+            "rugs_Simon_MD_028",
+            "rugs_Simon_MD_025"
+          ],
+          [
+            "rugs_Simon_MD_030",
+            "rugs_Simon_MD_027",
+            "rugs_Simon_MD_024"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-4": {
+    "id": "simon-rugs-4",
+    "label": "Simon Rugs 4",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "LivingRoom",
+      "Office",
+      "Hall"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_046",
+            "rugs_Simon_MD_044",
+            "rugs_Simon_MD_042"
+          ],
+          [
+            "rugs_Simon_MD_045",
+            "rugs_Simon_MD_043",
+            "rugs_Simon_MD_041"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_051",
+            "rugs_Simon_MD_052"
+          ],
+          [
+            "rugs_Simon_MD_049",
+            "rugs_Simon_MD_050"
+          ],
+          [
+            "rugs_Simon_MD_047",
+            "rugs_Simon_MD_048"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-5": {
+    "id": "simon-rugs-5",
+    "label": "Simon Rugs 5",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "LivingRoom",
+      "Bathroom"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_061",
+            "rugs_Simon_MD_058",
+            "rugs_Simon_MD_055"
+          ],
+          [
+            "rugs_Simon_MD_060",
+            "rugs_Simon_MD_057",
+            "rugs_Simon_MD_054"
+          ],
+          [
+            "rugs_Simon_MD_059",
+            "rugs_Simon_MD_056",
+            "rugs_Simon_MD_053"
+          ]
+        ]
+      }
+    ]
+  },
+  "simon-rugs-6": {
+    "id": "simon-rugs-6",
+    "label": "Simon Rugs 6",
+    "mode": "preassembled",
+    "tileSetId": "simon-md",
+    "roomTypes": [
+      "Diningroom",
+      "Bedroom",
+      "Hall",
+      "LivingRoom",
+      "Office"
+    ],
+    "group": "Rug",
+    "colors": [
+      "Red",
+      "Orange",
+      "White"
+    ],
+    "materials": [
+      "Fabric"
+    ],
+    "variantGroup": "simons_rugs",
+    "pieces": {},
+    "minWidth": 2,
+    "minHeight": 2,
+    "preassembledSizes": [
+      {
+        "width": 3,
+        "height": 2,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_067",
+            "rugs_Simon_MD_065",
+            "rugs_Simon_MD_063"
+          ],
+          [
+            "rugs_Simon_MD_066",
+            "rugs_Simon_MD_064",
+            "rugs_Simon_MD_062"
+          ]
+        ]
+      },
+      {
+        "width": 2,
+        "height": 3,
+        "tileLayout": [
+          [
+            "rugs_Simon_MD_072",
+            "rugs_Simon_MD_073"
+          ],
+          [
+            "rugs_Simon_MD_070",
+            "rugs_Simon_MD_071"
+          ],
+          [
+            "rugs_Simon_MD_068",
+            "rugs_Simon_MD_069"
           ]
         ]
       }

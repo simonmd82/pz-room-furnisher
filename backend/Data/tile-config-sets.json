@@ -10,7 +10,14 @@
     "id": "melos",
     "name": "Melos",
     "description": "",
-    "enabled": true,
+    "enabled": false,
     "file": "TileConfigSets\\melos.json"
+  },
+  {
+    "id": "simon-md",
+    "name": "Simon_MD",
+    "description": "",
+    "enabled": false,
+    "file": "TileConfigSets\\simon-md.json"
   }
 ]

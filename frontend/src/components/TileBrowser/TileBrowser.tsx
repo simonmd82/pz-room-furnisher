@@ -8,9 +8,9 @@ import type { TileSheetInfo, TileDefinition, TileConfigMap, TileProperty } from 
 import {
   makeTileId, defaultDefinition, parseTileId, computeTileDefId,
   layoutCols, layoutRows, SHADES, shadeColor, STYLE_TAGS,
-  TILE_PROPERTIES,
+  TILE_PROPERTIES, isThemedCategory,
 } from '../../types/tiles';
-import { getRoomTypeNames, getCategories, getMaterials, getColorNames } from '../../api/settingsApi';
+import { getRoomTypeNames, getCategories, getMaterials, getColorNames, getThemes, getThemedCategories } from '../../api/settingsApi';
 import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
@@ -166,11 +166,11 @@ export function TileBrowser() {
   };
 
   const toggleArrayField = (field: keyof TileDefinition, val: string) => {
-    const allHave = selDefs.every(d => (d[field] as string[]).includes(val));
+    const allHave = selDefs.every(d => ((d[field] as string[] | undefined) ?? []).includes(val));
     setViewDefs(prev => {
       const next = { ...prev };
       selDefs.forEach(def => {
-        const cur     = def[field] as string[];
+        const cur     = (def[field] as string[] | undefined) ?? [];
         const updated = allHave ? cur.filter(x => x !== val) : cur.includes(val) ? cur : [...cur, val];
         next[def.id] = { ...next[def.id], [field]: updated };
       });
@@ -272,6 +272,8 @@ export function TileBrowser() {
   const [roomTypeList, setRoomTypeList] = useState<string[]>([]);
   const [materialList, setMaterialList] = useState<string[]>([]);
   const [colorList,    setColorList]    = useState<string[]>([]);
+  const [themeList,    setThemeList]    = useState<string[]>([]);
+  const [themedCats,   setThemedCats]   = useState<string[]>([]);
 
   // ── init ─────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -283,6 +285,8 @@ export function TileBrowser() {
     getCategories().then(setKnownCategories).catch(console.error);
     getMaterials().then(setMaterialList).catch(console.error);
     getColorNames().then(setColorList).catch(console.error);
+    getThemes().then(setThemeList).catch(console.error);
+    getThemedCategories().then(setThemedCats).catch(console.error);
     getGroups().then(setGlobalGroups).catch(console.error);
   }, [reloadSets]);
 
@@ -776,6 +780,22 @@ export function TileBrowser() {
                 </div>
               );
             })()}
+
+            {/* Themes — only for themed categories (settings, e.g. Picture/Poster) */}
+            {selDefs.some(d => isThemedCategory(d.group, themedCats)) && (
+              <div className={s.fieldRow} style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 4 }}>
+                <span className={s.fieldLabel}>{t('common.themes')}</span>
+                <div className={s.chipGroup}>
+                  {themeList.map(th => { const st = arrState(d => d.themes ?? [], th); return (
+                    <span key={th} className={`${s.chip} ${st==='all'?s.chipActive:st==='some'?s.chipPartial:''}`}
+                      onClick={() => toggleArrayField('themes', th)}>{th}</span>
+                  ); })}
+                </div>
+                {themeList.length === 0 && (
+                  <span style={{ fontSize: '0.75rem', color: '#888' }}>{t('common.noThemesConfigured')}</span>
+                )}
+              </div>
+            )}
 
             {(() => {
               const mixed   = isMixed(d => d.orientation);

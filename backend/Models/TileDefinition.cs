@@ -56,6 +56,11 @@ public class TileDefinition
     /// <summary>Style tags – stored but not yet consumed by the generator</summary>
     public List<string> StyleTags    { get; set; } = [];
     /// <summary>
+    /// Motif themes, e.g. ["Cars","Music"]. Only meaningful for themed categories
+    /// (settings "themedCategories", e.g. Picture/Poster); slots with AllowedThemes filter on it.
+    /// </summary>
+    public List<string> Themes       { get; set; } = [];
+    /// <summary>
     /// Erlaubte Orientierungen für dieses Tile (z.B. ["E","S"] für Bilder/Poster).
     /// Leer = alle 4 Richtungen erlaubt.
     /// </summary>

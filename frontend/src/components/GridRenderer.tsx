@@ -6,6 +6,8 @@ import { parseTileId } from '../types/tiles';
 import { sheetImageUrl } from '../api/tilesApi';
 import { recomputeRoomPath } from '../api/buildingApi';
 import { buildReverseFootprintIndex, resolveFootprintGroup, computeDelta, isGroupMoveValid, applyGroupMove } from '../utils/furnitureFootprint';
+import { buildIsoScene } from '../utils/isoScene';
+import { IsoRenderer, isoContentSize } from './IsoRenderer';
 import styles from './GridRenderer.module.css';
 
 const SPRITE_W = 128;
@@ -19,6 +21,12 @@ const ZOOM_STEP = 1.25;
 // are drawn inside their layer's box. Nothing may paint outside its box: Chrome does not
 // reliably repaint such overflow when the box resizes, leaving ghosts of the old zoom.
 const EDGE_PAD  = 8;
+const VIEW_MODE_KEY = 'gridRenderer.viewMode';
+
+type ViewMode = 'grid' | 'iso';
+function loadViewMode(): ViewMode {
+  try { return localStorage.getItem(VIEW_MODE_KEY) === 'iso' ? 'iso' : 'grid'; } catch { return 'grid'; }
+}
 
 // Stable per-Floor-object id. A new Floor object (floor switch, re-uploaded file, path
 // regen, wall-furniture re-parse) gets a fresh id, which remounts the grid content below:
@@ -415,10 +423,17 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
   const [dragPreview, setDragPreview] = useState<{ cells: { col: number; row: number }[]; valid: boolean } | null>(null);
   const dragGroupRef = useRef<PlacedFurnitureItem[] | null>(null);
   const dragOriginRef = useRef<{ col: number; row: number } | null>(null);
+  // ISO view needs the TBX tile data, which only comes with a building.
+  const [viewModeRaw, setViewModeRaw] = useState<ViewMode>(loadViewMode);
+  const viewMode: ViewMode = building ? viewModeRaw : 'grid';
+  const isIso = viewMode === 'iso';
+  const [isoCutaway, setIsoCutaway] = useState(true);
 
   // ── Viewport fit + zoom ──────────────────────────────────────────────────────
   // cellSize = (size that fits the whole floor into the viewport) * zoom; zoom 1 == "fit".
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null);
+  const setScrollRef = useCallback((el: HTMLDivElement | null) => { scrollRef.current = el; setScrollEl(el); }, []);
   const [viewport, setViewport] = useState({ w: 0, h: 0 });
   const [zoom, setZoom] = useState(1);
   useEffect(() => {
@@ -432,14 +447,31 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
   const gridCols = grid[0]?.length ?? 1;
   const gridRows = grid.length || 1;
   // A different building/floor footprint starts over at "fit".
-  useEffect(() => { setZoom(1); }, [gridCols, gridRows]);
+  // A view-mode switch does too: the two views have unrelated content sizes.
+  useEffect(() => { setZoom(1); }, [gridCols, gridRows, viewMode]);
 
-  // rows + 1: the grid reserves one cell of headroom above row 0 (TOP_PAD below).
+  const setViewMode = useCallback((mode: ViewMode) => {
+    setViewModeRaw(mode);
+    try { localStorage.setItem(VIEW_MODE_KEY, mode); } catch { /* per-viewer convenience only */ }
+    if (mode === 'iso') {
+      // Drag-editing is top-down only.
+      setEditMode(false);
+      setActiveLayer(null);
+      setDraggedItemId(null);
+      setDragPreview(null);
+    }
+  }, []);
+
+  // Grid: rows + 1, the grid reserves one cell of headroom above row 0 (TOP_PAD below).
+  // ISO: content size is linear in cellSize, so fit = viewport / size-at-cellSize-1.
+  const isoUnit = isoContentSize(gridCols, gridRows, 1);
   const fitCellSize = viewport.w > 0 && viewport.h > 0
-    ? Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(Math.min(
-        (viewport.w - 4 - 2 * EDGE_PAD) / gridCols,
-        (viewport.h - 4 - EDGE_PAD) / (gridRows + 1),
-      ))))
+    ? Math.max(MIN_CELL, Math.min(MAX_CELL, Math.floor(isIso
+        ? Math.min((viewport.w - 4) / isoUnit.w, (viewport.h - 4) / isoUnit.h)
+        : Math.min(
+            (viewport.w - 4 - 2 * EDGE_PAD) / gridCols,
+            (viewport.h - 4 - EDGE_PAD) / (gridRows + 1),
+          ))))
     : 40;
   const cellSize = Math.max(MIN_CELL, Math.min(MAX_CELL, Math.round(fitCellSize * zoom)));
   const minZoom  = MIN_CELL / fitCellSize;
@@ -573,6 +605,11 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
     return [...filtered].sort((a, b) =>
       (a.layer === 'FloorFurniture' ? 0 : 1) - (b.layer === 'FloorFurniture' ? 0 : 1));
   }, [floorPlacements, hiddenLayers]);
+
+  const isoSprites = useMemo(
+    () => (isIso && building ? buildIsoScene(building, floor, floorIndex, furniturePlacements) : []),
+    [isIso, building, floor, floorIndex, furniturePlacements],
+  );
 
   const reverseFootprintIndex = useMemo(() => buildReverseFootprintIndex(tileConfig), [tileConfig]);
 
@@ -791,6 +828,8 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
           <button
             className={`${styles.pathToggleBtn} ${showPaths ? styles.pathToggleActive : ''}`}
             onClick={() => setShowPaths(v => !v)}
+            disabled={isIso}
+            title={isIso ? t('gridRenderer.isoTopDownOnly') : undefined}
           >
             {showPaths ? t('gridRenderer.hidePaths', { count: pathRoomCount }) : t('gridRenderer.showPaths')}
           </button>
@@ -799,7 +838,8 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
             className={`${styles.pathToggleBtn} ${narrowMode > 0 ? styles.pathToggleActive : ''}`}
             style={{ marginTop: 4 }}
             onClick={() => setNarrowMode(m => (m > 0 ? 0 : 1))}
-            title={t('gridRenderer.narrowHint')}
+            disabled={isIso}
+            title={isIso ? t('gridRenderer.isoTopDownOnly') : t('gridRenderer.narrowHint')}
           >
             {narrowMode > 0 ? t('gridRenderer.hideNarrow') : t('gridRenderer.showNarrow')}
           </button>
@@ -822,6 +862,8 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
               className={`${styles.pathToggleBtn} ${showDebug ? styles.pathToggleActive : ''}`}
               style={{ marginTop: 4 }}
               onClick={() => setShowDebug(v => !v)}
+              disabled={isIso}
+              title={isIso ? t('gridRenderer.isoTopDownOnly') : undefined}
             >
               🐛 {showDebug ? t('gridRenderer.debugOff') : t('gridRenderer.debugOn', { count: floorPlacements.length })}
             </button>
@@ -840,6 +882,8 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
                   setDraggedItemId(null);
                   setDragPreview(null);
                 }}
+                disabled={isIso}
+                title={isIso ? t('gridRenderer.isoTopDownOnly') : undefined}
               >
                 🖐 {editMode ? t('gridRenderer.editModeOn') : t('gridRenderer.editModeOff')}
               </button>
@@ -885,7 +929,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
                       <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l}</span>
                       <span style={{ color: '#556', fontSize: '0.66rem' }}>{count}</span>
                     </label>
-                    {editMode && (
+                    {editMode && !isIso && (
                       <button
                         className={`${styles.layerBtn} ${isActiveLayer ? styles.layerBtnActive : ''}`}
                         style={{ fontSize: '0.7rem', padding: '1px 5px' }}
@@ -922,8 +966,47 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
         >
           {t('gridRenderer.zoomFit')}
         </button>
+        <span className={styles.zoomSep} />
+        <button
+          className={`${styles.zoomBtn} ${!isIso ? styles.zoomBtnActive : ''}`}
+          onClick={() => setViewMode('grid')}
+        >
+          {t('gridRenderer.viewGrid')}
+        </button>
+        <button
+          className={`${styles.zoomBtn} ${isIso ? styles.zoomBtnActive : ''}`}
+          onClick={() => setViewMode('iso')}
+          disabled={!building}
+          title={t('gridRenderer.viewIsoTitle')}
+        >
+          {t('gridRenderer.viewIso')}
+        </button>
+        {isIso && (
+          <button
+            className={`${styles.zoomBtn} ${isoCutaway ? styles.zoomBtnActive : ''}`}
+            onClick={() => setIsoCutaway(v => !v)}
+            title={t('gridRenderer.wallsTitle')}
+          >
+            {isoCutaway ? t('gridRenderer.wallsCut') : t('gridRenderer.wallsFull')}
+          </button>
+        )}
       </div>
-      <div ref={scrollRef} className={styles.scrollArea}>
+      <div ref={setScrollRef} className={styles.scrollArea}>
+        {isIso ? (
+          <IsoRenderer
+            sprites={isoSprites}
+            sheetInfoMap={sheetInfoMap}
+            cellSize={cellSize}
+            cols={cols}
+            rows={rows}
+            rooms={rooms}
+            roomGrid={grid}
+            scrollEl={scrollEl}
+            hiddenLayers={hiddenLayers}
+            selectedRooms={selected}
+            cutaway={isoCutaway}
+          />
+        ) : (
         <div
           key={floorRenderId(floor)}
           className={styles.content}
@@ -1225,6 +1308,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
 
         </div>
         </div>
+        )}
       </div>
       </div>
     </div>

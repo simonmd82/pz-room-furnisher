@@ -1,0 +1,3952 @@
+{
+  "decoration_02_Simon_MD_016": {
+    "id": "decoration_02_Simon_MD_016",
+    "tileId": "decoration_02_Simon_MD_016",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_016"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_017": {
+    "id": "decoration_02_Simon_MD_017",
+    "tileId": "decoration_02_Simon_MD_017",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_017"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_018": {
+    "id": "decoration_02_Simon_MD_018",
+    "tileId": "decoration_02_Simon_MD_018",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_018"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_019": {
+    "id": "decoration_02_Simon_MD_019",
+    "tileId": "decoration_02_Simon_MD_019",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_019"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_012": {
+    "id": "decoration_02_Simon_MD_012",
+    "tileId": "decoration_02_Simon_MD_012",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_012"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_013": {
+    "id": "decoration_02_Simon_MD_013",
+    "tileId": "decoration_02_Simon_MD_013",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_013"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_014": {
+    "id": "decoration_02_Simon_MD_014",
+    "tileId": "decoration_02_Simon_MD_014",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_014"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_015": {
+    "id": "decoration_02_Simon_MD_015",
+    "tileId": "decoration_02_Simon_MD_015",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_015"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_011": {
+    "id": "decoration_02_Simon_MD_011",
+    "tileId": "decoration_02_Simon_MD_011",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_011"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_010": {
+    "id": "decoration_02_Simon_MD_010",
+    "tileId": "decoration_02_Simon_MD_010",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_010"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_009": {
+    "id": "decoration_02_Simon_MD_009",
+    "tileId": "decoration_02_Simon_MD_009",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_009"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_008": {
+    "id": "decoration_02_Simon_MD_008",
+    "tileId": "decoration_02_Simon_MD_008",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_008"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_032": {
+    "id": "decoration_02_Simon_MD_032",
+    "tileId": "decoration_02_Simon_MD_032",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_032"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_033": {
+    "id": "decoration_02_Simon_MD_033",
+    "tileId": "decoration_02_Simon_MD_033",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_033"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_034": {
+    "id": "decoration_02_Simon_MD_034",
+    "tileId": "decoration_02_Simon_MD_034",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_034"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_035": {
+    "id": "decoration_02_Simon_MD_035",
+    "tileId": "decoration_02_Simon_MD_035",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_035"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_036": {
+    "id": "decoration_02_Simon_MD_036",
+    "tileId": "decoration_02_Simon_MD_036",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_036"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_037": {
+    "id": "decoration_02_Simon_MD_037",
+    "tileId": "decoration_02_Simon_MD_037",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_037"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_038": {
+    "id": "decoration_02_Simon_MD_038",
+    "tileId": "decoration_02_Simon_MD_038",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_038"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_02_Simon_MD_039": {
+    "id": "decoration_02_Simon_MD_039",
+    "tileId": "decoration_02_Simon_MD_039",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_02_Simon_MD_039"
+      ]
+    ],
+    "group": "Music",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Black"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_speaker_black_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_001": {
+    "id": "decoration_Simon_MD_001",
+    "tileId": "decoration_Simon_MD_001",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_001"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_01",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_002": {
+    "id": "decoration_Simon_MD_002",
+    "tileId": "decoration_Simon_MD_002",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_002"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_01",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_003": {
+    "id": "decoration_Simon_MD_003",
+    "tileId": "decoration_Simon_MD_003",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_003"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_02",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_004": {
+    "id": "decoration_Simon_MD_004",
+    "tileId": "decoration_Simon_MD_004",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_004"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_02",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_006": {
+    "id": "decoration_Simon_MD_006",
+    "tileId": "decoration_Simon_MD_006",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_006"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_03",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_007": {
+    "id": "decoration_Simon_MD_007",
+    "tileId": "decoration_Simon_MD_007",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_007"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_03",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_008": {
+    "id": "decoration_Simon_MD_008",
+    "tileId": "decoration_Simon_MD_008",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_008"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_04",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_009": {
+    "id": "decoration_Simon_MD_009",
+    "tileId": "decoration_Simon_MD_009",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_009"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_04",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_010": {
+    "id": "decoration_Simon_MD_010",
+    "tileId": "decoration_Simon_MD_010",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_010"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_05",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_011": {
+    "id": "decoration_Simon_MD_011",
+    "tileId": "decoration_Simon_MD_011",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_011"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_05",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_012": {
+    "id": "decoration_Simon_MD_012",
+    "tileId": "decoration_Simon_MD_012",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_012"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_06",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_013": {
+    "id": "decoration_Simon_MD_013",
+    "tileId": "decoration_Simon_MD_013",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_013"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_06",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_014": {
+    "id": "decoration_Simon_MD_014",
+    "tileId": "decoration_Simon_MD_014",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_014"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_07",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_015": {
+    "id": "decoration_Simon_MD_015",
+    "tileId": "decoration_Simon_MD_015",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_015"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_07",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_021": {
+    "id": "decoration_Simon_MD_021",
+    "tileId": "decoration_Simon_MD_021",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_021"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_09",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_020": {
+    "id": "decoration_Simon_MD_020",
+    "tileId": "decoration_Simon_MD_020",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_020"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_09",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_019": {
+    "id": "decoration_Simon_MD_019",
+    "tileId": "decoration_Simon_MD_019",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_019"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_08",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_018": {
+    "id": "decoration_Simon_MD_018",
+    "tileId": "decoration_Simon_MD_018",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_018"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_08",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_017": {
+    "id": "decoration_Simon_MD_017",
+    "tileId": "decoration_Simon_MD_017",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_017"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_07",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_016": {
+    "id": "decoration_Simon_MD_016",
+    "tileId": "decoration_Simon_MD_016",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_016"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_07",
+    "styleTags": [],
+    "themes": [
+      "Movies"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_127": {
+    "id": "decoration_Simon_MD_127",
+    "tileId": "decoration_Simon_MD_127",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_127"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_01",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_128": {
+    "id": "decoration_Simon_MD_128",
+    "tileId": "decoration_Simon_MD_128",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_128"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_01",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_129": {
+    "id": "decoration_Simon_MD_129",
+    "tileId": "decoration_Simon_MD_129",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_129"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_02",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_130": {
+    "id": "decoration_Simon_MD_130",
+    "tileId": "decoration_Simon_MD_130",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_130"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_02",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_131": {
+    "id": "decoration_Simon_MD_131",
+    "tileId": "decoration_Simon_MD_131",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_131"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_03",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_132": {
+    "id": "decoration_Simon_MD_132",
+    "tileId": "decoration_Simon_MD_132",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_132"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_03",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_133": {
+    "id": "decoration_Simon_MD_133",
+    "tileId": "decoration_Simon_MD_133",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_133"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_04",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_134": {
+    "id": "decoration_Simon_MD_134",
+    "tileId": "decoration_Simon_MD_134",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_134"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_04",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_136": {
+    "id": "decoration_Simon_MD_136",
+    "tileId": "decoration_Simon_MD_136",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_136"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_05",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_135": {
+    "id": "decoration_Simon_MD_135",
+    "tileId": "decoration_Simon_MD_135",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_135"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_05",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_118": {
+    "id": "decoration_Simon_MD_118",
+    "tileId": "decoration_Simon_MD_118",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_118"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [],
+    "variantGroup": "simon_tabletop_deco_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_119": {
+    "id": "decoration_Simon_MD_119",
+    "tileId": "decoration_Simon_MD_119",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_119"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [],
+    "variantGroup": "simon_tabletop_deco_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_120": {
+    "id": "decoration_Simon_MD_120",
+    "tileId": "decoration_Simon_MD_120",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_120"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [],
+    "variantGroup": "simon_tabletop_deco_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_121": {
+    "id": "decoration_Simon_MD_121",
+    "tileId": "decoration_Simon_MD_121",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_121"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [],
+    "variantGroup": "simon_tabletop_deco_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_122": {
+    "id": "decoration_Simon_MD_122",
+    "tileId": "decoration_Simon_MD_122",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_122"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Hall",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_deco_standing_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_123": {
+    "id": "decoration_Simon_MD_123",
+    "tileId": "decoration_Simon_MD_123",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_123"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Hall",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_deco_standing_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_124": {
+    "id": "decoration_Simon_MD_124",
+    "tileId": "decoration_Simon_MD_124",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_124"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Hall",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_deco_standing_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_125": {
+    "id": "decoration_Simon_MD_125",
+    "tileId": "decoration_Simon_MD_125",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_125"
+      ]
+    ],
+    "group": "Decoration",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Hall",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_deco_standing_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_174": {
+    "id": "decoration_Simon_MD_174",
+    "tileId": "decoration_Simon_MD_174",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_174"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_06",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_175": {
+    "id": "decoration_Simon_MD_175",
+    "tileId": "decoration_Simon_MD_175",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_175"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_06",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_177#1x2": {
+    "id": "decoration_Simon_MD_177#1x2",
+    "tileId": "decoration_Simon_MD_177",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_177"
+      ],
+      [
+        "decoration_Simon_MD_176"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_07",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_178#2x1": {
+    "id": "decoration_Simon_MD_178#2x1",
+    "tileId": "decoration_Simon_MD_178",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_178",
+        "decoration_Simon_MD_179"
+      ]
+    ],
+    "group": "Picture",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Hall",
+      "LivingRoom",
+      "Office",
+      "Diningroom"
+    ],
+    "variantGroup": "simon_picture_07",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_170": {
+    "id": "decoration_Simon_MD_170",
+    "tileId": "decoration_Simon_MD_170",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_170"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_10",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_171": {
+    "id": "decoration_Simon_MD_171",
+    "tileId": "decoration_Simon_MD_171",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_171"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_10",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_172": {
+    "id": "decoration_Simon_MD_172",
+    "tileId": "decoration_Simon_MD_172",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_172"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_11",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_173": {
+    "id": "decoration_Simon_MD_173",
+    "tileId": "decoration_Simon_MD_173",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_173"
+      ]
+    ],
+    "group": "Poster",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "Office",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_poster_11",
+    "styleTags": [],
+    "themes": [
+      "Art"
+    ],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_031#1x2": {
+    "id": "furniture_02_Simon_MD_031#1x2",
+    "tileId": "furniture_02_Simon_MD_031",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_031"
+      ],
+      [
+        "furniture_02_Simon_MD_030"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W",
+      "E"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_032#2x1": {
+    "id": "furniture_02_Simon_MD_032#2x1",
+    "tileId": "furniture_02_Simon_MD_032",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_032",
+        "furniture_02_Simon_MD_033"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_035#1x2": {
+    "id": "furniture_02_Simon_MD_035#1x2",
+    "tileId": "furniture_02_Simon_MD_035",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_035"
+      ],
+      [
+        "furniture_02_Simon_MD_034"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Grey"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_grey_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W",
+      "E"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_036#2x1": {
+    "id": "furniture_02_Simon_MD_036#2x1",
+    "tileId": "furniture_02_Simon_MD_036",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_036",
+        "furniture_02_Simon_MD_037"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Grey"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_grey_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_039#1x2": {
+    "id": "furniture_02_Simon_MD_039#1x2",
+    "tileId": "furniture_02_Simon_MD_039",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_039"
+      ],
+      [
+        "furniture_02_Simon_MD_038"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W",
+      "E"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_040#2x1": {
+    "id": "furniture_02_Simon_MD_040#2x1",
+    "tileId": "furniture_02_Simon_MD_040",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_040",
+        "furniture_02_Simon_MD_041"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Black"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_black_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_043#1x2": {
+    "id": "furniture_02_Simon_MD_043#1x2",
+    "tileId": "furniture_02_Simon_MD_043",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_043"
+      ],
+      [
+        "furniture_02_Simon_MD_042"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_red_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W",
+      "E"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_044#2x1": {
+    "id": "furniture_02_Simon_MD_044#2x1",
+    "tileId": "furniture_02_Simon_MD_044",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_044",
+        "furniture_02_Simon_MD_045"
+      ]
+    ],
+    "group": "Table",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": true,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": true,
+    "isLootContainer": true,
+    "colors": [
+      "Red"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_table_low_red_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N",
+      "S"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_088": {
+    "id": "furniture_02_Simon_MD_088",
+    "tileId": "furniture_02_Simon_MD_088",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_088"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_089": {
+    "id": "furniture_02_Simon_MD_089",
+    "tileId": "furniture_02_Simon_MD_089",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_089"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_090": {
+    "id": "furniture_02_Simon_MD_090",
+    "tileId": "furniture_02_Simon_MD_090",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_090"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_097": {
+    "id": "furniture_02_Simon_MD_097",
+    "tileId": "furniture_02_Simon_MD_097",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_097"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_098": {
+    "id": "furniture_02_Simon_MD_098",
+    "tileId": "furniture_02_Simon_MD_098",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_098"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_099": {
+    "id": "furniture_02_Simon_MD_099",
+    "tileId": "furniture_02_Simon_MD_099",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_099"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_094#1x2": {
+    "id": "furniture_02_Simon_MD_094#1x2",
+    "tileId": "furniture_02_Simon_MD_094",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_094"
+      ],
+      [
+        "furniture_02_Simon_MD_092"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_093#2x1": {
+    "id": "furniture_02_Simon_MD_093#2x1",
+    "tileId": "furniture_02_Simon_MD_093",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_093",
+        "furniture_02_Simon_MD_095"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_02_Simon_MD_096#2x2": {
+    "id": "furniture_02_Simon_MD_096#2x2",
+    "tileId": "furniture_02_Simon_MD_096",
+    "label": "",
+    "orientation": "NW",
+    "tileLayout": [
+      [
+        "furniture_02_Simon_MD_096",
+        "furniture_02_Simon_MD_095"
+      ],
+      [
+        "furniture_02_Simon_MD_093",
+        "furniture_02_Simon_MD_093"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_shelf_brown_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "NW"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_062": {
+    "id": "honeywood_Simon_MD_062",
+    "tileId": "honeywood_Simon_MD_062",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_062"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_063": {
+    "id": "honeywood_Simon_MD_063",
+    "tileId": "honeywood_Simon_MD_063",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_063"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_065": {
+    "id": "honeywood_Simon_MD_065",
+    "tileId": "honeywood_Simon_MD_065",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_065"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_white_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_064": {
+    "id": "honeywood_Simon_MD_064",
+    "tileId": "honeywood_Simon_MD_064",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_064"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Glass",
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_white_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_106": {
+    "id": "honeywood_Simon_MD_106",
+    "tileId": "honeywood_Simon_MD_106",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_106"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_107": {
+    "id": "honeywood_Simon_MD_107",
+    "tileId": "honeywood_Simon_MD_107",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_107"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_104": {
+    "id": "honeywood_Simon_MD_104",
+    "tileId": "honeywood_Simon_MD_104",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_104"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_white_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_105": {
+    "id": "honeywood_Simon_MD_105",
+    "tileId": "honeywood_Simon_MD_105",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_105"
+      ]
+    ],
+    "group": "Cabinet",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom"
+    ],
+    "variantGroup": "simon_cabinet_white_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_066": {
+    "id": "honeywood_Simon_MD_066",
+    "tileId": "honeywood_Simon_MD_066",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_066"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_067": {
+    "id": "honeywood_Simon_MD_067",
+    "tileId": "honeywood_Simon_MD_067",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_067"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_068": {
+    "id": "honeywood_Simon_MD_068",
+    "tileId": "honeywood_Simon_MD_068",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_068"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_white_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_069": {
+    "id": "honeywood_Simon_MD_069",
+    "tileId": "honeywood_Simon_MD_069",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_069"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_white_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_070": {
+    "id": "honeywood_Simon_MD_070",
+    "tileId": "honeywood_Simon_MD_070",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_070"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_hanger_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_071": {
+    "id": "honeywood_Simon_MD_071",
+    "tileId": "honeywood_Simon_MD_071",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_071"
+      ]
+    ],
+    "group": "Wardrobe",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom"
+    ],
+    "variantGroup": "simon_wardrobe_hanger_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_143": {
+    "id": "honeywood_Simon_MD_143",
+    "tileId": "honeywood_Simon_MD_143",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_143"
+      ]
+    ],
+    "group": "Clock",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Diningroom",
+      "Hall"
+    ],
+    "variantGroup": "simon_standing_clock_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "honeywood_Simon_MD_144": {
+    "id": "honeywood_Simon_MD_144",
+    "tileId": "honeywood_Simon_MD_144",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "honeywood_Simon_MD_144"
+      ]
+    ],
+    "group": "Clock",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Diningroom",
+      "Hall"
+    ],
+    "variantGroup": "simon_standing_clock_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "vegetation_indoor_Simon_MD_000": {
+    "id": "vegetation_indoor_Simon_MD_000",
+    "tileId": "vegetation_indoor_Simon_MD_000",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "vegetation_indoor_Simon_MD_000"
+      ]
+    ],
+    "group": "Plant",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Bedroom",
+      "Diningroom",
+      "Hall",
+      "Office"
+    ],
+    "variantGroup": "simon_plant_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  }
+}

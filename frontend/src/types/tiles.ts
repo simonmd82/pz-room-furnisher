@@ -96,6 +96,8 @@ export interface TileDefinition {
   windowBlockedEdge: '' | 'N' | 'E' | 'S' | 'W';
   /** Style tags – stored but not yet used by the generator */
   styleTags: string[];
+  /** Motif themes, e.g. ["Cars"] — only for themed categories (settings, e.g. Picture/Poster). */
+  themes?: string[];
   /**
    * true (default) = orientation/allowedOrients are authored as the direction the piece faces
    * (this tool's historical convention). false = authored directly in Project Zomboid's own
@@ -114,6 +116,23 @@ export interface TileConfigSetInfo {
   description: string;
   enabled: boolean;
   file: string;
+}
+
+/** One room-type slot that can pick a tile. Mirrors backend TileUsageRef. */
+export interface TileUsageRef {
+  roomType: string;
+  source: 'slot' | 'pool' | 'poolRequired' | 'companion' | 'grid';
+  sourceId: string;
+  label: string;
+  /** Reached only as a VariantGroup sibling of a directly matched tile. */
+  viaVariantGroup: boolean;
+}
+
+export interface TileUsageEntry {
+  tile: TileDefinition;
+  setId: string;
+  setEnabled: boolean;
+  usage: TileUsageRef[];
 }
 
 // ── Unified tile properties (used in all 3 tabs) ──────────────────────────
@@ -159,6 +178,15 @@ export function makeTileId(sheetName: string, index: number): string {
  * Computes the identity key for a piece from its root tile id and footprint shape.
  * Mirrors backend/Models/TileDefinition.cs (ComputeId) — keep both in sync.
  */
+/**
+ * Whether tiles of `group` carry themes (TileDefinition.themes) and slots can filter them by theme.
+ * `themedCategories` comes from settings (getThemedCategories); matched case-insensitively like the backend.
+ */
+export function isThemedCategory(group: string | undefined, themedCategories: string[]): boolean {
+  const g = (group ?? '').toLowerCase();
+  return themedCategories.some(c => c.toLowerCase() === g);
+}
+
 export function computeTileDefId(tileId: string, tileLayout: string[][]): string {
   const cols = tileLayout[0]?.length ?? 1;
   const rows = tileLayout.length;

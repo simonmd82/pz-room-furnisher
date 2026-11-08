@@ -1,18 +1,19 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { GridCell, GridLayout, GridMode, GridOrient, GridPoint, RoomTypeSlot } from '../../types/roomTypes';
-import { defaultGridCell, defaultGridLayout, defaultSlot, EMPTY_CATEGORY, FURNITURE_LAYERS, GRID_ORIENTS, SIZE_KEYS } from '../../types/roomTypes';
+import type { AnchorRule, GridCell, GridCorner, GridLayout, GridMode, GridOrient, GridPoint, RoomTypeSlot } from '../../types/roomTypes';
+import { defaultGridCell, defaultGridLayout, defaultSlot, EMPTY_CATEGORY, FURNITURE_LAYERS, GRID_CORNERS, GRID_ORIENTS, SIZE_KEYS } from '../../types/roomTypes';
 import type { TileDefinition } from '../../types/tiles';
 import { layoutCols, layoutRows } from '../../types/tiles';
 import {
-  cellRect, GRID_WARNING_KINDS, nextCellId, ORIENT_ARROW, rectContains, rectsOverlap,
-  rotateOrientCw, transformedGridSize, transformGridOrient, transformGridRect, validateGrid,
+  canOverlap, cellRect, CORNER_ARROW, GRID_WARNING_KINDS, nextCellId, ORIENT_ARROW, pieceArrow, rectContains, rectsOverlap,
+  rotateOrientCw, transformedGridSize, transformGridCorner, transformGridOrient, transformGridRect, validateGrid,
 } from '../../utils/gridLayoutMath';
 import type { GridIssue, GridRect } from '../../utils/gridLayoutMath';
 import type { TileCatalog } from '../../utils/tileCatalog';
 import { facingOf, getCachedTileCatalog, loadTileCatalog, SPRITE_W, spriteStyle } from '../../utils/tileCatalog';
 import { FurniturePickerModal } from './FurniturePickerModal';
+import { ThemeSelector } from './ThemeSelector';
 import rs from './RoomTypeEditor.module.css';
 import s from './GridLayoutEditor.module.css';
 
@@ -28,10 +29,25 @@ interface Props {
   availGroups: string[];
   /** Ids of the room type's slots — a grid id must not clash with them. */
   slotIds: string[];
+  /** Copied grid, shared across room types (state lives in the room-type editor). */
+  clipboard: { grid: GridLayout; fromRoom: string } | null;
+  /** Current room type, to label a clipboard copied from another one. */
+  roomType: string;
+  onCopy: (grid: GridLayout) => void;
+  onClearClipboard: () => void;
+}
+
+/** `${base}_copy`, `${base}_copy2`, … — the first one not in `taken`. */
+function uniqueGridId(base: string, taken: Set<string>): string {
+  const stem = `${base || 'grid'}_copy`;
+  if (!taken.has(stem)) return stem;
+  let n = 2;
+  while (taken.has(`${stem}${n}`)) n++;
+  return `${stem}${n}`;
 }
 
 /** "Grid layouts" section of the room-type editor: a list of collapsible grid cards. */
-export function GridLayoutEditor({ grids, onChange, availGroups, slotIds }: Props) {
+export function GridLayoutEditor({ grids, onChange, availGroups, slotIds, clipboard, roomType, onCopy, onClearClipboard }: Props) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [catalog, setCatalog] = useState<TileCatalog | null>(getCachedTileCatalog);
@@ -58,17 +74,68 @@ export function GridLayoutEditor({ grids, onChange, availGroups, slotIds }: Prop
     setExpanded(new Set());
   };
 
+  /** Deep copy with a free id; cell ids stay (they are only unique within their grid).
+   *  A paste keeps the original id/label when the id is still free in this room type. */
+  const cloneWithFreeId = (g: GridLayout, keepIfFree: boolean): GridLayout => {
+    const copy = structuredClone(g);
+    const taken = new Set([...slotIds, ...grids.map(x => x.id)]);
+    if (keepIfFree && g.id && !taken.has(g.id)) return copy;
+    copy.id = uniqueGridId(g.id, taken);
+    if (copy.label) copy.label = t('roomTypeEditor.grids.copyLabel', { label: copy.label });
+    return copy;
+  };
+
+  const duplicateGrid = (idx: number) => {
+    const next = [...grids];
+    next.splice(idx + 1, 0, cloneWithFreeId(grids[idx], false));
+    onChange(next);
+    // Indices after idx shift by one; the duplicate opens.
+    setExpanded(prev => {
+      const n = new Set<number>();
+      prev.forEach(i => n.add(i <= idx ? i : i + 1));
+      n.add(idx + 1);
+      return n;
+    });
+  };
+
+  const pasteGrid = () => {
+    if (!clipboard) return;
+    onChange([...grids, cloneWithFreeId(clipboard.grid, true)]);
+    setExpanded(new Set([grids.length]));
+  };
+
   return (
     <>
       <div className={rs.slotsHeader} style={{ marginTop: 12 }}>
         <span className={rs.slotsLabel}>{t('roomTypeEditor.grids.header', { count: grids.length })}</span>
         <button className={rs.addSlotBtn} onClick={addGrid}>{t('roomTypeEditor.grids.addGrid')}</button>
       </div>
+      {clipboard && (
+        <div className={rs.pasteBar}>
+          <span className={rs.pasteBarIcon}>📋</span>
+          <span className={rs.pasteBarText}>
+            {t('roomTypeEditor.pasteBar.clipboard')}{' '}
+            <strong>▦ {clipboard.grid.id || clipboard.grid.label || t('roomTypeEditor.pasteBar.noName')}</strong>
+            {clipboard.fromRoom !== roomType && (
+              <span className={rs.pasteBarFrom}>{t('roomTypeEditor.pasteBar.from', { room: clipboard.fromRoom })}</span>
+            )}
+          </span>
+          <button className={rs.pasteSlotBtn} onClick={pasteGrid}
+            title={t('roomTypeEditor.grids.pasteTitle', { name: clipboard.grid.id || t('roomTypeEditor.pasteBar.insertTitleFallback') })}>
+            {t('roomTypeEditor.pasteBar.insert')}
+          </button>
+          <button className={rs.pasteBarClearBtn} title={t('roomTypeEditor.pasteBar.clearTitle')}
+            onClick={onClearClipboard}>✕</button>
+        </div>
+      )}
       {grids.length === 0 && (
         <div className={rs.hint} style={{ padding: '10px 12px' }}>{t('roomTypeEditor.grids.noGrids')}</div>
       )}
       {grids.map((grid, idx) => {
         const otherIds = new Set([...slotIds, ...grids.filter((_, i) => i !== idx).map(g => g.id)]);
+        const anchorTargets = [...new Set(grids.filter((_, i) => i !== idx).flatMap(g => [
+          g.id, g.slotGroupId, ...g.cells.map(c => c.anchorGroup?.trim() ?? ''),
+        ]))].filter(id => id && id !== grid.id && id !== grid.slotGroupId);
         return (
           <GridCard key={idx}
             grid={grid}
@@ -77,7 +144,10 @@ export function GridLayoutEditor({ grids, onChange, availGroups, slotIds }: Prop
             onToggle={() => setExpanded(prev => { const n = new Set(prev); if (n.has(idx)) n.delete(idx); else n.add(idx); return n; })}
             onChange={next => updateGrid(idx, next)}
             onRemove={() => removeGrid(idx)}
+            onDuplicate={() => duplicateGrid(idx)}
+            onCopy={() => onCopy(grid)}
             otherIds={otherIds}
+            anchorTargets={anchorTargets}
             availGroups={availGroups}
             catalog={catalog} />
         );
@@ -105,7 +175,11 @@ interface CardProps {
   onToggle: () => void;
   onChange: (g: GridLayout) => void;
   onRemove: () => void;
+  onDuplicate: () => void;
+  onCopy: () => void;
   otherIds: Set<string>;
+  /** Grid ids, grid groups and cell anchor groups this grid can be placed opposite. */
+  anchorTargets: string[];
   availGroups: string[];
   catalog: TileCatalog | null;
 }
@@ -113,7 +187,7 @@ interface CardProps {
 type PickerTarget = { kind: 'new'; x: number; y: number } | { kind: 'repick'; cellId: string };
 type Tool = 'place' | 'keepClear';
 
-function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherIds, availGroups, catalog }: CardProps) {
+function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, onDuplicate, onCopy, otherIds, anchorTargets, availGroups, catalog }: CardProps) {
   const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tool, setTool] = useState<Tool>('place');
@@ -130,13 +204,35 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
   const updateCell = (id: string, patch: Partial<GridCell>) =>
     setCells(grid.cells.map(c => c.id === id ? { ...c, ...patch } : c));
 
-  /** True if rect fits inside the grid and overlaps no other piece / keep-clear cell. */
-  const fits = (r: GridRect, ignoreId?: string) =>
-    r.x >= 0 && r.y >= 0 && r.x + r.w <= grid.width && r.y + r.h <= grid.height
-    && !grid.cells.some(c => c.id !== ignoreId && rectsOverlap(r, cellRect(c)))
-    && !grid.keepClear.some(p => rectContains(r, p));
+  /** True if rect fits inside the grid and overlaps no other piece (except a stacking host,
+   *  see canOverlap) / keep-clear cell. `ignoreId` = the piece being moved (new pieces don't stack). */
+  const fits = (r: GridRect, ignoreId?: string) => {
+    const self = grid.cells.find(c => c.id === ignoreId) ?? defaultGridCell('', r.x, r.y);
+    return r.x >= 0 && r.y >= 0 && r.x + r.w <= grid.width && r.y + r.h <= grid.height
+      && !grid.cells.some(c => c.id !== ignoreId && rectsOverlap(r, cellRect(c)) && !canOverlap(self, c))
+      && !grid.keepClear.some(p => rectContains(r, p));
+  };
 
-  const pieceAt = (p: GridPoint) => grid.cells.find(c => rectContains(cellRect(c), p));
+  /** Topmost piece at p: a piece standing on/in a stacking host wins over the host. */
+  const pieceAt = (p: GridPoint) => {
+    const hits = grid.cells.filter(c => rectContains(cellRect(c), p));
+    return hits.find(c => !c.allowStacking) ?? hits[0];
+  };
+
+  /** Click on a piece: a selected stacking host adds a new piece on that cell; a selected piece
+   *  standing on a host selects the host below (click-through); otherwise select the piece. */
+  const onPieceClick = (c: GridCell, p: GridPoint) => {
+    if (c.id !== selectedId) { setSelectedId(c.id); return; }
+    if (c.allowStacking) { addOnHost(p); return; }
+    const host = grid.cells.find(h => h.id !== c.id && h.allowStacking && rectContains(cellRect(h), p));
+    if (host) setSelectedId(host.id);
+  };
+
+  /** Click on an already selected stacking host: add a new piece on that cell. */
+  const addOnHost = (p: GridPoint) => {
+    if (grid.keepClear.some(k => k.x === p.x && k.y === p.y) || pieceAt(p)?.allowStacking === false) { flash(); return; }
+    setPicker({ kind: 'new', x: p.x, y: p.y });
+  };
 
   const flash = () => { setFlashBad(true); window.setTimeout(() => setFlashBad(false), 450); };
 
@@ -189,12 +285,13 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
   // ── Piece edits ──
   const rotatePiece = (c: GridCell) => {
     const orient = rotateOrientCw(c.orient);
+    const cornerOrient = transformGridCorner(c.cornerOrient, 1, false);
     const footprint = { ...c.footprint, width: c.footprint.height, height: c.footprint.width };
     // Pivot around the top-left; nudge back inside the grid if the swap pushes it out.
     const x = Math.max(0, Math.min(c.x, grid.width - footprint.width));
     const y = Math.max(0, Math.min(c.y, grid.height - footprint.height));
     if (!fits({ x, y, w: footprint.width, h: footprint.height }, c.id)) { flash(); return; }
-    updateCell(c.id, { orient, footprint, x, y });
+    updateCell(c.id, { orient, cornerOrient, footprint, x, y });
   };
 
   const setAnchor = (id: string) =>
@@ -223,12 +320,18 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
     if (!picker) return;
     const target = picker;
     setPicker(null);
-    const orient: GridOrient = target.kind === 'repick'
-      ? grid.cells.find(c => c.id === target.cellId)?.orient ?? 'S'
-      : 'S';
-    // Footprint from the picked variant that actually faces `orient`, so the canvas shape
-    // matches what the generator will place; fall back to the picker's shared footprint.
-    const facing = defs.find(d => facingOf(d) === orient);
+    const prev = target.kind === 'repick' ? grid.cells.find(c => c.id === target.cellId) : undefined;
+    const orient: GridOrient = prev?.orient ?? 'S';
+    // A card holding only corner variants (no straight piece) makes this a corner piece; a mixed
+    // card (straight + corner counters of one set) keeps the cell's current corner setting.
+    const cornerDefs = defs.filter(isCornerDef);
+    const cornerOrient: GridCorner | '' = defs.length > 0 && cornerDefs.length === defs.length
+      ? (cornerDefs.find(d => facingOf(d) === prev?.cornerOrient) ?? cornerDefs[0]).orientation as GridCorner
+      : prev?.cornerOrient ?? '';
+    // Footprint from the picked variant that actually faces `orient` (or sits in the corner),
+    // so the canvas shape matches what the generator will place; fall back to the picker's
+    // shared footprint.
+    const facing = defs.find(d => facingOf(d) === (cornerOrient || orient));
     const fp = facing
       ? { width: layoutCols(facing), height: layoutRows(facing), canRotate: false }
       : patch.footprint ? { width: patch.footprint.width, height: patch.footprint.height, canRotate: false } : null;
@@ -237,6 +340,7 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
       requiredLayer: patch.requiredLayer ?? '',
       requiredProperties: patch.requiredProperties ?? [],
       previewTileIds: defs.map(d => d.id),
+      cornerOrient,
     };
 
     if (target.kind === 'repick') {
@@ -278,6 +382,18 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
   };
 
   const anchorCell = grid.cells.find(c => c.isAnchor);
+  const opposite = grid.oppositeAnchor;
+  const updateOpposite = (patch: Partial<AnchorRule>) => {
+    if (opposite) onChange({ ...grid, oppositeAnchor: { ...opposite, ...patch } });
+  };
+  const setOppositeTarget = (anchorTarget: string) => {
+    if (!anchorTarget) {
+      const { oppositeAnchor: _, ...rest } = grid;
+      onChange(rest);
+      return;
+    }
+    onChange({ ...grid, oppositeAnchor: { positions: ['oppositeWall'], minOppositeWallDistance: 1, ...opposite, anchorTarget } });
+  };
 
   return (
     <div className={`${rs.slotCard} ${grid.required ? rs.slotCardRequired : ''}`}>
@@ -291,6 +407,10 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
           {anchorCell && <> · ★ {anchorCell.label || anchorCell.id}</>}
         </span>
         {errors.length > 0 && <span className={s.errorBadge} title={issues.map(i => issueText(t, i)).join('\n')}>⚠ {errors.length}</span>}
+        <button className={rs.duplicateSlotBtn} onClick={e => { e.stopPropagation(); onDuplicate(); }}
+          title={t('roomTypeEditor.grids.duplicateGrid')}>⎘</button>
+        <button className={rs.copySlotBtn} onClick={e => { e.stopPropagation(); onCopy(); }}
+          title={t('roomTypeEditor.grids.copyGrid')}>📋</button>
         <button className={rs.removeSlotBtn} onClick={e => { e.stopPropagation(); onRemove(); }}
           title={t('roomTypeEditor.grids.removeGrid')}>✕</button>
       </div>
@@ -341,6 +461,10 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
               <input type="checkbox" checked={!!grid.mainSubRoom} onChange={e => onChange({ ...grid, mainSubRoom: e.target.checked })} />
               {t('roomTypeEditor.grids.mainSubRoomLabel')}
             </label>
+            <label className={rs.slotCheck} title={t('roomTypeEditor.colorHarmony.title')}>
+              <input type="checkbox" checked={grid.useColorHarmony !== false} onChange={e => onChange({ ...grid, useColorHarmony: e.target.checked })} />
+              {t('roomTypeEditor.colorHarmony.label')}
+            </label>
             <label className={s.field}>
               <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.priorityLabel')}</span>
               <input type="number" className={rs.slotNumInput} value={grid.priority}
@@ -357,6 +481,38 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
               )}
             </label>
           </div>
+          <div className={rs.slotRow} style={{ flexWrap: 'wrap' }} title={t('roomTypeEditor.grids.oppositeAnchorHint')}>
+            <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.oppositeAnchorLabel')}</span>
+            <select className={rs.slotSelect} value={opposite?.anchorTarget ?? ''} onChange={e => setOppositeTarget(e.target.value)}>
+              <option value="">{t('roomTypeEditor.grids.oppositeAnchorNone')}</option>
+              {[...new Set([...anchorTargets, ...(opposite ? [opposite.anchorTarget] : [])])].map(id => <option key={id} value={id}>{id}</option>)}
+            </select>
+            {opposite && (<>
+              <span className={rs.slotHint} title={t('roomTypeEditor.slotCard.distanceTitle')}>{t('roomTypeEditor.slotCard.distanceLabel')}</span>
+              <input type="number" min={1} className={rs.slotSizeInput} style={{ width: 64 }}
+                value={opposite.minOppositeWallDistance ?? 1}
+                title={t('roomTypeEditor.slotCard.distanceMinTitle')}
+                onChange={e => updateOpposite({ minOppositeWallDistance: Math.max(1, parseInt(e.target.value) || 1) })} />
+              <span className={rs.slotHint}>{t('roomTypeEditor.slotCard.distanceTo')}</span>
+              <input type="number" min={1} className={rs.slotSizeInput} style={{ width: 64 }} placeholder="∞"
+                value={opposite.maxOppositeWallDistance ?? ''}
+                title={t('roomTypeEditor.slotCard.distanceMaxTitle')}
+                onChange={e => {
+                  const raw = e.target.value.trim();
+                  updateOpposite({ maxOppositeWallDistance: raw === '' ? undefined : Math.max(1, parseInt(raw) || 1) });
+                }} />
+              <label className={rs.slotCheck} title={t('roomTypeEditor.slotCard.allowInsideTitle')}>
+                <input type="checkbox" checked={opposite.oppositeWallAllowInside ?? false}
+                  onChange={e => updateOpposite({ oppositeWallAllowInside: e.target.checked || undefined })} />
+                {t('roomTypeEditor.slotCard.allowInsideLabel')}
+              </label>
+              <label className={rs.slotCheck} title={t('roomTypeEditor.slotCard.keepSightClearTitle')}>
+                <input type="checkbox" checked={opposite.keepSightClear ?? false}
+                  onChange={e => updateOpposite({ keepSightClear: e.target.checked || undefined })} />
+                {t('roomTypeEditor.slotCard.keepSightClearLabel')}
+              </label>
+            </>)}
+          </div>
           <div className={rs.slotRow}>
             <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.sizesLabel')}</span>
             <div className={rs.chipGroup} style={{ gap: 4 }}>
@@ -364,7 +520,13 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
                 const on = grid.allowedSizes.includes(k);
                 return (
                   <span key={k} className={`${rs.chip} ${on ? rs.chipActive : ''}`}
-                    onClick={() => onChange({ ...grid, allowedSizes: on ? grid.allowedSizes.filter(x => x !== k) : [...grid.allowedSizes, k] })}>
+                    onClick={() => {
+                      // Toggling a size off also drops its per-size weight.
+                      const { [k]: _, ...restWeights } = grid.groupWeightBySize ?? {};
+                      onChange({ ...grid,
+                        allowedSizes: on ? grid.allowedSizes.filter(x => x !== k) : [...grid.allowedSizes, k],
+                        groupWeightBySize: on ? restWeights : grid.groupWeightBySize });
+                    }}>
                     {k}
                   </span>
                 );
@@ -372,6 +534,24 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
             </div>
             <span className={rs.slotHint}>{grid.allowedSizes.length === 0 ? t('roomTypeEditor.grids.allSizes') : ''}</span>
           </div>
+          {grid.slotGroupId && (
+            <div className={rs.slotRow} title={t('roomTypeEditor.grids.sizeWeightHint')}>
+              <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.sizeWeightLabel')}</span>
+              {SIZE_KEYS.filter(k => grid.allowedSizes.length === 0 || grid.allowedSizes.includes(k)).map(k => (
+                <label key={k} className={s.field} style={{ gap: 3 }}>
+                  <span className={rs.slotHint}>{k}</span>
+                  <input type="number" min={1} max={10} className={rs.slotNumInput}
+                    value={grid.groupWeightBySize?.[k] ?? ''} placeholder={String(grid.groupWeight)}
+                    onChange={e => {
+                      const { [k]: _, ...rest } = grid.groupWeightBySize ?? {};
+                      onChange({ ...grid, groupWeightBySize: e.target.value === ''
+                        ? rest
+                        : { ...rest, [k]: Math.max(1, Math.min(10, +e.target.value || 1)) } });
+                    }} />
+                </label>
+              ))}
+            </div>
+          )}
 
           {/* ── Canvas + inspector ── */}
           <div className={s.workArea}>
@@ -404,11 +584,11 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, otherId
                     );
                   }))}
 
-                  {[...grid.cells].sort((a, b) => a.y - b.y).map(c => (
+                  {[...grid.cells].sort((a, b) => Number(b.allowStacking) - Number(a.allowStacking) || a.y - b.y).map(c => (
                     <Piece key={c.id} cell={c} catalog={catalog}
                       selected={c.id === selectedId}
                       dragging={drag?.cellId === c.id}
-                      onSelect={() => setSelectedId(c.id)}
+                      onSelect={p => onPieceClick(c, p)}
                       onDragStart={(offX, offY) => { setSelectedId(c.id); setDrag({ cellId: c.id, offX, offY }); }}
                       onDragEnd={() => { setDrag(null); setDropHover(null); }}
                       onDropOnto={p => onDrop(p)}
@@ -495,13 +675,18 @@ function issueText(t: (k: string, o?: Record<string, unknown>) => string, i: Gri
   }
 }
 
-/** Preview tile definition for a cell: the picked variant facing the cell's orient with a matching shape. */
+/** Corner variant: orientation NW/NE/SE/SW = the room corner it sits in (both conventions). */
+const isCornerDef = (d: TileDefinition) => (GRID_CORNERS as readonly string[]).includes(d.orientation);
+
+/** Preview tile definition for a cell: the picked variant facing the cell's orient (or, for a
+ *  corner piece, sitting in its corner) with a matching shape. */
 function previewDef(cell: GridCell, catalog: TileCatalog | null, orient: GridOrient = cell.orient,
-  w = cell.footprint.width, h = cell.footprint.height): TileDefinition | null {
+  corner: GridCorner | '' = cell.cornerOrient, w = cell.footprint.width, h = cell.footprint.height): TileDefinition | null {
   if (!catalog || cell.previewTileIds.length === 0) return null;
   const defs = cell.previewTileIds.map(id => catalog.byId.get(id)).filter((d): d is TileDefinition => !!d);
   const shaped = defs.filter(d => layoutCols(d) === w && layoutRows(d) === h);
-  return shaped.find(d => facingOf(d) === orient) ?? shaped[0] ?? null;
+  if (corner) return shaped.find(d => d.orientation === corner) ?? null;
+  return shaped.find(d => facingOf(d) === orient) ?? shaped.find(d => !isCornerDef(d)) ?? null;
 }
 
 interface PieceProps {
@@ -509,7 +694,8 @@ interface PieceProps {
   catalog: TileCatalog | null;
   selected: boolean;
   dragging: boolean;
-  onSelect: () => void;
+  /** Called with the clicked grid cell. */
+  onSelect: (p: GridPoint) => void;
   onDragStart: (offX: number, offY: number) => void;
   onDragEnd: () => void;
   onDropOnto: (p: GridPoint) => void;
@@ -533,9 +719,11 @@ function Piece({ cell, catalog, selected, dragging, onSelect, onDragStart, onDra
 
   return (
     <div className={`${s.piece} ${kind} ${selected ? s.pieceSelected : ''} ${dragging ? s.pieceDragging : ''}`}
-      style={{ left: cell.x * CELL, top: cell.y * CELL, width: cell.footprint.width * CELL, height: cell.footprint.height * CELL, zIndex: 10 + cell.y }}
+      style={{ left: cell.x * CELL, top: cell.y * CELL, width: cell.footprint.width * CELL, height: cell.footprint.height * CELL,
+        // Stacking hosts stay below pieces placed on / inside them.
+        zIndex: (cell.allowStacking ? 10 : 30) + cell.y }}
       draggable
-      onClick={e => { e.stopPropagation(); onSelect(); }}
+      onClick={e => { e.stopPropagation(); onSelect(cellFromEvent(e)); }}
       onDragStart={e => {
         const p = cellFromEvent(e);
         e.dataTransfer.effectAllowed = 'move';
@@ -556,11 +744,26 @@ function Piece({ cell, catalog, selected, dragging, onSelect, onDragStart, onDra
             );
           }))
         : <span className={s.pieceText}>{cell.label || cats[0] || cell.id}</span>}
-      <span className={s.orientBadge}>{ORIENT_ARROW[cell.orient]}</span>
+      <span className={s.orientBadge}>{pieceArrow(cell.orient, cell.cornerOrient)}</span>
       {cell.isAnchor && <span className={s.anchorBadge}>★</span>}
+      {cell.cornerOrient
+        ? cornerWallFacings(cell.cornerOrient).map(f => <span key={f} className={s.wallMark} style={WALL_MARK_STYLE[f]} />)
+        : cell.againstWall && <span className={s.wallMark} style={WALL_MARK_STYLE[cell.orient]} />}
     </div>
   );
 }
+
+/** A corner piece's two walls, as the facings whose back side they are (NW → walls N, W → facings S, E). */
+const BACK_TO_FACING: Record<string, GridOrient> = { N: 'S', S: 'N', E: 'W', W: 'E' };
+const cornerWallFacings = (c: GridCorner): GridOrient[] => [BACK_TO_FACING[c[0]], BACK_TO_FACING[c[1]]];
+
+/** "Against wall" marker: a wall bar on the piece's back side (opposite its facing). */
+const WALL_MARK_STYLE: Record<GridOrient, CSSProperties> = {
+  S: { top: 0, left: 0, right: 0, height: 4 },
+  N: { bottom: 0, left: 0, right: 0, height: 4 },
+  E: { left: 0, top: 0, bottom: 0, width: 4 },
+  W: { right: 0, top: 0, bottom: 0, width: 4 },
+};
 
 interface InspectorProps {
   cell: GridCell;
@@ -631,6 +834,20 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
         </div>
       </div>
 
+      <div className={s.field} title={t('roomTypeEditor.grids.cornerHint')}>
+        <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.cornerLabel')}</span>
+        <div className={s.orientButtons}>
+          <button className={`${s.orientBtn} ${!cell.cornerOrient ? s.orientBtnActive : ''}`}
+            title={t('roomTypeEditor.grids.cornerNone')}
+            onClick={() => onChange({ cornerOrient: '' })}>–</button>
+          {GRID_CORNERS.map(c => (
+            <button key={c} className={`${s.orientBtn} ${cell.cornerOrient === c ? s.orientBtnActive : ''}`}
+              title={t(`roomTypeEditor.grids.corner.${c}`)}
+              onClick={() => onChange({ cornerOrient: c })}>{CORNER_ARROW[c]}</button>
+          ))}
+        </div>
+      </div>
+
       <div className={s.field}>
         <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.footprintLabel')}</span>
         <input type="number" min={1} max={MAX_GRID} className={rs.slotNumInput} value={cell.footprint.width}
@@ -653,6 +870,18 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
         <label className={rs.slotCheck} title={t('roomTypeEditor.grids.allowStackingHint', { key: cell.id })}>
           <input type="checkbox" checked={cell.allowStacking} onChange={e => onChange({ allowStacking: e.target.checked })} />
           {t('roomTypeEditor.grids.allowStackingLabel')}
+        </label>
+        <label className={rs.slotCheck} title={t('roomTypeEditor.grids.againstWallHint')}>
+          <input type="checkbox" checked={cell.againstWall} onChange={e => onChange({ againstWall: e.target.checked })} />
+          {t('roomTypeEditor.grids.againstWallLabel')}
+        </label>
+        <label className={rs.slotCheck} title={t('roomTypeEditor.grids.edgePieceHint')}>
+          <input type="checkbox" checked={cell.edgePiece} onChange={e => onChange({ edgePiece: e.target.checked })} />
+          {t('roomTypeEditor.grids.edgePieceLabel')}
+        </label>
+        <label className={rs.slotCheck} title={t('roomTypeEditor.slotCard.blocksFrontCellTitle')}>
+          <input type="checkbox" checked={cell.blocksFrontCell} onChange={e => onChange({ blocksFrontCell: e.target.checked })} />
+          {t('roomTypeEditor.slotCard.blocksFrontCell')}
         </label>
       </div>
 
@@ -698,6 +927,8 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
             </div>
           </>
         )}
+        <ThemeSelector categories={Object.keys(cell.allowedCategories)} value={cell.allowedThemes}
+          onChange={allowedThemes => onChange({ allowedThemes })} />
       </div>
 
       <label className={s.field}>
@@ -729,6 +960,12 @@ function PieceInspector({ cell, takenIds, availGroups, onChange, onRename, onRot
         <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.materialLabel')}</span>
         <input className={rs.slotSizeInput} style={{ width: 100 }} value={cell.materialGroupId}
           onChange={e => onChange({ materialGroupId: e.target.value })} />
+      </label>
+      <label className={s.field} title={t('roomTypeEditor.grids.anchorGroupHint')}>
+        <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.anchorGroupLabel')}</span>
+        <input className={rs.slotSizeInput} style={{ width: 100 }} value={cell.anchorGroup}
+          placeholder="counters"
+          onChange={e => onChange({ anchorGroup: e.target.value.trim() })} />
       </label>
 
       <div className={rs.slotRow} style={{ gap: 6, marginTop: 4 }}>
@@ -771,12 +1008,13 @@ function RotationPreview({ grid }: { grid: GridLayout }) {
               {grid.cells.map(c => {
                 const r = transformGridRect(cellRect(c), grid.width, grid.height, rot, mirror);
                 const o = transformGridOrient(c.orient, rot, mirror);
+                const corner = transformGridCorner(c.cornerOrient, rot, mirror);
                 const kind = c.isAnchor ? s.swAnchor : c.required ? s.swRequired : s.swOptional;
                 return (
                   <div key={c.id} className={`${s.previewPiece} ${kind}`}
                     style={{ left: r.x * MINI_CELL, top: r.y * MINI_CELL, width: r.w * MINI_CELL, height: r.h * MINI_CELL }}
-                    title={`${c.id} → ${o}`}>
-                    <span className={s.previewArrow}>{ORIENT_ARROW[o]}</span>
+                    title={`${c.id} → ${corner || o}`}>
+                    <span className={s.previewArrow}>{pieceArrow(o, corner)}</span>
                   </div>
                 );
               })}

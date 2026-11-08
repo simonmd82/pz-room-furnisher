@@ -125,6 +125,7 @@ All furniture is placed in "Tile mode".
 - `livingroom`
 - `office`
 - `garagestorage`
+- `hall`
 
 
 ---

@@ -72,6 +72,10 @@
     "windowBlockedEdge": "Window-blocked edge",
     "windowBlockedEdgeInfo": "Only this edge must not touch a window",
     "noneDefaultRule": "None (default rule)",
+    "themes": "Themes",
+    "noThemesConfigured": "No themes defined in settings.",
+    "allowedThemes": "Themes",
+    "allowedThemesHint": "Only affects tiles of themed categories (e.g. Picture/Poster); untagged ones are excluded once a theme is selected. None selected = all.",
     "styleTags": "Style tags",
     "styleTagsSavedNotActive": "(saved, not yet active)",
     "any": "Any (none)",
@@ -100,7 +104,8 @@
     "furniture": "Furniture Templates",
     "roomTypes": "Room Types",
     "rugs": "Rugs",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tileUsage": "Tile Usage"
   },
   "generatorLog": {
     "toggle": "Log ({{count}})",
@@ -136,6 +141,14 @@
     "zoomIn": "Zoom in",
     "zoomFit": "Fit",
     "zoomFitTitle": "Fit whole floor into view",
+    "viewGrid": "Grid",
+    "viewIso": "ISO",
+    "viewIsoTitle": "Isometric view, as in Project Zomboid (view only)",
+    "wallsCut": "Walls: low",
+    "wallsFull": "Walls: full",
+    "wallsTitle": "Toggle walls, doors and windows between full height and low stubs",
+    "isoTopDownOnly": "Only available in the grid view",
+    "isoMissingTiles": "{{count}} tiles not found in the tiles folder",
     "zoomHint": "Zoom relative to fit — Ctrl + mouse wheel zooms at the cursor"
   },
   "roomTypeEditor": {
@@ -172,6 +185,11 @@
       "label": "🎨 Color group (room default)",
       "title": "Default color-group ID for all slots of this room type. Slots with an empty colorGroupId inherit this value. Empty = no color filter by default.",
       "placeholder": "e.g. bedroom_main (empty = no default)"
+    },
+    "colorHarmony": {
+      "label": "🌈 Color harmony",
+      "title": "Prefer colors that match the room's reference color on the color wheel: neighboring hues (±60°) or the opposite side (180° ±30°). Neutral colors always match. Only applies while this piece's own color group has no lock; falls back to all tiles if nothing matches.",
+      "roomTitle": "Master switch for color harmony in this room type. Reference color = the room color group's color, otherwise the first colored required piece. Off = no harmony for any slot, grid or pool."
     },
     "colorPalette": {
       "allSelected": "✓ All colors → random per room, among colors all members share",
@@ -243,6 +261,8 @@
       "min": "Min",
       "max": "Max",
       "maxUnlimitedHint": "Max -1 = unlimited",
+      "sameTileForAllInstances": "Same tile for all instances",
+      "sameTileForAllInstancesHint": "Off (default): each instance picks its own tile and avoids tiles already used by this slot, as long as alternatives exist. On: every instance reuses the first instance's tile (or an orientation variant of it).",
       "allowedCategories": "Allowed categories",
       "allowedCategoriesAll": "(all matching)",
       "allowedCategoriesSelected_one": "({{count}} selected)",
@@ -273,6 +293,10 @@
       "cellRequiredPropertiesTitle": "Only relevant when \"Blocks cell\" is off. If any properties are selected, another slot may only share this cell if its tile has ALL of them (e.g. isLow + isWallMounted). Combinable with soft block – both restrictions apply together.\n\nEmpty = no extra restriction (default).",
       "blocksFrontCell": "🚶 Keep cell in front free",
       "blocksFrontCellTitle": "If enabled: the cell directly in front of the placed tile (in its facing direction) is reserved – other slots cannot place furniture there, but the player can still walk into it.\n\nTypical use: stove, fridge – the cell in front should stay clear.",
+      "placeLast": "⏬ Place last",
+      "placeLastTitle": "If enabled: this slot is placed after all other slots of the room, required ones included, so it only takes the space the furniture left.\n\nTypical use: pictures, posters.",
+      "clearanceLabel": "↔ Free space around",
+      "clearanceTitle": "Cells of free space all around the piece, diagonals included (0 = off). Those cells must be free room cells, so the piece never touches a wall or other furniture, and they stay clear of later pieces (rugs excepted). Slots with free space are placed after the room's other slots. Typical use: billiard table.",
       "wallAlignmentLabel": "Wall alignment",
       "wallAlignmentInfoTitle": "Determines how the furniture is oriented relative to the wall.\n\n• Automatic: the generator picks the best matching tile variant.\n• Perpendicular (⊥): back against the wall, front faces into the room.\n  For furniture that projects into the room (bed, desk, toilet).\n  Prefers a tile variant whose long axis is perpendicular to the wall.\n• Parallel (∥): long side along the wall.\n  For furniture placed along the wall (sofa, shelf, dresser).\n  Prefers a tile variant whose long axis is parallel to the wall.\n\nNote: requires tile variants in the VariantGroup with correct TileLayout dimensions.",
       "layerLabel": "Layer",
@@ -364,6 +388,10 @@
       "distanceMaxTitle": "Maximum distance (empty = no limit)",
       "distanceTo": "to",
       "distanceHint": "min..max (empty = up to the wall)",
+      "allowInsideLabel": "also inside room",
+      "allowInsideTitle": "Not only against the opposite wall: any spot between min and max distance, farthest first. If the wall is within the range, the piece stands at the wall; in long rooms it stands at max distance inside the room. Needs a max distance; the slot's 'near wall' rule doesn't apply to these spots.",
+      "keepSightClearLabel": "keep view clear",
+      "keepSightClearTitle": "The cells between anchor and this piece (e.g. sofa → TV) must hold no colliding furniture except the anchor's own grid pieces (coffee table). Afterwards they stay clear of later pieces; rugs are still allowed.",
       "anchorSummary": "📎 \"{{target}}\" → {{positions}}",
       "previewWallLabel": "Simulate wall:",
       "previewSelectPosition": "Select a position to preview",
@@ -416,6 +444,9 @@
       "allowOnPathHint": "Grid pieces with collision may stand on precomputed walking-path cells.",
       "mainSubRoomLabel": "Main sub-room",
       "mainSubRoomHint": "Place the whole grid only in the largest connected area of the room (the sub-room with the most doors). No effect when no inner walls are present.",
+      "oppositeAnchorLabel": "Opposite",
+      "oppositeAnchorHint": "Place this whole grid across from another grid, its front facing it (TV group across from the seating group). The grid is placed after grids without this rule; if the target wasn't placed, this grid is skipped.",
+      "oppositeAnchorNone": "— off —",
       "priorityLabel": "Priority",
       "groupLabel": "Group",
       "groupHint": "Grids with the same group are alternatives: exactly one of them is used, weighted.",
@@ -445,12 +476,29 @@
         "W": "Faces left"
       },
       "rotateHint": "Rotate 90° clockwise (turns facing and swaps width/height)",
+      "cornerLabel": "Corner",
+      "cornerHint": "Corner piece: the generator places the corner variant (orientation NW/NE/SE/SW) of the picked furniture and needs walls on both of the corner's sides, rotated with the grid. Optional pieces without that corner are dropped, a required piece rejects the spot. Use with grid mode \"In corner\" and put the piece in the matching grid corner.",
+      "cornerNone": "Straight piece (no corner)",
+      "corner": {
+        "NW": "Back-left corner",
+        "NE": "Back-right corner",
+        "SE": "Front-right corner",
+        "SW": "Front-left corner"
+      },
       "footprintLabel": "Footprint",
       "anchorLabel": "Anchor",
       "anchorHint": "The anchor is the piece the grid is built around. Exactly one per grid; always mandatory.",
       "cellRequiredLabel": "Required",
       "allowStackingLabel": "Allow stacking on top",
-      "allowStackingHint": "Only soft-blocks its cells: a slot anchored to this piece (e.g. a lamp, position Center) may stand on it; other slots still keep off.",
+      "allowStackingHint": "Only soft-blocks its cells: a slot anchored to this piece (e.g. a lamp, position Center) may stand on it; other slots still keep off. Other pieces of this grid may overlap it (click the selected piece again to add one; click a selected piece standing on it again to select this one below): a piece on another layer (e.g. PC) must stand on its tiles, a piece on the same layer (e.g. chair) must use its empty layout cells (e.g. the inner corner of an L-desk). Pieces on a Wall layer (hanging counter, hood) always soft-block only, so they never block the cell below.",
+      "edgePieceLabel": "▏Edge piece",
+      "edgePieceHint": "The piece sits on a cell edge, e.g. shower glass. Its facing names the edge and turns with the grid. An edge that lands on E or S is drawn as the W or N edge of the next cell, so it stays on the right side in every corner. If a wall already runs along that edge, an optional piece is dropped and a required piece rejects the spot.",
+      "againstWallLabel": "🧱 Against wall",
+      "againstWallHint": "The piece's back side (opposite its facing) must have a wall behind it. Optional pieces without one are dropped — so one long grid with optional end pieces shrinks to fit shorter walls. A required piece rejects the spot instead.",
+      "duplicateGrid": "Duplicate grid",
+      "copyGrid": "Copy grid to clipboard (can also be pasted into another room configuration)",
+      "pasteTitle": "Insert grid \"{{name}}\" at the end",
+      "copyLabel": "{{label}} (copy)",
       "cellRequiredHint": "Required pieces must fit, otherwise the grid tries another spot. Optional pieces are dropped if blocked.",
       "categoriesLabel": "Categories",
       "addCategory": "+ add category",
@@ -465,6 +513,10 @@
       "strictMatch": "strict",
       "strictMatchHint": "No match in the locked variant group → skip this piece instead of using another variant.",
       "materialLabel": "Material",
+      "sizeWeightLabel": "Weight per size",
+      "sizeWeightHint": "Group weight for this room size only (1–10). Empty = the grid's normal group weight. Weights only compete with the other grids of the group that are allowed for the same size.",
+      "anchorGroupLabel": "Anchor group",
+      "anchorGroupHint": "Shared anchor key, e.g. \"counters\". Every placed piece with the same anchor group (across all grids) is registered under it. A slot with anchor target = this key stands on / next to one of them, picked at random; several slots or instances targeting it are spread over different pieces, skipping pieces already covered. Enable \"Allow stacking on top\" on the pieces so items can stand on them.",
       "repick": "Pick furniture",
       "deletePiece": "Delete piece",
       "previewTitle": "How the generator can place it (back edge on each wall):",
@@ -473,6 +525,7 @@
       "gridOption": "Grid: {{grid}} (anchor)",
       "gridCellOption": "Grid: {{grid}} → {{cell}}",
       "gridGroupOption": "Grid group: {{group}} (anchor of placed grid)",
+      "anchorGroupOption": "Grid anchor group: {{group}} (random piece)",
       "saveBlocked": "Fix grid layout errors before saving: {{ids}}",
       "issues": {
         "anchorCount": "Exactly one anchor needed (has {{count}}).",
@@ -810,7 +863,14 @@
     "categories": {
       "title":       "📦 Furniture categories",
       "description": "Offered as selectable categories for furniture in the slot configurations.",
-      "placeholder": "e.g. Carpet"
+      "placeholder": "e.g. Carpet",
+      "themed":      "🖼️ Themed",
+      "themedTitle": "Themed category: its tiles get theme tags (tile/furniture browser) and slots allowing it can filter by theme."
+    },
+    "themes": {
+      "title":       "🖼️ Themes",
+      "description": "Motif themes for tiles of themed categories (tick \"🖼️ Themed\" in the categories list, e.g. Picture/Poster). Tagged in the tile/furniture browser; slots, grid cells and layout pools can restrict those tiles to selected themes.",
+      "placeholder": "e.g. Cars"
     },
     "materials": {
       "title":       "🪵 Materials",
@@ -820,7 +880,10 @@
     "colors": {
       "title":       "🎨 Colors",
       "description": "Offered as color tags in the tile browser and furniture browser.",
-      "placeholder": "e.g. Purple"
+      "placeholder": "e.g. Purple",
+      "huesTitle": "Color wheel position used by color harmony: hue in degrees (0 = red, 120 = green, 240 = blue), or Neutral (matches every color).",
+      "neutral": "Neutral",
+      "hue": "Hue"
     },
     "uiPreferences": {
       "title":       "🖥 UI Preferences",
@@ -940,6 +1003,52 @@
     "useDirectly":   "Use directly",
     "useDirectlyHint": "Use this path directly",
     "selectFolder":  "Select this folder"
+  },
+  "tileUsage": {
+    "searchPlaceholder": "Search id, label, variant group…",
+    "allGroups": "All groups",
+    "allLayers": "All layers",
+    "allRoomTypes": "Used in: any room type",
+    "allSets": "All sets",
+    "none": "(none)",
+    "reload": "Reload",
+    "resultCount": "{{count}} tiles",
+    "loading": "Loading…",
+    "noResults": "No tiles match the filters.",
+    "anyRoom": "any",
+    "setDisabled": "disabled",
+    "unused": "unused",
+    "viaOnly": "variant group only",
+    "viaVariantGroup": "via variant group",
+    "showMore": "Show more ({{shown}} of {{total}})",
+    "filter": {
+      "unused": "Unused",
+      "unusedHint": "No slot, grid cell, pool or companion of any room type can pick this tile",
+      "via": "Variant group only",
+      "viaHint": "Only reachable as an orientation/corner sibling of a directly matched tile in the same variant group",
+      "used": "Used",
+      "usedHint": "Matched directly by at least one room type slot",
+      "all": "All",
+      "allHint": "All tile definitions"
+    },
+    "col": {
+      "id": "Tile",
+      "group": "Group",
+      "layer": "Layer",
+      "shape": "Size",
+      "properties": "Properties",
+      "roomTypes": "Tile room types",
+      "variantGroup": "Variant group",
+      "set": "Set",
+      "usage": "Used in"
+    },
+    "source": {
+      "slot": "slot",
+      "pool": "pool",
+      "poolRequired": "pool required",
+      "companion": "companion",
+      "grid": "grid"
+    }
   }
 }
 

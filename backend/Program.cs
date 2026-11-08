@@ -23,6 +23,7 @@ builder.Services.AddSingleton<IRugCatalogService, RugCatalogService>();
 builder.Services.AddSingleton<IWallFurnitureClassificationService, WallFurnitureClassificationService>();
 builder.Services.AddSingleton<IPathfinderService, PathfinderService>();
 builder.Services.AddSingleton<IFurnishingGeneratorService, FurnishingGeneratorService>();
+builder.Services.AddSingleton<ITileUsageService, TileUsageService>();
 builder.Services.AddSingleton<ITbxExportService, TbxExportService>();
 
 builder.Services.AddCors(options =>

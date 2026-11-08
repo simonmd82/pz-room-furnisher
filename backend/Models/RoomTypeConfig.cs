@@ -100,6 +100,16 @@ public class AnchorRule
     /// <summary>Maximaldistanz (in Zellen) fuer oppositeWall. Null/&lt;=0 = ohne Limit.</summary>
     public int? MaxOppositeWallDistance { get; set; }
     /// <summary>
+    /// oppositeWall: also allow spots inside the room between min and max distance (farthest first),
+    /// not only against the wall. A wall closer than max is still used when it lies within the range.
+    /// </summary>
+    public bool OppositeWallAllowInside { get; set; }
+    /// <summary>
+    /// oppositeWall: the cells between anchor and piece (e.g. sofa → TV) must hold no colliding piece
+    /// other than the anchor's own grid/slot, and stay clear of later pieces (rugs excepted).
+    /// </summary>
+    public bool KeepSightClear { get; set; }
+    /// <summary>
     /// Ausrichtung des verankerten Slots relativ zum Anker.
     /// "match"            = gleiche Ausrichtung wie der Anker-Slot (z.B. Nachttisch neben Bett).
     /// "parallelToAnchor" = Alias für "match"; semantisch klarer für Möbel, die parallel zum Anker stehen sollen.
@@ -133,12 +143,24 @@ public class RoomTypeSlot
         { "XL", new() { Min = 0, Max = 4 } },
     };
     /// <summary>
+    /// Bei mehreren Instanzen (CountBySize &gt; 1): true = alle Instanzen nutzen dasselbe Tile
+    /// (bzw. dieselbe VariantGroup) wie die erste. false (Standard) = jede Instanz wählt ihr eigenes
+    /// Tile und meidet bereits von diesem Slot genutzte, solange Alternativen existieren.
+    /// </summary>
+    public bool SameTileForAllInstances { get; set; } = false;
+    /// <summary>
     /// Erlaubte Möbelkategorien mit Auswahlgewichtung (Kategorie → Gewicht 1–10).
     /// Der Generator lost zuerst eine Kategorie (nach Gewichtung) und wählt dann
     /// ein passendes Möbelstück aus dieser Kategorie zufällig aus.
     /// Leer = alle passenden Kategorien gleichwertig.
     /// </summary>
     public Dictionary<string, int> AllowedCategories { get; set; } = [];
+    /// <summary>
+    /// Erlaubte Motiv-Themen (z.B. ["Cars","Music"]) für Tiles aus thematisierten Kategorien
+    /// (Settings "themedCategories", z.B. Picture/Poster). Solche Tiles brauchen mind. ein
+    /// passendes Thema; Tiles anderer Kategorien bleiben unberührt. Leer = alle Themen.
+    /// </summary>
+    public List<string> AllowedThemes { get; set; } = [];
     /// <summary>Platzierungsregeln für diesen Slot (an Wand, Ecke, Fenster …).</summary>
     public PlacementRules PlacementRules { get; set; } = new();
     /// <summary>
@@ -221,6 +243,19 @@ public class RoomTypeSlot
     public bool BlocksFrontCell { get; set; } = false;
 
     /// <summary>
+    /// Free space all around (billiard table): every cell within this many cells of the footprint
+    /// (diagonals included) must be a free room cell; afterwards those cells stay clear of later
+    /// pieces (rugs excepted). 0 = off. Such slots are placed after the room's other slots.
+    /// </summary>
+    public int Clearance { get; set; } = 0;
+
+    /// <summary>
+    /// Placed after all other slots of the room, required ones included (pictures, posters), so
+    /// they only take the wall space the furniture left. Slots anchored to this one follow it.
+    /// </summary>
+    public bool PlaceLast { get; set; } = false;
+
+    /// <summary>
     /// Bedingte Abhängigkeit: Dieser Slot wird nur versucht wenn der Slot mit dieser ID
     /// (oder SlotGroupId) zuvor erfolgreich platziert wurde.
     /// Nützlich für Objekte die eine Oberfläche benötigen (Lampe → Tisch, Waschbecken → Unterschrank).
@@ -238,6 +273,13 @@ public class RoomTypeSlot
     /// ungefilterten Pool (Slot wird nicht weggelassen).
     /// </summary>
     public string ColorGroupId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Farbharmonie: Ohne aktive Farbsperre der eigenen Gruppe werden Tiles bevorzugt, deren
+    /// Farben zur Referenzfarbe des Raums passen (benachbart oder gegenüber auf dem Farbkreis,
+    /// neutrale Farben immer). Kein Treffer → ungefilterter Pool. Siehe ColorHarmony.
+    /// </summary>
+    public bool UseColorHarmony { get; set; } = true;
 
     /// <summary>
     /// Tile-Varianten-Gruppen-ID für kohärente Modellwahl (gleicher Variantensatz).
@@ -320,6 +362,8 @@ public class LayoutPoolCompanion
     public string AnchorPosition     { get; set; } = string.Empty;
     public string? Orient            { get; set; }
     public Dictionary<string, int>  AllowedCategories  { get; set; } = [];
+    /// <summary>See RoomTypeSlot.AllowedThemes.</summary>
+    public List<string>             AllowedThemes      { get; set; } = [];
     public List<string>             RequiredProperties { get; set; } = [];
     public string RequiredLayer      { get; set; } = string.Empty;
     public string Label              { get; set; } = string.Empty;
@@ -400,6 +444,8 @@ public class LayoutPool
     public PlacementRules PlacementRules { get; set; } = new();
     public string RequiredLayer      { get; set; } = string.Empty;
     public Dictionary<string, int> DefaultCategories { get; set; } = [];
+    /// <summary>See RoomTypeSlot.AllowedThemes; applies to every slot the pool expands to (not companions).</summary>
+    public List<string> AllowedThemes { get; set; } = [];
     public List<string> RequiredProperties { get; set; } = [];
     public bool BlocksFrontCell      { get; set; } = false;
     public bool BlocksPlacement      { get; set; } = false;
@@ -407,6 +453,8 @@ public class LayoutPool
     /// <summary>See RoomTypeSlot.CellRequiredProperties.</summary>
     public List<string> CellRequiredProperties { get; set; } = [];
     public string ColorGroupId       { get; set; } = string.Empty;
+    /// <summary>See RoomTypeSlot.UseColorHarmony; applies to every slot the pool expands to.</summary>
+    public bool   UseColorHarmony    { get; set; } = true;
     public string MaterialGroupId    { get; set; } = string.Empty;
     public string TileGroupId        { get; set; } = string.Empty;
     public List<LayoutPoolRequiredSlot> RequiredSlots { get; set; } = [];
@@ -466,6 +514,8 @@ public class GridCell
     /// <summary>Required cells must place for the grid to place; optional cells are dropped if blocked.</summary>
     public bool Required { get; set; } = false;
     public Dictionary<string, int> AllowedCategories { get; set; } = [];
+    /// <summary>See RoomTypeSlot.AllowedThemes.</summary>
+    public List<string> AllowedThemes { get; set; } = [];
     public string RequiredLayer { get; set; } = string.Empty;
     public List<string> RequiredProperties { get; set; } = [];
     /// <summary>See RoomTypeSlot.ColorGroupId.</summary>
@@ -480,8 +530,45 @@ public class GridCell
     /// true = the piece only soft-blocks its cells (BlocksPlacement=false, SoftBlocks=true), so a
     /// slot anchored to it (e.g. a lamp with AnchorTarget "{grid}_{cell}", position Center) can be
     /// placed on top, while unrelated slots still keep off. Same as a normal nightstand slot.
+    /// Pieces with a "Wall*" RequiredLayer always behave like this, so a hanging counter never
+    /// blocks the counter cell below it.
     /// </summary>
     public bool AllowStacking { get; set; } = false;
+    /// <summary>
+    /// The piece's back side (opposite its facing, after the grid is rotated/mirrored) must be
+    /// fully backed by a wall. An optional piece without a wall behind it is dropped, so one long
+    /// grid with optional end pieces shrinks to fit shorter walls; a mandatory piece rejects the spot.
+    /// </summary>
+    public bool AgainstWall { get; set; } = false;
+    /// <summary>
+    /// Piece drawn on a cell edge (shower glass): Orient names the edge, rotated/mirrored with the
+    /// grid. Tiles only exist for N and W edges, so an E/S edge becomes the W/N edge of the next
+    /// cell. Dropped (mandatory: spot rejected) if a wall already runs along that edge. It stands
+    /// between cells, so the grid's own pieces don't block it and it blocks no floor cell.
+    /// </summary>
+    public bool EdgePiece { get; set; } = false;
+    /// <summary>
+    /// Same as RoomTypeSlot.BlocksFrontCell: the cell in front of the piece (in its rotated facing)
+    /// must be free and stays free of later furniture (rugs excepted). No effect on corner or
+    /// edge pieces, which have no single front.
+    /// </summary>
+    public bool BlocksFrontCell { get; set; } = false;
+    /// <summary>
+    /// Grid-local corner ("NW" | "NE" | "SE" | "SW", empty = straight piece): the piece is a
+    /// corner variant (tile Orientation NW/NE/SE/SW = the room corner it sits in) and must touch
+    /// walls on both of those sides, rotated/mirrored with the grid. The generator resolves the
+    /// matching corner variant of each pool tile's VariantGroup instead of the Orient variant.
+    /// An optional corner piece without both walls is dropped; a mandatory one rejects the spot.
+    /// </summary>
+    public string CornerOrient { get; set; } = string.Empty;
+    /// <summary>
+    /// Shared anchor key (e.g. "counters"): every placed piece with the same AnchorGroup — across
+    /// all grids of the room type — is registered under it, in random order. A slot with
+    /// AnchorTarget = the group anchors to one of them; several slots / instances targeting the
+    /// group are spread over different pieces (round-robin, already-covered pieces skipped).
+    /// Empty = no group.
+    /// </summary>
+    public string AnchorGroup { get; set; } = string.Empty;
     /// <summary>Editor-only: tile-definition ids picked for this cell (sprite preview). Ignored by the generator.</summary>
     public List<string> PreviewTileIds { get; set; } = [];
 }
@@ -516,6 +603,8 @@ public class GridLayout
     /// <summary>Grids sharing a non-empty SlotGroupId are alternatives: exactly one is chosen by GroupWeight.</summary>
     public string SlotGroupId { get; set; } = string.Empty;
     public int GroupWeight { get; set; } = 5;
+    /// <summary>Per room size (XS…XL) override of GroupWeight; a missing size uses GroupWeight.</summary>
+    public Dictionary<string, int> GroupWeightBySize { get; set; } = [];
     /// <summary>Room sizes (XS/S/M/L/XL) this grid is used in. Empty = all sizes.</summary>
     public List<string> AllowedSizes { get; set; } = [];
     /// <summary>Allow colliding grid pieces on precomputed walking-path cells (see PlacementRules.AllowOnPath).</summary>
@@ -523,9 +612,18 @@ public class GridLayout
     /// <summary>All pieces and keep-clear cells must lie in the main sub-room (see PlacementRules.MainSubRoom).
     /// No effect when the room has no inner walls.</summary>
     public bool MainSubRoom { get; set; } = false;
+    /// <summary>See RoomTypeSlot.UseColorHarmony; applies to all of the grid's pieces.</summary>
+    public bool UseColorHarmony { get; set; } = true;
     public List<GridCell> Cells { get; set; } = [];
     /// <summary>Empty grid cells that must stay walkable — no other furniture (except collision-free floor decor such as rugs) may be placed there.</summary>
     public List<GridPoint> KeepClear { get; set; } = [];
+    /// <summary>
+    /// Places the whole grid opposite another grid (TV group across from the seating group), its
+    /// front facing that grid. Uses AnchorTarget (grid id, grid SlotGroupId or cell AnchorGroup) and
+    /// the oppositeWall distance, AllowInside and KeepSightClear fields. Null = normal Mode placement.
+    /// Such grids are placed after all grids without this rule.
+    /// </summary>
+    public AnchorRule? OppositeAnchor { get; set; }
 }
 
 /// <summary>
@@ -614,4 +712,10 @@ public class RoomTypeConfig
     /// Leer oder Gruppe nicht vorhanden → Farbe wird vom ersten platzierten Slot übernommen.
     /// </summary>
     public Dictionary<string, List<string>> ColorPalettes { get; set; } = new();
+
+    /// <summary>
+    /// Hauptschalter für Farbharmonie in diesem Raumtyp (siehe RoomTypeSlot.UseColorHarmony).
+    /// false = keine Referenzfarbe, kein Harmonie-Filter für irgendeinen Slot.
+    /// </summary>
+    public bool UseColorHarmony { get; set; } = true;
 }

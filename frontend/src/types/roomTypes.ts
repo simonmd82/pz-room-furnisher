@@ -110,6 +110,10 @@ export interface AnchorRule {
   minOppositeWallDistance?: number;
   /** Maximaldistanz fuer oppositeWall (in Zellen). */
   maxOppositeWallDistance?: number;
+  /** oppositeWall: also allow spots inside the room within min..max (farthest first). */
+  oppositeWallAllowInside?: boolean;
+  /** oppositeWall: no colliding piece (except the anchor's own grid) between anchor and piece; lane stays clear. */
+  keepSightClear?: boolean;
   /**
    * Ausrichtung des verankerten Slots relativ zum Anker.
    * "match"            = gleiche Ausrichtung wie der Anker (z.B. Nachttisch neben Bett).
@@ -193,12 +197,19 @@ export interface RoomTypeSlot {
   /** Min/Max-Anzahl je Raumgröße */
   countBySize: Record<SizeKey, SlotCount>;
   /**
+   * Bei mehreren Instanzen: true = alle nutzen dasselbe Tile wie die erste (bzw. dessen
+   * VariantGroup). false/fehlend (Standard) = jede Instanz wählt ihr eigenes Tile.
+   */
+  sameTileForAllInstances?: boolean;
+  /**
    * Erlaubte Möbelkategorien mit Auswahlgewichtung (Kategorie → 1–10).
    * Der Generator lost zuerst eine Kategorie und wählt daraus zufällig ein Möbel.
    * Leer = alle passenden Kategorien gleichwertig.
    * Sonderschlüssel EMPTY_CATEGORY: gewichteter "nichts platzieren"-Wurf pro Instanz.
    */
   allowedCategories: Record<string, number>;
+  /** Allowed motif themes for tiles of themed categories (settings themedCategories). Empty/absent = all. */
+  allowedThemes?: string[];
   /** Platzierungsregeln (an Wand, Ecke, Tür, Fenster …) */
   placementRules: PlacementRules;
   /** Erlaubter Furniture-Layer, leer = beliebig */
@@ -236,6 +247,12 @@ export interface RoomTypeSlot {
    */
   colorGroupId: string;
   /**
+   * Farbharmonie (Standard: an). Ohne aktive Farbsperre der eigenen Gruppe werden Farben bevorzugt,
+   * die zur Referenzfarbe des Raums passen (Nachbar- oder Gegenfarbe auf dem Farbkreis, neutral immer).
+   * undefined = an.
+   */
+  useColorHarmony?: boolean;
+  /**
    * Fallback-Platzierungsregeln (geordnete Liste).
    * Wenn placementRules keine freie Zelle findet, versucht der Generator
    * diese Regeln der Reihe nach als Alternativen.
@@ -268,6 +285,10 @@ export interface RoomTypeSlot {
    * Typischer Einsatz: Herd, Kühlschrank – Zelle davor soll frei bleiben. Standard: false.
    */
   blocksFrontCell: boolean;
+  /** Free space all around (cells, diagonals included); 0/undefined = off. Placed after the room's other slots. */
+  clearance?: number;
+  /** Placed after all other slots of the room (pictures, posters). */
+  placeLast?: boolean;
     /** Nur versuchen, wenn dieser Slot / diese Gruppe bereits platziert wurde. */
     requiresSlot: string;
   /** Zwingt alle passenden Tiles auf dieselbe Tile-VariantGroup. */
@@ -335,6 +356,8 @@ export interface LayoutPoolCompanion {
   anchorPosition: AnchorPosition;
   orient?: AnchorRule['orient'];
   allowedCategories: Record<string, number>;
+  /** Allowed motif themes for tiles of themed categories (settings themedCategories). Empty/absent = all. */
+  allowedThemes?: string[];
   requiredProperties: string[];
   requiredLayer: string;
   label: string;
@@ -410,6 +433,8 @@ export interface LayoutPool {
   requiredLayer: string;
   /** Category weights for positions not reserved by requiredSlots. */
   defaultCategories: Record<string, number>;
+  /** Allowed motif themes for tiles of themed categories (settings themedCategories), for every pool position. Empty/absent = all. */
+  allowedThemes?: string[];
   requiredProperties: string[];
   blocksFrontCell: boolean;
   blocksPlacement: boolean;
@@ -417,6 +442,8 @@ export interface LayoutPool {
   /** See RoomTypeSlot.cellRequiredProperties. */
   cellRequiredProperties: string[];
   colorGroupId: string;
+  /** See RoomTypeSlot.useColorHarmony; applies to every slot the pool expands to. */
+  useColorHarmony?: boolean;
   materialGroupId: string;
   tileGroupId: string;
   /** Guaranteed-typed positions (e.g. 1 stove, 1 sink counter). */
@@ -466,6 +493,9 @@ export interface GridPoint {
 
 export const GRID_ORIENTS = ['N', 'E', 'S', 'W'] as const;
 export type GridOrient = typeof GRID_ORIENTS[number];
+/** Room corner a corner piece sits in (tile-definitions orientation NW/NE/SE/SW). */
+export const GRID_CORNERS = ['NW', 'NE', 'SE', 'SW'] as const;
+export type GridCorner = typeof GRID_CORNERS[number];
 
 /**
  * One piece of furniture inside a GridLayout. Position/footprint/orient are grid-local:
@@ -484,6 +514,8 @@ export interface GridCell {
   /** Required cells must fit for the grid to be placed; optional ones are dropped if blocked. */
   required: boolean;
   allowedCategories: Record<string, number>;
+  /** Allowed motif themes for tiles of themed categories (settings themedCategories). Empty/absent = all. */
+  allowedThemes?: string[];
   requiredLayer: string;
   requiredProperties: string[];
   colorGroupId: string;
@@ -492,6 +524,19 @@ export interface GridCell {
   materialGroupId: string;
   /** Soft-block only, so a slot anchored to this piece (lamp on nightstand) can sit on top. */
   allowStacking: boolean;
+  /** Back side (opposite the facing, after grid rotation) must be backed by a wall; an optional
+   *  piece without one is dropped, a mandatory one rejects the spot. */
+  againstWall: boolean;
+  /** Piece on a cell edge (shower glass): orient names the edge; E/S become the next cell's W/N edge. */
+  edgePiece: boolean;
+  /** Cell in front of the piece stays free of later furniture. No effect on corner or edge pieces. */
+  blocksFrontCell: boolean;
+  /** Grid-local corner ('' = straight piece): the generator places the corner variant of the
+   *  picked tiles and needs walls on both of its sides (rotated/mirrored with the grid). */
+  cornerOrient: GridCorner | '';
+  /** Shared anchor key ('' = none): slots with this AnchorTarget anchor to one of the placed
+   *  pieces carrying it (across all grids), spread randomly over them. */
+  anchorGroup: string;
   /** Editor-only: tile-definition ids picked for this cell, used for the sprite preview. */
   previewTileIds: string[];
 }
@@ -515,14 +560,20 @@ export interface GridLayout {
   /** Grids sharing a non-empty slotGroupId are alternatives (one is chosen by groupWeight). */
   slotGroupId: string;
   groupWeight: number;
+  /** Per room size override of groupWeight; a missing size uses groupWeight. */
+  groupWeightBySize?: Partial<Record<SizeKey, number>>;
   /** Room sizes this grid is used in. Empty = all. */
   allowedSizes: SizeKey[];
   allowOnPath: boolean;
   /** Pieces only in the room's main sub-room (largest area); no effect without inner walls. */
   mainSubRoom: boolean;
+  /** See RoomTypeSlot.useColorHarmony; applies to all of the grid's pieces. */
+  useColorHarmony?: boolean;
   cells: GridCell[];
   /** Empty grid cells that must stay walkable. */
   keepClear: GridPoint[];
+  /** Places the grid opposite another grid, its front facing it. Undefined = normal mode placement. */
+  oppositeAnchor?: AnchorRule;
 }
 
 export function defaultGridCell(id: string, x: number, y: number): GridCell {
@@ -532,14 +583,14 @@ export function defaultGridCell(id: string, x: number, y: number): GridCell {
     orient: 'S', isAnchor: false, required: false,
     allowedCategories: {}, requiredLayer: '', requiredProperties: [],
     colorGroupId: '', tileGroupId: '', requireTileGroupMatch: false, materialGroupId: '',
-    allowStacking: false, previewTileIds: [],
+    allowStacking: false, againstWall: false, edgePiece: false, blocksFrontCell: false, cornerOrient: '', anchorGroup: '', previewTileIds: [],
   };
 }
 
 export function defaultGridLayout(id = ''): GridLayout {
   return {
     id, label: '', width: 4, height: 3, mode: 'wall', allowMirror: true,
-    required: false, priority: 0, slotGroupId: '', groupWeight: 5, allowedSizes: [],
+    required: false, priority: 0, slotGroupId: '', groupWeight: 5, groupWeightBySize: {}, allowedSizes: [],
     allowOnPath: false, mainSubRoom: false, cells: [], keepClear: [],
   };
 }
@@ -551,6 +602,7 @@ export function normalizeGridLayout(g: Partial<GridLayout>): GridLayout {
     ...base,
     ...g,
     allowedSizes: [...(g.allowedSizes ?? [])],
+    groupWeightBySize: { ...(g.groupWeightBySize ?? {}) },
     keepClear: (g.keepClear ?? []).map(p => ({ x: p.x, y: p.y })),
     cells: (g.cells ?? []).map(c => {
       const d = defaultGridCell(c.id ?? '', c.x ?? 0, c.y ?? 0);
@@ -560,6 +612,7 @@ export function normalizeGridLayout(g: Partial<GridLayout>): GridLayout {
         ...c,
         footprint: { width: fp.width ?? 1, height: fp.height ?? 1, canRotate: false },
         allowedCategories: { ...(c.allowedCategories ?? {}) },
+        allowedThemes: [...(c.allowedThemes ?? [])],
         requiredProperties: [...(c.requiredProperties ?? [])],
         previewTileIds: [...(c.previewTileIds ?? [])],
       };
@@ -587,6 +640,8 @@ export interface RoomTypeConfig {
    * Leer oder Gruppe fehlt → Farbe wird vom ersten platzierten Möbel übernommen.
    */
   colorPalettes: Record<string, string[]>;
+  /** Room-level master switch for colour harmony (see RoomTypeSlot.useColorHarmony). undefined = on. */
+  useColorHarmony?: boolean;
 }
 
 export type RoomTypeConfigMap = Record<string, RoomTypeConfig>;

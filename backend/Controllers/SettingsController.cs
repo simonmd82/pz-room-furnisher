@@ -61,4 +61,43 @@ public class SettingsController : ControllerBase
         _svc.SetKnownColors(colors.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().ToList());
         return Ok(_svc.GetKnownColors());
     }
+
+    /// <summary>Returns the list of known Picture/Poster themes.</summary>
+    [HttpGet("themes")]
+    public IActionResult GetThemes() => Ok(_svc.GetKnownThemes());
+
+    /// <summary>Replaces the list of known themes.</summary>
+    [HttpPut("themes")]
+    public IActionResult SetThemes([FromBody] List<string>? themes)
+    {
+        if (themes is null) return BadRequest("Body must be a JSON array of strings.");
+        _svc.SetKnownThemes(themes.Where(t => !string.IsNullOrWhiteSpace(t)).Distinct().ToList());
+        return Ok(_svc.GetKnownThemes());
+    }
+
+    /// <summary>Returns the categories whose tiles carry themes (e.g. Picture, Poster).</summary>
+    [HttpGet("themed-categories")]
+    public IActionResult GetThemedCategories() => Ok(_svc.GetThemedCategories());
+
+    /// <summary>Replaces the list of themed categories (empty = theming off).</summary>
+    [HttpPut("themed-categories")]
+    public IActionResult SetThemedCategories([FromBody] List<string>? categories)
+    {
+        if (categories is null) return BadRequest("Body must be a JSON array of strings.");
+        _svc.SetThemedCategories(categories.Where(c => !string.IsNullOrWhiteSpace(c)).Distinct(StringComparer.OrdinalIgnoreCase).ToList());
+        return Ok(_svc.GetThemedCategories());
+    }
+
+    /// <summary>Returns colour → hue (degrees, null = neutral) used for colour harmony.</summary>
+    [HttpGet("color-hues")]
+    public IActionResult GetColorHues() => Ok(_svc.GetColorHues());
+
+    /// <summary>Replaces the colour → hue map.</summary>
+    [HttpPut("color-hues")]
+    public IActionResult SetColorHues([FromBody] Dictionary<string, int?>? hues)
+    {
+        if (hues is null) return BadRequest("Body must be a JSON object of colour → hue (number or null).");
+        _svc.SetColorHues(hues);
+        return Ok(_svc.GetColorHues());
+    }
 }

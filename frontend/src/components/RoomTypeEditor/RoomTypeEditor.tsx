@@ -7,7 +7,7 @@ import {
   defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion, defaultReservedZone,
   defaultRugSlotConfig, EMPTY_CATEGORY, normalizeGridLayout,
 } from '../../types/roomTypes';
-import type { AnchorRule, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
+import type { AnchorRule, GridLayout, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
 import { getRoomTypeNames, saveRoomTypeNames, getCategories, getMaterials } from '../../api/settingsApi';
 import { getGroups, getColors } from '../../api/tilesApi';
@@ -18,6 +18,7 @@ const isBaseColor = (color: string): boolean => !SHADES.some(sh => color.endsWit
 import { AnchorRulePreview } from './AnchorRulePreview';
 import { FurniturePickerModal } from './FurniturePickerModal';
 import { GridLayoutEditor, gridSaveErrors } from './GridLayoutEditor';
+import { ThemeSelector } from './ThemeSelector';
 import { Spinner } from '../Spinner/Spinner';
 import s from './RoomTypeEditor.module.css';
 
@@ -166,6 +167,7 @@ export function RoomTypeEditor() {
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
    /** Zwischenablage: kopierter Slot + Quellenraum */
    const [copiedSlot, setCopiedSlot] = useState<{ slot: RoomTypeSlot; fromRoom: string } | null>(null);
+   const [copiedGrid, setCopiedGrid] = useState<{ grid: GridLayout; fromRoom: string } | null>(null);
    /** Drag & Drop für Layout-Varianten: welche Variante/Slot wird gerade gezogen */
    const dragLayoutVariantRef = useRef<{ variantIdx: number; slotIdx: number } | null>(null);
    const [dragOverLayoutSlot, setDragOverLayoutSlot] = useState<{ variantIdx: number; slotIdx: number } | null>(null);
@@ -874,6 +876,11 @@ export function RoomTypeEditor() {
                 value={draft.colorGroupId ?? ''}
                 onChange={e => { setDraft({ ...draft, colorGroupId: e.target.value }); setDirty(true); }}
               />
+              <label className={s.slotCheck} title={t('roomTypeEditor.colorHarmony.roomTitle')}>
+                <input type="checkbox" checked={draft.useColorHarmony !== false}
+                  onChange={e => { setDraft({ ...draft, useColorHarmony: e.target.checked }); setDirty(true); }} />
+                {t('roomTypeEditor.colorHarmony.label')}
+              </label>
             </div>
 
             {/* Farbpalette (Raum-Ebene) – Multi-Select */}
@@ -1173,6 +1180,13 @@ export function RoomTypeEditor() {
                   </table>
                   </div>
                   <div className={s.slotHint} style={{ marginTop: 2 }}>{t('roomTypeEditor.slotCard.maxUnlimitedHint')}</div>
+                  {Object.values(slot.countBySize).some(c => c.max >= 2 || c.max < 0) && (
+                    <label className={s.slotCheck} style={{ marginTop: 4 }} title={t('roomTypeEditor.slotCard.sameTileForAllInstancesHint')}>
+                      <input type="checkbox" checked={slot.sameTileForAllInstances ?? false}
+                        onChange={e => updateSlot(idx, { sameTileForAllInstances: e.target.checked })} />
+                      {t('roomTypeEditor.slotCard.sameTileForAllInstances')}
+                    </label>
+                  )}
 
                   {/* ── Erlaubte Kategorien mit Gewichtung ── */}
                   <div className={s.slotRow} style={{ marginTop: 6 }}>
@@ -1227,6 +1241,8 @@ export function RoomTypeEditor() {
                       </span>
                     )}
                   </div>
+                  <ThemeSelector categories={Object.keys(slot.allowedCategories)} value={slot.allowedThemes}
+                    onChange={allowedThemes => updateSlot(idx, { allowedThemes })} />
 
                   {/* ── Platzierungsregeln ── */}
                   <div className={s.slotRow} style={{ marginTop: 6 }}>
@@ -1347,6 +1363,32 @@ export function RoomTypeEditor() {
                         style={{ accentColor: '#4d9fcc' }}
                       />
                       {t('roomTypeEditor.slotCard.blocksFrontCell')}
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.82rem', color: (slot.clearance ?? 0) > 0 ? '#7fd3ff' : '#889' }}
+                      title={t('roomTypeEditor.slotCard.clearanceTitle')}>
+                      {t('roomTypeEditor.slotCard.clearanceLabel')}
+                      <input
+                        type="number"
+                        min={0}
+                        max={3}
+                        className={s.slotSizeInput}
+                        style={{ width: 48 }}
+                        value={slot.clearance ?? 0}
+                        onChange={e => {
+                          const v = Math.max(0, Math.min(3, parseInt(e.target.value) || 0));
+                          updateSlot(idx, { clearance: v > 0 ? v : undefined });
+                        }}
+                      />
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', fontSize: '0.82rem', color: (slot.placeLast ?? false) ? '#7fd3ff' : '#889' }}
+                      title={t('roomTypeEditor.slotCard.placeLastTitle')}>
+                      <input
+                        type="checkbox"
+                        checked={slot.placeLast ?? false}
+                        onChange={() => updateSlot(idx, { placeLast: !(slot.placeLast ?? false) })}
+                        style={{ accentColor: '#4d9fcc' }}
+                      />
+                      {t('roomTypeEditor.slotCard.placeLast')}
                     </label>
                   </div>
 
@@ -1499,6 +1541,12 @@ export function RoomTypeEditor() {
                       if (!effectiveGroup) return <span className={s.slotHint} style={{ color: '#556' }}>{t('roomTypeEditor.slotCard.colorGroupNoFilter')}</span>;
                       return <span className={s.slotHint} style={{ color: '#8c8' }}>{t('roomTypeEditor.slotCard.colorGroupEffective', { group: effectiveGroup })}</span>;
                     })()}
+                    <label className={s.slotCheck} title={t('roomTypeEditor.colorHarmony.title')}>
+                      <input type="checkbox" checked={slot.useColorHarmony !== false}
+                        disabled={draft.useColorHarmony === false}
+                        onChange={e => updateSlot(idx, { useColorHarmony: e.target.checked })} />
+                      {t('roomTypeEditor.colorHarmony.label')}
+                    </label>
                   </div>
 
                   {/* ── Farbpalette für slot-spezifische Gruppe ── */}
@@ -1685,6 +1733,10 @@ export function RoomTypeEditor() {
                       .map(gid => (
                         <option key={`gridgrp_${gid}`} value={gid}>{t('roomTypeEditor.grids.gridGroupOption', { group: gid })}</option>
                       ))}
+                    {Array.from(new Set((draft.grids ?? []).flatMap(g => g.cells.map(c => c.anchorGroup)).filter(Boolean)))
+                      .map(ag => (
+                        <option key={`gridanchorgrp_${ag}`} value={ag}>{t('roomTypeEditor.grids.anchorGroupOption', { group: ag })}</option>
+                      ))}
                     {(draft.grids ?? []).filter(g => g.id).flatMap(g => [
                       <option key={`grid_${g.id}`} value={g.id}>{t('roomTypeEditor.grids.gridOption', { grid: g.label || g.id })}</option>,
                       ...g.cells.map(c => (
@@ -1814,6 +1866,24 @@ export function RoomTypeEditor() {
                           <span className={s.slotHint} style={{ fontSize: '0.75rem', color: '#888' }}>
                             {t('roomTypeEditor.slotCard.distanceHint')}
                           </span>
+                          <label className={s.slotHint} title={t('roomTypeEditor.slotCard.allowInsideTitle')}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <input
+                              type="checkbox"
+                              checked={rule.oppositeWallAllowInside ?? false}
+                              onChange={e => updateAnchorRule(idx, rIdx, { oppositeWallAllowInside: e.target.checked || undefined })}
+                            />
+                            {t('roomTypeEditor.slotCard.allowInsideLabel')}
+                          </label>
+                          <label className={s.slotHint} title={t('roomTypeEditor.slotCard.keepSightClearTitle')}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <input
+                              type="checkbox"
+                              checked={rule.keepSightClear ?? false}
+                              onChange={e => updateAnchorRule(idx, rIdx, { keepSightClear: e.target.checked || undefined })}
+                            />
+                            {t('roomTypeEditor.slotCard.keepSightClearLabel')}
+                          </label>
                         </div>
                       )}
                       {rule.anchorTarget && rule.positions.length > 0 && (
@@ -1918,7 +1988,11 @@ export function RoomTypeEditor() {
               grids={draft.grids ?? []}
               onChange={grids => { setDraft({ ...draft, grids }); setDirty(true); }}
               availGroups={availGroups}
-              slotIds={draft.slots.map(sl => sl.id)} />
+              slotIds={draft.slots.map(sl => sl.id)}
+              clipboard={copiedGrid}
+              roomType={draft.roomType}
+              onCopy={g => setCopiedGrid({ grid: structuredClone(g), fromRoom: draft.roomType })}
+              onClearClipboard={() => setCopiedGrid(null)} />
 
             {/* ── Layout-Varianten ── */}
             <div className={s.slotsHeader} style={{ marginTop: 12 }}>
@@ -2314,6 +2388,12 @@ export function RoomTypeEditor() {
                          <span className={s.slotGroupLabel}>{t('roomTypeEditor.layoutVariants.pools.colorGroupLabel')}</span>
                          <input className={s.slotSizeInput} style={{ flex: 1, minWidth: 80 }} value={pool.colorGroupId}
                            onChange={e => updatePool(idx, poolIdx, { colorGroupId: e.target.value })} />
+                         <label className={s.slotCheck} title={t('roomTypeEditor.colorHarmony.title')}>
+                           <input type="checkbox" checked={pool.useColorHarmony !== false}
+                             disabled={draft.useColorHarmony === false}
+                             onChange={e => updatePool(idx, poolIdx, { useColorHarmony: e.target.checked })} />
+                           {t('roomTypeEditor.colorHarmony.label')}
+                         </label>
                        </div>
 
                        {/* blocksFrontCell / blocksPlacement / softBlocks */}
@@ -2354,6 +2434,10 @@ export function RoomTypeEditor() {
                            <span key={g} className={s.chip} onClick={() => togglePoolCategory(idx, poolIdx, g)}>{g}</span>
                          ))}
                        </div>
+                       <ThemeSelector
+                         categories={[...Object.keys(pool.defaultCategories), ...pool.requiredSlots.map(r => r.category)]}
+                         value={pool.allowedThemes}
+                         onChange={allowedThemes => updatePool(idx, poolIdx, { allowedThemes })} />
 
                        {/* Required slots */}
                        <div className={s.slotRow} style={{ justifyContent: 'space-between', marginTop: 8 }}>
@@ -2515,6 +2599,8 @@ export function RoomTypeEditor() {
                                    <span key={g} className={s.chip} onClick={() => toggleCompanionCategory(idx, poolIdx, rsIdx, ci, g)}>{g}</span>
                                  ))}
                                </div>
+                               <ThemeSelector categories={Object.keys(c.allowedCategories)} value={c.allowedThemes}
+                                 onChange={allowedThemes => updateCompanion(idx, poolIdx, rsIdx, ci, { allowedThemes })} />
                              </div>
                              );});
                            })()}
