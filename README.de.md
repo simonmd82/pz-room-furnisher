@@ -79,7 +79,7 @@ Alternativ können die mitgelieferten Skripte genutzt werden:
 ### 🏠 Gebäude-Tab
 
 Der Einstiegspunkt der Anwendung. Hier wird ein **Project Zomboid `.tbx`-Gebäudefile** geladen und visualisiert.
-Zur Zeit kann es auschließlilch Wohngebäude möblieren und nutzt vorerst nur Vanilla Tiles!
+Zur Zeit kann es ausschließlich Wohngebäude möblieren. Standardmäßig nutzt es Vanilla-Möbel, zusätzlich können Melos- und Simon_MD-Tiles aktiviert werden (siehe [Tile-Sets](#tile-sets)).
 
 **Was es kann:**
 
@@ -90,6 +90,9 @@ Zur Zeit kann es auschließlilch Wohngebäude möblieren und nutzt vorerst nur V
   - Türen (orange) und Fenster (cyan) werden als Balken auf den Wänden dargestellt.
   - Treppen werden gestreift dargestellt, der Einstiegspunkt mit einem ✕ markiert.
   - Tooltip je Zelle mit Raumname, Tür-/Fensterinfo und Koordinaten.
+- **Grid- und ISO-Ansicht** – Oberhalb des Gebäudes lässt sich zwischen dem Grid von oben und einer isometrischen Ansicht wie in Project Zomboid wechseln. Die ISO-Ansicht dient nur zum Betrachten und braucht den in den Einstellungen gesetzten PZ-Tiles-Ordner. Wände, Türen und Fenster lassen sich in voller Höhe oder als niedrige Stümpfe anzeigen.
+- **Zoomen & Verschieben** – Zoom-Buttons (−, %, +, Fit) oder Strg + Mausrad am Mauszeiger. Die Ansicht lässt sich mit der mittleren Maustaste verschieben, oder mit der linken Maustaste überall außer auf Möbeln.
+- **Möbel verschieben** – Nach dem Möblieren lassen sich platzierte Möbel an eine andere Stelle ziehen (nur in der Grid-Ansicht).
 - **Raumauswahl** – Einzelklick oder Ctrl+Klick (Multi-Select) um Räume hervorzuheben / auszublenden.
 - **A\*-Wegfindung** – Berechnet beim Upload automatisch für jeden Raum den kürzesten Weg zwischen allen Tür-Waypoints (mit kleinem Zufalls-Jitter für optische Variation).
   - Treppen-Zellen werden beim Routing ausgenommen; nur der Einstiegspunkt ist passierbar.
@@ -107,11 +110,13 @@ Lass dabei das Gebäude unmöbliert.
 Ziehe die TBX Datei in den Container im Gebäude-Tab. Das Gebäude wird nun sichtbar und kann bearbeitet werden.
 Mach dich mit der Legende oberhalb der Gebäude-UI vertraut.
 In der linken Spalte kannst du nun entweder alle Räume eines Typs auswählen oder Räume einzeln selektieren die möbliert werden sollen. 
+Wähle unter "Möbel-Konfigurationsquellen" aus, welche Tile-Sets verwendet werden.
 Bestimme mit den Reglern unterhalb der Liste der Räume die Dichte wie stark möbliert werden soll. Jeder Raum bekommt dann eine eigene prozentuale Dichte-Anzahl, abhängig von deiner Auswahl.
 Wenn jeder Raum gleich stark möbliert werden soll, dann selektiere die Checkbox oberhalb des Buttons.
 Sollen alle Räume maximal möbliert werden, setze beide Regler auf 100%.
 Wenn du mit deiner Auswahl zufrieden bist, dann klicke auf den Button und warte bis der Algorithmus durchgelaufen ist. Dies kann je nach Größe des Gebäudes durchaus 1-2 Minuten dauern.
 Bei kleinen Gebäuden dauert dies nur ein paar Sekunden.
+Ein Fortschrittsdialog zeigt die Räume, während sie möbliert werden. "Stopp" beendet den Lauf nach dem aktuellen Raum, bereits fertige Räume bleiben erhalten.
 Im Anschluss kannst du dir das Ergebnis ansehen und wenn das für dich passt, es mit dem "TBX Export" Button exportieren als neue TBX Datei und anschließend wieder in TileEd öffnen.
 Die Möbel werden dabei alle im "Tilemode" platziert.
 
@@ -127,6 +132,16 @@ Die Möbel werden dabei alle im "Tilemode" platziert.
 - `garagestorage`
 - `hall`
 
+#### Tile-Sets
+
+| Set | Standard | Status |
+|---|---|---|
+| Vanilla | an | Möbel des Basisspiels |
+| Melos | aus | Enthalten, noch nicht zu 100% fertig |
+| Simon_MD | aus | Enthalten, noch nicht zu 100% fertig |
+
+Ein Set wird im Gebäude-Tab unter "Möbel-Konfigurationsquellen" aktiviert oder deaktiviert. Beim Möblieren werden nur aktivierte Sets verwendet.
+Melos und Simon_MD sind noch nicht vollständig konfiguriert, daher werden manche ihrer Möbel nicht platziert. Ein exportiertes Gebäude, das sie nutzt, braucht diese Tile-Packs außerdem in deinen Tools und im Spiel.
 
 ---
 

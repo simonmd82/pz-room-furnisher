@@ -79,7 +79,7 @@ Alternatively, use the included scripts:
 ### 🏠 Building Tab
 
 The entry point of the application. Here you load and visualize a **Project Zomboid `.tbx` building file**.
-Currently it can only furnish residential buildings and only uses Vanilla furniture!
+Currently it can only furnish residential buildings. It uses Vanilla furniture by default, Melos and Simon_MD tiles can be enabled as well (see [Tile sets](#tile-sets)).
 
 **What it can do:**
 
@@ -90,6 +90,9 @@ Currently it can only furnish residential buildings and only uses Vanilla furnit
   - Doors (orange) and windows (cyan) are drawn as bars on the walls.
   - Stairs are shown striped, the entry point marked with an ✕.
   - Tooltip per cell with room name, door/window info, and coordinates.
+- **Grid and ISO view** – Switch above the building between the top-down grid and an isometric view like in Project Zomboid. The ISO view is view-only and needs the PZ Tiles folder set in Settings. Walls, doors, and windows can be shown at full height or as low stubs.
+- **Zoom & pan** – Zoom buttons (−, %, +, Fit) or Ctrl + mouse wheel at the cursor. Drag to pan with the middle mouse button, or with the left mouse button anywhere except on furniture.
+- **Move furniture** – After furnishing, placed furniture can be dragged to another spot (grid view only).
 - **Room selection** – Single click or Ctrl+click (multi-select) to highlight / hide rooms.
 - **A\* pathfinding** – Automatically calculates the shortest path between all door waypoints for every room on upload (with a small random jitter for visual variation).
   - Stair cells are excluded from routing; only the entry point is passable.
@@ -107,11 +110,13 @@ Leave the building unfurnished.
 Drag the TBX file into the drop zone in the Building tab. The building becomes visible and can be edited.
 Familiarize yourself with the legend above the building UI.
 In the left column you can either select all rooms of a type, or select individual rooms to be furnished.
+Under "Furniture config sources" choose which tile sets to use.
 Use the sliders below the room list to set how densely furnished each selection should be. Each room then gets its own percentage density, based on your selection.
 If every room should be furnished equally, check the checkbox above the button.
 To furnish all rooms at maximum density, set both sliders to 100%.
 Once you're happy with your selection, click the button and wait for the algorithm to finish. Depending on the building's size, this can take 1-2 minutes.
 For small buildings this only takes a few seconds.
+A progress dialog shows the rooms as they are furnished. "Stop" ends the run after the current room, and rooms already done are kept.
 Afterwards you can review the result, and if you're happy with it, export it with the "TBX Export" button as a new TBX file, then reopen it in TileEd.
 All furniture is placed in "Tile mode".
 
@@ -127,6 +132,16 @@ All furniture is placed in "Tile mode".
 - `garagestorage`
 - `hall`
 
+#### Tile sets
+
+| Set | Default | Status |
+|---|---|---|
+| Vanilla | on | Base game furniture |
+| Melos | off | Included, not 100% complete yet |
+| Simon_MD | off | Included, not 100% complete yet |
+
+Enable or disable a set under "Furniture config sources" in the Building tab. Only enabled sets are used for furnishing.
+Melos and Simon_MD are not fully configured yet, so some of their furniture won't be placed. An exported building that uses them also needs those tile packs in your tools and game.
 
 ---
 
