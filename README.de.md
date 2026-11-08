@@ -125,6 +125,7 @@ Die Möbel werden dabei alle im "Tilemode" platziert.
 - `livingroom`
 - `office`
 - `garagestorage`
+- `hall`
 
 
 ---
