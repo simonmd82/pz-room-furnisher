@@ -17,11 +17,13 @@ export async function generateFurnishing(
   densityMin = 0,
   densityMax = 1,
   densityFixed = false,
+  excludedColors: string[] = [],
+  lightSwitches = false,
 ): Promise<FurnishResult> {
   const res = await fetch(`${API_BASE}/furnish/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ building, roomSelections, seed: seed ?? null, densityMin, densityMax, densityFixed }),
+    body: JSON.stringify({ building, roomSelections, seed: seed ?? null, densityMin, densityMax, densityFixed, excludedColors, lightSwitches }),
   });
   if (!res.ok) throw new Error(await res.text());
   return res.json() as Promise<FurnishResult>;
@@ -64,11 +66,13 @@ export async function generateFurnishingStream(
   densityMin = 0,
   densityMax = 1,
   densityFixed = false,
+  excludedColors: string[] = [],
+  lightSwitches = false,
 ): Promise<void> {
   const res = await fetch(`${API_BASE}/furnish/generate-stream`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ building, roomSelections, seed: seed ?? null, densityMin, densityMax, densityFixed }),
+    body: JSON.stringify({ building, roomSelections, seed: seed ?? null, densityMin, densityMax, densityFixed, excludedColors, lightSwitches }),
     signal,
   });
   if (!res.ok || !res.body) throw new Error(await res.text());
@@ -117,6 +121,18 @@ async function downloadResponse(res: Response, fallbackName: string): Promise<vo
   URL.revokeObjectURL(url);
 }
 
+export async function getAppVersion(): Promise<string> {
+  const res = await fetch(`${API_BASE}/version`);
+  if (!res.ok) throw new Error(await res.text());
+  return ((await res.json()) as { version: string }).version;
+}
+
+/** Open the backend's log folder in the system file manager. */
+export async function openLogFolder(): Promise<void> {
+  const res = await fetch(`${API_BASE}/logs/open`, { method: 'POST' });
+  if (!res.ok) throw new Error(await res.text());
+}
+
 // ── Repro bundles ────────────────────────────────────────────────────────────
 
 /** Exactly what one furnish run sent to the generator. */
@@ -127,6 +143,10 @@ export interface FurnishRequestSnapshot {
   densityMin: number;
   densityMax: number;
   densityFixed: boolean;
+  /** Missing in bundles made before colour exclusion existed. */
+  excludedColors?: string[] | null;
+  /** Missing in bundles made before light switches existed. */
+  lightSwitches?: boolean;
 }
 
 export interface ReproExpected {

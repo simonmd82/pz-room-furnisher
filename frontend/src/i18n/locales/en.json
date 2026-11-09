@@ -799,9 +799,15 @@
     "densityMax":     "Max",
     "densityHint":    "Each generation draws a random value between {{min}} % and {{max}} %.",
     "densityFixed": "Fix density per room",
+    "excludeColors":      "Exclude colors",
+    "excludeColorsHint":  "Furniture and rugs with a selected color, including its light and dark shades, are not used. Slots with nothing left stay empty.",
+    "excludeColorsClear": "Clear selection",
+    "excludeColorsNone":  "None",
+    "lightSwitches":      "Place light switches next to doors",
     "generate":           "Generate ({{count}} rooms)",
     "generating":         "Generating…",
     "noRoomSelected":     "Please select at least one room.",
+    "pathsMissing":       "Please setup the tiles folder and building.txt folder in the \"Settings\" tab before running the furnishing.",
     "tilesPlaced":        "{{tiles}} tiles placed in {{rooms}} rooms.",
     "tilesPlacedSummary": "{{count}} tiles placed",
     "exportTbx":          "Export TBX",
@@ -810,6 +816,9 @@
     "exportRepro":        "🐞 Export repro bundle",
     "exportReproHint":    "Save the last furnish run (building, room selection, seed, density, room-type/tile/rug config) so it can be replayed exactly on another machine.",
     "reproExportOk":      "Repro bundle saved",
+    "reportProblem":      "⚠ Report a problem with this result",
+    "reportProblemHint":  "Opens the GitHub issue form and downloads a repro bundle of this run. The report is public.",
+    "reportExportOk":     "Repro bundle downloaded. Drag it into the issue form that just opened.",
     "exportError":        "Export error: {{error}}",
     "genericError":       "Error: {{error}}",
     "defaultRoomName":    "Room {{n}}",
@@ -885,6 +894,13 @@
       "neutral": "Neutral",
       "hue": "Hue"
     },
+    "feedback": {
+      "title":       "💬 Feedback",
+      "description": "Report a bug in the app. For a bad furnishing result, use the button in the Building tab instead.",
+      "reportBug":   "Report a bug on GitHub",
+      "openLogs":    "Open log folder",
+      "openLogsError": "Could not open the log folder: {{error}}"
+    },
     "developer": {
       "title":       "🛠 Developer",
       "description": "For configuring furniture and room types. Not needed for furnishing buildings."
@@ -903,7 +919,7 @@
       },
       "reproTools": {
         "label":       "Repro tools",
-        "description": "Show \"Export repro bundle\" after furnishing and \"Load repro bundle\" below the file upload — for reporting and reproducing generator issues."
+        "description": "Show \"Load repro bundle\" below the file upload — for reproducing generator issues."
       }
     },
     "configManagement": {
@@ -925,8 +941,8 @@
       "description":            "Local folder/file paths used by the Tile Browser and Furniture Templates tabs. Specific to this machine — not shared or shipped with the app.",
       "tilesFolder":            "PZ Tiles folder",
       "tilesFolderPlaceholder": "e.g. C:\\Games\\ProjectZomboid\\media\\textures",
-      "bfFile":                 "BuildingFurniture.txt",
-      "bfFilePlaceholder":      "e.g. C:\\Users\\…\\TileZed\\BuildingFurniture.txt",
+      "bfFile":                 "BuildingFurniture.txt folder",
+      "bfFilePlaceholder":      "e.g. C:\\Users\\…\\TileZed",
       "browse":                 "Browse",
       "setPath":                "Set",
       "pathOk":                 "Found",

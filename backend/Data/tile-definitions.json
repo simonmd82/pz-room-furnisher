@@ -19905,7 +19905,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -19944,7 +19944,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -19980,7 +19980,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20019,7 +20019,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20058,7 +20058,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20097,7 +20097,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20136,7 +20136,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20175,7 +20175,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20370,7 +20370,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20409,7 +20409,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20448,7 +20448,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -20472,7 +20472,7 @@
       "NW"
     ],
     "windowBlockedEdge": "",
-    "useFacingOrientation": true
+    "useFacingOrientation": false
   },
   "furniture_shelving_01_022#1x2": {
     "id": "furniture_shelving_01_022#1x2",
@@ -24546,7 +24546,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -24591,7 +24591,7 @@
     "notes": "",
     "isHigh": true,
     "isMedium": false,
-    "isLow": false,
+    "isLow": true,
     "isWallMounted": false,
     "hasSurface": false,
     "hasCollision": true,
@@ -24634,7 +24634,7 @@
     "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -24675,7 +24675,7 @@
     "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -24716,7 +24716,7 @@
     "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -24757,7 +24757,7 @@
     "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -26814,10 +26814,10 @@
       ]
     ],
     "group": "Shelf",
-    "layer": "WallFurniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -26837,7 +26837,7 @@
       "Kitchen",
       "Office"
     ],
-    "variantGroup": "",
+    "variantGroup": "shelf_brown_02",
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
@@ -26855,10 +26855,10 @@
       ]
     ],
     "group": "Shelf",
-    "layer": "WallFurniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -26878,7 +26878,7 @@
       "Kitchen",
       "Office"
     ],
-    "variantGroup": "",
+    "variantGroup": "shelf_brown_02",
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
@@ -26896,10 +26896,10 @@
       ]
     ],
     "group": "Shelf",
-    "layer": "WallFurniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -26919,7 +26919,7 @@
       "Kitchen",
       "Office"
     ],
-    "variantGroup": "",
+    "variantGroup": "shelf_brown_02",
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
@@ -26937,10 +26937,10 @@
       ]
     ],
     "group": "Shelf",
-    "layer": "WallFurniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -26960,7 +26960,7 @@
       "Kitchen",
       "Office"
     ],
-    "variantGroup": "",
+    "variantGroup": "shelf_brown_02",
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
@@ -26978,10 +26978,10 @@
       ]
     ],
     "group": "Shelf",
-    "layer": "WallFurniture",
+    "layer": "Wallfurniture",
     "notes": "",
     "isHigh": true,
-    "isMedium": false,
+    "isMedium": true,
     "isLow": false,
     "isWallMounted": true,
     "hasSurface": false,
@@ -27001,14 +27001,14 @@
       "Kitchen",
       "Office"
     ],
-    "variantGroup": "",
+    "variantGroup": "shelf_brown_02",
     "styleTags": [],
     "themes": [],
     "allowedOrients": [
       "NW"
     ],
     "windowBlockedEdge": "",
-    "useFacingOrientation": true
+    "useFacingOrientation": false
   },
   "location_business_machinery_01_033": {
     "id": "location_business_machinery_01_033",
@@ -49684,11 +49684,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_white_02",
     "styleTags": [],
@@ -49724,11 +49720,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_white_02",
     "styleTags": [],
@@ -49804,11 +49796,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_white_02",
     "styleTags": [],
@@ -50047,11 +50035,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_white_02",
     "styleTags": [],
@@ -50087,11 +50071,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_black_02",
     "styleTags": [],
@@ -50287,11 +50267,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_black_02",
     "styleTags": [],
@@ -50487,11 +50463,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_black_02",
     "styleTags": [],
@@ -50527,11 +50499,7 @@
     ],
     "materials": [],
     "roomTypes": [
-      "Diningroom",
-      "Office",
-      "LivingRoom",
-      "Hall",
-      "Bedroom"
+      "Office"
     ],
     "variantGroup": "phone_black_02",
     "styleTags": [],
@@ -60001,6 +59969,712 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_000": {
+    "id": "lighting_indoor_01_000",
+    "tileId": "lighting_indoor_01_000",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_000"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_left_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_001": {
+    "id": "lighting_indoor_01_001",
+    "tileId": "lighting_indoor_01_001",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_001"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_left_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_002": {
+    "id": "lighting_indoor_01_002",
+    "tileId": "lighting_indoor_01_002",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_002"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_left_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_003": {
+    "id": "lighting_indoor_01_003",
+    "tileId": "lighting_indoor_01_003",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_003"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_left_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_004": {
+    "id": "lighting_indoor_01_004",
+    "tileId": "lighting_indoor_01_004",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_004"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_right_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_005": {
+    "id": "lighting_indoor_01_005",
+    "tileId": "lighting_indoor_01_005",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_005"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_right_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_006": {
+    "id": "lighting_indoor_01_006",
+    "tileId": "lighting_indoor_01_006",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_006"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_right_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "lighting_indoor_01_007": {
+    "id": "lighting_indoor_01_007",
+    "tileId": "lighting_indoor_01_007",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "lighting_indoor_01_007"
+      ]
+    ],
+    "group": "Lightswitch",
+    "layer": "Wallfurniture2",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "White"
+    ],
+    "materials": [],
+    "roomTypes": [
+      "Closet",
+      "Storage",
+      "Office",
+      "LivingRoom",
+      "Garagestorage",
+      "Hall",
+      "Kitchen",
+      "Laundry",
+      "Diningroom",
+      "Bedroom",
+      "Bathroom",
+      "Bar"
+    ],
+    "variantGroup": "light_switch_right_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_011": {
+    "id": "furniture_shelving_01_011",
+    "tileId": "furniture_shelving_01_011",
+    "label": "",
+    "orientation": "S",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_011"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_012": {
+    "id": "furniture_shelving_01_012",
+    "tileId": "furniture_shelving_01_012",
+    "label": "",
+    "orientation": "E",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_012"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_013": {
+    "id": "furniture_shelving_01_013",
+    "tileId": "furniture_shelving_01_013",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_013"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_014": {
+    "id": "furniture_shelving_01_014",
+    "tileId": "furniture_shelving_01_014",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_014"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_015": {
+    "id": "furniture_shelving_01_015",
+    "tileId": "furniture_shelving_01_015",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_015"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": false,
+    "isLow": true,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "SW"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_005": {
+    "id": "furniture_shelving_01_005",
+    "tileId": "furniture_shelving_01_005",
+    "label": "",
+    "orientation": "NE",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_005"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Diningroom",
+      "Kitchen",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "NE"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_006": {
+    "id": "furniture_shelving_01_006",
+    "tileId": "furniture_shelving_01_006",
+    "label": "",
+    "orientation": "SE",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_006"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Diningroom",
+      "Kitchen",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "SE"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "furniture_shelving_01_007": {
+    "id": "furniture_shelving_01_007",
+    "tileId": "furniture_shelving_01_007",
+    "label": "",
+    "orientation": "SW",
+    "tileLayout": [
+      [
+        "furniture_shelving_01_007"
+      ]
+    ],
+    "group": "Shelf",
+    "layer": "Wallfurniture",
+    "notes": "",
+    "isHigh": true,
+    "isMedium": true,
+    "isLow": false,
+    "isWallMounted": true,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": true,
+    "colors": [
+      "Brown"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Diningroom",
+      "Kitchen",
+      "Office"
+    ],
+    "variantGroup": "shelf_brown_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "SW"
+    ],
     "windowBlockedEdge": "",
     "useFacingOrientation": false
   }

@@ -21,6 +21,9 @@ resources/
 # User-generated snapshots (runtime only)
 backend/Data/Snapshots/
 
+# Runtime logs
+backend/logs/
+
 # Per-machine paths (PZ tiles folder, BuildingFurniture.txt) — never ship
 backend/Data/local-settings.json
 

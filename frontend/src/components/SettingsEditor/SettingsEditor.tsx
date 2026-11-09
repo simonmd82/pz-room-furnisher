@@ -17,6 +17,8 @@ import {
 } from '../../api/roomTypesApi';
 import { getTilesPath, setTilesPath } from '../../api/tilesApi';
 import { getBfPath, setBfPath } from '../../api/bfApi';
+import { getAppVersion, openLogFolder } from '../../api/furnishApi';
+import { issueUrl } from '../../utils/reportLinks';
 import { DirPicker } from '../TileBrowser/DirPicker';
 import { Spinner } from '../Spinner/Spinner';
 import { invalidateThemeSettings } from '../RoomTypeEditor/ThemeSelector';
@@ -330,6 +332,44 @@ function ConfigManagementSection() {
   );
 }
 
+// ── Feedback ─────────────────────────────────────────────────────────────────
+
+function FeedbackSection() {
+  const { t } = useTranslation();
+  const [version, setVersion] = useState('');
+  const [error, setError]     = useState<string | null>(null);
+
+  useEffect(() => { getAppVersion().then(setVersion).catch(console.error); }, []);
+
+  const openLogs = async () => {
+    setError(null);
+    try {
+      await openLogFolder();
+    } catch (e) {
+      setError(t('settingsEditor.feedback.openLogsError', { error: String(e) }));
+    }
+  };
+
+  return (
+    <div className={s.section}>
+      <div className={s.sectionHeader}>
+        <span className={s.sectionTitle}>{t('settingsEditor.feedback.title')}</span>
+        <span className={s.sectionDesc}>{t('settingsEditor.feedback.description')}</span>
+      </div>
+      <div className={s.prefsList}>
+        <div>
+          <a className={s.configBtn} href={issueUrl('bug.yml', { version })} target="_blank" rel="noopener noreferrer">
+            {t('settingsEditor.feedback.reportBug')}
+          </a>
+          {' '}
+          <button className={s.configBtn} onClick={openLogs}>{t('settingsEditor.feedback.openLogs')}</button>
+        </div>
+        {error && <span className={s.prefDesc}>{error}</span>}
+      </div>
+    </div>
+  );
+}
+
 // ── Haupt-Komponente ─────────────────────────────────────────────────────────
 
 interface SettingsEditorProps {
@@ -370,6 +410,8 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
 
       <div className={s.columns}>
         <FilePathsSection />
+
+        <FeedbackSection />
 
         <div className={s.section}>
           <div className={s.sectionHeader}>

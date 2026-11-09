@@ -35,6 +35,8 @@ interface Props {
   rows: number;
   rooms: Room[];
   roomGrid: number[][];
+  /** Open stairwell cells ("col,row"), painted black. */
+  stairwell: Set<string>;
   scrollEl: HTMLDivElement | null;
   hiddenLayers: Set<string>;
   selectedRooms: Set<number>;
@@ -42,7 +44,7 @@ interface Props {
 }
 
 export function IsoRenderer({
-  sprites, sheetInfoMap, cellSize, cols, rows, rooms, roomGrid, scrollEl,
+  sprites, sheetInfoMap, cellSize, cols, rows, rooms, roomGrid, stairwell, scrollEl,
   hiddenLayers, selectedRooms, cutaway,
 }: Props) {
   const { t } = useTranslation();
@@ -121,6 +123,12 @@ export function IsoRenderer({
           if (ri <= 0) continue;
           const p = top(c, r);
           if (p.x < viewL || p.x > viewR || p.y < viewT || p.y > viewB) continue;
+          if (stairwell.has(`${c},${r}`)) {
+            ctx.fillStyle = '#000';
+            diamond(p.x, p.y);
+            ctx.fill();
+            continue;
+          }
           // Skipped for dimmed rooms: under their half-transparent sprites it would tint the floor.
           if (selectedRooms.size > 0 && !selectedRooms.has(ri)) continue;
           ctx.fillStyle = toRgb(rooms[ri - 1]?.color ?? '', 0.55);
@@ -176,7 +184,7 @@ export function IsoRenderer({
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [sprites, sheetInfoMap, cellSize, cols, rows, rooms, roomGrid, hiddenLayers, selectedRooms, cutaway,
+  }, [sprites, sheetInfoMap, cellSize, cols, rows, rooms, roomGrid, stairwell, hiddenLayers, selectedRooms, cutaway,
       canvasW, canvasH, canvasLeft, canvasTop, originX, originY, hover, loadTick, onSheetLoaded]);
 
   const onMouseMove = useCallback((e: React.MouseEvent) => {

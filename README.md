@@ -10,6 +10,7 @@ AI was used to create this app. If you don't like that, don't use it.
 ## Table of Contents
 
 - [Running the App](#running-the-app)
+- [Feedback & Bug Reports](#feedback--bug-reports)
 - [Running from Source (Developers)](#running-from-source-developers)
 - [Usage: Buildings & Settings](#usage-buildings--settings)
   - [🏠 Building Tab](#-building-tab)
@@ -36,6 +37,18 @@ No installation of .NET, Node, or anything else required — just download and r
 5. To stop the app, close the console window (Windows) or press Ctrl+C in the terminal (Linux).
 
 Your settings and configuration are saved next to the executable, in the `Data/` folder.
+
+---
+
+## Feedback & Bug Reports
+
+German or English are both fine.
+
+- **Bad furnishing result:** click "Report a problem with this result" in the Building tab after a run. It opens the [issue form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) and downloads a repro bundle to drag in.
+- **Crash, error or broken UI:** use the [bug form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml). Settings → Feedback opens the folder with the log file to attach.
+- **Ideas and questions:** [Discussions](https://github.com/simonmd82/pz-room-furnisher/discussions).
+
+Issues are public, including any attached repro bundle (your building layout, room selection and furnishing config).
 
 ---
 
@@ -107,6 +120,7 @@ Leave the building unfurnished.
 
 **How to use it:**
 
+Before the first run, set the tiles folder and the folder containing `BuildingFurniture.txt` in the Settings tab. Furnishing stays disabled until both are found.
 Drag the TBX file into the drop zone in the Building tab. The building becomes visible and can be edited.
 Familiarize yourself with the legend above the building UI.
 In the left column you can either select all rooms of a type, or select individual rooms to be furnished.
@@ -114,6 +128,8 @@ Under "Furniture config sources" choose which tile sets to use.
 Use the sliders below the room list to set how densely furnished each selection should be. Each room then gets its own percentage density, based on your selection.
 If every room should be furnished equally, check the checkbox above the button.
 To furnish all rooms at maximum density, set both sliders to 100%.
+Open the "Exclude colors" dropdown and tick any color that should not appear. Furniture and rugs with that color, including its light and dark shades, are not used, and a spot with nothing left stays empty.
+"Place light switches next to doors" is on by default and gives every furnished room at least one switch, and at most one per door. They are placed before any furniture and aren't affected by excluded colors. Untick it to leave them out.
 Once you're happy with your selection, click the button and wait for the algorithm to finish. Depending on the building's size, this can take 1-2 minutes.
 For small buildings this only takes a few seconds.
 A progress dialog shows the rooms as they are furnished. "Stop" ends the run after the current room, and rooms already done are kept.
@@ -131,6 +147,19 @@ All furniture is placed in "Tile mode".
 - `office`
 - `garagestorage`
 - `hall`
+
+#### Wall furniture
+
+Some buildings contain doors, windows or arches placed as generic furniture, or shop windows painted into a wall layer, instead of normal door and window objects. The generator can't tell what these pieces are, so the Building tab lists them under "wall-furniture elements found". A badge shows how many still need review.
+
+Open the list and choose what each tile is. Set these before furnishing, because they only affect the next run. Your choice is saved per tile and applies to every future building using that tile. An entry made of several tiles is set tile by tile, since a door and a window can sit next to each other in one entry. "Set all tiles to" sets the whole entry at once.
+
+| Option | Effect on furnishing |
+|---|---|
+| Door | Counts as a door. The spot in front stays clear unless a furniture slot is set to stand near doors, and walking paths lead through it. |
+| Window (high) | Counts as a window. Tall furniture can't stand in front of it unless its slot is set to stand near windows. Low furniture can. |
+| Window (high & low) | Currently behaves exactly like Window (high). |
+| Ignore | Stays a plain wall, so furniture of any height can stand against it. Tiles you haven't set count as Ignore. |
 
 #### Tile sets
 
@@ -205,7 +234,7 @@ Read access to **BuildingFurniture files** (Project Zomboid's `.bf` format) for 
 
 **What it can do:**
 
-- **Path configuration** – Set the path to a `.bf` file (e.g. `BuildingFurniture_01.bf`). Saved persistently.
+- **Path configuration** – In Settings, set the folder containing `BuildingFurniture.txt`. Saved persistently.
 - **Directory browser** – Same file browser as in the Tile Browser.
 - **Group list** – Lists all `group` blocks in the file with label, piece count, and entry count.
   - Search filter.

@@ -7,6 +7,8 @@ namespace backend.Controllers;
 [Route("api/bfurniture")]
 public class BuildingFurnitureController : ControllerBase
 {
+    private const string BfFileName = "BuildingFurniture.txt";
+
     private readonly IBuildingFurnitureService _bf;
     private readonly ITileConfigService _cfg;
 
@@ -20,7 +22,7 @@ public class BuildingFurnitureController : ControllerBase
 
     [HttpGet("path")]
     public IActionResult GetPath() =>
-        Ok(new { path = _bf.FilePath, isValid = _bf.IsConfigured });
+        Ok(new { path = Path.GetDirectoryName(_bf.FilePath) ?? "", isValid = _bf.IsConfigured });
 
     [HttpPost("path")]
     public IActionResult SetPath([FromBody] SetBfPathRequest req)
@@ -31,11 +33,17 @@ public class BuildingFurnitureController : ControllerBase
         var norm = req.Path.Replace('/', Path.DirectorySeparatorChar)
                            .Replace('\\', Path.DirectorySeparatorChar);
 
-        if (!System.IO.File.Exists(norm))
-            return BadRequest($"File not found: {norm}");
+        // The setting is the folder; a pasted path to the file itself is accepted too.
+        var folder = Path.GetFileName(norm).Equals(BfFileName, StringComparison.OrdinalIgnoreCase) && !Directory.Exists(norm)
+            ? Path.GetDirectoryName(norm) ?? norm
+            : norm;
+        var file = Path.Combine(folder, BfFileName);
 
-        _bf.SetFilePath(norm);
-        return Ok(new { path = norm, isValid = true });
+        if (!System.IO.File.Exists(file))
+            return BadRequest($"{BfFileName} not found in: {folder}");
+
+        _bf.SetFilePath(file);
+        return Ok(new { path = folder, isValid = true });
     }
 
     // ── Groups ────────────────────────────────────────────────────────────────

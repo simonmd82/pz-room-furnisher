@@ -1,11 +1,14 @@
 ﻿import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Building, PlacedFurnitureItem, ReservedZonePlacement } from '../../types/building';
-import { generateFurnishingStream, exportTbx, exportReproBundle } from '../../api/furnishApi';
+import { generateFurnishingStream, exportTbx, exportReproBundle, getAppVersion } from '../../api/furnishApi';
 import type { RoomSelection, FurnishRequestSnapshot, ReproExpected } from '../../api/furnishApi';
+import { getColorNames } from '../../api/settingsApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
 import type { RoomTypeConfigMap } from '../../types/roomTypes';
-import { getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
+import { getBfPath } from '../../api/bfApi';
+import { getColors, getTilesPath, getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
+import { issueUrl } from '../../utils/reportLinks';
 import type { TileConfigSetInfo } from '../../types/tiles';
 import { Spinner } from '../Spinner/Spinner';
 import { FurnishProgressDialog } from './FurnishProgressDialog';
@@ -14,6 +17,9 @@ import s from './FurnishPanel.module.css';
 
 /** How many recent generator log lines the progress dialog shows. */
 const PROGRESS_LOG_LINES = 40;
+
+/** openMenu value of the colour dropdown; room menus use their selection key. */
+const COLOR_MENU = 'excludeColors';
 
 interface Props {
   building: Building;
@@ -32,8 +38,12 @@ interface Props {
   densityMax: number;
   densityFixed: boolean;
   onDensityChange: (min: number, max: number, fixed: boolean) => void;
-  /** Settings → "Repro tools": show the repro-bundle export after a completed run. */
-  reproToolsEnabled?: boolean;
+  /** Colour tags that must not appear in the furnishing. */
+  excludedColors: string[];
+  onExcludedColorsChange: (colors: string[]) => void;
+  /** Place light switches next to doors. */
+  lightSwitches: boolean;
+  onLightSwitchesChange: (on: boolean) => void;
   /** Reserved zones already on the grid when the panel mounts (e.g. from a replayed repro bundle). */
   initialReservedZones?: ReservedZonePlacement[];
 }
@@ -146,7 +156,8 @@ function tbxColorToCss(color: string | undefined): string {
 export default function FurnishPanel({
   building, fileName, placements, onPlacementsChanged, onReservedZonesChanged, onLogChanged,
   selected, onSelectedChange, overrides, onOverridesChange,
-  seed, onSeedChange, densityMin, densityMax, densityFixed, onDensityChange, reproToolsEnabled = false,
+  seed, onSeedChange, densityMin, densityMax, densityFixed, onDensityChange, excludedColors, onExcludedColorsChange,
+  lightSwitches, onLightSwitchesChange,
   initialReservedZones,
 }: Props) {
   const { t } = useTranslation();
@@ -163,10 +174,29 @@ export default function FurnishPanel({
   /** Last fully completed run: the request exactly as sent + only what that run produced. */
   const [lastRun, setLastRun] = useState<{ request: FurnishRequestSnapshot; expected: ReproExpected } | null>(null);
   const [exportingRepro, setExportingRepro] = useState(false);
+  const [knownColors, setKnownColors] = useState<string[]>([]);
+  const [appVersion, setAppVersion]   = useState('');
+  /** Both paths from the Settings tab are valid; null until the check has finished. */
+  const [pathsReady, setPathsReady]   = useState<boolean | null>(null);
 
   useEffect(() => {
+    Promise.all([getTilesPath(), getBfPath()])
+      .then(([tiles, bf]) => setPathsReady(tiles.isValid && bf.isValid))
+      .catch(() => setPathsReady(false));
     getRoomTypes().then(setRoomTypes).catch(console.error);
     getTileConfigSets().then(setConfigSets).catch(console.error);
+    getAppVersion().then(setAppVersion).catch(console.error);
+    // Tile tags plus the colour registry: some colours exist only on rugs, some only on tiles.
+    Promise.all([getColors(), getColorNames().catch(() => [] as string[])]).then(([tags, names]) => {
+      // Shades are listed under their base colour; the backend excludes them together.
+      const byLower = new Map([...names, ...tags].map(c => c.replace(/ (Light|Dark)$/i, '')).map(c => [c.toLowerCase(), c]));
+      const colors = [...byLower.values()].sort((a, b) => a.localeCompare(b));
+      setKnownColors(colors);
+      // An empty list means the request failed or no tiles exist; keep the stored selection then.
+      if (colors.length === 0) return;
+      const stillKnown = excludedColors.filter(c => colors.includes(c));
+      if (stillKnown.length !== excludedColors.length) onExcludedColorsChange(stillKnown);
+    }).catch(console.error);
   }, []);
 
   const toggleConfigSet = async (id: string, enabled: boolean) => {
@@ -301,6 +331,8 @@ export default function FurnishPanel({
     const request: FurnishRequestSnapshot = {
       building, roomSelections: selections, seed,
       densityMin: densityMin / 100, densityMax: densityMax / 100, densityFixed,
+      excludedColors: [...excludedColors],
+      lightSwitches,
     };
     const runPlacements: PlacedFurnitureItem[] = [];
     const runZones: ReservedZonePlacement[] = [];
@@ -351,7 +383,7 @@ export default function FurnishPanel({
           case 'error':
             throw new Error(ev.message);
         }
-      }, abort.signal, request.seed ?? undefined, request.densityMin, request.densityMax, request.densityFixed);
+      }, abort.signal, request.seed ?? undefined, request.densityMin, request.densityMax, request.densityFixed, excludedColors, lightSwitches);
 
       setLastRun({ request, expected: { placements: runPlacements, reservedZones: runZones, log: fullLog } });
       setStatus({ msg: t('furnishPanel.tilesPlaced', { tiles: tilesPlaced, rooms: selections.length }), ok: true });
@@ -409,18 +441,30 @@ export default function FurnishPanel({
     }
   };
 
-  const handleExportRepro = async () => {
+  const handleExportRepro = async (successMsg = t('furnishPanel.reproExportOk')) => {
     if (!lastRun) return;
     setExportingRepro(true);
     try {
       await exportReproBundle(lastRun.request, fileName, lastRun.expected);
-      setStatus({ msg: `✓ ${t('furnishPanel.reproExportOk')}`, ok: true });
+      setStatus({ msg: `✓ ${successMsg}`, ok: true });
     } catch (e) {
       setStatus({ msg: t('furnishPanel.exportError', { error: String(e) }), ok: false });
     } finally {
       setExportingRepro(false);
     }
   };
+
+  const handleReportProblem = () => {
+    if (!lastRun) return;
+    // Open before any await: browsers block popups that aren't directly tied to the click.
+    window.open(issueUrl('bad-result.yml', { version: appVersion, seed: lastRun.request.seed ?? '' }), '_blank', 'noopener');
+    void handleExportRepro(t('furnishPanel.reportExportOk'));
+  };
+
+  const toggleExcludedColor = (color: string) =>
+    onExcludedColorsChange(excludedColors.includes(color)
+      ? excludedColors.filter(c => c !== color)
+      : [...excludedColors, color]);
 
   return (
     <div className={s.panel}>
@@ -644,6 +688,56 @@ export default function FurnishPanel({
         {t('furnishPanel.densityFixed')}
       </label>
 
+      {/* ── Excluded colours ── */}
+      {knownColors.length > 0 && (
+        <>
+          <span className={s.sectionLabel}>{t('furnishPanel.excludeColors')}</span>
+          <div className={s.colorSelect} onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              className={s.colorSelectBtn}
+              aria-haspopup="true"
+              aria-expanded={openMenu === COLOR_MENU}
+              title={excludedColors.join(', ')}
+              onClick={() => setOpenMenu(openMenu === COLOR_MENU ? null : COLOR_MENU)}>
+              <span className={s.colorSelectValue}>
+                {excludedColors.length > 0 ? excludedColors.join(', ') : t('furnishPanel.excludeColorsNone')}
+              </span>
+              <span aria-hidden="true">▾</span>
+            </button>
+            {openMenu === COLOR_MENU && (
+              <div className={s.colorSelectMenu}>
+                <p className={s.configSetsHint}>{t('furnishPanel.excludeColorsHint')}</p>
+                {excludedColors.length > 0 && (
+                  <button type="button" className={s.colorSelectClear} onClick={() => onExcludedColorsChange([])}>
+                    {t('furnishPanel.excludeColorsClear')}
+                  </button>
+                )}
+                {knownColors.map(color => (
+                  <label key={color} className={s.colorSelectOption}>
+                    <input
+                      type="checkbox"
+                      checked={excludedColors.includes(color)}
+                      onChange={() => toggleExcludedColor(color)}
+                    />
+                    {color}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      <label className={s.densityToggle}>
+        <input
+          type="checkbox"
+          checked={lightSwitches}
+          onChange={e => onLightSwitchesChange(e.target.checked)}
+        />
+        {t('furnishPanel.lightSwitches')}
+      </label>
+
       {/* ── Config sets ── */}
       {configSets.length > 0 && (
         <>
@@ -666,9 +760,12 @@ export default function FurnishPanel({
       )}
 
       {/* ── Generate ── */}
+      {pathsReady === false && (
+        <div className={`${s.status} ${s.statusError}`}>{t('furnishPanel.pathsMissing')}</div>
+      )}
       <button
         className={s.generateBtn}
-        disabled={running || selected.size === 0}
+        disabled={running || selected.size === 0 || !pathsReady}
         onClick={handleGenerate}>
         {running
           ? <><Spinner /> {t('furnishPanel.generating')}</>
@@ -689,14 +786,23 @@ export default function FurnishPanel({
           </button>
         </>
       )}
-      {reproToolsEnabled && lastRun && (
-        <button
-          className={s.exportBtn}
-          disabled={exportingRepro || running}
-          onClick={handleExportRepro}
-          title={t('furnishPanel.exportReproHint')}>
-          {exportingRepro ? <><Spinner /> {t('furnishPanel.exporting')}</> : t('furnishPanel.exportRepro')}
-        </button>
+      {lastRun && (
+        <>
+          <button
+            className={s.exportBtn}
+            disabled={exportingRepro || running}
+            onClick={handleReportProblem}
+            title={t('furnishPanel.reportProblemHint')}>
+            {t('furnishPanel.reportProblem')}
+          </button>
+          <button
+            className={s.exportBtn}
+            disabled={exportingRepro || running}
+            onClick={() => handleExportRepro()}
+            title={t('furnishPanel.exportReproHint')}>
+            {exportingRepro ? <><Spinner /> {t('furnishPanel.exporting')}</> : t('furnishPanel.exportRepro')}
+          </button>
+        </>
       )}
 
       {/* ── Status ── */}

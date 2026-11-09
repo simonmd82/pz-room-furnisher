@@ -799,9 +799,15 @@
     "densityMax":     "Max",
     "densityHint":    "Pro Generierung wird ein Zufallswert zwischen {{min}} % und {{max}} % gezogen.",
     "densityFixed": "Dichte fixieren (für alle Räume gleich)",
+    "excludeColors":      "Farben ausschließen",
+    "excludeColorsHint":  "Möbel und Teppiche mit einer gewählten Farbe, auch in hellen und dunklen Tönen, werden nicht verwendet. Plätze ohne verbleibende Auswahl bleiben leer.",
+    "excludeColorsClear": "Auswahl löschen",
+    "excludeColorsNone":  "Keine",
+    "lightSwitches":      "Lichtschalter neben Türen platzieren",
     "generate":           "Generieren ({{count}} Räume)",
     "generating":         "Generiere…",
     "noRoomSelected":     "Bitte mindestens einen Raum auswählen.",
+    "pathsMissing":       "Vor dem Möblieren, bitte zuerst die Pfade zu den Tiles und der building.txt Datei im Tab \"Einstellungen\" auswählen.",
     "tilesPlaced":        "{{tiles}} Tiles in {{rooms}} Räumen platziert.",
     "tilesPlacedSummary": "{{count}} Tiles platziert",
     "exportTbx":          "TBX exportieren",
@@ -810,6 +816,9 @@
     "exportRepro":        "🐞 Repro-Paket exportieren",
     "exportReproHint":    "Den letzten Einrichtungs-Lauf speichern (Gebäude, Raumauswahl, Seed, Dichte, Raumtyp-/Tile-/Teppich-Konfiguration), damit er auf einem anderen Rechner exakt wiederholt werden kann.",
     "reproExportOk":      "Repro-Paket gespeichert",
+    "reportProblem":      "⚠ Problem mit diesem Ergebnis melden",
+    "reportProblemHint":  "Öffnet das GitHub-Issue-Formular und lädt ein Repro-Paket dieses Laufs herunter. Die Meldung ist öffentlich.",
+    "reportExportOk":     "Repro-Paket heruntergeladen. Zieh es in das gerade geöffnete Issue-Formular.",
     "exportError":        "Export-Fehler: {{error}}",
     "genericError":       "Fehler: {{error}}",
     "defaultRoomName":    "Raum {{n}}",
@@ -885,6 +894,13 @@
       "neutral": "Neutral",
       "hue": "Farbton"
     },
+    "feedback": {
+      "title":       "💬 Feedback",
+      "description": "Einen Fehler in der App melden. Für ein schlechtes Einrichtungs-Ergebnis stattdessen den Button im Gebäude-Tab benutzen.",
+      "reportBug":   "Fehler auf GitHub melden",
+      "openLogs":    "Log-Ordner öffnen",
+      "openLogsError": "Log-Ordner konnte nicht geöffnet werden: {{error}}"
+    },
     "developer": {
       "title":       "🛠 Entwickler",
       "description": "Zum Konfigurieren von Möbeln und Raumtypen. Zum Möblieren von Gebäuden nicht nötig."
@@ -903,7 +919,7 @@
       },
       "reproTools": {
         "label":       "Repro-Werkzeuge",
-        "description": "Zeigt „Repro-Paket exportieren“ nach dem Einrichten und „Repro-Paket laden“ unter dem Datei-Upload – zum Melden und Nachstellen von Generator-Problemen."
+        "description": "Zeigt „Repro-Paket laden“ unter dem Datei-Upload – zum Nachstellen von Generator-Problemen."
       }
     },
     "configManagement": {
@@ -925,8 +941,8 @@
       "description":            "Lokale Ordner-/Datei-Pfade für den Tile Browser und die Furniture-Vorlagen. Gerätespezifisch — werden nicht geteilt oder mit der App ausgeliefert.",
       "tilesFolder":            "PZ-Tiles-Ordner",
       "tilesFolderPlaceholder": "z.B. C:\\Games\\ProjectZomboid\\media\\textures",
-      "bfFile":                 "BuildingFurniture.txt",
-      "bfFilePlaceholder":      "z.B. C:\\Users\\…\\TileZed\\BuildingFurniture.txt",
+      "bfFile":                 "Ordner der BuildingFurniture.txt",
+      "bfFilePlaceholder":      "z.B. C:\\Users\\…\\TileZed",
       "browse":                 "Durchsuchen",
       "setPath":                "Setzen",
       "pathOk":                 "Gefunden",

@@ -49,6 +49,18 @@ function isWallHeightLayer(layer: string): boolean {
 type WallDir = 'West' | 'North';
 type Opening = 'Door' | 'Window' | null;
 
+/** Open stairwell on this floor: the 3 middle cells of each stair coming up from the floor below ("col,row"). */
+export function stairwellCells(building: Building, floor: Floor): Set<string> {
+  const cells = new Set<string>();
+  const below = building.floors.find(f => f.index === floor.index - 1);
+  for (const obj of below?.objects ?? []) {
+    if (obj.type !== 'Stairs') continue;
+    for (let i = 1; i <= 3; i++)
+      cells.add(obj.dir === 'W' ? `${obj.x + i},${obj.y}` : `${obj.x},${obj.y + i}`);
+  }
+  return cells;
+}
+
 export function buildIsoScene(
   building: Building,
   floor: Floor,
@@ -218,7 +230,9 @@ export function buildIsoScene(
       isWallHeightLayer(p.layer));
   }
 
-  return sortIsoSprites(sprites);
+  // Nothing lies flat on an open stairwell; IsoRenderer paints those cells black.
+  const stairwell = stairwellCells(building, floor);
+  return sortIsoSprites(sprites.filter(s => s.rank >= FLAT_RANK_LIMIT || !stairwell.has(key(s.col, s.row))));
 }
 
 type PushFn = (col: number, row: number, tile: string | null, layer: string,

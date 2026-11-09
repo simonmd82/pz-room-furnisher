@@ -28,7 +28,11 @@ public record FurnishRequest(
     /// true  = Ein einziger Wert wird pro Aufruf gezogen und für ALLE Räume erzwungen (auch wenn DensityMin &lt; DensityMax).
     /// false = Standard: Jeder Raum bekommt einen eigenen Zufallswert, sofern DensityMin &lt; DensityMax.
     /// </summary>
-    bool                DensityFixed = false);
+    bool                DensityFixed = false,
+    /// <summary>Colour tags that must not appear in this run: a tile or rug carrying any of them is removed from the catalog.</summary>
+    List<string>?       ExcludedColors = null,
+    /// <summary>Place light switches next to doors before any furniture.</summary>
+    bool                LightSwitches = false);
 
 /// <summary>A single tile placed on the grid.</summary>
 public record PlacedFurnitureItem(
@@ -121,6 +125,17 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     // Generate call; same thread-static reasoning. Read by MatchTiles via MatchesThemes.
     [ThreadStatic] private static HashSet<string>? t_themedCategories;
 
+    // Colours excluded by the current request (null = none); same thread-static reasoning. The
+    // catalogs are filtered once in GenerateCore, this is only for palettes and log messages.
+    [ThreadStatic] private static HashSet<string>? t_excludedColors;
+
+    private static readonly string[] ColorShadeSuffixes = [" Light", " Dark"];
+
+    // Stair exits of the room component being furnished (null = none). Entrances like doors, but
+    // kept out of doorCells: NearDoor targeting and floor decor on landings must not change.
+    // Thread-static so RoomRemainsConnected's many call sites need no extra parameter.
+    [ThreadStatic] private static HashSet<(int, int)>? t_stairEntryCells;
+
     private readonly IRoomTypeConfigService _roomTypeSvc;
     private readonly ITileConfigService     _tileSvc;
     private readonly IPathfinderService     _pathfinder;
@@ -148,8 +163,32 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         t_layoutPoolCache = new(new SlotKeyComparer());
         t_colorHues = new Dictionary<string, int?>(inputs?.ColorHues ?? _settings.GetColorHues(), StringComparer.OrdinalIgnoreCase);
         t_themedCategories = new HashSet<string>(inputs?.ThemedCategories ?? _settings.GetThemedCategories(), StringComparer.OrdinalIgnoreCase);
+        var excluded = req.ExcludedColors?.Where(c => !string.IsNullOrWhiteSpace(c)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        t_excludedColors = excluded is { Count: > 0 } ? excluded : null;
         try { return GenerateCore(req, progress, ct, inputs); }
-        finally { t_cancel = default; t_layoutPoolCache = null; t_colorHues = null; t_themedCategories = null; }
+        finally { t_cancel = default; t_layoutPoolCache = null; t_colorHues = null; t_themedCategories = null; t_excludedColors = null; t_stairEntryCells = null; t_switchCells = null; }
+    }
+
+    /// <summary>
+    /// The catalog without entries carrying an excluded colour, in original order (the generator's
+    /// results depend on iteration order). Returns the catalog untouched when nothing is excluded.
+    /// </summary>
+    private static IReadOnlyDictionary<string, T> WithoutExcludedColors<T>(
+        IReadOnlyDictionary<string, T> catalog, Func<T, IEnumerable<string>> colorsOf)
+    {
+        if (t_excludedColors is null) return catalog;
+        return catalog.Where(kv => !colorsOf(kv.Value).Any(IsColorExcluded))
+                      .ToDictionary(kv => kv.Key, kv => kv.Value);
+    }
+
+    /// <summary>True if the colour or the base colour of its shade ("Red Light" → "Red") is excluded in this run.</summary>
+    private static bool IsColorExcluded(string color)
+    {
+        if (t_excludedColors is not { } excluded) return false;
+        foreach (var suffix in ColorShadeSuffixes)
+            if (color.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                return excluded.Contains(color[..^suffix.Length]);
+        return excluded.Contains(color);
     }
 
     private FurnishResult GenerateCore(FurnishRequest req, IFurnishProgress? progress, CancellationToken ct, GeneratorInputs? inputs)
@@ -158,10 +197,14 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         var placements     = new List<PlacedFurnitureItem>();
         var log            = new List<string>();
         var reservedZones  = new List<ReservedZonePlacement>();
-        var enabledTiles   = inputs?.Tiles     ?? _tileSvc.GetAllEnabled();
+        var sourceTiles    = inputs?.Tiles     ?? _tileSvc.GetAllEnabled();
+        var enabledTiles   = WithoutExcludedColors(sourceTiles, t => t.Colors);
         var roomTilesCache = new Dictionary<string, IReadOnlyDictionary<string, TileDefinition>>(StringComparer.OrdinalIgnoreCase);
-        var rugCatalog     = inputs?.Rugs      ?? _rugSvc.GetAllEnabled();
+        var sourceRugs     = inputs?.Rugs      ?? _rugSvc.GetAllEnabled();
+        var rugCatalog     = WithoutExcludedColors(sourceRugs, r => r.Colors);
         var roomTypes      = inputs?.RoomTypes ?? _roomTypeSvc.GetAll();
+        if (t_excludedColors is { } excludedColors)
+            log.Add($"[COLOR] excluded colours: {string.Join(", ", excludedColors.Order(StringComparer.OrdinalIgnoreCase))} → {sourceTiles.Count - enabledTiles.Count}/{sourceTiles.Count} tiles and {sourceRugs.Count - rugCatalog.Count}/{sourceRugs.Count} rugs removed");
 
         // Möblierungsdichte: zufälliger Wert aus [DensityMin, DensityMax].
         // DensityFixed=true:  ein einziger Wert wird erzwungen und für alle Räume verwendet – einheitliches Bild.
@@ -318,6 +361,13 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         if (effectiveGroup.Count == 1) doorCells.UnionWith(effectiveGroup);
                         else                           openingGroups.Add(effectiveGroup);
                     }
+                    // Only exits reachable in the empty room count: an already sealed landing
+                    // would otherwise make every placement in this room fail the check.
+                    var stairEntries = floor.StairWaypoints.Select(w => (w.Col, w.Row)).Where(roomCells.Contains).ToHashSet();
+                    if (stairEntries.Count > 0)
+                        stairEntries.IntersectWith(ComputeReachableCells(roomCells, [], doorCells, innerWallKeys, out _));
+                    t_stairEntryCells = stairEntries.Count > 0 ? stairEntries : null;
+
                     var mainSubRoomCells = ComputeMainSubRoom(roomCells, innerWallKeys,
                         new HashSet<(int, int)>(doorCells.Concat(gapCells)));
                     var occupied            = new HashSet<(int, int)>();
@@ -369,6 +419,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     }
 
                     var seededColorMap = SeedGroupColors(config, roomSize, allTiles, configKey, rng, log);
+
+                    t_switchCells = req.LightSwitches
+                        ? PlaceLightSwitches(floor, sel.FloorIndex, roomCells, cellWalls, sourceTiles, rng,
+                            sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow, placements, log)
+                        : null;
 
                     // Grid layouts are placed first, as fixed units; their occupancy/anchors/colour
                     // locks then seed both the composite solver and the greedy pass below.
@@ -921,6 +976,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         public HashSet<(int, int)> HighCells { get; init; } = [];
         /// <summary>Read-only cells holding this room's grid pieces — exempt from KeepSightClear (see SightLaneClear).</summary>
         public HashSet<(int, int)> GridCells { get; init; } = [];
+        /// <summary>Cells later grids may not build on: a placed target grid and the area in front of it — see ReserveOppositeTargetArea.</summary>
+        public HashSet<(int, int)> GridKeepOutCells { get; init; } = [];
+        /// <summary>Chairs placed by grids so far; each needs a walkable neighbour reachable from a door.</summary>
+        public HashSet<(int, int)> SeatCells { get; init; } = [];
+        /// <summary>Grid id / group id → world rect of the placed grid.</summary>
+        public Dictionary<string, (int x, int y, int w, int h)> GridBounds { get; init; } = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<string, (int col, int row, int fpW, int fpH, string orient)> AnchorMap { get; }
         public Dictionary<string, string> ColorMap { get; }
         public Dictionary<string, string> VariantMap { get; }
@@ -973,6 +1034,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             WallFaces = new HashSet<(int, int, string)>(WallFaces),
             HighCells = new HashSet<(int, int)>(HighCells),
             GridCells = GridCells, // read-only after seeding, shared reference is safe
+            GridKeepOutCells = new HashSet<(int, int)>(GridKeepOutCells),
+            SeatCells = new HashSet<(int, int)>(SeatCells),
+            GridBounds = new Dictionary<string, (int x, int y, int w, int h)>(GridBounds, StringComparer.OrdinalIgnoreCase),
         };
     }
 
@@ -990,10 +1054,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     private static bool WallFaceTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
         HashSet<(int, int, string)>? wallFaces)
     {
-        if (wallFaces is not { Count: > 0 } || WallFaceKey(tile) is not { } key) return false;
+        if (WallFaceKey(tile) is not { } key) return false;
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
-                if (wallFaces.Contains((col + c, row + r, key))) return true;
+                if (wallFaces?.Contains((col + c, row + r, key)) == true
+                    || (t_switchCells?.TryGetValue((col + c, row + r), out var layer) == true && layer == key))
+                    return true;
         return false;
     }
 
@@ -1005,10 +1071,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     private static bool HighCellTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
         HashSet<(int, int)>? highOccupied)
     {
-        if (!tile.IsHigh || highOccupied is not { Count: > 0 }) return false;
+        if (!tile.IsHigh) return false;
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
-                if (highOccupied.Contains((col + c, row + r))) return true;
+                // A switch counts as high so nothing tall hides it.
+                if (highOccupied?.Contains((col + c, row + r)) == true || t_switchCells?.ContainsKey((col + c, row + r)) == true)
+                    return true;
         return false;
     }
 
@@ -2238,8 +2306,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 foreach (var set in memberColors) union.UnionWith(set);
             }
 
+            // Excluded colours leave the palette too: locking one would match no tile and drop
+            // the group back to an unfiltered pool, losing its colour match.
             var palette = (config.ColorPalettes.GetValueOrDefault(groupId) ?? [])
-                .Where(c => !string.IsNullOrEmpty(c)).ToList();
+                .Where(c => !string.IsNullOrEmpty(c) && !IsColorExcluded(c)).ToList();
             List<string> choices;
             string source;
             if (palette.Contains(AllColorsToken))
@@ -3021,6 +3091,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     $"(layer='{slot.RequiredLayer}', cats=[{string.Join(",", slot.AllowedCategories.Keys.Where(k => k != EmptyCategory))}], " +
                     $"props=[{string.Join(",", slot.RequiredProperties)}], roomType='{roomTypeName}', " +
                     $"fp={slot.Footprint.Width}×{slot.Footprint.Height}, canRotate={slot.Footprint.CanRotate})");
+            if (t_excludedColors is { } excludedColors)
+                log.Add($"  [COLOR] '{slot.Id}': left empty, excluded colours may have removed its tiles ({string.Join(", ", excludedColors.Order(StringComparer.OrdinalIgnoreCase))})");
             return;
         }
 
@@ -6130,6 +6202,12 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         foreach (var d in doorCells)
             if (walkable.Contains(d) && !visited.Contains(d))
                 return false;
+
+        // Treppenausgänge sind Eingänge wie Türen und fallen nicht unter die Nischen-Toleranz unten.
+        if (t_stairEntryCells is { } stairEntries)
+            foreach (var s in stairEntries)
+                if (walkable.Contains(s) && !visited.Contains(s))
+                    return false;
 
         // Jede sonstige neu abgeschnittene Zelle muss real begehbarer Bodenraum bleiben — nur
         // eine winzige türlose Nische (maximal MaxTolerableIsolatedCells Zellen, z.B. eine

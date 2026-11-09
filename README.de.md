@@ -10,6 +10,7 @@ KI wurde verwendet dieses Applikation zu erstellen. Wenn dir das nicht gefällt,
 ## Inhaltsverzeichnis
 
 - [App starten](#app-starten)
+- [Feedback & Fehler melden](#feedback--fehler-melden)
 - [Aus dem Quellcode starten (Entwickler)](#aus-dem-quellcode-starten-entwickler)
 - [Bedienung: Gebäude & Einstellungen](#bedienung-gebäude--einstellungen)
   - [🏠 Gebäude-Tab](#-gebäude-tab)
@@ -36,6 +37,18 @@ Keine Installation von .NET, Node oder sonst etwas nötig — einfach herunterla
 5. Zum Beenden das Konsolenfenster schließen (Windows) bzw. Ctrl+C im Terminal drücken (Linux).
 
 Einstellungen und Konfiguration werden neben der ausführbaren Datei im Ordner `Data/` gespeichert.
+
+---
+
+## Feedback & Fehler melden
+
+Deutsch und Englisch sind beide in Ordnung.
+
+- **Schlechtes Einrichtungs-Ergebnis:** Nach einem Lauf im Gebäude-Tab auf „Problem mit diesem Ergebnis melden“ klicken. Das öffnet das [Issue-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) und lädt ein Repro-Paket herunter, das du dort hineinziehst.
+- **Absturz, Fehlermeldung oder kaputte Oberfläche:** Das [Bug-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml) benutzen. Unter Einstellungen → Feedback öffnet sich der Ordner mit der Log-Datei zum Anhängen.
+- **Ideen und Fragen:** [Discussions](https://github.com/simonmd82/pz-room-furnisher/discussions).
+
+Issues sind öffentlich, auch angehängte Repro-Pakete (Gebäude-Grundriss, Raumauswahl und Einrichtungs-Konfiguration).
 
 ---
 
@@ -107,11 +120,14 @@ Lass dabei das Gebäude unmöbliert.
 
 **Wie man es bedient:**
 
+Lege vor dem ersten Lauf im Tab Einstellungen den Tiles-Ordner und den Ordner mit der `BuildingFurniture.txt` fest. Das Möblieren bleibt gesperrt, bis beide gefunden werden.
 Ziehe die TBX Datei in den Container im Gebäude-Tab. Das Gebäude wird nun sichtbar und kann bearbeitet werden.
 Mach dich mit der Legende oberhalb der Gebäude-UI vertraut.
 In der linken Spalte kannst du nun entweder alle Räume eines Typs auswählen oder Räume einzeln selektieren die möbliert werden sollen. 
 Wähle unter "Möbel-Konfigurationsquellen" aus, welche Tile-Sets verwendet werden.
 Bestimme mit den Reglern unterhalb der Liste der Räume die Dichte wie stark möbliert werden soll. Jeder Raum bekommt dann eine eigene prozentuale Dichte-Anzahl, abhängig von deiner Auswahl.
+Öffne die Auswahl „Farben ausschließen“ und hake jede Farbe an, die nicht vorkommen soll. Möbel und Teppiche mit dieser Farbe, auch in hellen und dunklen Tönen, werden nicht verwendet, ein Platz ohne verbleibende Auswahl bleibt leer.
+„Lichtschalter neben Türen platzieren“ ist standardmäßig aktiv und gibt jedem möblierten Raum mindestens einen Schalter, höchstens einen pro Tür. Sie werden vor allen Möbeln platziert und sind von ausgeschlossenen Farben nicht betroffen. Entferne den Haken, um sie wegzulassen.
 Wenn jeder Raum gleich stark möbliert werden soll, dann selektiere die Checkbox oberhalb des Buttons.
 Sollen alle Räume maximal möbliert werden, setze beide Regler auf 100%.
 Wenn du mit deiner Auswahl zufrieden bist, dann klicke auf den Button und warte bis der Algorithmus durchgelaufen ist. Dies kann je nach Größe des Gebäudes durchaus 1-2 Minuten dauern.
@@ -131,6 +147,19 @@ Die Möbel werden dabei alle im "Tilemode" platziert.
 - `office`
 - `garagestorage`
 - `hall`
+
+#### Wand-Möbel
+
+Manche Gebäude enthalten Türen, Fenster oder Bögen, die als generisches Möbelstück platziert wurden, oder Schaufenster, die in einen Wand-Layer gemalt sind, statt normaler Tür- und Fenster-Objekte. Der Generator erkennt nicht, was diese Teile sind. Darum listet der Gebäude-Tab sie unter „Wand-Möbelelemente gefunden“ auf. Ein Badge zeigt, wie viele noch zu prüfen sind.
+
+Öffne die Liste und wähle für jedes Tile aus, was es ist. Stelle das vor dem Möblieren ein, denn es wirkt sich erst auf den nächsten Lauf aus. Die Wahl wird pro Tile gespeichert und gilt für jedes künftige Gebäude mit diesem Tile. Mehrteilige Einträge werden Tile für Tile eingestellt, da Tür und Fenster im selben Eintrag nebeneinander liegen können. „Alle Tiles setzen auf“ stellt den ganzen Eintrag auf einmal ein.
+
+| Option | Wirkung beim Möblieren |
+|---|---|
+| Tür | Zählt als Tür. Der Platz davor bleibt frei, außer ein Möbel-Slot ist so eingestellt, dass er nahe an Türen stehen soll. Laufwege führen hindurch. |
+| Fenster (hoch) | Zählt als Fenster. Hohe Möbel können nicht davor stehen, außer ihr Slot ist so eingestellt, dass er nahe an Fenstern stehen soll. Niedrige Möbel können es. |
+| Fenster (hoch & niedrig) | Verhält sich aktuell genau wie Fenster (hoch). |
+| Ignorieren | Bleibt eine normale Wand, Möbel jeder Höhe können davor stehen. Nicht eingestellte Tiles zählen als Ignorieren. |
 
 #### Tile-Sets
 
@@ -205,7 +234,7 @@ Lesezugriff auf **BuildingFurniture-Dateien** (`.bf`-Format von Project Zomboid)
 
 **Was es kann:**
 
-- **Pfad-Konfiguration** – Pfad zu einer `.bf`-Datei setzen (z. B. `BuildingFurniture_01.bf`). Wird persistent gespeichert.
+- **Pfad-Konfiguration** – In den Einstellungen den Ordner mit der `BuildingFurniture.txt` festlegen. Wird persistent gespeichert.
 - **Verzeichnis-Browser** – Gleicher Datei-Browser wie im Tile Browser.
 - **Gruppen-Liste** – Listet alle `group`-Blöcke der Datei mit Bezeichnung, Piece-Anzahl und Entry-Anzahl auf.
   - Suchfilter.

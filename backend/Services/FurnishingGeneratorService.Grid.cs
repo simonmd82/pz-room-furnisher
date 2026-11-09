@@ -199,14 +199,95 @@ public partial class FurnishingGeneratorService
         }
 
         // An entry sorts by its rolled winner; Required if any member is required.
-        return result
+        return MoveOppositeGridsBehindTargets(result
             .Select((e, i) => (e, i))
-            .OrderBy(x => x.e.Any(g => !string.IsNullOrWhiteSpace(g.OppositeAnchor?.AnchorTarget))) // target first
-            .ThenByDescending(x => x.e.Any(g => g.Required))
+            .OrderByDescending(x => x.e.Any(g => g.Required))
             .ThenBy(x => x.e[0].Priority)
             .ThenBy(x => x.i)
             .Select(x => x.e)
-            .ToList();
+            .ToList());
+    }
+
+    private static string? OppositeTarget(List<GridLayout> entry) => entry
+        .Select(g => g.OppositeAnchor?.AnchorTarget?.Trim())
+        .FirstOrDefault(t => !string.IsNullOrEmpty(t));
+
+    /// <summary>
+    /// Puts each entry with an opposite anchor (TV group) directly behind the entry it targets, so
+    /// it needs its target placed first but no unrelated grid takes its spot. An entry whose
+    /// target is no grid goes last.
+    /// </summary>
+    private static List<List<GridLayout>> MoveOppositeGridsBehindTargets(List<List<GridLayout>> entries)
+    {
+        bool IsTarget(GridLayout g, string target) =>
+            g.Id.Equals(target, StringComparison.OrdinalIgnoreCase)
+            || g.SlotGroupId.Equals(target, StringComparison.OrdinalIgnoreCase)
+            || g.Cells.Any(c => GridCellSlotId(g, c).Equals(target, StringComparison.OrdinalIgnoreCase));
+
+        var result = entries.Where(e => OppositeTarget(e) is null).ToList();
+        // Back to front, so entries sharing a target keep their order.
+        foreach (var dependent in entries.Where(e => OppositeTarget(e) is not null).Reverse())
+        {
+            var target = OppositeTarget(dependent)!;
+            int at = result.FindLastIndex(e => e.Any(g => IsTarget(g, target)));
+            result.Insert(at < 0 ? result.Count : at + 1, dependent);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Keeps later grids out of a seating area, whether or not its TV found a spot: the target
+    /// grid's whole box (cells of pieces that rolled empty included) plus the strip in front of
+    /// it, as wide as the grid and as deep as the opposite rule's maximum distance.
+    /// </summary>
+    private static void ReserveOppositeTargetArea(
+        List<GridLayout> entry,
+        LayoutPlacementState state,
+        HashSet<(int, int)> roomCells,
+        HashSet<string>? innerWallKeys,
+        List<string> log)
+    {
+        var rule = entry.Select(g => g.OppositeAnchor).FirstOrDefault(r => !string.IsNullOrWhiteSpace(r?.AnchorTarget));
+        if (rule is null) return;
+        var key = rule.AnchorTarget.Trim();
+        if (!state.AnchorMap.TryGetValue(key, out var target) || !state.GridBounds.TryGetValue(key, out var box)
+            || !Enum.TryParse<Direction>(target.orient, out var facing))
+            return;
+
+        int before = state.GridKeepOutCells.Count;
+        for (int y = box.y; y < box.y + box.h; y++)
+            for (int x = box.x; x < box.x + box.w; x++)
+                if (roomCells.Contains((x, y)))
+                    state.GridKeepOutCells.Add((x, y));
+
+        int maxDepth = rule.MaxOppositeWallDistance is int m && m > 0 ? m : int.MaxValue;
+        bool northSouth = facing is Direction.N or Direction.S;
+        int lanes = northSouth ? box.w : box.h;
+        for (int lane = 0; lane < lanes; lane++)
+        {
+            var (c, r) = facing switch
+            {
+                Direction.N => (box.x + lane, target.row - 1),
+                Direction.S => (box.x + lane, target.row + target.fpH),
+                Direction.W => (target.col - 1, box.y + lane),
+                _           => (target.col + target.fpW, box.y + lane),
+            };
+            for (int depth = 1; depth <= maxDepth && roomCells.Contains((c, r)); depth++)
+            {
+                state.GridKeepOutCells.Add((c, r));
+                var (nc, nr) = facing switch
+                {
+                    Direction.N => (c, r - 1),
+                    Direction.S => (c, r + 1),
+                    Direction.W => (c - 1, r),
+                    _           => (c + 1, r),
+                };
+                var edge = northSouth ? $"H:{c},{Math.Max(r, nr)}" : $"V:{Math.Max(c, nc)},{r}";
+                if (innerWallKeys?.Contains(edge) == true) break;
+                (c, r) = (nc, nr);
+            }
+        }
+        log.Add($"  [GRID] seating area of '{key}' reserved for later grids: {state.GridKeepOutCells.Count - before} cells");
     }
 
     /// <summary>
@@ -274,6 +355,7 @@ public partial class FurnishingGeneratorService
                 state = placed;
                 break;
             }
+            ReserveOppositeTargetArea(entry, state, roomCells, innerWallKeys, log);
         }
 
         return state;
@@ -432,6 +514,9 @@ public partial class FurnishingGeneratorService
         }
 
         var (bRot, bMirror, bOx, bOy) = bestTransform;
+        var worldBox = (bOx, bOy, bRot % 2 == 0 ? grid.Width : grid.Height, bRot % 2 == 0 ? grid.Height : grid.Width);
+        best.GridBounds[grid.Id] = worldBox;
+        if (!string.IsNullOrEmpty(grid.SlotGroupId)) best.GridBounds.TryAdd(grid.SlotGroupId, worldBox);
         if (oppositeRule?.KeepSightClear == true)
         {
             // No clear-check: only grid pieces exist so far, and the lane may cross those (coffee table).
@@ -564,16 +649,18 @@ public partial class FurnishingGeneratorService
         HashSet<string>? innerWallKeys,
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> gapCells,
-        HashSet<(int, int)>? stairEndCells)
+        HashSet<(int, int)>? stairEndCells,
+        HashSet<string>? droppedSeats = null)
     {
         var state = baseState.Clone();
         int optionalPlaced = 0;
         var hosts = new List<(int col, int row, TileDefinition tile)>(); // placed AllowStacking pieces
-        var seatCells = new HashSet<(int, int)>(); // walk-up pieces (chairs) that need a reachable neighbour
+        var seatOwners = new Dictionary<(int, int), GridCellPlan>(); // this grid's walk-up pieces (chairs)
 
         foreach (var plan in plans)
         {
             var c = plan.Cell;
+            if (droppedSeats?.Contains(c.Id) == true) continue;
             var (lx, ly, w, h) = TransformGridRect(c.X, c.Y, c.Footprint.Width, c.Footprint.Height, grid.Width, grid.Height, rot, mirror);
             var orient = TransformGridOrient(c.Orient, rot, mirror);
             var corner = TransformGridCorner(c.CornerOrient, rot, mirror);
@@ -599,10 +686,10 @@ public partial class FurnishingGeneratorService
             if (c.AllowStacking) hosts.Add((candidate.Col, candidate.Row, candidate.Tile));
             var t = candidate.Tile;
             // Base-layer only: stacked Furniture2/3 pieces (sink, microwave) sit on a counter, not on the floor.
-            if (!t.HasCollision && t.Layer.Equals("Furniture", StringComparison.OrdinalIgnoreCase))
+            if ((!t.HasCollision || IsChairCell(c)) && t.Layer.Equals("Furniture", StringComparison.OrdinalIgnoreCase))
                 for (int r = 0; r < h; r++)
                     for (int x = 0; x < w; x++)
-                        seatCells.Add((candidate.Col + x, candidate.Row + r));
+                        seatOwners[(candidate.Col + x, candidate.Row + r)] = plan;
             if (!plan.Mandatory) optionalPlaced++;
         }
 
@@ -630,13 +717,37 @@ public partial class FurnishingGeneratorService
                 return null;
             entryCells = new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)));
         }
-        // Seats must be reachable too — a back-row chair boxed in by wall, table and its
-        // neighbour chair passes the free-cell connectivity check but is unusable.
-        if (!RoomRemainsConnected(0, 0, 0, 0, roomCells, blocked, entryCells, innerWallKeys, seatCells))
+        if (!RoomRemainsConnected(0, 0, 0, 0, roomCells, blocked, entryCells, innerWallKeys))
             return null;
+
+        // Seats must be reachable too — a back-row chair boxed in by wall, table and its
+        // neighbour chair passes the free-cell connectivity check but is unusable. Only that
+        // chair goes: the table stays with the rest of its seats. A boxed-in chair this grid
+        // can't drop (mandatory, or from an earlier grid) rules the position out.
+        state.SeatCells.UnionWith(seatOwners.Keys);
+        var reachable = ComputeReachableCells(roomCells, blocked, entryCells, innerWallKeys, out var walkable);
+        if (walkable.Count == 0) return (state, optionalPlaced);
+
+        var dropped = new HashSet<string>(droppedSeats ?? []);
+        bool anyBoxedIn = false;
+        foreach (var seat in state.SeatCells)
+        {
+            if (HasOrthogonalNeighborIn(seat, reachable)) continue;
+            if (!seatOwners.TryGetValue(seat, out var owner) || owner.Mandatory) return null;
+            dropped.Add(owner.Cell.Id);
+            anyBoxedIn = true;
+        }
+        if (anyBoxedIn)
+            return EvaluateGridCandidate(grid, plans, rot, mirror, ox, oy, baseState, floorIndex, roomCells, placeCells, cellWalls,
+                doorCells, windowCells, pathCells, allTiles, config, rng, roomIndex1Based, selectionAnchorCol,
+                selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells, dropped);
 
         return (state, optionalPlaced);
     }
+
+    /// <summary>Piece meant to be sat on from a neighbouring cell (Chair, DiningChair, …), with or without collision.</summary>
+    private static bool IsChairCell(GridCell cell) =>
+        cell.AllowedCategories.Keys.Any(k => k.Contains("Chair", StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// EdgePiece: where a piece on the given world edge really goes. N/W edges stay on the cell;
@@ -691,6 +802,8 @@ public partial class FurnishingGeneratorService
         List<(int col, int row, TileDefinition tile)> hosts)
     {
         if (plan.BasePool.Count == 0 || !RectInRoom(col, row, fpW, fpH, placeCells))
+            return null;
+        if (!IsWallLayerCell(plan.Cell) && FootprintTouchesCells(col, row, fpW, fpH, state.GridKeepOutCells))
             return null;
         var occupied = plan.Cell.EdgePiece ? baseState.Occupied : state.Occupied;
         if (plan.CanPrecheckOccupancy && !FitsFootprintLoose(col, row, fpW, fpH, occupied))

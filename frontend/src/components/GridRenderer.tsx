@@ -6,7 +6,7 @@ import { parseTileId } from '../types/tiles';
 import { sheetImageUrl } from '../api/tilesApi';
 import { recomputeRoomPath } from '../api/buildingApi';
 import { buildReverseFootprintIndex, resolveFootprintGroup, computeDelta, isGroupMoveValid, applyGroupMove } from '../utils/furnitureFootprint';
-import { buildIsoScene } from '../utils/isoScene';
+import { buildIsoScene, stairwellCells } from '../utils/isoScene';
 import { IsoRenderer, isoContentSize } from './IsoRenderer';
 import styles from './GridRenderer.module.css';
 
@@ -610,6 +610,10 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
     () => (isIso && building ? buildIsoScene(building, floor, floorIndex, furniturePlacements) : []),
     [isIso, building, floor, floorIndex, furniturePlacements],
   );
+  const isoStairwell = useMemo(
+    () => (isIso && building ? stairwellCells(building, floor) : new Set<string>()),
+    [isIso, building, floor],
+  );
 
   const reverseFootprintIndex = useMemo(() => buildReverseFootprintIndex(tileConfig), [tileConfig]);
 
@@ -1001,6 +1005,7 @@ export function GridRenderer({ floor, rooms, building, floorIndex = 0, onFloorUp
             rows={rows}
             rooms={rooms}
             roomGrid={grid}
+            stairwell={isoStairwell}
             scrollEl={scrollEl}
             hiddenLayers={hiddenLayers}
             selectedRooms={selected}

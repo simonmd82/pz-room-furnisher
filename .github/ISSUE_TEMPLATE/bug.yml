@@ -1,0 +1,49 @@
+name: App bug
+description: Crash, error message, broken UI or a failing TBX export.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        German or English are both fine. Bad furnishing results have their own form.
+
+        **Everything you post here is public.** Check logs for anything private, such as a user name in a file path.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: "0.2.2"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Load a building...
+        2. Click...
+        3. See error...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log or console output
+      description: Settings → Feedback → "Open log folder", then drag `pzrf.log` in. If the app won't start, paste what its console window shows.
+    validations:
+      required: true

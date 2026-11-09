@@ -1,0 +1,23 @@
+name: Close unreproducible issues
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          only-labels: needs-repro
+          days-before-stale: 7
+          days-before-close: 7
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          stale-issue-message: "This issue still needs a repro bundle or steps to reproduce. It will close in 7 days without an update."
+          close-issue-message: "Closed because it can't be reproduced yet. Comment with the missing details and it can be reopened."

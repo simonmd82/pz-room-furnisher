@@ -1,0 +1,44 @@
+name: Furnishing looks wrong
+description: A room came out badly furnished (wrong item, wrong spot, blocked door, ugly combination).
+labels: ["bad-result"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for testing! German or English are both fine.
+
+        **Everything you post here is public, including the repro bundle** (it contains your building layout, room selection and furnishing config).
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: "0.2.2"
+    validations:
+      required: true
+  - type: input
+    id: seed
+    attributes:
+      label: Seed
+    validations:
+      required: false
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+      description: Which room, which item, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image in. Mark the problem if it isn't obvious.
+    validations:
+      required: true
+  - type: textarea
+    id: bundle
+    attributes:
+      label: Repro bundle
+      description: Drag in the `.pzrf-repro.json` file. "Report a problem with this result" in the Building tab downloads it. Without it the run usually can't be reproduced.
+    validations:
+      required: true

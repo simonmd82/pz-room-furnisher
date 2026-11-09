@@ -111,6 +111,17 @@ function App() {
   const [densityMin, setDensityMin]     = useState(50);
   const [densityMax, setDensityMax]     = useState(100);
   const [densityFixed, setDensityFixed] = useState(false);
+  const [excludedColors, setExcludedColors] = useState<string[]>(() => {
+    try {
+      const stored: unknown = JSON.parse(localStorage.getItem('pzrf.excludedColors') ?? '[]');
+      return Array.isArray(stored) ? stored.filter((c): c is string => typeof c === 'string') : [];
+    } catch {
+      return [];
+    }
+  });
+  const [lightSwitches, setLightSwitches] = useState<boolean>(
+    () => localStorage.getItem('pzrf.lightSwitches') !== 'false'
+  );
   const [lastFile, setLastFile]         = useState<File | null>(null);
   const [reproToolsEnabled, setReproToolsEnabled] = useState<boolean>(
     () => localStorage.getItem('pzrf.reproToolsEnabled') === 'true'
@@ -121,6 +132,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem('pzrf.reproToolsEnabled', String(reproToolsEnabled));
   }, [reproToolsEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('pzrf.excludedColors', JSON.stringify(excludedColors));
+  }, [excludedColors]);
+
+  useEffect(() => {
+    localStorage.setItem('pzrf.lightSwitches', String(lightSwitches));
+  }, [lightSwitches]);
 
   useEffect(() => {
     localStorage.setItem('pzrf.showGeneratorLog', String(showGeneratorLog));
@@ -170,6 +189,8 @@ function App() {
     setDensityMin(Math.round(req.densityMin * 100));
     setDensityMax(Math.round(req.densityMax * 100));
     setDensityFixed(req.densityFixed);
+    setExcludedColors(req.excludedColors ?? []);
+    setLightSwitches(req.lightSwitches ?? false);
     setGeneratorLog([...compareReproResult(bundle.expected, result, bundle.appVersion, localVersion), ...result.log]);
     setLogOpen(true);
     setLoadId(n => n + 1);
@@ -374,7 +395,10 @@ function App() {
                   setDensityMax(max);
                   setDensityFixed(fixed);
                 }}
-                reproToolsEnabled={furnishingConfigEnabled && reproToolsEnabled}
+                lightSwitches={lightSwitches}
+                onLightSwitchesChange={setLightSwitches}
+                excludedColors={excludedColors}
+                onExcludedColorsChange={setExcludedColors}
                 initialReservedZones={reservedZones}
               />
 

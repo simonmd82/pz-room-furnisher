@@ -5,6 +5,8 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddProvider(new FileLoggerProvider(builder.Environment.ContentRootPath));
+
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
     {
@@ -59,10 +61,7 @@ else
         var url = app.Urls.FirstOrDefault() ?? "http://localhost:5000";
         try
         {
-            if (OperatingSystem.IsWindows())
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
-            else if (OperatingSystem.IsLinux())
-                Process.Start("xdg-open", url);
+            OpenWithShell(url);
         }
         catch
         {
@@ -73,9 +72,34 @@ else
 
 app.MapControllers();
 
+app.MapGet("/api/version", () => new { version = AppInfo.Version });
+app.MapPost("/api/logs/open", () =>
+{
+    var dir = FileLoggerProvider.LogDirectory(app.Environment.ContentRootPath);
+    try
+    {
+        Directory.CreateDirectory(dir);
+        OpenWithShell(dir);
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Could not open log folder {Dir}", dir);
+        return Results.Problem(ex.Message);
+    }
+});
+
 if (!app.Environment.IsDevelopment())
 {
     app.MapFallbackToFile("index.html");
 }
 
 app.Run();
+
+static void OpenWithShell(string target)
+{
+    if (OperatingSystem.IsWindows())
+        Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+    else if (OperatingSystem.IsLinux())
+        Process.Start("xdg-open", target);
+}

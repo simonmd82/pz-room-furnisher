@@ -22,11 +22,13 @@ public class FurnishController : ControllerBase
     private readonly ITileConfigService          _tiles;
     private readonly IRugCatalogService          _rugs;
     private readonly ISettingsService            _settings;
+    private readonly ILogger<FurnishController>  _logger;
 
     public FurnishController(IFurnishingGeneratorService generator, ITbxExportService exporter, IOptions<JsonOptions> jsonOptions,
                              IRoomTypeConfigService roomTypes, ITileConfigService tiles, IRugCatalogService rugs,
-                             ISettingsService settings)
+                             ISettingsService settings, ILogger<FurnishController> logger)
     {
+        _logger    = logger;
         _generator = generator;
         _exporter  = exporter;
         _roomTypes = roomTypes;
@@ -44,7 +46,11 @@ public class FurnishController : ControllerBase
     public IActionResult Generate([FromBody] FurnishRequest request)
     {
         try { return Ok(_generator.Generate(request)); }
-        catch (Exception ex) { return StatusCode(500, $"Generation failed: {ex.Message}\n{ex.StackTrace}"); }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Generation failed");
+            return StatusCode(500, $"Generation failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
 
     /// <summary>
@@ -72,7 +78,11 @@ public class FurnishController : ControllerBase
                 events.Writer.TryWrite(new { type = "done" });
             }
             catch (OperationCanceledException) { /* client aborted */ }
-            catch (Exception ex) { events.Writer.TryWrite(new { type = "error", message = ex.Message }); }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Generation failed");
+                events.Writer.TryWrite(new { type = "error", message = ex.Message });
+            }
             finally { events.Writer.TryComplete(); }
         });
 
@@ -130,7 +140,11 @@ public class FurnishController : ControllerBase
             var fileName = $"{baseName}_furnished.tbx";
             return File(Encoding.UTF8.GetBytes(tbx), "application/xml", fileName);
         }
-        catch (Exception ex) { return StatusCode(500, ex.Message); }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "TBX export failed");
+            return StatusCode(500, ex.Message);
+        }
     }
 
     // ── Repro bundles ────────────────────────────────────────────────────────
@@ -177,7 +191,11 @@ public class FurnishController : ControllerBase
             var result = _generator.Generate(bundle.Request, inputs: inputs);
             return Ok(new ReproReplayResult(result, AppInfo.Version));
         }
-        catch (Exception ex) { return StatusCode(500, $"Replay failed: {ex.Message}\n{ex.StackTrace}"); }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Repro replay failed");
+            return StatusCode(500, $"Replay failed: {ex.Message}\n{ex.StackTrace}");
+        }
     }
 
     /// <summary>First-wins by key, in list order — mirrors how the config services built the originals.</summary>
