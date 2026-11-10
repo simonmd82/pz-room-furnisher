@@ -167,7 +167,8 @@ function FilePathRow({
   );
 }
 
-function FilePathsSection() {
+/** showBfPath: the BuildingFurniture.txt folder is only read by the Furniture Templates tab (Developer). */
+function FilePathsSection({ showBfPath }: { showBfPath: boolean }) {
   const { t } = useTranslation();
 
   const [tilesPath, setTilesPathInput] = useState('');
@@ -182,8 +183,12 @@ function FilePathsSection() {
 
   useEffect(() => {
     getTilesPath().then(r => { setTilesPathInput(r.path); setTilesOk(r.isValid); }).catch(() => {});
-    getBfPath().then(r => { setBfPathInput(r.path); setBfOk(r.isValid); }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (!showBfPath) return;
+    getBfPath().then(r => { setBfPathInput(r.path); setBfOk(r.isValid); }).catch(() => {});
+  }, [showBfPath]);
 
   const applyTilesPath = async (p: string) => {
     setTilesErr('');
@@ -224,14 +229,14 @@ function FilePathsSection() {
           onSet={() => applyTilesPath(tilesPath)}
           onBrowse={() => setTilesPicking(true)}
         />
-        <FilePathRow
+        {showBfPath && <FilePathRow
           label={t('settingsEditor.filePaths.bfFile')}
           path={bfPath} ok={bfOk} err={bfErr}
           placeholder={t('settingsEditor.filePaths.bfFilePlaceholder')}
           onPathChange={setBfPathInput}
           onSet={() => applyBfPath(bfPath)}
           onBrowse={() => setBfPicking(true)}
-        />
+        />}
       </div>
 
       {tilesPicking && (
@@ -240,7 +245,7 @@ function FilePathsSection() {
           onClose={() => setTilesPicking(false)}
         />
       )}
-      {bfPicking && (
+      {showBfPath && bfPicking && (
         <DirPicker
           onSelect={p => { setBfPicking(false); applyBfPath(p); }}
           onClose={() => setBfPicking(false)}
@@ -409,7 +414,7 @@ export function SettingsEditor({ showGeneratorLog, onShowGeneratorLogChange, fur
       </div>
 
       <div className={s.columns}>
-        <FilePathsSection />
+        <FilePathsSection showBfPath={furnishingConfigEnabled} />
 
         <FeedbackSection />
 

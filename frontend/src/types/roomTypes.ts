@@ -326,6 +326,11 @@ export interface RugSizing {
    * grid's placed pieces form the box — other slots requiring the grid don't enlarge it.
    */
   clusterGridPiecesOnly?: boolean;
+  /**
+   * matchAnchorCluster only: when requiresSlot names a placed grid, the rug covers the grid's full
+   * frame as placed (e.g. 2×2), even if optional pieces rolled empty. Wins over clusterGridPiecesOnly.
+   */
+  clusterUseGridFrame?: boolean;
   /** Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner. */
   fillShortAxis: number;
   /** Fill mode only: cells subtracted from each end of the long axis (door clearance etc.). */
@@ -564,6 +569,12 @@ export interface GridLayout {
   groupWeightBySize?: Partial<Record<SizeKey, number>>;
   /** Room sizes this grid is used in. Empty = all. */
   allowedSizes: SizeKey[];
+  /**
+   * Non-required grids only: weight of "leave this grid out" (like the __empty__ category weight).
+   * Ungrouped: skipped with chance emptyWeight / (emptyWeight + weight). In a group, "none" competes
+   * with the members, using the group's largest emptyWeight. 0 = always placed when possible.
+   */
+  emptyWeight?: number;
   allowOnPath: boolean;
   /** Pieces only in the room's main sub-room (largest area); no effect without inner walls. */
   mainSubRoom: boolean;
@@ -590,7 +601,7 @@ export function defaultGridCell(id: string, x: number, y: number): GridCell {
 export function defaultGridLayout(id = ''): GridLayout {
   return {
     id, label: '', width: 4, height: 3, mode: 'wall', allowMirror: true,
-    required: false, priority: 0, slotGroupId: '', groupWeight: 5, groupWeightBySize: {}, allowedSizes: [],
+    required: false, priority: 0, slotGroupId: '', groupWeight: 5, groupWeightBySize: {}, allowedSizes: [], emptyWeight: 0,
     allowOnPath: false, mainSubRoom: false, cells: [], keepClear: [],
   };
 }

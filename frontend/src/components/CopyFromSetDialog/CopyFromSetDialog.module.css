@@ -1,0 +1,132 @@
+/* "Copy from set…" picker — same look as RoomTypeEditor/FurniturePickerModal.module.css */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  width: min(1000px, calc(100vw - 32px));
+  height: min(780px, calc(100vh - 32px));
+  display: flex;
+  flex-direction: column;
+  background: #12121c;
+  border: 1px solid #3a3a5a;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+.header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #2a2a40;
+}
+.title { flex: 1; font-size: 0.85rem; color: #ccd; }
+.closeBtn { background: none; border: none; color: #889; cursor: pointer; font-size: 0.9rem; }
+.closeBtn:hover { color: #ddf; }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid #2a2a40;
+}
+.inline { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #889; }
+.search, .select {
+  padding: 4px 8px;
+  background: #0e0e18;
+  border: 1px solid #3a3a5a;
+  border-radius: 4px;
+  color: #ccd;
+  font-size: 0.76rem;
+}
+.search { flex: 1; min-width: 180px; }
+.search:focus, .select:focus { outline: none; border-color: #8866cc; }
+
+.grid {
+  flex: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  align-content: start;
+  gap: 6px;
+  padding: 10px 12px;
+}
+.empty { grid-column: 1 / -1; color: #667; font-size: 0.78rem; padding: 12px; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid #2a2a40;
+  border-radius: 4px;
+  background: #0e0e18;
+}
+.cardSelected { border-color: #8866cc; background: #2a1a4a; }
+.cardHead { display: flex; flex-direction: column; min-width: 0; cursor: pointer; user-select: none; }
+.cardHead:hover .cardLabel { color: #fff; }
+.cardLabel { font-size: 0.76rem; color: #dde; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardMeta { font-size: 0.66rem; color: #778; }
+
+.thumbs { display: flex; flex-wrap: wrap; gap: 4px; }
+.thumbBtn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px;
+  background: #12121c;
+  border: 1px solid #2a2a40;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.thumbBtn:hover { border-color: #7755bb; }
+.thumbSelected { border-color: #b499ff; background: #3d2d6a; }
+.thumb {
+  width: 45px;
+  height: 90px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.noThumb { color: #445; }
+.facing { font-size: 0.6rem; color: #99a; }
+.order {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 14px;
+  padding: 0 3px;
+  border-radius: 7px;
+  background: #8866cc;
+  color: #fff;
+  font-size: 0.6rem;
+  text-align: center;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid #2a2a40;
+}
+.fields { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.checkLabel { display: flex; align-items: center; gap: 4px; font-size: 0.72rem; color: #aab; cursor: pointer; }
+.muted { color: #667; font-size: 0.72rem; }
+.actions { display: flex; gap: 6px; margin-left: auto; }
+.secondaryBtn, .applyBtn { padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.76rem; }
+.secondaryBtn { background: #1a1a2e; border: 1px solid #3a3a5a; color: #aab; }
+.secondaryBtn:hover { border-color: #7755bb; }
+.applyBtn { background: #1a2a1a; border: 1px solid #4a8a4a; color: #8f8; }
+.applyBtn:hover:not(:disabled) { background: #2a3a2a; }
+.applyBtn:disabled { opacity: 0.4; cursor: default; }

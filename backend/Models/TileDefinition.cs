@@ -43,6 +43,12 @@ public class TileDefinition
     /// freien Nachbarzelle aus erreichbar bleibt (Moore-Nachbarschaft, Reichweite 1).
     /// </summary>
     public bool IsLootContainer { get; set; } = false;
+    /// <summary>
+    /// True if this wall piece hangs high enough to sit above a window (e.g. kitchen hanging
+    /// counters). Skips the window check only — IsHigh still counts for the one-high-piece-per-cell
+    /// rule, light switches and doors/openings.
+    /// </summary>
+    public bool AllowAboveWindow { get; set; } = false;
 
     // ── Randomiser meta ───────────────────────────────────────────────────
     /// <summary>Colour tags, e.g. ["Brown","Wood"]</summary>

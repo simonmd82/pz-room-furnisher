@@ -42,7 +42,7 @@ Your settings and configuration are saved next to the executable, in the `Data/`
 
 ## Feedback & Bug Reports
 
-German or English are both fine.
+German or English are both fine. The ⓘ button in the top right shows your app version, which helps in a report.
 
 - **Bad furnishing result:** click "Report a problem with this result" in the Building tab after a run. It opens the [issue form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) and downloads a repro bundle to drag in.
 - **Crash, error or broken UI:** use the [bug form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml). Settings → Feedback opens the folder with the log file to attach.
@@ -115,7 +115,7 @@ Leave the building unfurnished.
 
 **How to use it:**
 
-Before the first run, set the tiles folder and the folder containing `BuildingFurniture.txt` in the Settings tab. Furnishing stays disabled until both are found.
+Before the first run, set the PZ tiles folder in the Settings tab. Furnishing stays disabled until it is found. (The folder containing `BuildingFurniture.txt` is only needed with Developer enabled, for the Furniture Templates tab.)
 Drag the TBX file into the drop zone in the Building tab. The building becomes visible and can be edited.
 Familiarize yourself with the legend above the building UI.
 In the left column you can either select all rooms of a type, or select individual rooms to be furnished.

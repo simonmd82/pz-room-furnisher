@@ -1,0 +1,55 @@
+/* About modal — same dark palette as FurnishProgressDialog.module.css */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #05050bcc;
+}
+
+.card {
+  width: min(460px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #12121e;
+  border: 1px solid #3a3a5a;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px #000a;
+  font-size: 0.85rem;
+  color: #dde;
+}
+
+.titleRow { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.title { font-size: 1rem; font-weight: 700; color: #c8a8ff; }
+.version { font-size: 0.8rem; color: #aab; font-variant-numeric: tabular-nums; }
+
+.rows { display: flex; flex-direction: column; gap: 4px; }
+.label { display: inline-block; min-width: 96px; color: #778; }
+
+.link { color: #a98bff; text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+.block { display: flex; flex-direction: column; gap: 3px; }
+.blockTitle { color: #778; }
+
+.notes { display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem; color: #889; }
+.notes p { margin: 0; }
+
+.actions { display: flex; justify-content: flex-end; }
+.closeBtn {
+  padding: 5px 16px;
+  border: 1px solid #3a3a5a;
+  border-radius: 5px;
+  background: #2a2a3e;
+  color: #ddd;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.closeBtn:hover { background: #3d2d6a; border-color: #8866cc; color: #fff; }

@@ -15,6 +15,7 @@ import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
+import { CopyFromSetDialog } from '../CopyFromSetDialog/CopyFromSetDialog';
 import { Spinner } from '../Spinner/Spinner';
 import s from './TileBrowser.module.css';
 
@@ -52,11 +53,12 @@ export function TileBrowser() {
   const [config, setConfig] = useState<TileConfigMap>({});
 
   // ── config sets (vanilla / mod packs) ───────────────────────────────────
-  const { selectedSetId, reloadSets } = useActiveConfigSet();
+  const { selectedSetId, reloadSets, sets } = useActiveConfigSet();
 
   // ── settings clipboard (shared with Furniture Templates tab) ────────────
-  const { clipboard, copiedFrom, copy: copyToClipboard } = useTileSettingsClipboard();
+  const { clipboard, copiedFrom, copy: copyToClipboard, sourceSetId: clipboardSetId, omitted: clipboardOmitted } = useTileSettingsClipboard();
   const [clipboardFlash, setClipboardFlash] = useState<string | null>(null);
+  const [copyFromOpen, setCopyFromOpen]     = useState(false);
 
   // ── group selector ─────────────────────────────────────────────────────
   const [extraGroups, setExtraGroups] = useState<string[]>([]);
@@ -181,6 +183,18 @@ export function TileBrowser() {
   };
 
   // ── settings copy/paste ─────────────────────────────────────────────────
+  /** Paste tooltip suffix: which set the clipboard came from and which fields were left out. */
+  const clipboardOrigin = [
+    clipboardSetId && clipboardSetId !== selectedSetId
+      ? t('common.copyFromSet.fromSet', { set: sets.find(x => x.id === clipboardSetId)?.name ?? clipboardSetId }) : '',
+    clipboardOmitted.length > 0
+      ? t('common.copyFromSet.without', { fields: clipboardOmitted.map(f => t(`common.copyFromSet.field.${f}`)).join(', ') }) : '',
+  ].filter(Boolean).join(' · ');
+  const handleCopiedFromSet = (count: number) => {
+    setClipboardFlash(count === 1 ? t('common.settingsCopied') : t('common.settingsCopiedMulti', { count }));
+    setTimeout(() => setClipboardFlash(null), 2000);
+  };
+
   const handleCopySettings = () => {
     if (selDefsOrdered.length === 0) return;
     copyToClipboard(selDefsOrdered);
@@ -693,18 +707,32 @@ export function TileBrowser() {
               >{t('common.copySettings')}</button>
               <button
                 className={s.layoutBtn}
+                title={t('common.copyFromSet.buttonHint')}
+                onClick={() => setCopyFromOpen(true)}
+              >{t('common.copyFromSet.button')}</button>
+              <button
+                className={s.layoutBtn}
                 disabled={!clipboard || selTileIds.length === 0}
                 title={
                   clipboard && copiedFrom
                     ? (clipboard.length === 1
                       ? t('common.settingsCopiedHint', { tileId: copiedFrom[0] })
                       : t('common.settingsCopiedHintMulti', { count: clipboard.length }))
+                      + (clipboardOrigin ? `
+${clipboardOrigin}` : '')
                     : undefined
                 }
                 onClick={handlePasteSettings}
               >{selTileIds.length > 1 ? t('common.pasteSettings', { count: selTileIds.length }) : t('common.pasteSettingsEmpty')}</button>
               {clipboardFlash && <span className={s.clipboardFlash}>{clipboardFlash}</span>}
             </div>
+            {copyFromOpen && (
+              <CopyFromSetDialog
+                currentSetId={selectedSetId}
+                onClose={() => setCopyFromOpen(false)}
+                onCopied={handleCopiedFromSet}
+              />
+            )}
 
             {/* Sprite preview (root tile) – single-select only */}
             {selIndices.length === 1 && (

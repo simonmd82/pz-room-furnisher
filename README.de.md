@@ -42,7 +42,7 @@ Einstellungen und Konfiguration werden neben der ausführbaren Datei im Ordner `
 
 ## Feedback & Fehler melden
 
-Deutsch und Englisch sind beide in Ordnung.
+Deutsch und Englisch sind beide in Ordnung. Der ⓘ-Button oben rechts zeigt die App-Version, die in einer Meldung hilft.
 
 - **Schlechtes Einrichtungs-Ergebnis:** Nach einem Lauf im Gebäude-Tab auf „Problem mit diesem Ergebnis melden“ klicken. Das öffnet das [Issue-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) und lädt ein Repro-Paket herunter, das du dort hineinziehst.
 - **Absturz, Fehlermeldung oder kaputte Oberfläche:** Das [Bug-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml) benutzen. Unter Einstellungen → Feedback öffnet sich der Ordner mit der Log-Datei zum Anhängen.
@@ -115,7 +115,7 @@ Lass dabei das Gebäude unmöbliert.
 
 **Wie man es bedient:**
 
-Lege vor dem ersten Lauf im Tab Einstellungen den Tiles-Ordner und den Ordner mit der `BuildingFurniture.txt` fest. Das Möblieren bleibt gesperrt, bis beide gefunden werden.
+Lege vor dem ersten Lauf im Tab Einstellungen den PZ-Tiles-Ordner fest. Das Möblieren bleibt gesperrt, bis er gefunden wird. (Der Ordner mit der `BuildingFurniture.txt` wird nur mit aktiviertem Entwickler-Modus für den Tab Furniture-Vorlagen gebraucht.)
 Ziehe die TBX Datei in den Container im Gebäude-Tab. Das Gebäude wird nun sichtbar und kann bearbeitet werden.
 Mach dich mit der Legende oberhalb der Gebäude-UI vertraut.
 In der linken Spalte kannst du nun entweder alle Räume eines Typs auswählen oder Räume einzeln selektieren die möbliert werden sollen. 

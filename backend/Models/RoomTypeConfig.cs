@@ -338,6 +338,13 @@ public class RugSizing
     /// TV table on the opposite wall) don't enlarge it. No effect for a non-grid parent.
     /// </summary>
     public bool ClusterGridPiecesOnly { get; set; } = false;
+    /// <summary>
+    /// matchAnchorCluster only: when RequiresSlot names a placed grid (grid id or grid group name),
+    /// the box is the grid's full frame as placed (after rotation/mirror) — e.g. a 2×2 rug under a
+    /// rocking-chair grid even when its optional side table rolled empty. Wins over
+    /// ClusterGridPiecesOnly. No effect for a non-grid parent.
+    /// </summary>
+    public bool ClusterUseGridFrame { get; set; } = false;
     /// <summary>Fill mode only: fixed short-axis width, e.g. 2 for a hallway runner.</summary>
     public int FillShortAxis { get; set; } = 2;
     /// <summary>Fill mode only: cells subtracted from each end of the long axis (door clearance etc.).</summary>
@@ -607,6 +614,14 @@ public class GridLayout
     public Dictionary<string, int> GroupWeightBySize { get; set; } = [];
     /// <summary>Room sizes (XS/S/M/L/XL) this grid is used in. Empty = all sizes.</summary>
     public List<string> AllowedSizes { get; set; } = [];
+    /// <summary>
+    /// Non-required grids only: weight of "leave this grid out", rolled like the __empty__ category
+    /// weight of a cell, so rooms of the same size don't all get the same grids even at 100 %
+    /// density. Ungrouped: skipped with chance EmptyWeight / (EmptyWeight + weight for the room
+    /// size). One-of group: "none" competes with the members' weights, using the largest
+    /// EmptyWeight of the group. 0 = always placed when possible (default).
+    /// </summary>
+    public int EmptyWeight { get; set; } = 0;
     /// <summary>Allow colliding grid pieces on precomputed walking-path cells (see PlacementRules.AllowOnPath).</summary>
     public bool AllowOnPath { get; set; } = false;
     /// <summary>All pieces and keep-clear cells must lie in the main sub-room (see PlacementRules.MainSubRoom).

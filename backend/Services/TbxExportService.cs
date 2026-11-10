@@ -27,7 +27,7 @@ public class TbxExportService : ITbxExportService
         "Floor", "FloorOverlay", "FloorOverlay2", "FloorOverlay3", "FloorOverlay4",
         "Vegetation", "FloorFurniture", "Furniture", "Furniture2", "Furniture3", "Furniture4",
         "Walls", "WallTrim", "Walls2", "WallTrim2", "RoofCap", "RoofCap2",
-        "WallOverlay", "WallOverlay2", "WallFurniture", "WallFurniture2",
+        "WallOverlay", "WallOverlay2", "WallFurniture", "WallFurniture2", "WallFurniture3", "WallFurniture4",
         "Frames", "Doors", "Curtains", "Curtains2", "Curtains3", "Curtains4",
     ];
 
@@ -36,7 +36,7 @@ public class TbxExportService : ITbxExportService
     private static readonly string[][] LayerFamilies =
     [
         ["Furniture", "Furniture2", "Furniture3", "Furniture4"],
-        ["WallFurniture", "WallFurniture2"],
+        ["WallFurniture", "WallFurniture2", "WallFurniture3", "WallFurniture4"],
         ["WallOverlay", "WallOverlay2"],
         ["Curtains", "Curtains2", "Curtains3", "Curtains4"],
     ];

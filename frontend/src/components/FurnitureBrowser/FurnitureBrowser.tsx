@@ -9,6 +9,7 @@ import { defaultDefinition, computeTileDefId, parseTileId, layoutCols, layoutRow
 import { ConfigSetSelector } from '../ConfigSetSelector/ConfigSetSelector';
 import { useActiveConfigSet } from '../../context/ActiveConfigSetContext';
 import { useTileSettingsClipboard } from '../../context/TileSettingsClipboardContext';
+import { CopyFromSetDialog } from '../CopyFromSetDialog/CopyFromSetDialog';
 import { FURNITURE_LAYERS } from '../../types/roomTypes';
 import { Spinner } from '../Spinner/Spinner';
 import s from './FurnitureBrowser.module.css';
@@ -29,11 +30,12 @@ const CONF_ZOOM  = 0.30; // config panel previews
 
 export function FurnitureBrowser() {
   const { t } = useTranslation();
-  const { selectedSetId } = useActiveConfigSet();
+  const { selectedSetId, sets } = useActiveConfigSet();
 
   // ── settings clipboard (shared with Tile Browser tab) ────────────────────
-  const { clipboard, copiedFrom, copy: copyToClipboard } = useTileSettingsClipboard();
+  const { clipboard, copiedFrom, copy: copyToClipboard, sourceSetId: clipboardSetId, omitted: clipboardOmitted } = useTileSettingsClipboard();
   const [clipboardFlash, setClipboardFlash] = useState<string | null>(null);
+  const [copyFromOpen, setCopyFromOpen]     = useState(false);
 
   // ── property/layer highlight filter (independent of the config panel) ──
   const [highlightProps, setHighlightProps]   = useState<Set<TileProperty>>(new Set());
@@ -313,6 +315,18 @@ export function FurnitureBrowser() {
   };
 
   // ── settings copy/paste ─────────────────────────────────────────────────
+  /** Paste tooltip suffix: which set the clipboard came from and which fields were left out. */
+  const clipboardOrigin = [
+    clipboardSetId && clipboardSetId !== selectedSetId
+      ? t('common.copyFromSet.fromSet', { set: sets.find(x => x.id === clipboardSetId)?.name ?? clipboardSetId }) : '',
+    clipboardOmitted.length > 0
+      ? t('common.copyFromSet.without', { fields: clipboardOmitted.map(f => t(`common.copyFromSet.field.${f}`)).join(', ') }) : '',
+  ].filter(Boolean).join(' · ');
+  const handleCopiedFromSet = (count: number) => {
+    setClipboardFlash(count === 1 ? t('common.settingsCopied') : t('common.settingsCopiedMulti', { count }));
+    setTimeout(() => setClipboardFlash(null), 2000);
+  };
+
   const handleCopySettings = () => {
     if (selDefsOrdered.length === 0) return;
     copyToClipboard(selDefsOrdered);
@@ -621,18 +635,32 @@ export function FurnitureBrowser() {
               >{t('common.copySettings')}</button>
               <button
                 className={s.browseBtn}
+                title={t('common.copyFromSet.buttonHint')}
+                onClick={() => setCopyFromOpen(true)}
+              >{t('common.copyFromSet.button')}</button>
+              <button
+                className={s.browseBtn}
                 disabled={!clipboard || selIds.length === 0}
                 title={
                   clipboard && copiedFrom
                     ? (clipboard.length === 1
                       ? t('common.settingsCopiedHint', { tileId: copiedFrom[0] })
                       : t('common.settingsCopiedHintMulti', { count: clipboard.length }))
+                      + (clipboardOrigin ? `
+${clipboardOrigin}` : '')
                     : undefined
                 }
                 onClick={handlePasteSettings}
               >{selIds.length > 1 ? t('common.pasteSettings', { count: selIds.length }) : t('common.pasteSettingsEmpty')}</button>
               {clipboardFlash && <span className={s.clipboardFlash}>{clipboardFlash}</span>}
             </div>
+            {copyFromOpen && (
+              <CopyFromSetDialog
+                currentSetId={selectedSetId}
+                onClose={() => setCopyFromOpen(false)}
+                onCopied={handleCopiedFromSet}
+              />
+            )}
 
             {/* Layout preview + sprites – nur bei Einzelauswahl */}
             {selDefs.length === 1 && (() => {

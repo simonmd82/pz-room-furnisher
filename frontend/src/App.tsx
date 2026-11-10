@@ -14,6 +14,7 @@ import { WallFurniturePanel } from './components/WallFurniturePanel/WallFurnitur
 import { ActiveConfigSetProvider } from './context/ActiveConfigSetContext';
 import { TileSettingsClipboardProvider } from './context/TileSettingsClipboardContext';
 import { ReproImport } from './components/ReproImport';
+import { AboutDialog } from './components/AboutDialog/AboutDialog';
 import type { Building, Floor, FurnishResult, PlacedFurnitureItem, ReservedZonePlacement } from './types/building';
 import type { ReproBundle, RoomSelection } from './api/furnishApi';
 import { compareReproResult } from './utils/reproCompare';
@@ -99,6 +100,7 @@ function App() {
   const [generatorLog, setGeneratorLog] = useState<string[]>([]);
   const [logOpen, setLogOpen]           = useState(false);
   const [logCopied, setLogCopied]       = useState(false);
+  const [aboutOpen, setAboutOpen]       = useState(false);
   const [showGeneratorLog, setShowGeneratorLog] = useState<boolean>(
     () => localStorage.getItem('pzrf.showGeneratorLog') !== 'false'
   );
@@ -275,6 +277,14 @@ function App() {
                 {l.label}
               </button>
             ))}
+            <button
+              className="lang-btn"
+              onClick={() => setAboutOpen(true)}
+              title={t('about.button')}
+              aria-label={t('about.button')}
+            >
+              ⓘ
+            </button>
           </div>
         </div>
         <div className="tab-bar">
@@ -454,6 +464,7 @@ function App() {
         )}
       </main>
       )}
+      {aboutOpen && <AboutDialog onClose={() => setAboutOpen(false)} />}
     </div>
     </TileSettingsClipboardProvider>
     </ActiveConfigSetProvider>

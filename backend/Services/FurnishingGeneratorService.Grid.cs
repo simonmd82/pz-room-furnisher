@@ -172,10 +172,27 @@ public partial class FurnishingGeneratorService
             return Math.Max(1, g.GroupWeight);
         }
 
+        // EmptyWeight roll for non-required grids / groups: true = leave it out this time.
+        bool RollEmpty(string what, IReadOnlyCollection<GridLayout> members)
+        {
+            if (members.Any(g => g.Required)) return false;
+            int empty = members.Max(g => Math.Max(0, g.EmptyWeight));
+            if (empty == 0) return false;
+            int total = empty + members.Sum(WeightFor);
+            if (rng.Next(total) >= empty) return false;
+            log.Add($"  [EMPTY] grid {what} rolled empty ({empty}/{total})");
+            return true;
+        }
+
         var result = new List<List<GridLayout>>();
         foreach (var group in eligible.GroupBy(g => g.SlotGroupId, StringComparer.OrdinalIgnoreCase))
         {
-            if (string.IsNullOrEmpty(group.Key)) { result.AddRange(group.Select(g => new List<GridLayout> { g })); continue; }
+            if (string.IsNullOrEmpty(group.Key))
+            {
+                result.AddRange(group.Where(g => !RollEmpty($"'{g.Id}'", [g])).Select(g => new List<GridLayout> { g }));
+                continue;
+            }
+            if (RollEmpty($"group '{group.Key}'", group.ToList())) continue;
 
             // Weighted order without replacement: roll among the remaining members repeatedly.
             var remaining = group.ToList();
@@ -445,7 +462,10 @@ public partial class FurnishingGeneratorService
         var candidates = new List<(int rot, bool mirror, int ox, int oy, double dist)>();
         if (oppositeRule is not null)
         {
-            candidates = OppositeGridCandidates(grid, plans[0].Cell, oppositeRule, oppositeTarget, roomCells, innerWallKeys, rng);
+            // dist = lateral offset from the target's centre; stable sort keeps the lane/depth
+            // order within one offset tier (see the tier break in the loop below).
+            candidates = OppositeGridCandidates(grid, plans[0].Cell, oppositeRule, oppositeTarget, roomCells, innerWallKeys, rng)
+                .OrderBy(c => c.dist).ToList();
         }
         else
         {
@@ -469,8 +489,13 @@ public partial class FurnishingGeneratorService
         int bestScore = -1, evaluated = 0;
         (int rot, bool mirror, int ox, int oy) bestTransform = default;
 
-        foreach (var (rot, mirror, ox, oy, _) in candidates)
+        double bestTier = double.MaxValue;
+        foreach (var (rot, mirror, ox, oy, dist) in candidates)
         {
+            // Opposite grids: the most aligned valid spot wins — once a tier (equal lateral offset
+            // from the target) produced a placement, less aligned spots aren't considered, even if
+            // they would fit more optional pieces. Within a tier, more optional pieces still win.
+            if (oppositeRule is not null && best is not null && dist > bestTier + 1e-6) break;
             // Cheap geometric pre-filter: the anchor's rotated footprint must lie on free room cells.
             var a = anchorPlan.Cell;
             var (ax, ay, aw, ah) = TransformGridRect(a.X, a.Y, a.Footprint.Width, a.Footprint.Height, grid.Width, grid.Height, rot, mirror);
@@ -492,7 +517,7 @@ public partial class FurnishingGeneratorService
             var (state, score) = result.Value;
             if (score > bestScore)
             {
-                best = state; bestScore = score; bestTransform = (rot, mirror, ox, oy);
+                best = state; bestScore = score; bestTransform = (rot, mirror, ox, oy); bestTier = dist;
                 if (score == optionalTotal) break;
             }
         }
@@ -526,7 +551,8 @@ public partial class FurnishingGeneratorService
                 oppositeTarget.orient!, bOx + ax, bOy + ay, aw, ah)); // set: the rule returned early if the target was missing
         }
         log.Add($"  [GRID] '{grid.Id}' placed {grid.Width}x{grid.Height} mode={grid.Mode} back={GridRotationNames[bRot]}{(bMirror ? " mirrored" : "")} " +
-                $"origin=({bOx},{bOy}), optional {bestScore}/{optionalTotal} ({evaluated} candidates checked)");
+                $"origin=({bOx},{bOy}), optional {bestScore}/{optionalTotal} ({evaluated} candidates checked)" +
+                (oppositeRule is not null && bestTier > 1e-6 ? $", lateral offset {bestTier:0.#} from '{oppositeRule.AnchorTarget.Trim()}'" : ""));
         foreach (var p in best.SlotPlacements.Skip(baseState.SlotPlacements.Count))
             log.Add($"  [PLACED] '{p.SlotId}': '{p.TileId}' orient '{p.Orient}' at ({p.Col},{p.Row})");
         return best;
@@ -559,7 +585,14 @@ public partial class FurnishingGeneratorService
             var (ax, ay, aw, ah) = TransformGridRect(anchor.X, anchor.Y, anchor.Footprint.Width, anchor.Footprint.Height, grid.Width, grid.Height, rot, mirror);
             foreach (var pos in ComputeOppositeWallCandidates(target.col, target.row, target.fpW, target.fpH, target.orient,
                          aw, ah, minDist, maxDist, roomCells, innerWallKeys, rule.OppositeWallAllowInside))
-                result.Add((rot, mirror, pos.col - ax, pos.row - ay, 0));
+            {
+                // Lateral offset between the anchor piece's centre and the target's centre,
+                // measured along the target's front edge (rows for an E/W-facing target, else cols).
+                double offset = facing is Direction.E or Direction.W
+                    ? Math.Abs((pos.row + ah / 2.0) - (target.row + target.fpH / 2.0))
+                    : Math.Abs((pos.col + aw / 2.0) - (target.col + target.fpW / 2.0));
+                result.Add((rot, mirror, pos.col - ax, pos.row - ay, offset));
+            }
         }
         return result;
     }

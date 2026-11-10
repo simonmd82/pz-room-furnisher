@@ -81,6 +81,8 @@ export interface TileDefinition {
   canStack:      boolean;
   isTableTop:    boolean;
   isLootContainer: boolean;
+  /** Hangs above a window (e.g. kitchen hanging counter): skips the window check, still counts as high. */
+  allowAboveWindow?: boolean;
   // ── Randomiser meta ───────────────────────────────────────────────────
   /** Colour tags for grouping similar-looking furniture */
   colors: string[];
@@ -146,6 +148,7 @@ export const TILE_PROPERTIES = [
   'canStack',
   'isTableTop',
   'isLootContainer',
+  'allowAboveWindow',
 ] as const;
 export type TileProperty = typeof TILE_PROPERTIES[number];
 
@@ -212,6 +215,7 @@ export function defaultDefinition(tileId: string): TileDefinition {
     canStack:      false,
     isTableTop:    false,
     isLootContainer: false,
+    allowAboveWindow: false,
     colors: [],
     materials: [],
     roomTypes: [],

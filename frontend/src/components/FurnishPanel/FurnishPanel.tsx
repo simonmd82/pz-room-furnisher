@@ -6,7 +6,6 @@ import type { RoomSelection, FurnishRequestSnapshot, ReproExpected } from '../..
 import { getColorNames } from '../../api/settingsApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
 import type { RoomTypeConfigMap } from '../../types/roomTypes';
-import { getBfPath } from '../../api/bfApi';
 import { getColors, getTilesPath, getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
 import { issueUrl } from '../../utils/reportLinks';
 import type { TileConfigSetInfo } from '../../types/tiles';
@@ -176,12 +175,13 @@ export default function FurnishPanel({
   const [exportingRepro, setExportingRepro] = useState(false);
   const [knownColors, setKnownColors] = useState<string[]>([]);
   const [appVersion, setAppVersion]   = useState('');
-  /** Both paths from the Settings tab are valid; null until the check has finished. */
+  /** The tiles folder from the Settings tab is valid; null until the check has finished.
+   *  (The BuildingFurniture.txt path is developer-only and not needed for furnishing.) */
   const [pathsReady, setPathsReady]   = useState<boolean | null>(null);
 
   useEffect(() => {
-    Promise.all([getTilesPath(), getBfPath()])
-      .then(([tiles, bf]) => setPathsReady(tiles.isValid && bf.isValid))
+    getTilesPath()
+      .then(tiles => setPathsReady(tiles.isValid))
       .catch(() => setPathsReady(false));
     getRoomTypes().then(setRoomTypes).catch(console.error);
     getTileConfigSets().then(setConfigSets).catch(console.error);

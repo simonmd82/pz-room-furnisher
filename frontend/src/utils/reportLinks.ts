@@ -1,4 +1,4 @@
-const REPO_URL = 'https://github.com/simonmd82/pz-room-furnisher';
+export const REPO_URL = 'https://github.com/simonmd82/pz-room-furnisher';
 
 /** New-issue link for an issue form; fields are prefilled by the form's field ids. */
 export function issueUrl(template: 'bad-result.yml' | 'bug.yml', fields: Record<string, string | number>): string {

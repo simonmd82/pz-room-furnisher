@@ -135,6 +135,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     // kept out of doorCells: NearDoor targeting and floor decor on landings must not change.
     // Thread-static so RoomRemainsConnected's many call sites need no extra parameter.
     [ThreadStatic] private static HashSet<(int, int)>? t_stairEntryCells;
+    // World frames of the grids placed in the room being furnished (keyed by grid id and grid group
+    // name), for rug slots with ClusterUseGridFrame. Thread-static so PlaceSlot needs no extra parameter.
+    [ThreadStatic] private static Dictionary<string, (int x, int y, int w, int h)>? t_gridBounds;
 
     private readonly IRoomTypeConfigService _roomTypeSvc;
     private readonly ITileConfigService     _tileSvc;
@@ -166,7 +169,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         var excluded = req.ExcludedColors?.Where(c => !string.IsNullOrWhiteSpace(c)).ToHashSet(StringComparer.OrdinalIgnoreCase);
         t_excludedColors = excluded is { Count: > 0 } ? excluded : null;
         try { return GenerateCore(req, progress, ct, inputs); }
-        finally { t_cancel = default; t_layoutPoolCache = null; t_colorHues = null; t_themedCategories = null; t_excludedColors = null; t_stairEntryCells = null; t_switchCells = null; }
+        finally { t_cancel = default; t_layoutPoolCache = null; t_colorHues = null; t_themedCategories = null; t_excludedColors = null; t_stairEntryCells = null; t_switchCells = null; t_gridBounds = null; }
     }
 
     /// <summary>
@@ -431,6 +434,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         doorCells, windowCells, pathCells, allTiles, seededColorMap, reservedZoneCells, rng, configKey,
                         sel.RoomIndex1Based, sel.AnchorCol, sel.AnchorRow, innerWallKeys, openingGroups, gapCells,
                         stairCells.ends, mainSubRoomCells, narrowCells, log);
+                    t_gridBounds = gridState?.GridBounds;
                     if (gridState is not null)
                     {
                         placements.AddRange(gridState.Placements);
@@ -3069,11 +3073,23 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             && slot.RugSlot.Sizing.Mode.Equals("matchAnchorCluster", StringComparison.OrdinalIgnoreCase))
         {
             var gridMembers = GridClusterMemberIds(config, slot.RequiresSlot, anchorMap);
+            if (slot.RugSlot.Sizing.ClusterUseGridFrame
+                && t_gridBounds?.TryGetValue(slot.RequiresSlot, out var frame) == true
+                && anchorMap.TryGetValue(slot.RequiresSlot, out var frameParent) && frameParent.Count > 0)
+            {
+                rugClusterBounds = (frame.x, frame.y, frame.w, frame.h, frameParent[0].orient);
+                log.Add($"  [INFO] '{slot.Id}': rug covers grid frame {frame.w}×{frame.h} at ({frame.x},{frame.y})");
+            }
+            else
+            {
+            if (slot.RugSlot.Sizing.ClusterUseGridFrame)
+                log.Add($"  [INFO] '{slot.Id}': clusterUseGridFrame ignored — '{slot.RequiresSlot}' is no placed grid");
             bool gridPiecesOnly = slot.RugSlot.Sizing.ClusterGridPiecesOnly && gridMembers.Count > 0;
             if (slot.RugSlot.Sizing.ClusterGridPiecesOnly && gridMembers.Count == 0)
                 log.Add($"  [INFO] '{slot.Id}': clusterGridPiecesOnly ignored — '{slot.RequiresSlot}' is no placed grid");
             rugClusterBounds = ComputeAnchorClusterBounds(slot.RequiresSlot, anchorMap, config.Slots, slot.Id,
                 extraMemberIds: gridMembers, includeRequiringSlots: !gridPiecesOnly);
+            }
             if (rugClusterBounds is null)
             {
                 log.Add($"  [WARN] '{slot.Id}': matchAnchorCluster — parent '{slot.RequiresSlot}' not placed, skipping");
@@ -3095,6 +3111,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 log.Add($"  [COLOR] '{slot.Id}': left empty, excluded colours may have removed its tiles ({string.Join(", ", excludedColors.Order(StringComparer.OrdinalIgnoreCase))})");
             return;
         }
+
+        // Pool before colour lock/harmony narrow it — anchored placement falls back to this when
+        // every colour-matching tile lacks the orientation the anchor demands (e.g. a sink on an
+        // E/S wall when the colour filter left only W/N-only Melos mirrors). See [COLOR-FALLBACK].
+        var preColorCandidates = candidates;
 
         // ── Farbfilter ─────────────────────────────────────────────────────────
         // Effektive Gruppe: Slot überschreibt Raum-Default; "none" deaktiviert.
@@ -3266,7 +3287,15 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             // etc.) can fail the whole slot even though other candidates would fit. Retry every
             // matching candidate tile in turn, same as the composite-layout solver
             // (BuildLayoutCandidates) already does via OrderTileCandidatesForLayout.
-            foreach (var candidateTile in OrderTileCandidatesForLayout(candidates, slot, rng))
+            //
+            // If the colour-filtered pool fails ONLY on orientation (every rejected position was
+            // otherwise valid), a second pass retries with the untried pre-colour tiles — a mirror
+            // in the wrong colour beats no mirror over the sink at all.
+            var anchorPools = new List<List<TileDefinition>> { candidates };
+            bool sawOrientFailure = false, orientOnlyFailures = true;
+            for (int poolIdx = 0; poolIdx < anchorPools.Count && result is null; poolIdx++)
+            {
+            foreach (var candidateTile in OrderTileCandidatesForLayout(anchorPools[poolIdx], slot, rng))
             {
             tile = candidateTile;
             result = null;
@@ -3455,6 +3484,11 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                         return true;
                     }
 
+                    if (!orientOk && fitOk && doorOk && gapOk && pathOk && winOk && sideOk && wallOk)
+                        sawOrientFailure = true;
+                    else
+                        orientOnlyFailures = false;
+
                     var sideSuffix = chosenOpenSide.HasValue ? $" side='{chosenOpenSide.Value}'" : string.Empty;
                     var ruleSuffix = ruleIdx > 0 ? $" rule#{ruleIdx}" : string.Empty;
                     log.Add($"    [ANCHOR-FAIL] '{slot.Id}'{ruleSuffix} tile='{tile.TileId}': pos=({ac},{ar}){sideSuffix} fit={fitOk} door={doorOk} gap={gapOk} path={pathOk} window={winOk} side={sideOk} orient={orientOk} loot={lootOk} conn={connOk}");
@@ -3563,6 +3597,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     }
                     else
                     {
+                        orientOnlyFailures = false;
                         log.Add($"    [ANCHOR-FAIL] '{slot.Id}': ComputeAnchoredPosition returned null for anchorPos='{anchorPos}'");
                     }
                 }
@@ -3575,6 +3610,19 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             }
 
             if (result is not null) break;
+            }
+
+            if (result is null && poolIdx == 0 && sawOrientFailure && orientOnlyFailures
+                && preColorCandidates.Count > candidates.Count)
+            {
+                var tried = new HashSet<TileDefinition>(candidates);
+                var wider = preColorCandidates.Where(t => !tried.Contains(t)).ToList();
+                if (wider.Count > 0)
+                {
+                    log.Add($"    [COLOR-FALLBACK] '{slot.Id}': no colour-matching tile fits the anchor's orientation, retrying with {wider.Count} tile(s) of any colour");
+                    anchorPools.Add(wider);
+                }
+            }
             }
         }
         else
@@ -4073,6 +4121,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         "hasCollision"  => t.HasCollision,
         "canStack"      => t.CanStack,
         "isTableTop"    => t.IsTableTop,
+        "isLootContainer"  => t.IsLootContainer,
+        "allowAboveWindow" => t.AllowAboveWindow,
         _               => false,
     };
 
@@ -4892,6 +4942,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         HashSet<(int, int)> windowCells)
     {
         if (windowCells.Count == 0) return false;
+        // Hangs above the window (e.g. kitchen hanging counter) — the window stays free.
+        if (tile.AllowAboveWindow) return false;
 
         var localEdge = NormalizeEdge(tile.WindowBlockedEdge);
         if (localEdge is not null)

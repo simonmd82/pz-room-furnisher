@@ -1652,6 +1652,13 @@ export function RoomTypeEditor() {
                           {t('roomTypeEditor.slotCard.rugClusterGridOnly')}
                         </label>
                       )}
+                      {slot.rugSlot.sizing.mode === 'matchAnchorCluster' && (
+                        <label className={s.slotCheck} title={t('roomTypeEditor.slotCard.rugClusterGridFrameHint')}>
+                          <input type="checkbox" checked={!!slot.rugSlot.sizing.clusterUseGridFrame}
+                            onChange={e => updateSlot(idx, { rugSlot: { ...slot.rugSlot!, sizing: { ...slot.rugSlot!.sizing, clusterUseGridFrame: e.target.checked } } })} />
+                          {t('roomTypeEditor.slotCard.rugClusterGridFrame')}
+                        </label>
+                      )}
                       {slot.rugSlot.sizing.mode === 'fill' && (<>
                         <span className={s.slotGroupLabel}>{t('roomTypeEditor.slotCard.rugFillShortAxis')}</span>
                         <input type="number" min={1} max={20} className={s.slotNumInput}

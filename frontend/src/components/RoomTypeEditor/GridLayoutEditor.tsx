@@ -470,6 +470,12 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, onDupli
               <input type="number" className={rs.slotNumInput} value={grid.priority}
                 onChange={e => onChange({ ...grid, priority: +e.target.value || 0 })} />
             </label>
+            <label className={s.field} title={t('roomTypeEditor.grids.emptyWeightHint')}>
+              <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.emptyWeightLabel')}</span>
+              <input type="number" min={0} max={10} className={rs.slotNumInput} value={grid.emptyWeight ?? 0}
+                disabled={grid.required}
+                onChange={e => onChange({ ...grid, emptyWeight: Math.max(0, Math.min(10, +e.target.value || 0)) })} />
+            </label>
             <label className={s.field} title={t('roomTypeEditor.grids.groupHint')}>
               <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.groupLabel')}</span>
               <input className={rs.slotSizeInput} style={{ width: 110 }} value={grid.slotGroupId}
