@@ -107,11 +107,6 @@ Currently it can only furnish residential buildings. It uses Vanilla furniture b
 - **Zoom & pan** – Zoom buttons (−, %, +, Fit) or Ctrl + mouse wheel at the cursor. Drag to pan with the middle mouse button, or with the left mouse button anywhere except on furniture.
 - **Move furniture** – After furnishing, placed furniture can be dragged to another spot (grid view only).
 - **Room selection** – Single click or Ctrl+click (multi-select) to highlight / hide rooms.
-- **A\* pathfinding** – Automatically calculates the shortest path between all door waypoints for every room on upload (with a small random jitter for visual variation).
-  - Stair cells are excluded from routing; only the entry point is passable.
-  - Cost gradient: open floor > cells near walls > corners.
-- **Show paths** – Toggle to show/hide the calculated paths as colored dots in the grid.
-- **Regenerate path** – Clicking 🔄 in a room legend entry recalculates that single room's path with a new random seed (no reload needed).
 
 **Preparing the TBX file**
 

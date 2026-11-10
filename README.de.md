@@ -107,11 +107,6 @@ Zur Zeit kann es ausschließlich Wohngebäude möblieren. Standardmäßig nutzt 
 - **Zoomen & Verschieben** – Zoom-Buttons (−, %, +, Fit) oder Strg + Mausrad am Mauszeiger. Die Ansicht lässt sich mit der mittleren Maustaste verschieben, oder mit der linken Maustaste überall außer auf Möbeln.
 - **Möbel verschieben** – Nach dem Möblieren lassen sich platzierte Möbel an eine andere Stelle ziehen (nur in der Grid-Ansicht).
 - **Raumauswahl** – Einzelklick oder Ctrl+Klick (Multi-Select) um Räume hervorzuheben / auszublenden.
-- **A\*-Wegfindung** – Berechnet beim Upload automatisch für jeden Raum den kürzesten Weg zwischen allen Tür-Waypoints (mit kleinem Zufalls-Jitter für optische Variation).
-  - Treppen-Zellen werden beim Routing ausgenommen; nur der Einstiegspunkt ist passierbar.
-  - Kostengefälle: offene Fläche > wandnahe Zellen > Ecken.
-- **Wege anzeigen** – Toggle zum Ein-/Ausblenden der berechneten Wege als farbige Punkte im Grid.
-- **Weg neu generieren** – Per Klick auf 🔄 im Raumlegende-Eintrag wird der Weg eines einzelnen Raums mit neuem Zufalls-Seed neu berechnet (ohne Reload).
 
 **Vorbereitung der TBX Datei**
 
