@@ -1578,8 +1578,8 @@
         },
         "sameTileForAllInstances": false,
         "allowedCategories": {
-          "Bedtable": 5,
-          "__empty__": 5
+          "__empty__": 6,
+          "Cabinet": 4
         },
         "allowedThemes": [],
         "placementRules": {

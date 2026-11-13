@@ -2638,7 +2638,7 @@
         "furniture_storage_01_040"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2678,7 +2678,7 @@
         "furniture_storage_01_042"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2718,7 +2718,7 @@
         "furniture_storage_01_043"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2729,7 +2729,7 @@
     "hasCollision": true,
     "canStack": false,
     "isTableTop": true,
-    "isLootContainer": false,
+    "isLootContainer": true,
     "allowAboveWindow": false,
     "colors": [
       "Beige"
@@ -2758,7 +2758,7 @@
         "furniture_storage_01_041"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2798,7 +2798,7 @@
         "furniture_storage_01_064"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2838,7 +2838,7 @@
         "furniture_storage_01_066"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2878,7 +2878,7 @@
         "furniture_storage_01_067"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -2918,7 +2918,7 @@
         "furniture_storage_01_065"
       ]
     ],
-    "group": "Bedtable",
+    "group": "Cabinet",
     "layer": "Furniture",
     "notes": "",
     "isHigh": true,
@@ -61035,7 +61035,7 @@
     "id": "lighting_indoor_02_017",
     "tileId": "lighting_indoor_02_017",
     "label": "",
-    "orientation": "N",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_02_017"
@@ -61119,7 +61119,7 @@
     "id": "lighting_indoor_02_019",
     "tileId": "lighting_indoor_02_019",
     "label": "",
-    "orientation": "E",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_019"
@@ -61202,7 +61202,7 @@
     "id": "lighting_indoor_02_021",
     "tileId": "lighting_indoor_02_021",
     "label": "",
-    "orientation": "N",
+    "orientation": "E",
     "tileLayout": [
       [
         "lighting_indoor_02_021"
@@ -61284,7 +61284,7 @@
     "id": "lighting_indoor_02_023",
     "tileId": "lighting_indoor_02_023",
     "label": "",
-    "orientation": "E",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_023"
@@ -63929,7 +63929,7 @@
     "id": "lighting_indoor_02_001",
     "tileId": "lighting_indoor_02_001",
     "label": "",
-    "orientation": "N",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_02_001"
@@ -63970,7 +63970,7 @@
     "id": "lighting_indoor_02_002",
     "tileId": "lighting_indoor_02_002",
     "label": "",
-    "orientation": "W",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_002"
@@ -64093,7 +64093,7 @@
     "id": "lighting_indoor_02_006",
     "tileId": "lighting_indoor_02_006",
     "label": "",
-    "orientation": "W",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_006"
@@ -64218,7 +64218,7 @@
     "id": "lighting_indoor_02_014",
     "tileId": "lighting_indoor_02_014",
     "label": "",
-    "orientation": "W",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_014"
@@ -64261,7 +64261,7 @@
     "id": "lighting_indoor_02_005",
     "tileId": "lighting_indoor_02_005",
     "label": "",
-    "orientation": "N",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_02_005"
@@ -64302,7 +64302,7 @@
     "id": "lighting_indoor_02_013",
     "tileId": "lighting_indoor_02_013",
     "label": "",
-    "orientation": "N",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_02_013"
@@ -64430,7 +64430,7 @@
     "id": "lighting_indoor_02_010",
     "tileId": "lighting_indoor_02_010",
     "label": "",
-    "orientation": "W",
+    "orientation": "N",
     "tileLayout": [
       [
         "lighting_indoor_02_010"
@@ -64472,7 +64472,7 @@
     "id": "lighting_indoor_02_009",
     "tileId": "lighting_indoor_02_009",
     "label": "",
-    "orientation": "N",
+    "orientation": "W",
     "tileLayout": [
       [
         "lighting_indoor_02_009"
