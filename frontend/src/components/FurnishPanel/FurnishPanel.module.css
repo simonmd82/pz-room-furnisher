@@ -9,24 +9,150 @@
   overflow: hidden;
 }
 
+/* Title + quick-select chips; chips scroll on their own if a building has many room types. */
+.panelHeader {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.panelHeader .typeToolbar {
+  max-height: 96px;
+  overflow-y: auto;
+}
+
+/* Room list: takes all remaining height, never collapses below a few rows. */
 .scrollArea {
   flex: 1;
-  min-height: 0;
+  min-height: 160px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding-right: 6px;
 }
+/* Options expanded: share short screens more evenly (~3 room rows stay visible). */
+.scrollAreaShared { min-height: 100px; }
+
+/* ── Collapsible generation options ── */
+/* Shrinks (body scrolls) when space is short, so the Generate footer never leaves the screen. */
+.options {
+  flex: 0 1 auto;
+  min-height: 56px; /* never clip the two-line card itself */
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+/* Card-style toggle: must read as "settings live here", not as fine print. */
+.optionsToggle {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  padding: 6px 10px;
+  background: #141428;
+  border: 1px solid #5a4a8a;
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.optionsToggle:hover { background: #1c1838; border-color: #8866cc; }
+.optionsExpanded { min-height: 32px; } /* expanded card is one line; body may shrink to 0 */
+.optionsExpanded .optionsToggle { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+.optionsHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.optionsTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ddd;
+}
+
+.optionsChevron {
+  font-size: 0.8rem;
+  color: #a88cff;
+}
+
+.optionsDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.68rem;
+  color: #889;
+}
+
+.optionsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 40vh;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 6px 6px 8px;
+  border-left: 2px solid #5a4a8a;
+}
+
+/* One-line "Using: … — change in Options" above Generate */
+.optionsHint {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.68rem;
+  color: #889;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.optionsHintText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.optionsHintChange {
+  flex-shrink: 0;
+  color: #a88cff;
+}
+.optionsHint:hover .optionsHintChange { text-decoration: underline; }
 
 .stickyFooter {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-top: 12px;
+  gap: 6px;
+  padding-top: 8px;
   margin-top: 4px;
   border-top: 1px solid #2a2a3a;
+}
+
+.exportRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+/* Export TBX on its own line, Report + Repro side by side below it. */
+.exportRow .exportBtn {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  padding: 5px 8px;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+.exportRow .exportBtn:first-child:not(:only-child):not(:nth-last-child(2)) {
+  flex-basis: 100%;
 }
 
 .panelTitle {
@@ -418,7 +544,7 @@
   background: #141422;
   border: 1px solid #2a2a3a;
   border-radius: 4px;
-  padding: 6px 8px;
+  padding: 3px 8px;
 }
 
 /* InternalName shown next to display name */
@@ -501,12 +627,8 @@
   white-space: nowrap;
 }
 
+/* In-flow (not absolute): the options body scrolls and would clip an overlay. */
 .colorSelectMenu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 2px;

@@ -10,6 +10,7 @@ KI wurde verwendet dieses Applikation zu erstellen. Wenn dir das nicht gefällt,
 ## Inhaltsverzeichnis
 
 - [App starten](#app-starten)
+  - [Warnung von Virenscanner oder SmartScreen](#warnung-von-virenscanner-oder-smartscreen)
 - [Feedback & Fehler melden](#feedback--fehler-melden)
 - [Aus dem Quellcode starten (Entwickler)](#aus-dem-quellcode-starten-entwickler)
 - [Bedienung: Gebäude & Einstellungen](#bedienung-gebäude--einstellungen)
@@ -38,13 +39,24 @@ Keine Installation von .NET, Node oder sonst etwas nötig — einfach herunterla
 
 Einstellungen und Konfiguration werden neben der ausführbaren Datei im Ordner `Data/` gespeichert.
 
+### Warnung von Virenscanner oder SmartScreen
+
+Die App ist (noch) nicht code-signiert. Windows und manche Virenscanner misstrauen neuen, unsignierten Programmen, deshalb kann ein neues Release blockiert oder gemeldet werden, obwohl es harmlos ist. Der komplette Quellcode liegt in diesem Repository, und die Release-Dateien werden per GitHub Actions daraus gebaut.
+
+Folgendes nur für Dateien tun, die von der offiziellen [Releases-Seite](https://github.com/simonmd82/pz-room-furnisher/releases) stammen:
+
+- **Vor dem Entpacken:** Rechtsklick auf das Zip → **Eigenschaften** → Haken bei **Zulassen** setzen → OK. Das vermeidet die meisten „Datei aus dem Internet“-Warnungen.
+- **„Der Computer wurde durch Windows geschützt“ (SmartScreen):** auf **Weitere Informationen** → **Trotzdem ausführen** klicken.
+- **Virenscanner hat die App in Quarantäne verschoben oder gelöscht:** aus der Quarantäne wiederherstellen und eine Ausnahme für den App-Ordner anlegen. Im Zweifel vorher `PzRoomFurnisher.exe` bei [VirusTotal](https://www.virustotal.com) hochladen.
+- **Bitte melden:** dem Hersteller des Virenscanners den Fehlalarm melden (die meisten haben ein Formular für „False Positive“ bzw. „Probe einreichen“) und einen [Bug-Report](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml) mit Name des Scanners und der Erkennung öffnen, damit ich mich darum kümmern kann.
+
 ---
 
 ## Feedback & Fehler melden
 
 Deutsch und Englisch sind beide in Ordnung. Der ⓘ-Button oben rechts zeigt die App-Version, die in einer Meldung hilft.
 
-- **Schlechtes Einrichtungs-Ergebnis:** Nach einem Lauf im Gebäude-Tab auf „Problem mit diesem Ergebnis melden“ klicken. Das öffnet das [Issue-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) und lädt ein Repro-Paket herunter, das du dort hineinziehst.
+- **Schlechtes Einrichtungs-Ergebnis:** Nach einem Lauf im Gebäude-Tab auf „⚠ Problem melden“ klicken. Das öffnet das [Issue-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) und lädt ein Repro-Paket herunter, das du dort hineinziehst.
 - **Absturz, Fehlermeldung oder kaputte Oberfläche:** Das [Bug-Formular](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml) benutzen. Unter Einstellungen → Feedback öffnet sich der Ordner mit der Log-Datei zum Anhängen.
 - **Ideen und Fragen:** [Discussions](https://github.com/simonmd82/pz-room-furnisher/discussions).
 

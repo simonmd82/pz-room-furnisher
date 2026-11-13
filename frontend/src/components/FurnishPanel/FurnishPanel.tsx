@@ -6,6 +6,7 @@ import type { RoomSelection, FurnishRequestSnapshot, ReproExpected } from '../..
 import { getColorNames } from '../../api/settingsApi';
 import { getRoomTypes } from '../../api/roomTypesApi';
 import type { RoomTypeConfigMap } from '../../types/roomTypes';
+import { classifyRoomSize, sizeLabel } from '../../types/roomTypes';
 import { getColors, getTilesPath, getTileConfigSets, updateTileConfigSet } from '../../api/tilesApi';
 import { issueUrl } from '../../utils/reportLinks';
 import type { TileConfigSetInfo } from '../../types/tiles';
@@ -13,6 +14,12 @@ import { Spinner } from '../Spinner/Spinner';
 import { FurnishProgressDialog } from './FurnishProgressDialog';
 import type { FurnishProgress } from './FurnishProgressDialog';
 import s from './FurnishPanel.module.css';
+import { newId } from '../../utils/id';
+
+const OPTIONS_OPEN_KEY = 'pzrf.furnishOptionsOpen';
+/** Window height from which the options start expanded (when the user hasn't chosen yet).
+ *  1080p browsers (~950 px) stay collapsed: open options would shrink the room list to ~2 rows. */
+const OPTIONS_OPEN_MIN_HEIGHT = 1050;
 
 /** How many recent generator log lines the progress dialog shows. */
 const PROGRESS_LOG_LINES = 40;
@@ -133,17 +140,6 @@ function collectRoomsByFloor(building: Building): Map<number, RoomEntry[]> {
 }
 
 
-const SIZE_LABELS: Record<string, string> = {
-  XS: 'XS ≤4', S: 'S ≤12', M: 'M ≤25', L: 'L ≤50', XL: 'XL 50+',
-};
-function classifySize(cells: number) {
-  if (cells <= 4)  return 'XS';
-  if (cells <= 12) return 'S';
-  if (cells <= 25) return 'M';
-  if (cells <= 50) return 'L';
-  return 'XL';
-}
-
 /** Convert "R G B" TBX color string to CSS rgb(). */
 function tbxColorToCss(color: string | undefined): string {
   if (!color) return '#888';
@@ -170,6 +166,13 @@ export default function FurnishPanel({
   const [openMenu, setOpenMenu]         = useState<string | null>(null);
   const [configSets, setConfigSets]     = useState<TileConfigSetInfo[]>([]);
   const [collapsedFloors, setCollapsedFloors] = useState<Set<number>>(new Set());
+  // Stored choice wins; without one, start open when the window has room for it.
+  const [optionsOpen, setOptionsOpen] = useState(() => {
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(OPTIONS_OPEN_KEY); } catch { /* storage unavailable */ }
+    return stored !== null ? stored === 'true' : window.innerHeight >= OPTIONS_OPEN_MIN_HEIGHT;
+  });
+  const optionsRef = useRef<HTMLDivElement>(null);
   /** Last fully completed run: the request exactly as sent + only what that run produced. */
   const [lastRun, setLastRun] = useState<{ request: FurnishRequestSnapshot; expected: ReproExpected } | null>(null);
   const [exportingRepro, setExportingRepro] = useState(false);
@@ -352,7 +355,7 @@ export default function FurnishPanel({
             const key = `${ev.floorIndex}:${ev.roomIndex1Based}:${ev.anchorCol}:${ev.anchorRow}`;
             livePlacements = [
               ...livePlacements.filter(p => `${p.floorIndex}:${p.roomIndex1Based}:${p.anchorCol}:${p.anchorRow}` !== key),
-              ...ev.placements.map(p => ({ ...p, id: crypto.randomUUID() })),
+              ...ev.placements.map(p => ({ ...p, id: newId() })),
             ];
             onPlacementsChanged(livePlacements);
 
@@ -461,6 +464,27 @@ export default function FurnishPanel({
     void handleExportRepro(t('furnishPanel.reportExportOk'));
   };
 
+  const toggleOptions = () => setOptionsOpen(open => {
+    try { localStorage.setItem(OPTIONS_OPEN_KEY, String(!open)); } catch { /* per-browser convenience only */ }
+    return !open;
+  });
+
+  /** Hint above Generate: make sure the options are open and in view. */
+  const revealOptions = () => {
+    if (!optionsOpen) toggleOptions();
+    requestAnimationFrame(() => optionsRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }));
+  };
+
+  const optionsSummary = [
+    `${t('furnishPanel.seed')} ${seed}`,
+    densityFixed || densityMin === densityMax ? `${densityMin}%` : `${densityMin}–${densityMax}%`,
+    excludedColors.length > 0 ? t('furnishPanel.optionsSummary.colorsExcluded', { count: excludedColors.length }) : null,
+    lightSwitches ? t('furnishPanel.optionsSummary.lightSwitches') : null,
+    configSets.length > 0
+      ? t('furnishPanel.optionsSummary.sets', { enabled: configSets.filter(cs => cs.enabled).length, total: configSets.length })
+      : null,
+  ].filter(Boolean).join(' · ');
+
   const toggleExcludedColor = (color: string) =>
     onExcludedColorsChange(excludedColors.includes(color)
       ? excludedColors.filter(c => c !== color)
@@ -468,7 +492,7 @@ export default function FurnishPanel({
 
   return (
     <div className={s.panel}>
-    <div className={s.scrollArea}>
+    <div className={s.panelHeader}>
       <p className={s.panelTitle}>{t('furnishPanel.title')}</p>
 
       {/* ── Quick-select toolbar ── */}
@@ -502,7 +526,9 @@ export default function FurnishPanel({
           </button>
         ))}
       </div>
+    </div>
 
+    <div className={`${s.scrollArea} ${optionsOpen ? s.scrollAreaShared : ''}`}>
       {/* ── Room list grouped by floor (collapsible tree) ── */}
       <div className={s.roomList}>
         {[...roomsByFloor.entries()].map(([floorIndex, rooms]) => {
@@ -539,11 +565,11 @@ export default function FurnishPanel({
               const { roomIndex1Based, cellCount, instanceNo, instanceTotal } = entry;
               const key         = selKey(entry);
               const room        = building.rooms[roomIndex1Based - 1];
-              const sizeKey     = classifySize(cellCount);
               const typeName    = overrides[key] || room?.internalName || '';
               const baseName    = room?.name || t('furnishPanel.defaultRoomName', { n: roomIndex1Based });
               const displayName = instanceTotal > 1 ? `${baseName} #${instanceNo}` : baseName;
               const matchedCfg  = configFor(typeName);
+              const sizeKey     = classifyRoomSize(cellCount, matchedCfg?.sizeLimits);
               const hasMatch    = matchedCfg !== undefined;
               const isEmptyType = matchedCfg !== undefined && !configHasFurniture(matchedCfg);
               const isSel       = selected.has(key);
@@ -578,7 +604,7 @@ export default function FurnishPanel({
                         <span className={s.roomInternalName}> · {room.internalName}</span>
                       )}
                     </span>
-                    <span className={s.roomRowBadge} title={t('furnishPanel.cellsTitle', { count: cellCount })}>{SIZE_LABELS[sizeKey]}</span>
+                    <span className={s.roomRowBadge} title={t('furnishPanel.cellsTitle', { count: cellCount })}>{sizeLabel(sizeKey, matchedCfg?.sizeLimits)}</span>
                     {!hasMatch && typeName && (
                       <span className={s.roomRowNoMatch} title={t('furnishPanel.noMatchTitle', { type: typeName })}>⚠</span>
                     )}
@@ -633,7 +659,22 @@ export default function FurnishPanel({
       </datalist>
     </div>
 
-    <div className={s.stickyFooter}>
+    {/* ── Generation options (collapsible, so the room list keeps its space on small screens) ── */}
+    <div className={`${s.options} ${optionsOpen ? s.optionsExpanded : ''}`} ref={optionsRef}>
+      <button
+        type="button"
+        className={s.optionsToggle}
+        aria-expanded={optionsOpen}
+        onClick={toggleOptions}
+        title={optionsSummary}>
+        <span className={s.optionsHead}>
+          <span className={s.optionsTitle}>⚙ {t('furnishPanel.optionsTitle')}</span>
+          <span className={s.optionsChevron} aria-hidden="true">{optionsOpen ? '▾' : '▸'}</span>
+        </span>
+        {!optionsOpen && <span className={s.optionsDescription}>{t('furnishPanel.optionsDescription')}</span>}
+      </button>
+      {optionsOpen && (
+    <div className={s.optionsBody}>
       {/* ── Seed ── */}
       <span className={s.sectionLabel}>{t('furnishPanel.seed')}</span>
       <div className={s.seedRow}>
@@ -758,11 +799,23 @@ export default function FurnishPanel({
           </div>
         </>
       )}
+    </div>
+      )}
+    </div>
 
+    <div className={s.stickyFooter}>
       {/* ── Generate ── */}
       {pathsReady === false && (
         <div className={`${s.status} ${s.statusError}`}>{t('furnishPanel.pathsMissing')}</div>
       )}
+      <button
+        type="button"
+        className={s.optionsHint}
+        onClick={revealOptions}
+        title={`${t('furnishPanel.optionsHint', { summary: optionsSummary })} — ${t('furnishPanel.optionsHintChange')}`}>
+        <span className={s.optionsHintText}>{t('furnishPanel.optionsHint', { summary: optionsSummary })}</span>
+        <span className={s.optionsHintChange}>— {t('furnishPanel.optionsHintChange')}</span>
+      </button>
       <button
         className={s.generateBtn}
         disabled={running || selected.size === 0 || !pathsReady}
@@ -773,11 +826,15 @@ export default function FurnishPanel({
       </button>
 
       {/* ── Result summary + export ── */}
+      {placements.length > 0 && !status && (
+        <div className={s.resultSummary}>
+          {t('furnishPanel.tilesPlacedSummary', { count: placements.length })}
+        </div>
+      )}
+      {(placements.length > 0 || lastRun) && (
+      <div className={s.exportRow}>
       {placements.length > 0 && (
         <>
-          <div className={s.resultSummary}>
-            {t('furnishPanel.tilesPlacedSummary', { count: placements.length })}
-          </div>
           <button
             className={s.exportBtn}
             disabled={exporting}
@@ -803,6 +860,8 @@ export default function FurnishPanel({
             {exportingRepro ? <><Spinner /> {t('furnishPanel.exporting')}</> : t('furnishPanel.exportRepro')}
           </button>
         </>
+      )}
+      </div>
       )}
 
       {/* ── Status ── */}

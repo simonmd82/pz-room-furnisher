@@ -7,6 +7,15 @@
         <AssemblyName>PzRoomFurnisher</AssemblyName>
         <!-- Dev default; release builds pass -p:Version=<tag> (release.yml / build-release.ps1). -->
         <Version>0.1.0</Version>
+        <!-- Exe identity (Win32 VERSIONINFO + icon); helps AV/SmartScreen heuristics. -->
+        <ApplicationIcon>app.ico</ApplicationIcon>
+        <Product>PZ Room Furnisher</Product>
+        <AssemblyTitle>PZ Room Furnisher</AssemblyTitle>
+        <Company>simonmd82</Company>
+        <Authors>simonmd82</Authors>
+        <Description>Local web tool that auto-furnishes rooms in Project Zomboid maps.</Description>
+        <Copyright>Copyright (c) 2026 simonmd82. MIT License.</Copyright>
+        <NeutralLanguage>en</NeutralLanguage>
     </PropertyGroup>
 
     <ItemGroup>

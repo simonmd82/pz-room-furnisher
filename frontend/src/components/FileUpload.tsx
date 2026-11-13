@@ -7,9 +7,13 @@ import styles from './FileUpload.module.css';
 
 interface Props {
   onBuildingLoaded: (building: Building, fileName: string, file: File) => void;
+  /** Slim one-line bar instead of the big drop zone (used once a building is loaded). */
+  compact?: boolean;
+  /** Name of the currently loaded building, e.g. after a repro replay that bypassed this upload. */
+  currentName?: string | null;
 }
 
-export function FileUpload({ onBuildingLoaded }: Props) {
+export function FileUpload({ onBuildingLoaded, compact = false, currentName = null }: Props) {
   const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
@@ -40,6 +44,30 @@ export function FileUpload({ onBuildingLoaded }: Props) {
     const file = e.dataTransfer.files?.[0];
     if (file) handleFile(file);
   };
+
+  if (compact) {
+    const name = fileName ?? currentName;
+    return (
+      <div
+        className={`${styles.dropZone} ${styles.compact}`}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+        onClick={() => inputRef.current?.click()}
+        title={t('upload.hint')}
+      >
+        <input ref={inputRef} type="file" accept=".tbx" className={styles.hidden} onChange={handleChange} />
+        {loading ? (
+          <span className={styles.compactText}><Spinner /> {t('upload.processing')}</span>
+        ) : (
+          <span className={styles.compactText}>
+            📄 {name && <strong className={styles.compactName}>{name}</strong>}
+            <span className={styles.compactAction}>{name ? '· ' : ''}{t('upload.loadOther')}</span>
+          </span>
+        )}
+        {error && <span className={styles.error}>❌ {error}</span>}
+      </div>
+    );
+  }
 
   return (
     <div

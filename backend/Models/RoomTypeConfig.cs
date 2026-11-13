@@ -9,14 +9,26 @@ public static class RoomSize
     public const string L  = "L";
     public const string XL = "XL";
 
-    public static string Classify(int fieldCount) => fieldCount switch
+    /// <summary>Default max cell count per size class (XL = everything above L).</summary>
+    public static readonly IReadOnlyList<(string Size, int Max)> DefaultLimits =
+        [(XS, 4), (S, 12), (M, 25), (L, 50)];
+
+    /// <summary>
+    /// Size class for a cell count. <paramref name="limits"/> (RoomTypeConfig.SizeLimits) may
+    /// override the max cells of XS/S/M/L per room type; missing keys use the defaults, and each
+    /// limit is clamped to at least the previous one so the classes stay ascending.
+    /// </summary>
+    public static string Classify(int fieldCount, IReadOnlyDictionary<string, int>? limits = null)
     {
-        <= 4  => XS,
-        <= 12 => S,
-        <= 25 => M,
-        <= 50 => L,
-        _     => XL,
-    };
+        int prev = 0;
+        foreach (var (size, def) in DefaultLimits)
+        {
+            int max = limits is not null && limits.TryGetValue(size, out var v) && v > 0 ? v : def;
+            prev = Math.Max(prev, max);
+            if (fieldCount <= prev) return size;
+        }
+        return XL;
+    }
 }
 
 /// <summary>Exakter Platzbedarf eines Slots in Zellen (Breite × Höhe).</summary>
@@ -127,6 +139,8 @@ public class RoomTypeSlot
     public string Id             { get; set; } = string.Empty;
     /// <summary>Anzeigename, z.B. "Bett", "Nachttisch links".</summary>
     public string Label          { get; set; } = string.Empty;
+    /// <summary>false = slot is ignored during generation (kept in the config for later use).</summary>
+    public bool   Enabled        { get; set; } = true;
     /// <summary>Exakter Platzbedarf des Slots in Zellen.</summary>
     public SlotFootprint Footprint { get; set; } = new();
     /// <summary>Muss dieser Slot immer befüllt werden?</summary>
@@ -593,6 +607,8 @@ public class GridLayout
     /// so normal slots can use it as AnchorTarget/RequiresSlot (e.g. a matchAnchorCluster rug).</summary>
     public string Id    { get; set; } = string.Empty;
     public string Label { get; set; } = string.Empty;
+    /// <summary>false = grid is ignored during generation (kept in the config for later use).</summary>
+    public bool Enabled { get; set; } = true;
     public int Width  { get; set; } = 4;
     public int Height { get; set; } = 3;
     /// <summary>
@@ -664,7 +680,25 @@ public class ReservedZoneRule
 /// <summary>Konfiguration für einen Raumtyp (z.B. "Bedroom").</summary>
 public class RoomTypeConfig
 {
+    /// <summary>
+    /// Shallow copy without disabled slots and grids (Enabled = false), as used by the generator.
+    /// Returns this instance when nothing is disabled.
+    /// </summary>
+    public RoomTypeConfig WithoutDisabled()
+    {
+        if (Slots.All(s => s.Enabled) && Grids.All(g => g.Enabled)) return this;
+        var copy = (RoomTypeConfig)MemberwiseClone();
+        copy.Slots = Slots.Where(s => s.Enabled).ToList();
+        copy.Grids = Grids.Where(g => g.Enabled).ToList();
+        return copy;
+    }
+
     public string RoomType            { get; set; } = string.Empty;
+    /// <summary>
+    /// Optional per-room-type max cell count for XS/S/M/L (see RoomSize.Classify), e.g.
+    /// { "XS": 6 } so 5–6-cell bathrooms count as XS. Missing keys use the defaults 4/12/25/50.
+    /// </summary>
+    public Dictionary<string, int> SizeLimits { get; set; } = [];
     public List<RoomTypeSlot> Slots   { get; set; } = [];
     /// <summary>
     /// Grid layouts placed as fixed units before the slots (see GridLayout). Optional; a

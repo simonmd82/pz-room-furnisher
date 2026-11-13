@@ -1,6 +1,34 @@
 ﻿export const SIZE_KEYS = ['XS', 'S', 'M', 'L', 'XL'] as const;
 export type SizeKey = typeof SIZE_KEYS[number];
 
+/** Default max cell count per size class; XL = everything above L. Mirrors backend RoomSize. */
+export const DEFAULT_SIZE_LIMITS: Record<Exclude<SizeKey, 'XL'>, number> = { XS: 4, S: 12, M: 25, L: 50 };
+
+/** Effective ascending limits for a room type (overrides clamped to at least the previous limit). */
+export function effectiveSizeLimits(limits?: Partial<Record<SizeKey, number>>): Record<Exclude<SizeKey, 'XL'>, number> {
+  let prev = 0;
+  const out = { ...DEFAULT_SIZE_LIMITS };
+  for (const k of ['XS', 'S', 'M', 'L'] as const) {
+    const v = limits?.[k];
+    prev = Math.max(prev, v && v > 0 ? v : DEFAULT_SIZE_LIMITS[k]);
+    out[k] = prev;
+  }
+  return out;
+}
+
+/** Size class of a room with this many cells (same rule as backend RoomSize.Classify). */
+export function classifyRoomSize(cells: number, limits?: Partial<Record<SizeKey, number>>): SizeKey {
+  const l = effectiveSizeLimits(limits);
+  for (const k of ['XS', 'S', 'M', 'L'] as const) if (cells <= l[k]) return k;
+  return 'XL';
+}
+
+/** Chip label like "XS ≤6" / "XL 50+" for the given limits. */
+export function sizeLabel(size: SizeKey, limits?: Partial<Record<SizeKey, number>>): string {
+  const l = effectiveSizeLimits(limits);
+  return size === 'XL' ? `XL ${l.L}+` : `${size} ≤${l[size]}`;
+}
+
 /** Exakter Platzbedarf eines Slots in Zellen (Breite × Höhe). */
 export interface SlotFootprint {
   width:     number;
@@ -189,6 +217,8 @@ export interface RoomTypeSlot {
   id: string;
   /** Anzeigename, z.B. "Bett", "Nachttisch links" */
   label: string;
+  /** false = ignored during generation. Missing = enabled. */
+  enabled?: boolean;
   /** Exakter Platzbedarf in Zellen */
   footprint: SlotFootprint;
   required: boolean;
@@ -555,6 +585,8 @@ export type GridMode = 'wall' | 'corner' | 'free';
 export interface GridLayout {
   id: string;
   label: string;
+  /** false = ignored during generation. Missing = enabled. */
+  enabled?: boolean;
   width: number;
   height: number;
   /** wall = back edge against a wall · corner = back + left edge against walls · free = anywhere, prefers centre */
@@ -633,6 +665,8 @@ export function normalizeGridLayout(g: Partial<GridLayout>): GridLayout {
 
 export interface RoomTypeConfig {
   roomType:      string;
+  /** Per-room-type max cell count for XS/S/M/L (missing = default 4/12/25/50), e.g. { XS: 6 }. */
+  sizeLimits?:   Partial<Record<SizeKey, number>>;
   slots:         RoomTypeSlot[];
   /** Grid layouts placed as fixed units before the slots. */
   grids?: GridLayout[];

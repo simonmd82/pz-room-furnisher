@@ -10,6 +10,7 @@ AI was used to create this app. If you don't like that, don't use it.
 ## Table of Contents
 
 - [Running the App](#running-the-app)
+  - [Antivirus / SmartScreen warnings](#antivirus--smartscreen-warnings)
 - [Feedback & Bug Reports](#feedback--bug-reports)
 - [Running from Source (Developers)](#running-from-source-developers)
 - [Usage: Buildings & Settings](#usage-buildings--settings)
@@ -38,13 +39,24 @@ No installation of .NET, Node, or anything else required — just download and r
 
 Your settings and configuration are saved next to the executable, in the `Data/` folder.
 
+### Antivirus / SmartScreen warnings
+
+The app is not code-signed (yet). Windows and some antivirus programs distrust new, unsigned programs, so a fresh release can be blocked or flagged even though it is harmless. The full source code is in this repository, and the release files are built from it by GitHub Actions.
+
+Only do the following for files you downloaded from the official [Releases page](https://github.com/simonmd82/pz-room-furnisher/releases):
+
+- **Before extracting:** right-click the zip → **Properties** → tick **Unblock** → OK. This avoids most "file from the internet" warnings.
+- **"Windows protected your PC" (SmartScreen):** click **More info** → **Run anyway**.
+- **Antivirus quarantined or deleted the app:** restore it from the quarantine and add an exception for the app folder. If you're unsure, upload `PzRoomFurnisher.exe` to [VirusTotal](https://www.virustotal.com) first.
+- **Please report it:** tell your antivirus vendor it's a false positive (most have a "submit a sample / false positive" form), and open a [bug report](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml) with the scanner name and detection name, so I can follow up.
+
 ---
 
 ## Feedback & Bug Reports
 
 German or English are both fine. The ⓘ button in the top right shows your app version, which helps in a report.
 
-- **Bad furnishing result:** click "Report a problem with this result" in the Building tab after a run. It opens the [issue form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) and downloads a repro bundle to drag in.
+- **Bad furnishing result:** click "⚠ Report problem" in the Building tab after a run. It opens the [issue form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bad-result.yml) and downloads a repro bundle to drag in.
 - **Crash, error or broken UI:** use the [bug form](https://github.com/simonmd82/pz-room-furnisher/issues/new?template=bug.yml). Settings → Feedback opens the folder with the log file to attach.
 - **Ideas and questions:** [Discussions](https://github.com/simonmd82/pz-room-furnisher/discussions).
 

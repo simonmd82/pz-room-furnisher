@@ -96,6 +96,8 @@ export interface TileDefinition {
   allowedOrients: string[];
   /** Optionale fensterkritische Kante (N/E/S/W), leer = keine Sonderregel */
   windowBlockedEdge: '' | 'N' | 'E' | 'S' | 'W';
+  /** true = only a window on exactly that side of this tile (as authored, no rotation) blocks it; empty edge = never blocked. */
+  windowExactSide?: boolean;
   /** Style tags – stored but not yet used by the generator */
   styleTags: string[];
   /** Motif themes, e.g. ["Cars"] — only for themed categories (settings, e.g. Picture/Poster). */

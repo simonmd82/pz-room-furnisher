@@ -9,7 +9,7 @@ public partial class FurnishingGeneratorService
 
     // Cell → lower-case layer of the switches placed in the current room component (null = none).
     // Thread-static so WallFaceTaken/HighCellTaken cover grids, layouts and slots alike.
-    [ThreadStatic] private static Dictionary<(int, int), string>? t_switchCells;
+    [ThreadStatic] private static Dictionary<(int, int), (string Layer, string? Side)>? t_switchCells;
 
     private readonly record struct SwitchSpot(int Col, int Row, Direction Wall, bool Left);
 
@@ -45,14 +45,14 @@ public partial class FurnishingGeneratorService
     /// to one per door, each on the door's wall in a neighbouring cell. Returns the used cells.
     /// Colour exclusions and room-type tags deliberately don't apply (pass the unfiltered catalog).
     /// </summary>
-    private static Dictionary<(int, int), string> PlaceLightSwitches(
+    private static Dictionary<(int, int), (string Layer, string? Side)> PlaceLightSwitches(
         Floor floor, int floorIndex, HashSet<(int, int)> roomCells,
         Dictionary<(int, int), HashSet<Direction>> cellWalls,
         IReadOnlyDictionary<string, TileDefinition> catalog, Random rng,
         int roomIndex1Based, int? selectionAnchorCol, int? selectionAnchorRow,
         List<PlacedFurnitureItem> placements, List<string> log)
     {
-        var used = new Dictionary<(int, int), string>();
+        var used = new Dictionary<(int, int), (string Layer, string? Side)>();
 
         var tiles = catalog.Values
             .Where(t => t.Group.Equals(LightSwitchGroup, StringComparison.OrdinalIgnoreCase))
@@ -96,8 +96,9 @@ public partial class FurnishingGeneratorService
             var tile = options[rng.Next(options.Count)];
             var tileId = tile.TileLayout.FirstOrDefault()?.FirstOrDefault(id => !string.IsNullOrEmpty(id)) ?? tile.Id;
             placements.Add(new PlacedFurnitureItem(floorIndex, spot.Col, spot.Row, tileId, tile.Layer, spot.Wall.ToString(),
-                LightSwitchSlotId, roomIndex1Based, selectionAnchorCol, selectionAnchorRow));
-            used[(spot.Col, spot.Row)] = tile.Layer.ToLowerInvariant();
+                LightSwitchSlotId, roomIndex1Based, selectionAnchorCol, selectionAnchorRow,
+                WallSide: WallSideOf(tile), HighPiece: tile.IsHigh));
+            used[(spot.Col, spot.Row)] = (tile.Layer.ToLowerInvariant(), WallSideOf(tile));
             log.Add($"  [SWITCH] '{tileId}' orient '{spot.Wall}' at ({spot.Col},{spot.Row})");
             return true;
         }

@@ -20,7 +20,10 @@
     "repo":       "GitHub",
     "releases":   "Releases",
     "credits":    "Optionale Tile-Sets",
-    "tileSets":   "Melos-Tiles und Simon_MD-Tiles",
+    "melosTiles": "Melos-Tiles",
+    "simonTiles": "Simon_MD-Tiles",
+    "daddyDirkieDirkTiles": "DaddyDirkieDirk-Tiles",
+    "and":        "und",
     "aiNotice":   "Bei der Erstellung dieser App wurde KI eingesetzt.",
     "disclaimer": "Kein Projekt von The Indie Stone und nicht von ihnen unterstützt. Project Zomboid ist eine Marke von The Indie Stone.",
     "close":      "Schließen"
@@ -34,6 +37,7 @@
   "upload": {
     "processing": "Datei wird verarbeitet…",
     "hint": ".tbx Datei hier ablegen oder klicken",
+    "loadOther": "Andere .tbx laden…",
     "loaded": "✅ {{name}} geladen – neue Datei ablegen"
   },
   "floor": {
@@ -84,7 +88,9 @@
     "variantIdInUse_one": "Bereits von {{count}} anderer Kachel verwendet",
     "variantIdInUse_other": "Bereits von {{count}} anderen Kacheln verwendet",
     "windowBlockedEdge": "Fenster-Sperrkante",
-    "windowBlockedEdgeInfo": "Nur diese Kante darf kein Fenster beruehren",
+    "windowBlockedEdgeInfo": "Nur diese Kante darf kein Fenster berühren. Bei Wand-Layer-Teilen ist sie auch die Wandseite: Teile an verschiedenen Seiten dürfen sich ein Feld teilen (z.B. Poster neben Lichtschalter). Eckteile belegen immer das ganze Feld.",
+    "windowExactSide": "Nur Fensterseite",
+    "windowExactSideInfo": "Nur gesperrt, wenn das Fenster genau auf dieser Seite des Tiles liegt (wie angelegt, nicht gedreht). Keine Kante gesetzt = nie durch Fenster gesperrt.",
     "noneDefaultRule": "Keine (Standardregel)",
     "themes": "Themen",
     "noThemesConfigured": "Keine Themen in den Einstellungen definiert.",
@@ -221,6 +227,11 @@
       "doorOnly": "Nur Tür-zu-Tür"
     },
     "pathStyleTitle": "Bestimmt welche Raumzellen als Laufweg markiert werden. Wandnah = Möbel können Pfad nicht blockieren. Raummitte = offener Bereich bleibt frei. Zufällig = maximale Variation.",
+    "sizeLimits": {
+      "label": "Raumgrößen-Grenzen",
+      "title": "Max. Felder je Größenklasse für diesen Raumtyp (leer = Standard). Z.B. XS ≤ 6: Bäder mit 5–6 Feldern nutzen die XS-Anzahlen und XS-Grids.",
+      "fieldTitle": "Größter Raum (Felder), der noch als {{size}} zählt — Standard {{def}}"
+    },
     "colorGroupRoom": {
       "label": "🎨 Farbgruppe (Raum-Default)",
       "title": "Standard-Farbgruppen-ID für alle Slots dieses Raumtyps. Slots mit leerer colorGroupId erben diesen Wert. Leer = kein Farbfilter als Standard.",
@@ -276,6 +287,7 @@
     },
     "slotCard": {
       "dragHandle": "Slot verschieben",
+      "enabledTitle": "Aktiv — abwählen, um diesen Slot bei der Generierung zu ignorieren",
       "noId": "keine ID",
       "required": "Pflicht",
       "optional": "Optional",
@@ -459,6 +471,7 @@
       "addGrid": "+ Grid",
       "noGrids": "Keine Grid-Layouts. Ein Grid platziert eine feste Möbel-Anordnung (z.B. Bett + Nachttische) als Einheit, gedreht an die passende Wand, noch vor den normalen Slots.",
       "noId": "(keine ID)",
+      "enabledTitle": "Aktiv — abwählen, um dieses Grid bei der Generierung zu ignorieren",
       "removeGrid": "Grid entfernen",
       "removeConfirm": "Grid '{{id}}' entfernen?",
       "shrinkConfirm": "Beim Verkleinern werden {{count}} Möbelstück(e) entfernt, die nicht mehr passen: {{ids}}. Fortfahren?",
@@ -490,7 +503,7 @@
       "oppositeAnchorHint": "Das ganze Grid gegenüber einem anderen Grid platzieren, mit der Vorderseite zu ihm (TV-Gruppe gegenüber der Sitzgruppe). Das Grid wird nach Grids ohne diese Regel platziert; wurde das Ziel nicht platziert, entfällt es.",
       "oppositeAnchorNone": "— aus —",
       "emptyWeightLabel": "Leer",
-      "emptyWeightHint": "Bereich: 0–10, nur für optionale Grids.\n\nGewicht dafür, dieses Grid wegzulassen, wie die Leer-Kategorie einer Zelle. Ohne Gruppe wird es mit der Chance leer / (leer + Gewicht) übersprungen; in einer Gruppe konkurriert \"keins\" mit den Mitgliedern der Gruppe (das größte Leer-Gewicht der Gruppe zählt).\n\nDamit bekommen gleich große Räume auch bei 100 % Dichte nicht alle dieselben Grids. 0 = wird immer platziert, wenn es passt.",
+      "emptyWeightHint": "Bereich: 0–99, nur für optionale Grids.\n\nGewicht dafür, dieses Grid wegzulassen, wie die Leer-Kategorie einer Zelle. Ohne Gruppe wird es mit der Chance leer / (leer + Gewicht) übersprungen; in einer Gruppe konkurriert \"keins\" mit den Mitgliedern der Gruppe (das größte Leer-Gewicht der Gruppe zählt).\n\nDamit bekommen gleich große Räume auch bei 100 % Dichte nicht alle dieselben Grids. 0 = wird immer platziert, wenn es passt.",
       "priorityLabel": "Priorität",
       "groupLabel": "Gruppe",
       "groupHint": "Grids mit gleicher Gruppe sind Alternativen: genau eines wird (gewichtet) verwendet.",
@@ -848,6 +861,16 @@
     "excludeColorsHint":  "Möbel und Teppiche mit einer gewählten Farbe, auch in hellen und dunklen Tönen, werden nicht verwendet. Plätze ohne verbleibende Auswahl bleiben leer.",
     "excludeColorsClear": "Auswahl löschen",
     "excludeColorsNone":  "Keine",
+    "optionsTitle":       "Einrichtungs-Optionen",
+    "optionsDescription": "Seed, Dichte, Farben, Lichtschalter, Konfig-Sets",
+    "optionsHint":        "Mit: {{summary}}",
+    "optionsHintChange":  "in den Optionen ändern",
+    "optionsSummary": {
+      "colorsExcluded_one":   "{{count}} Farbe ausgeschlossen",
+      "colorsExcluded_other": "{{count}} Farben ausgeschlossen",
+      "lightSwitches":        "Lichtschalter",
+      "sets":                 "{{enabled}}/{{total}} Sets"
+    },
     "lightSwitches":      "Lichtschalter neben Türen platzieren",
     "generate":           "Generieren ({{count}} Räume)",
     "generating":         "Generiere…",
@@ -858,10 +881,10 @@
     "exportTbx":          "TBX exportieren",
     "exporting":          "Exportiere…",
     "exportOk":           "Export erfolgreich",
-    "exportRepro":        "🐞 Repro-Paket exportieren",
+    "exportRepro":        "🐞 Repro-Paket",
     "exportReproHint":    "Den letzten Einrichtungs-Lauf speichern (Gebäude, Raumauswahl, Seed, Dichte, Raumtyp-/Tile-/Teppich-Konfiguration), damit er auf einem anderen Rechner exakt wiederholt werden kann.",
     "reproExportOk":      "Repro-Paket gespeichert",
-    "reportProblem":      "⚠ Problem mit diesem Ergebnis melden",
+    "reportProblem":      "⚠ Problem melden",
     "reportProblemHint":  "Öffnet das GitHub-Issue-Formular und lädt ein Repro-Paket dieses Laufs herunter. Die Meldung ist öffentlich.",
     "reportExportOk":     "Repro-Paket heruntergeladen. Zieh es in das gerade geöffnete Issue-Formular.",
     "exportError":        "Export-Fehler: {{error}}",

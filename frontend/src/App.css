@@ -83,10 +83,10 @@
 
 .app-main {
   flex: 1;
-  padding: 24px 32px;
+  padding: 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 12px;
   max-width: 1800px;
   width: 100%;
   margin: 0 auto;
@@ -98,8 +98,20 @@
   max-width: 480px;
 }
 
-.info-section {
-  /* */
+/* Once a building is loaded: compact upload bar + info bar on one line */
+.upload-section.top-row {
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2a2a3a;
+}
+.top-row .info-bar {
+  flex: 1;
+  padding: 0;
+  border-bottom: none;
 }
 
 .info-bar {

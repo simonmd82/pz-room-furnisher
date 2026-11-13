@@ -396,8 +396,13 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, onDupli
   };
 
   return (
-    <div className={`${rs.slotCard} ${grid.required ? rs.slotCardRequired : ''}`}>
+    <div className={`${rs.slotCard} ${grid.required ? rs.slotCardRequired : ''}`}
+      style={grid.enabled === false ? { opacity: 0.5 } : undefined}>
       <div className={s.cardHeader} onClick={onToggle}>
+        <input type="checkbox" checked={grid.enabled !== false}
+          title={t('roomTypeEditor.grids.enabledTitle')}
+          onClick={e => e.stopPropagation()}
+          onChange={e => onChange({ ...grid, enabled: e.target.checked })} />
         <span className={s.collapseIcon}>{expanded ? '▾' : '▸'}</span>
         <span className={s.gridBadge}>▦ {grid.width}×{grid.height}</span>
         <span className={s.gridId}>{grid.id || t('roomTypeEditor.grids.noId')}</span>
@@ -472,9 +477,9 @@ function GridCard({ grid, index, expanded, onToggle, onChange, onRemove, onDupli
             </label>
             <label className={s.field} title={t('roomTypeEditor.grids.emptyWeightHint')}>
               <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.emptyWeightLabel')}</span>
-              <input type="number" min={0} max={10} className={rs.slotNumInput} value={grid.emptyWeight ?? 0}
+              <input type="number" min={0} max={99} className={rs.slotNumInput} value={grid.emptyWeight ?? 0}
                 disabled={grid.required}
-                onChange={e => onChange({ ...grid, emptyWeight: Math.max(0, Math.min(10, +e.target.value || 0)) })} />
+                onChange={e => onChange({ ...grid, emptyWeight: Math.max(0, Math.min(99, +e.target.value || 0)) })} />
             </label>
             <label className={s.field} title={t('roomTypeEditor.grids.groupHint')}>
               <span className={rs.slotGroupLabel}>{t('roomTypeEditor.grids.groupLabel')}</span>

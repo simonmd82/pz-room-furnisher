@@ -20,7 +20,10 @@
     "repo":       "GitHub",
     "releases":   "Releases",
     "credits":    "Optional tile sets",
-    "tileSets":   "Melos tiles and Simon_MD tiles",
+    "melosTiles": "Melos tiles",
+    "simonTiles": "Simon_MD tiles",
+    "daddyDirkieDirkTiles": "DaddyDirkieDirk tiles",
+    "and":        "and",
     "aiNotice":   "AI was used to create this app.",
     "disclaimer": "Not affiliated with or endorsed by The Indie Stone. Project Zomboid is a trademark of The Indie Stone.",
     "close":      "Close"
@@ -34,6 +37,7 @@
   "upload": {
     "processing": "Processing file…",
     "hint": "Drop .tbx file here or click",
+    "loadOther": "Load other .tbx…",
     "loaded": "✅ {{name}} loaded – drop a new file to replace"
   },
   "floor": {
@@ -84,7 +88,9 @@
     "variantIdInUse_one": "Already used by {{count}} other tile",
     "variantIdInUse_other": "Already used by {{count}} other tiles",
     "windowBlockedEdge": "Window-blocked edge",
-    "windowBlockedEdgeInfo": "Only this edge must not touch a window",
+    "windowBlockedEdgeInfo": "Only this edge must not touch a window. On wall-layer pieces it is also the wall side: pieces on different sides may share a cell (e.g. a poster next to a light switch). Corner pieces always take the whole cell.",
+    "windowExactSide": "Window side only",
+    "windowExactSideInfo": "Blocked only when the window is on exactly this side of the tile (as authored, not rotated). No edge set = never blocked by a window.",
     "noneDefaultRule": "None (default rule)",
     "themes": "Themes",
     "noThemesConfigured": "No themes defined in settings.",
@@ -221,6 +227,11 @@
       "doorOnly": "Door-to-door only"
     },
     "pathStyleTitle": "Determines which room cells are marked as the walking path. Near-wall = furniture cannot block the path. Room centre = the open area stays free. Random = maximum variation.",
+    "sizeLimits": {
+      "label": "Room size limits",
+      "title": "Max cells per size class for this room type (empty = default). E.g. XS ≤ 6 lets 5–6-cell bathrooms use the XS slot counts and XS-only grids.",
+      "fieldTitle": "Largest room (cells) that still counts as {{size}} — default {{def}}"
+    },
     "colorGroupRoom": {
       "label": "🎨 Color group (room default)",
       "title": "Default color-group ID for all slots of this room type. Slots with an empty colorGroupId inherit this value. Empty = no color filter by default.",
@@ -276,6 +287,7 @@
     },
     "slotCard": {
       "dragHandle": "Move slot",
+      "enabledTitle": "Enabled — uncheck to ignore this slot during generation",
       "noId": "no ID",
       "required": "Required",
       "optional": "Optional",
@@ -459,6 +471,7 @@
       "addGrid": "+ Grid",
       "noGrids": "No grid layouts. A grid places a fixed furniture arrangement (e.g. bed + nightstands) as one unit, rotated to whichever wall fits, before the normal slots.",
       "noId": "(no id)",
+      "enabledTitle": "Enabled — uncheck to ignore this grid during generation",
       "removeGrid": "Remove grid",
       "removeConfirm": "Remove grid '{{id}}'?",
       "shrinkConfirm": "Shrinking removes {{count}} piece(s) that no longer fit: {{ids}}. Continue?",
@@ -490,7 +503,7 @@
       "oppositeAnchorHint": "Place this whole grid across from another grid, its front facing it (TV group across from the seating group). The grid is placed after grids without this rule; if the target wasn't placed, this grid is skipped.",
       "oppositeAnchorNone": "— off —",
       "emptyWeightLabel": "Empty",
-      "emptyWeightHint": "Range: 0–10, optional grids only.\n\nWeight of leaving this grid out, like the empty category on a cell. Without a group it is skipped with chance empty / (empty + weight); in a group, \"none\" competes with the group's members (the largest empty weight in the group counts).\n\nUse it so rooms of the same size don't all get the same grids at 100 % density. 0 = always placed when it fits.",
+      "emptyWeightHint": "Range: 0–99, optional grids only.\n\nWeight of leaving this grid out, like the empty category on a cell. Without a group it is skipped with chance empty / (empty + weight); in a group, \"none\" competes with the group's members (the largest empty weight in the group counts).\n\nUse it so rooms of the same size don't all get the same grids at 100 % density. 0 = always placed when it fits.",
       "priorityLabel": "Priority",
       "groupLabel": "Group",
       "groupHint": "Grids with the same group are alternatives: exactly one of them is used, weighted.",
@@ -848,6 +861,16 @@
     "excludeColorsHint":  "Furniture and rugs with a selected color, including its light and dark shades, are not used. Slots with nothing left stay empty.",
     "excludeColorsClear": "Clear selection",
     "excludeColorsNone":  "None",
+    "optionsTitle":       "Furnishing options",
+    "optionsDescription": "Seed, density, colours, light switches, config sets",
+    "optionsHint":        "Using: {{summary}}",
+    "optionsHintChange":  "change in Options",
+    "optionsSummary": {
+      "colorsExcluded_one":   "{{count}} colour excluded",
+      "colorsExcluded_other": "{{count}} colours excluded",
+      "lightSwitches":        "light switches",
+      "sets":                 "{{enabled}}/{{total}} sets"
+    },
     "lightSwitches":      "Place light switches next to doors",
     "generate":           "Generate ({{count}} rooms)",
     "generating":         "Generating…",
@@ -858,10 +881,10 @@
     "exportTbx":          "Export TBX",
     "exporting":          "Exporting…",
     "exportOk":           "Export successful",
-    "exportRepro":        "🐞 Export repro bundle",
+    "exportRepro":        "🐞 Repro bundle",
     "exportReproHint":    "Save the last furnish run (building, room selection, seed, density, room-type/tile/rug config) so it can be replayed exactly on another machine.",
     "reproExportOk":      "Repro bundle saved",
-    "reportProblem":      "⚠ Report a problem with this result",
+    "reportProblem":      "⚠ Report problem",
     "reportProblemHint":  "Opens the GitHub issue form and downloads a repro bundle of this run. The report is public.",
     "reportExportOk":     "Repro bundle downloaded. Drag it into the issue form that just opened.",
     "exportError":        "Export error: {{error}}",

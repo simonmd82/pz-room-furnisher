@@ -488,6 +488,7 @@ public partial class FurnishingGeneratorService
         LayoutPlacementState? best = null;
         int bestScore = -1, evaluated = 0;
         (int rot, bool mirror, int ox, int oy) bestTransform = default;
+        var blockStats = new Dictionary<string, int>(StringComparer.Ordinal); // "piece: reason" → candidates
 
         double bestTier = double.MaxValue;
         foreach (var (rot, mirror, ox, oy, dist) in candidates)
@@ -511,7 +512,7 @@ public partial class FurnishingGeneratorService
 
             var result = EvaluateGridCandidate(grid, plans, rot, mirror, ox, oy, baseState, floorIndex, roomCells, placeCells, cellWalls,
                 doorCells, windowCells, pathCells, allTiles, config, rng, roomIndex1Based, selectionAnchorCol,
-                selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells);
+                selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells, blockStats: blockStats);
             if (result is null) continue;
 
             var (state, score) = result.Value;
@@ -522,7 +523,13 @@ public partial class FurnishingGeneratorService
             }
         }
 
-        if (best is null) { Fail($"no valid position found ({evaluated} candidates checked)"); return null; }
+        if (best is null)
+        {
+            var blocked = blockStats.Count == 0 ? "" : "; blocked by: " + string.Join(", ",
+                blockStats.OrderByDescending(kv => kv.Value).Select(kv => $"{kv.Key} ×{kv.Value}"));
+            Fail($"no valid position found ({evaluated} candidates checked{blocked})");
+            return null;
+        }
 
         if (!string.IsNullOrEmpty(grid.SlotGroupId) && best.AnchorMap.TryGetValue(grid.Id, out var anchorEntry))
             best.AnchorMap.TryAdd(grid.SlotGroupId, anchorEntry);
@@ -683,8 +690,10 @@ public partial class FurnishingGeneratorService
         List<HashSet<(int, int)>>? openingGroups,
         HashSet<(int, int)> gapCells,
         HashSet<(int, int)>? stairEndCells,
-        HashSet<string>? droppedSeats = null)
+        HashSet<string>? droppedSeats = null,
+        Dictionary<string, int>? blockStats = null)
     {
+        void Blocked(string what) { if (blockStats is not null) blockStats[what] = blockStats.GetValueOrDefault(what) + 1; }
         var state = baseState.Clone();
         int optionalPlaced = 0;
         var hosts = new List<(int col, int row, TileDefinition tile)>(); // placed AllowStacking pieces
@@ -702,7 +711,7 @@ public partial class FurnishingGeneratorService
             {
                 if (ResolveEdgePiece(pieceCol, pieceRow, w, h, orient, roomCells, cellWalls) is not { } edge)
                 {
-                    if (plan.Mandatory) return null;
+                    if (plan.Mandatory) { Blocked($"'{c.Id}': wall on its edge"); return null; }
                     continue;
                 }
                 (pieceCol, pieceRow, orient) = edge;
@@ -711,7 +720,12 @@ public partial class FurnishingGeneratorService
                 doorCells, windowCells, pathCells, allTiles, config, rng, innerWallKeys, openingGroups, gapCells, stairEndCells, hosts);
             if (candidate is null)
             {
-                if (plan.Mandatory) return null;
+                if (plan.Mandatory)
+                {
+                    if (blockStats is not null)
+                        Blocked($"'{c.Id}': {GridPieceBlockReason(plan, pieceCol, pieceRow, w, h, placeCells, doorCells, windowCells, pathCells, state, grid.AllowOnPath)}");
+                    return null;
+                }
                 continue;
             }
 
@@ -734,7 +748,7 @@ public partial class FurnishingGeneratorService
             var (x, y, _, _) = TransformGridRect(kc.X, kc.Y, 1, 1, grid.Width, grid.Height, rot, mirror);
             var cell = (ox + x, oy + y);
             if (!placeCells.Contains(cell) || state.Occupied.Contains(cell) || state.PhysicalOccupied.Contains(cell))
-                return null;
+            { Blocked("keep-clear cell not free"); return null; }
             state.BlockedFrontCells.Add(cell);
         }
 
@@ -747,11 +761,11 @@ public partial class FurnishingGeneratorService
         if (openingGroups is { Count: > 0 })
         {
             if (openingGroups.Any(g => g.All(blocked.Contains)))
-                return null;
+            { Blocked("seals an opening"); return null; }
             entryCells = new HashSet<(int, int)>(doorCells.Concat(openingGroups.SelectMany(g => g)));
         }
         if (!RoomRemainsConnected(0, 0, 0, 0, roomCells, blocked, entryCells, innerWallKeys))
-            return null;
+        { Blocked("splits the room / walls off a door"); return null; }
 
         // Seats must be reachable too — a back-row chair boxed in by wall, table and its
         // neighbour chair passes the free-cell connectivity check but is unusable. Only that
@@ -766,14 +780,14 @@ public partial class FurnishingGeneratorService
         foreach (var seat in state.SeatCells)
         {
             if (HasOrthogonalNeighborIn(seat, reachable)) continue;
-            if (!seatOwners.TryGetValue(seat, out var owner) || owner.Mandatory) return null;
+            if (!seatOwners.TryGetValue(seat, out var owner) || owner.Mandatory) { Blocked("seat boxed in"); return null; }
             dropped.Add(owner.Cell.Id);
             anyBoxedIn = true;
         }
         if (anyBoxedIn)
             return EvaluateGridCandidate(grid, plans, rot, mirror, ox, oy, baseState, floorIndex, roomCells, placeCells, cellWalls,
                 doorCells, windowCells, pathCells, allTiles, config, rng, roomIndex1Based, selectionAnchorCol,
-                selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells, dropped);
+                selectionAnchorRow, innerWallKeys, openingGroups, gapCells, stairEndCells, dropped, blockStats);
 
         return (state, optionalPlaced);
     }
@@ -781,6 +795,32 @@ public partial class FurnishingGeneratorService
     /// <summary>Piece meant to be sat on from a neighbouring cell (Chair, DiningChair, …), with or without collision.</summary>
     private static bool IsChairCell(GridCell cell) =>
         cell.AllowedCategories.Keys.Any(k => k.Contains("Chair", StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>
+    /// Best-guess reason a mandatory grid piece found no tile at a spot — for the failure log only
+    /// (TryResolveGridCell itself just returns null). Checks the cheap cell rules in the same order
+    /// IsValidAnchoredPlacement applies them; anything else is reported as "no fitting tile".
+    /// </summary>
+    private static string GridPieceBlockReason(
+        GridCellPlan plan, int col, int row, int w, int h,
+        HashSet<(int, int)> placeCells, HashSet<(int, int)> doorCells, HashSet<(int, int)> windowCells,
+        HashSet<(int, int)> pathCells, LayoutPlacementState state, bool allowOnPath)
+    {
+        if (plan.BasePool.Count == 0) return "no tiles in pool";
+        if (!RectInRoom(col, row, w, h, placeCells)) return "outside the room";
+        bool wallLayer = IsWallLayerCell(plan.Cell);
+        if (!wallLayer && FootprintTouchesCells(col, row, w, h, state.GridKeepOutCells)) return "keep-out cell";
+        if (!plan.Cell.EdgePiece && !wallLayer && !FitsFootprintLoose(col, row, w, h, state.Occupied)) return "occupied";
+        bool anyCollision = plan.BasePool.Any(t => t.HasCollision);
+        if (anyCollision && FootprintTouchesCells(col, row, w, h, doorCells)) return "door cell";
+        if (FootprintTouchesCells(col, row, w, h, windowCells)
+            && plan.BasePool.Any(t => (t.IsHigh || t.IsMedium) && !t.AllowAboveWindow && !t.WindowExactSide))
+            return "window";
+        if (FootprintTouchesCells(col, row, w, h, windowCells) && plan.BasePool.Any(t => t.WindowExactSide))
+            return "window on its blocked side";
+        if (!allowOnPath && anyCollision && pathCells.Count > 0 && FootprintTouchesCells(col, row, w, h, pathCells)) return "walking path";
+        return "no fitting tile (orient/wall/height rules)";
+    }
 
     /// <summary>
     /// EdgePiece: where a piece on the given world edge really goes. N/W edges stay on the cell;
@@ -874,7 +914,7 @@ public partial class FurnishingGeneratorService
                 if (IsValidAnchoredPlacement(plan.Slot, col, row, fpW, fpH, corner, tile, roomCells, cellWalls, doorCells,
                         windowCells, pathCells, occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys,
                         openingGroups, state.CellPropertyGates, state.ReservedZoneCells, state.FrontExemptCells, gapCells,
-                        effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: baseState.HighCells))
+                        effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: baseState.HighCells, highWallFaces: baseState.WallFaces))
                     return new LayoutPlacementCandidate(col, row, corner, tile, colorGroup);
             }
             return null;
@@ -905,7 +945,7 @@ public partial class FurnishingGeneratorService
             if (IsValidAnchoredPlacement(plan.Slot, col, row, fpW, fpH, orient, tile, roomCells, cellWalls, doorCells,
                     windowCells, pathCells, occupied, state.PhysicalOccupied, state.BlockedFrontCells, innerWallKeys,
                     openingGroups, state.CellPropertyGates, state.ReservedZoneCells, state.FrontExemptCells, gapCells,
-                    effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: baseState.HighCells))
+                    effectiveSoftOccupied: baseState.SoftOccupied, stairEndCells: stairEndCells, narrowCells: state.NarrowCells, wallFaces: state.WallFaces, highOccupied: baseState.HighCells, highWallFaces: baseState.WallFaces))
                 return new LayoutPlacementCandidate(col, row, orient, tile, colorGroup);
         }
 

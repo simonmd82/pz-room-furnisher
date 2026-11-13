@@ -5,7 +5,7 @@ import {
   REQUIRED_PROPERTIES, FURNITURE_LAYERS,
   COMMON_FOOTPRINTS, defaultSlot, defaultRoomTypeConfig, defaultPlacementRules,
   defaultLayoutPool, defaultLayoutPoolRequiredSlot, defaultLayoutPoolCompanion, defaultReservedZone,
-  defaultRugSlotConfig, EMPTY_CATEGORY, normalizeGridLayout,
+  defaultRugSlotConfig, EMPTY_CATEGORY, normalizeGridLayout, DEFAULT_SIZE_LIMITS,
 } from '../../types/roomTypes';
 import type { AnchorRule, GridLayout, PlacementRules, RoomTypeConfig, RoomTypeConfigMap, RoomTypeSlot, LayoutPool, LayoutPoolRequiredSlot, LayoutPoolCompanion, ReservedZoneRule } from '../../types/roomTypes';
 import { getRoomTypes, saveRoomType, deleteRoomType } from '../../api/roomTypesApi';
@@ -863,6 +863,28 @@ export function RoomTypeEditor() {
               </select>
             </div>
 
+            {/* Room size limits (max cells per size class; empty = default) */}
+            <div className={s.pathStyleRow} style={{ flexWrap: 'wrap', gap: 6 }}>
+              <label className={s.pathStyleLabel} title={t('roomTypeEditor.sizeLimits.title')}>
+                {t('roomTypeEditor.sizeLimits.label')}
+              </label>
+              {(['XS', 'S', 'M', 'L'] as const).map(k => (
+                <label key={k} style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '0.72rem' }}
+                  title={t('roomTypeEditor.sizeLimits.fieldTitle', { size: k, def: DEFAULT_SIZE_LIMITS[k] })}>
+                  {k} ≤
+                  <input type="number" min={1} className={s.slotSizeInput} style={{ width: 46 }}
+                    placeholder={String(DEFAULT_SIZE_LIMITS[k])}
+                    value={draft.sizeLimits?.[k] ?? ''}
+                    onChange={e => {
+                      const { [k]: _, ...rest } = draft.sizeLimits ?? {};
+                      const v = parseInt(e.target.value, 10);
+                      setDraft({ ...draft, sizeLimits: v > 0 ? { ...rest, [k]: v } : rest });
+                      setDirty(true);
+                    }} />
+                </label>
+              ))}
+            </div>
+
             {/* Farbgruppe (Raum-Ebene) */}
             <div className={s.pathStyleRow}>
               <label className={s.pathStyleLabel}
@@ -998,7 +1020,10 @@ export function RoomTypeEditor() {
                 return (
               <div key={idx}
                 className={`${s.slotCard} ${slot.required ? s.slotCardRequired : ''} ${slot.slotGroupId ? s.slotCardGrouped : ''} ${dragOverIdx === idx && dragIndexRef.current !== idx ? s.slotCardDragOver : ''}`}
-                style={groupColor ? { '--group-color': groupColor } as React.CSSProperties : undefined}
+                style={{
+                  ...(groupColor ? { '--group-color': groupColor } as React.CSSProperties : {}),
+                  ...(slot.enabled === false ? { opacity: 0.5 } : {}),
+                }}
                 onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; if (dragOverIdx !== idx) setDragOverIdx(idx); }}
                 onDrop={e => { e.preventDefault(); if (dragIndexRef.current !== null) reorderSlots(dragIndexRef.current, idx); dragIndexRef.current = null; setDragOverIdx(null); }}
                 onDragEnd={() => { dragIndexRef.current = null; setDragOverIdx(null); }}>
@@ -1013,6 +1038,10 @@ export function RoomTypeEditor() {
                    }}
                    onClick={toggleCollapse} style={{ cursor: 'pointer' }}>
                   <span className={s.dragHandle} title={t('roomTypeEditor.slotCard.dragHandle')} onClick={e => e.stopPropagation()}>⠿</span>
+                  <input type="checkbox" checked={slot.enabled !== false}
+                    title={t('roomTypeEditor.slotCard.enabledTitle')}
+                    onClick={e => e.stopPropagation()}
+                    onChange={e => updateSlot(idx, { enabled: e.target.checked })} />
                   <span className={s.slotIndex}>#{idx + 1}</span>
                   <span className={s.collapseToggleIcon}>{isCollapsed ? '▶' : '▼'}</span>
                   <span className={s.slotSummaryId} style={{ color: slot.id ? '#aac' : '#446', fontStyle: slot.id ? 'normal' : 'italic' }}>

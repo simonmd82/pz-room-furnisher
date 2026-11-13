@@ -21,6 +21,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -58,6 +59,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -95,6 +97,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -132,6 +135,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -169,6 +173,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -206,6 +211,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -243,6 +249,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -280,6 +287,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -317,6 +325,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -354,6 +363,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -391,6 +401,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -428,6 +439,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -465,6 +477,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -502,6 +515,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -539,6 +553,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -576,6 +591,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -613,6 +629,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -625,7 +642,7 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
-    "windowBlockedEdge": "",
+    "windowBlockedEdge": "N",
     "useFacingOrientation": false
   },
   "decoration_02_Simon_MD_037": {
@@ -650,6 +667,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -662,7 +680,7 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
-    "windowBlockedEdge": "",
+    "windowBlockedEdge": "W",
     "useFacingOrientation": false
   },
   "decoration_02_Simon_MD_038": {
@@ -687,6 +705,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -699,7 +718,7 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
-    "windowBlockedEdge": "",
+    "windowBlockedEdge": "S",
     "useFacingOrientation": false
   },
   "decoration_02_Simon_MD_039": {
@@ -724,6 +743,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -736,7 +756,7 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
-    "windowBlockedEdge": "",
+    "windowBlockedEdge": "E",
     "useFacingOrientation": false
   },
   "decoration_Simon_MD_001": {
@@ -761,6 +781,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -800,6 +821,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -839,6 +861,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -878,6 +901,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -917,6 +941,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -956,6 +981,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -995,6 +1021,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1034,6 +1061,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1073,6 +1101,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1112,6 +1141,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1151,6 +1181,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1190,6 +1221,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1229,6 +1261,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1268,6 +1301,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1307,6 +1341,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1346,6 +1381,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1385,6 +1421,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1424,6 +1461,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1463,6 +1501,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1502,6 +1541,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1541,6 +1581,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1582,6 +1623,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1623,6 +1665,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1664,6 +1707,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1705,6 +1749,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1746,6 +1791,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1787,6 +1833,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1828,6 +1875,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1869,6 +1917,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1910,6 +1959,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -1951,6 +2001,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [],
@@ -1983,6 +2034,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [],
@@ -2015,6 +2067,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [],
@@ -2047,6 +2100,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [],
@@ -2079,6 +2133,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2115,6 +2170,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2151,6 +2207,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2187,6 +2244,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2223,6 +2281,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2264,6 +2323,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2308,6 +2368,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2350,6 +2411,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2391,6 +2453,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2430,6 +2493,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2469,6 +2533,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2508,6 +2573,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -2550,6 +2616,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -2593,6 +2660,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -2638,6 +2706,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Grey"
     ],
@@ -2681,6 +2750,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Grey"
     ],
@@ -2726,6 +2796,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -2769,6 +2840,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Black"
     ],
@@ -2814,6 +2886,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Red"
     ],
@@ -2857,6 +2930,7 @@
     "canStack": false,
     "isTableTop": true,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Red"
     ],
@@ -2899,6 +2973,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -2940,6 +3015,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -2981,6 +3057,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3022,6 +3099,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3063,6 +3141,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3104,6 +3183,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3148,6 +3228,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3190,6 +3271,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3236,6 +3318,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3277,6 +3360,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3319,6 +3403,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3361,6 +3446,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3403,6 +3489,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3445,6 +3532,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3486,6 +3574,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3527,6 +3616,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3568,6 +3658,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3609,6 +3700,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3649,6 +3741,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3689,6 +3782,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3729,6 +3823,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "White"
     ],
@@ -3769,6 +3864,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3809,6 +3905,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": true,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3849,6 +3946,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3891,6 +3989,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [
       "Brown"
     ],
@@ -3933,6 +4032,7 @@
     "canStack": false,
     "isTableTop": false,
     "isLootContainer": false,
+    "allowAboveWindow": false,
     "colors": [],
     "materials": [],
     "roomTypes": [
@@ -3946,6 +4046,774 @@
     "styleTags": [],
     "themes": [],
     "allowedOrients": [],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_146": {
+    "id": "decoration_Simon_MD_146",
+    "tileId": "decoration_Simon_MD_146",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_146"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_147": {
+    "id": "decoration_Simon_MD_147",
+    "tileId": "decoration_Simon_MD_147",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_147"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": true,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [
+      "Beige"
+    ],
+    "materials": [
+      "Wood"
+    ],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_152": {
+    "id": "decoration_Simon_MD_152",
+    "tileId": "decoration_Simon_MD_152",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_152"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_153": {
+    "id": "decoration_Simon_MD_153",
+    "tileId": "decoration_Simon_MD_153",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_153"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_01",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_154": {
+    "id": "decoration_Simon_MD_154",
+    "tileId": "decoration_Simon_MD_154",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_154"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_155": {
+    "id": "decoration_Simon_MD_155",
+    "tileId": "decoration_Simon_MD_155",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_155"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_02",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_156": {
+    "id": "decoration_Simon_MD_156",
+    "tileId": "decoration_Simon_MD_156",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_156"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_157": {
+    "id": "decoration_Simon_MD_157",
+    "tileId": "decoration_Simon_MD_157",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_157"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_03",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_158": {
+    "id": "decoration_Simon_MD_158",
+    "tileId": "decoration_Simon_MD_158",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_158"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_159": {
+    "id": "decoration_Simon_MD_159",
+    "tileId": "decoration_Simon_MD_159",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_159"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_04",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_167": {
+    "id": "decoration_Simon_MD_167",
+    "tileId": "decoration_Simon_MD_167",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_167"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_08",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_166": {
+    "id": "decoration_Simon_MD_166",
+    "tileId": "decoration_Simon_MD_166",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_166"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_08",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_165": {
+    "id": "decoration_Simon_MD_165",
+    "tileId": "decoration_Simon_MD_165",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_165"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_07",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_164": {
+    "id": "decoration_Simon_MD_164",
+    "tileId": "decoration_Simon_MD_164",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_164"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_07",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_163": {
+    "id": "decoration_Simon_MD_163",
+    "tileId": "decoration_Simon_MD_163",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_163"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_06",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_162": {
+    "id": "decoration_Simon_MD_162",
+    "tileId": "decoration_Simon_MD_162",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_162"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_06",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_160": {
+    "id": "decoration_Simon_MD_160",
+    "tileId": "decoration_Simon_MD_160",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_160"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_168": {
+    "id": "decoration_Simon_MD_168",
+    "tileId": "decoration_Simon_MD_168",
+    "label": "",
+    "orientation": "N",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_168"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_09",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "N"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_169": {
+    "id": "decoration_Simon_MD_169",
+    "tileId": "decoration_Simon_MD_169",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_169"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_09",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
+    "windowBlockedEdge": "",
+    "useFacingOrientation": false
+  },
+  "decoration_Simon_MD_161": {
+    "id": "decoration_Simon_MD_161",
+    "tileId": "decoration_Simon_MD_161",
+    "label": "",
+    "orientation": "W",
+    "tileLayout": [
+      [
+        "decoration_Simon_MD_161"
+      ]
+    ],
+    "group": "Art",
+    "layer": "Furniture2",
+    "notes": "",
+    "isHigh": false,
+    "isMedium": false,
+    "isLow": false,
+    "isWallMounted": false,
+    "hasSurface": false,
+    "hasCollision": false,
+    "canStack": false,
+    "isTableTop": false,
+    "isLootContainer": false,
+    "allowAboveWindow": false,
+    "colors": [],
+    "materials": [],
+    "roomTypes": [
+      "LivingRoom",
+      "Office"
+    ],
+    "variantGroup": "simon_art_stand_art_05",
+    "styleTags": [],
+    "themes": [],
+    "allowedOrients": [
+      "W"
+    ],
     "windowBlockedEdge": "",
     "useFacingOrientation": false
   }

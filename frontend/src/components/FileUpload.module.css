@@ -34,3 +34,41 @@
   margin-top: 10px;
   font-size: 0.9rem;
 }
+
+/* Compact variant: one line, shown once a building is loaded */
+.compact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-width: 1px;
+  border-radius: 6px;
+  text-align: left;
+  min-width: 0;
+}
+
+.compact .error {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+.compactText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: #aab;
+  white-space: nowrap;
+}
+
+.compactName {
+  color: #ddf;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+.compactAction {
+  color: #8866cc;
+}

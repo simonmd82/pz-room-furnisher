@@ -21,8 +21,23 @@ import { compareReproResult } from './utils/reproCompare';
 import type { TileConfigMap, TileSheetInfo } from './types/tiles';
 import { getTileConfig, getSheets } from './api/tilesApi';
 import { uploadTbx } from './api/buildingApi';
+import { getAppVersion } from './api/furnishApi';
+import { newId } from './utils/id';
 import './App.css';
 import s from './components/FurnishPanel/FurnishPanel.module.css';
+
+/** App version the Developer / repro-tool flags were last validated against. On a new version both flags reset to
+ *  off, because localStorage is per origin (localhost:port) and would otherwise carry them into every new build. */
+const DEV_FLAGS_VERSION_KEY = 'pzrf.devFlagsVersion';
+const FURNISHING_CONFIG_KEY = 'pzrf.furnishingConfigEnabled';
+const REPRO_TOOLS_KEY       = 'pzrf.reproToolsEnabled';
+
+function readStorage(key: string): string | null {
+  try { return localStorage.getItem(key); } catch { return null; }
+}
+function writeStorage(key: string, value: string): void {
+  try { localStorage.setItem(key, value); } catch { /* per-browser convenience only */ }
+}
 
 const LANGS = [
   { code: 'de', label: 'DE ' },
@@ -104,9 +119,9 @@ function App() {
   const [showGeneratorLog, setShowGeneratorLog] = useState<boolean>(
     () => localStorage.getItem('pzrf.showGeneratorLog') !== 'false'
   );
-  const [furnishingConfigEnabled, setFurnishingConfigEnabled] = useState<boolean>(
-    () => localStorage.getItem('pzrf.furnishingConfigEnabled') === 'true'
-  );
+  // Developer flags start off and are only restored from localStorage once the app version is confirmed unchanged.
+  const [furnishingConfigEnabled, setFurnishingConfigEnabled] = useState(false);
+  const [devFlagsChecked, setDevFlagsChecked] = useState(false);
   const [selected, setSelected]         = useState<Set<string>>(new Set());
   const [overrides, setOverrides]       = useState<Record<string, string>>({});
   const [seed, setSeed]                 = useState<number>(() => Math.floor(Math.random() * 999999));
@@ -125,15 +140,29 @@ function App() {
     () => localStorage.getItem('pzrf.lightSwitches') !== 'false'
   );
   const [lastFile, setLastFile]         = useState<File | null>(null);
-  const [reproToolsEnabled, setReproToolsEnabled] = useState<boolean>(
-    () => localStorage.getItem('pzrf.reproToolsEnabled') === 'true'
-  );
+  const [reproToolsEnabled, setReproToolsEnabled] = useState(false);
   /** Bumped on every building load so FurnishPanel remounts with fresh internal state. */
   const [loadId, setLoadId]             = useState(0);
 
   useEffect(() => {
-    localStorage.setItem('pzrf.reproToolsEnabled', String(reproToolsEnabled));
-  }, [reproToolsEnabled]);
+    getAppVersion()
+      .then(version => {
+        if (readStorage(DEV_FLAGS_VERSION_KEY) === version) {
+          setFurnishingConfigEnabled(readStorage(FURNISHING_CONFIG_KEY) === 'true');
+          setReproToolsEnabled(readStorage(REPRO_TOOLS_KEY) === 'true');
+        } else {
+          writeStorage(FURNISHING_CONFIG_KEY, 'false');
+          writeStorage(REPRO_TOOLS_KEY, 'false');
+          writeStorage(DEV_FLAGS_VERSION_KEY, version);
+        }
+        setDevFlagsChecked(true);
+      })
+      .catch(console.error); // version unknown → flags stay off and stored choice is left untouched
+  }, []);
+
+  useEffect(() => {
+    if (devFlagsChecked) writeStorage(REPRO_TOOLS_KEY, String(reproToolsEnabled));
+  }, [reproToolsEnabled, devFlagsChecked]);
 
   useEffect(() => {
     localStorage.setItem('pzrf.excludedColors', JSON.stringify(excludedColors));
@@ -148,11 +177,11 @@ function App() {
   }, [showGeneratorLog]);
 
   useEffect(() => {
-    localStorage.setItem('pzrf.furnishingConfigEnabled', String(furnishingConfigEnabled));
+    if (devFlagsChecked) writeStorage(FURNISHING_CONFIG_KEY, String(furnishingConfigEnabled));
     if (!furnishingConfigEnabled && (activeTab === 'tiles' || activeTab === 'furniture' || activeTab === 'roomtypes' || activeTab === 'rugs' || activeTab === 'tileusage')) {
       setActiveTab('building');
     }
-  }, [furnishingConfigEnabled]);
+  }, [furnishingConfigEnabled, devFlagsChecked]);
 
   // Load tile config + sheet metadata once on mount (needed for furniture preview)
   useEffect(() => {
@@ -183,7 +212,7 @@ function App() {
     setFileName(bundle.fileName || 'building');
     setLastFile(null); // no .tbx to re-parse; the bundle's building is authoritative
     setSelectedFloor(sels[0]?.floorIndex ?? req.building.floors[0]?.index ?? 0);
-    setPlacements(result.placements.map(p => ({ ...p, id: crypto.randomUUID() })));
+    setPlacements(result.placements.map(p => ({ ...p, id: newId() })));
     setReservedZones(result.reservedZones);
     setSelected(new Set(sels.map(key)));
     setOverrides(Object.fromEntries(sels.filter(r => r.roomTypeOverride).map(r => [key(r), r.roomTypeOverride])));
@@ -351,14 +380,16 @@ function App() {
         <div className="tab-full"><SettingsEditor showGeneratorLog={showGeneratorLog} onShowGeneratorLogChange={setShowGeneratorLog} furnishingConfigEnabled={furnishingConfigEnabled} onFurnishingConfigEnabledChange={setFurnishingConfigEnabled} reproToolsEnabled={reproToolsEnabled} onReproToolsEnabledChange={setReproToolsEnabled} /></div>
       ) : (
       <main className="app-main">
-        <section className="upload-section">
-          <FileUpload onBuildingLoaded={handleBuildingLoaded} />
+        {/* Same element before/after load so FileUpload keeps its state; once loaded it
+            collapses to one line next to the info bar to leave height for the room list. */}
+        <section className={building ? 'upload-section top-row' : 'upload-section'}>
+          <FileUpload
+            onBuildingLoaded={handleBuildingLoaded}
+            compact={!!building}
+            currentName={building ? fileName : null}
+          />
           {furnishingConfigEnabled && reproToolsEnabled && <ReproImport onReplayed={handleReproReplayed} />}
-        </section>
-
-        {building && (
-          <>
-            <section className="info-section">
+          {building && (
               <div className="info-bar">
                 <span> {t('app.dimensions', { width: building.width, height: building.height })}</span>
                 <span> {t('app.floors', { count: building.floors.length })}</span>
@@ -371,8 +402,11 @@ function App() {
                   </span>
                 )}
               </div>
-            </section>
+          )}
+        </section>
 
+        {building && (
+          <>
             <WallFurniturePanel
               candidates={building.wallFurnitureCandidates}
               onClassified={handleWallFurnitureClassified}

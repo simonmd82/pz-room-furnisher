@@ -77,6 +77,15 @@ public class TileDefinition
     /// </summary>
     public string WindowBlockedEdge { get; set; } = string.Empty;
     /// <summary>
+    /// true = WindowBlockedEdge names a world side of this tile as authored (no rotation — each
+    /// orientation variant is its own definition), and only a window lying on exactly that outer
+    /// side of the footprint blocks it; windows on its other sides are fine (e.g. an N shower
+    /// next to an E window). Empty WindowBlockedEdge = never blocked by a window.
+    /// false (default) = the old rule: IsHigh/IsMedium pieces stay off window cells entirely,
+    /// or WindowBlockedEdge picks the footprint row/column that must not hold a window cell.
+    /// </summary>
+    public bool WindowExactSide { get; set; } = false;
+    /// <summary>
     /// true (default) = Orientation/AllowedOrients are authored as the direction the piece
     /// faces (this tool's historical convention). false = authored directly in Project
     /// Zomboid's own editor convention instead (the wall side the piece sits against, e.g.

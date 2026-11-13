@@ -39,6 +39,6 @@ body:
     id: bundle
     attributes:
       label: Repro bundle
-      description: Drag in the `.pzrf-repro.json` file. "Report a problem with this result" in the Building tab downloads it. Without it the run usually can't be reproduced.
+      description: Drag in the `.pzrf-repro.json` file. "⚠ Report problem" in the Building tab downloads it. Without it the run usually can't be reproduced.
     validations:
       required: true

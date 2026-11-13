@@ -47,7 +47,11 @@ public record PlacedFurnitureItem(
     int?   AnchorCol = null,
     int?   AnchorRow = null,
     // Client-generated identity for manual drag & drop; never populated server-side.
-    string? Id = null);
+    string? Id = null,
+    // Generation-only (not sent to the client): wall side of a side-bound wall piece (see
+    // WallSideOf) and whether it is high, so CollectWallFaces can rebuild side-aware occupancy.
+    [property: System.Text.Json.Serialization.JsonIgnore] string? WallSide = null,
+    [property: System.Text.Json.Serialization.JsonIgnore] bool HighPiece = false);
 
 /// <summary>A reserved rectangular zone (e.g. "Car" spot) that placement must avoid entirely.</summary>
 public record ReservedZonePlacement(
@@ -265,7 +269,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 if (configKey is null)
                 { log.Add($"[SKIP] '{room.Name}' / InternalName='{room.InternalName}' (floor {sel.FloorIndex}): no RoomTypeConfig for '{typeName}'."); continue; }
 
-                var config = roomTypes[configKey];
+                var config = roomTypes[configKey].WithoutDisabled();
 
                 // Only tiles allowed in this room type (RoomTypes empty = everywhere). FilterTiles
                 // already checks this for a slot's base pool, but orientation/corner/tile-group
@@ -325,10 +329,10 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 
                     var layoutVariant = SelectLayoutVariant(config, rng, log);
 
-                    var roomSize      = RoomSize.Classify(roomCells.Count);
+                    var roomSize      = RoomSize.Classify(roomCells.Count, config.SizeLimits);
                     var cellWalls     = ComputeWallDirections(roomCells, floor, stairCells.mid);
                     var doorCells     = GetEdgeCells(floor, roomCells, FloorObjectType.Door);
-                    var windowCells   = GetEdgeCells(floor, roomCells, FloorObjectType.Window);
+                    var windowCells   = GetWindowCells(floor, roomCells);
                     // Scoped to edges touching THIS room's cells — edge keys are plain coordinate
                     // strings with no room identifier, so an unfiltered floor-wide set can spuriously
                     // "match" a different room's wall whose grid coordinates happen to sit adjacent
@@ -1055,14 +1059,61 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             ? tile.Layer.ToLowerInvariant()
             : null;
 
+    /// <summary>
+    /// Wall side a wall-layer piece is bound to: its WindowBlockedEdge (as authored on the resolved
+    /// tile), for non-corner pieces on a Wall* layer. Two side-bound pieces on different sides may
+    /// share a cell (same layer included; the TBX export moves the second one to the next wall
+    /// layer). Null = the piece takes the whole cell (no edge set, corner piece, not a wall layer).
+    /// </summary>
+    private static string? WallSideOf(TileDefinition tile) =>
+        tile.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase)
+        && tile.Orientation.Trim().Length == 1
+        && NormalizeEdge(tile.WindowBlockedEdge) is { } side
+            ? side
+            : null;
+
+    private static readonly string[] WallSides = ["N", "E", "S", "W"];
+
+    /// <summary>High band of a side-bound piece, kept in wallFaces as "high|side" (it never enters highOccupied).</summary>
+    private const string HighBandKey = "high";
+
+    /// <summary>Adds a placed cell's wall-face entries: "layer" (whole cell) or "layer|side", plus "high|side" for a high side-bound piece.</summary>
+    private static void AddWallFace(HashSet<(int, int, string)> faces, int col, int row, string layer, string? side, bool high)
+    {
+        if (!layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase)) return;
+        var key = layer.ToLowerInvariant();
+        faces.Add((col, row, side is null ? key : key + "|" + side));
+        if (side is not null && high) faces.Add((col, row, HighBandKey + "|" + side));
+    }
+
+    /// <summary>Is band `key` of this cell taken for a piece on `side` (null = whole cell)?</summary>
+    private static bool FaceBandTaken(HashSet<(int, int, string)>? faces, int col, int row, string key, string? side, bool wholeCellKeyCounts)
+    {
+        if (faces is null) return false;
+        if (wholeCellKeyCounts && faces.Contains((col, row, key))) return true;
+        if (side is not null) return faces.Contains((col, row, key + "|" + side));
+        foreach (var s in WallSides)
+            if (faces.Contains((col, row, key + "|" + s))) return true;
+        return false;
+    }
+
+    /// <summary>A light switch on this cell blocks a piece on `side` (null = whole cell) unless both are side-bound on different sides.</summary>
+    private static bool SwitchBlocks((int, int) cell, string? side, string? layerKey)
+    {
+        if (t_switchCells is null || !t_switchCells.TryGetValue(cell, out var sw)) return false;
+        if (layerKey is not null && sw.Layer != layerKey) return false;
+        return side is null || sw.Side is null || sw.Side == side;
+    }
+
     private static bool WallFaceTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
         HashSet<(int, int, string)>? wallFaces)
     {
         if (WallFaceKey(tile) is not { } key) return false;
+        var side = WallSideOf(tile);
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
-                if (wallFaces?.Contains((col + c, row + r, key)) == true
-                    || (t_switchCells?.TryGetValue((col + c, row + r), out var layer) == true && layer == key))
+                if (FaceBandTaken(wallFaces, col + c, row + r, key, side, wholeCellKeyCounts: true)
+                    || SwitchBlocks((col + c, row + r), side, key))
                     return true;
         return false;
     }
@@ -1073,13 +1124,18 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
     /// enters occupied). Tiles without IsHigh are unaffected.
     /// </summary>
     private static bool HighCellTaken(int col, int row, int fpW, int fpH, TileDefinition tile,
-        HashSet<(int, int)>? highOccupied)
+        HashSet<(int, int)>? highOccupied, HashSet<(int, int, string)>? wallFaces = null)
     {
         if (!tile.IsHigh) return false;
+        var side = WallSideOf(tile);
         for (int r = 0; r < fpH; r++)
             for (int c = 0; c < fpW; c++)
-                // A switch counts as high so nothing tall hides it.
-                if (highOccupied?.Contains((col + c, row + r)) == true || t_switchCells?.ContainsKey((col + c, row + r)) == true)
+                // highOccupied = high pieces taking the whole cell; side-bound high pieces live in
+                // wallFaces as "high|side". A switch counts as high so nothing tall hides it,
+                // except a side-bound wall piece on another wall of the cell.
+                if (highOccupied?.Contains((col + c, row + r)) == true
+                    || FaceBandTaken(wallFaces, col + c, row + r, HighBandKey, side, wholeCellKeyCounts: false)
+                    || SwitchBlocks((col + c, row + r), side, null))
                     return true;
         return false;
     }
@@ -1171,7 +1227,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         foreach (var p in placements)
             if (p.FloorIndex == floorIndex && p.RoomIndex1Based == roomIndex1Based
                 && p.Layer.StartsWith("Wall", StringComparison.OrdinalIgnoreCase))
-                faces.Add((p.Col, p.Row, p.Layer.ToLowerInvariant()));
+                AddWallFace(faces, p.Col, p.Row, p.Layer, p.WallSide, p.HighPiece);
         return faces;
     }
 
@@ -2573,7 +2629,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     continue;
                 if (WallFaceTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, wallFaces))
                     continue;
-                if (HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied))
+                if (HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied, wallFaces))
                     continue;
                 if (!ClearanceRingOk(anchorCol, anchorRow, fpW, fpH, slot.Clearance, roomCells, occupied, softOccupied, physicalOccupied, innerWallKeys))
                     continue;
@@ -2668,7 +2724,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         Lazy<HashSet<(int, int)>>? protectedCells = null,
         HashSet<(int, int)>? narrowCells = null,
         HashSet<(int, int, string)>? wallFaces = null,
-        HashSet<(int, int)>? highOccupied = null)
+        HashSet<(int, int)>? highOccupied = null,
+        HashSet<(int, int, string)>? highWallFaces = null)
     {
         // Defaults to slot.PlacementRules (unchanged behavior); callers that want to retry an
         // anchored placement under a FallbackRules entry (see EnumeratePlacementRuleChain) pass
@@ -2685,7 +2742,8 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
             return false;
         if (WallFaceTaken(col, row, fpW, fpH, tile, wallFaces))
             return false;
-        if (HighCellTaken(col, row, fpW, fpH, tile, highOccupied))
+        // highWallFaces: side-bound high bands to respect (grids pass their base state, like highOccupied).
+        if (HighCellTaken(col, row, fpW, fpH, tile, highOccupied, highWallFaces ?? wallFaces))
             return false;
         if (!ClearanceRingOk(col, row, fpW, fpH, slot.Clearance, roomCells, occupied, effectiveSoftOccupied, physicalOccupied, innerWallKeys))
             return false;
@@ -2952,7 +3010,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     slot.Id,
                     roomIndex1Based,
                     selectionAnchorCol,
-                    selectionAnchorRow));
+                    selectionAnchorRow,
+                    WallSide: WallSideOf(candidate.Tile),
+                    HighPiece: candidate.Tile.IsHigh));
                 if (slot.BlocksPlacement)
                     state.Occupied.Add((candidate.Col + c, candidate.Row + r));
                 else if (slot.SoftBlocks)
@@ -2961,9 +3021,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     state.PhysicalOccupied.Add((candidate.Col + c, candidate.Row + r));
                 else if (IsFloorFurnitureNoCollision(candidate.Tile))
                     state.FrontExemptCells.Add((candidate.Col + c, candidate.Row + r));
-                if (WallFaceKey(candidate.Tile) is { } faceKey)
-                    state.WallFaces.Add((candidate.Col + c, candidate.Row + r, faceKey));
-                if (candidate.Tile.IsHigh)
+                var wallSide = WallSideOf(candidate.Tile);
+                AddWallFace(state.WallFaces, candidate.Col + c, candidate.Row + r, candidate.Tile.Layer, wallSide, candidate.Tile.IsHigh);
+                if (candidate.Tile.IsHigh && wallSide is null) // side-bound: tracked via WallFaces
                     state.HighCells.Add((candidate.Col + c, candidate.Row + r));
                 if (!slot.BlocksPlacement && slot.CellRequiredProperties.Count > 0)
                 {
@@ -3420,7 +3480,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     // bereits ausgenommen, respektiert aber softOccupied-Zellen anderer Slots.
                     bool fitOk  = FitsFootprint(ac, ar, fpW, fpH, roomCells, occupied, effectiveSoftOccupied, innerWallKeys: innerWallKeys, tile: finalTile, floorLayerOccupied: floorLayerOccupied, stairEndCells: stairEndCells, narrowCells: narrowCells)
                                   && !WallFaceTaken(ac, ar, fpW, fpH, finalTile, wallFaces)
-                                  && !HighCellTaken(ac, ar, fpW, fpH, finalTile, effectiveHighOccupied)
+                                  && !HighCellTaken(ac, ar, fpW, fpH, finalTile, effectiveHighOccupied, wallFaces)
                                   && ClearanceRingOk(ac, ar, fpW, fpH, slot.Clearance, roomCells, occupied, effectiveSoftOccupied, physicalOccupied, innerWallKeys)
                                   && SatisfiesCellPropertyGates(ac, ar, fpW, fpH, finalTile, cellPropertyGates)
                                   && !BlockedByReservedZone(ac, ar, fpW, fpH, finalTile, reservedZoneCells);
@@ -3698,7 +3758,9 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                     slot.Id,
                     roomIndex1Based,
                     selectionAnchorCol,
-                    selectionAnchorRow));
+                    selectionAnchorRow,
+                    WallSide: WallSideOf(placedTile),
+                    HighPiece: placedTile.IsHigh));
                 if (slot.BlocksPlacement)
                     occupied.Add((col + c, row + r));
                 else if (slot.SoftBlocks)
@@ -3708,7 +3770,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 // stapelt, selbst wenn dieser Slot selbst nicht blockt (siehe FitsFootprint).
                 if (placedTile.Layer.Equals("FloorFurniture", StringComparison.OrdinalIgnoreCase))
                     floorLayerOccupied.Add((col + c, row + r));
-                if (placedTile.IsHigh)
+                if (placedTile.IsHigh && WallSideOf(placedTile) is null) // side-bound: tracked via wallFaces
                     highOccupied.Add((col + c, row + r));
                 // Physikalische Belegung: unabhängig von BlocksPlacement, nur nach HasCollision
                 if (placedTile.HasCollision)
@@ -4258,7 +4320,7 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
 
                 if (!SatisfiesCellPropertyGates(anchorCol, anchorRow, fpW, fpH, resolvedTile, cellPropertyGates)
                     || WallFaceTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, wallFaces)
-                    || HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied)
+                    || HighCellTaken(anchorCol, anchorRow, fpW, fpH, resolvedTile, highOccupied, wallFaces)
                     || !ClearanceRingOk(anchorCol, anchorRow, fpW, fpH, slot.Clearance, roomCells, occupied, softOccupied, physicalOccupied, innerWallKeys))
                 {
                     rejFits++;
@@ -4945,6 +5007,18 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         // Hangs above the window (e.g. kitchen hanging counter) — the window stays free.
         if (tile.AllowAboveWindow) return false;
 
+        // Side-exact: only a window on the tile's own (unrotated) side of the footprint blocks it.
+        if (tile.WindowExactSide)
+        {
+            if (NormalizeEdge(tile.WindowBlockedEdge) is not { } side) return false;
+            if (windowCells is not WindowCells wc)
+                return FootprintTouchesEdge(col, row, fpW, fpH, windowCells, side); // no side data: conservative
+            var dir = Enum.Parse<Direction>(side);
+            foreach (var cell in FootprintEdgeCells(col, row, fpW, fpH, side))
+                if (wc.Sides.TryGetValue(cell, out var dirs) && dirs.Contains(dir)) return true;
+            return false;
+        }
+
         var localEdge = NormalizeEdge(tile.WindowBlockedEdge);
         if (localEdge is not null)
         {
@@ -4986,6 +5060,16 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
                 return false;
         }
     }
+
+    /// <summary>Footprint cells along one outer edge ("N" = top row, "W" = left column, …).</summary>
+    private static IEnumerable<(int, int)> FootprintEdgeCells(int col, int row, int fpW, int fpH, string edge) => edge switch
+    {
+        "N" => Enumerable.Range(0, fpW).Select(c => (col + c, row)),
+        "S" => Enumerable.Range(0, fpW).Select(c => (col + c, row + fpH - 1)),
+        "W" => Enumerable.Range(0, fpH).Select(r => (col, row + r)),
+        "E" => Enumerable.Range(0, fpH).Select(r => (col + fpW - 1, row + r)),
+        _   => [],
+    };
 
     private static string RotateEdge(string edge, string fromOrient, string toOrient)
     {
@@ -5742,6 +5826,36 @@ public partial class FurnishingGeneratorService : IFurnishingGeneratorService
         foreach (var cell in result.Where(kv => kv.Value.Count == 0).Select(kv => kv.Key).ToList())
             result.Remove(cell);
 
+        return result;
+    }
+
+    /// <summary>
+    /// Window cells of a room plus, per cell, the side(s) the window is on — used by
+    /// TileDefinition.WindowExactSide. Still a plain cell set for every other window check.
+    /// </summary>
+    private sealed class WindowCells : HashSet<(int, int)>
+    {
+        public Dictionary<(int, int), HashSet<Direction>> Sides { get; } = [];
+
+        public void AddSide((int, int) cell, Direction side)
+        {
+            Add(cell);
+            if (!Sides.TryGetValue(cell, out var dirs)) Sides[cell] = dirs = [];
+            dirs.Add(side);
+        }
+    }
+
+    private static WindowCells GetWindowCells(Floor floor, HashSet<(int, int)> roomCells)
+    {
+        var result = new WindowCells();
+        foreach (var e in floor.Edges.Where(e => e.Type == FloorObjectType.Window))
+        {
+            // Same side mapping as the light-switch placer: cell1 lies N/W of the edge.
+            if (roomCells.Contains((e.Cell1Col, e.Cell1Row)))
+                result.AddSide((e.Cell1Col, e.Cell1Row), e.IsHorizontal ? Direction.S : Direction.E);
+            if (roomCells.Contains((e.Cell2Col, e.Cell2Row)))
+                result.AddSide((e.Cell2Col, e.Cell2Row), e.IsHorizontal ? Direction.N : Direction.W);
+        }
         return result;
     }
 

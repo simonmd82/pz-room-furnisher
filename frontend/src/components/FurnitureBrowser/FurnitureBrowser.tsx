@@ -867,6 +867,19 @@ ${clipboardOrigin}` : '')
                 </div>
               );
             })()}
+            {(() => {
+              const mixed  = isMixed(d => d.windowExactSide ?? false);
+              const curVal = sv(d => d.windowExactSide ?? false) as boolean | undefined;
+              return (
+                <label className={s.checkRow} style={mixed ? { color: '#bb8833' } : {}}
+                  title={t('common.windowExactSideInfo')}>
+                  <IndeterminateCheckbox checked={mixed ? false : (curVal ?? false)} indeterminate={mixed}
+                    onChange={v => applyField('windowExactSide', v as TileDefinition['windowExactSide'])} />
+                  {t('common.windowExactSide')}{mixed ? ' ⚠' : ''}
+                  <span className={s.infoIcon} aria-label={t('common.windowExactSideInfo')}>ⓘ</span>
+                </label>
+              );
+            })()}
 
             {/* Layer */}
             {(() => {

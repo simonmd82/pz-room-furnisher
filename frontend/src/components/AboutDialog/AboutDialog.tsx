@@ -4,6 +4,10 @@ import { getAppVersion } from '../../api/furnishApi';
 import { REPO_URL } from '../../utils/reportLinks';
 import s from './AboutDialog.module.css';
 
+const MELOS_TILES_URL    = 'https://steamcommunity.com/sharedfiles/filedetails/?id=2879745353';
+const SIMON_MD_TILES_URL = 'https://steamcommunity.com/sharedfiles/filedetails/?id=2852704777';
+const DADDY_DIRKIE_DIRK_TILES_URL = 'https://steamcommunity.com/sharedfiles/filedetails/?id=3628736763';
+
 interface Props {
   onClose: () => void;
 }
@@ -52,7 +56,13 @@ export function AboutDialog({ onClose }: Props) {
 
         <div className={s.block}>
           <div className={s.blockTitle}>{t('about.credits')}</div>
-          <div>{t('about.tileSets')}</div>
+          <div>
+            {link(MELOS_TILES_URL, t('about.melosTiles'))}
+            {', '}
+            {link(SIMON_MD_TILES_URL, t('about.simonTiles'))}
+            {` ${t('about.and')} `}
+            {link(DADDY_DIRKIE_DIRK_TILES_URL, t('about.daddyDirkieDirkTiles'))}
+          </div>
         </div>
 
         <div className={s.notes}>
